@@ -1,0 +1,149 @@
+/* Syntax Highlighting Styles */
+.syntax-highlighted {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 1.5rem 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* PHP Syntax Colors */
+.syntax-highlighted .php-tag {
+    color: #569cd6;
+    font-weight: bold;
+}
+
+.syntax-highlighted .keyword {
+    color: #569cd6;
+    font-weight: bold;
+}
+
+.syntax-highlighted .type {
+    color: #4ec9b0;
+    font-weight: bold;
+}
+
+.syntax-highlighted .string {
+    color: #ce9178;
+}
+
+.syntax-highlighted .comment {
+    color: #6a9955;
+    font-style: italic;
+}
+
+.syntax-highlighted .variable {
+    color: #9cdcfe;
+}
+
+.syntax-highlighted .number {
+    color: #b5cea8;
+}
+
+.syntax-highlighted .function {
+    color: #dcdcaa;
+}
+
+.syntax-highlighted .class {
+    color: #4ec9b0;
+    font-weight: bold;
+}
+
+.syntax-highlighted .constant {
+    color: #d7ba7d;
+    font-weight: bold;
+}
+
+.syntax-highlighted .namespace {
+    color: #c586c0;
+}
+
+.syntax-highlighted .operator {
+    color: #d4d4d4;
+}
+
+.syntax-highlighted .attribute {
+    color: #f44747;
+    font-weight: bold;
+}
+
+/* Scrollbar styling for code blocks */
+.syntax-highlighted::-webkit-scrollbar {
+    height: 8px;
+}
+
+.syntax-highlighted::-webkit-scrollbar-track {
+    background: #2d2d2d;
+    border-radius: 4px;
+}
+
+.syntax-highlighted::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.syntax-highlighted::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Light theme alternative */
+@media (prefers-color-scheme: light) {
+    .syntax-highlighted {
+        background: #f8f8f8;
+        color: #333;
+        border: 1px solid #e1e1e1;
+    }
+    
+    .syntax-highlighted .php-tag {
+        color: #0000ff;
+    }
+    
+    .syntax-highlighted .keyword {
+        color: #0000ff;
+    }
+    
+    .syntax-highlighted .type {
+        color: #008080;
+    }
+    
+    .syntax-highlighted .string {
+        color: #a31515;
+    }
+    
+    .syntax-highlighted .comment {
+        color: #008000;
+    }
+    
+    .syntax-highlighted .variable {
+        color: #001080;
+    }
+    
+    .syntax-highlighted .number {
+        color: #098658;
+    }
+    
+    .syntax-highlighted .function {
+        color: #795e26;
+    }
+    
+    .syntax-highlighted .class {
+        color: #267f99;
+    }
+    
+    .syntax-highlighted .constant {
+        color: #0070c1;
+    }
+    
+    .syntax-highlighted .namespace {
+        color: #af00db;
+    }
+    
+    .syntax-highlighted .attribute {
+        color: #e50000;
+    }
+}

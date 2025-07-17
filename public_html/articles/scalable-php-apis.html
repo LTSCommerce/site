@@ -7,6 +7,7 @@
     <title>Building Scalable Backend APIs with Modern PHP | Joseph</title>
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/articles.css">
+    <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -54,72 +55,123 @@
 
                     <p>Separate concerns into distinct layers for better maintainability and testability:</p>
 
-                    <pre><code>// Controller Layer - HTTP concerns only
-class UserController {
-    private UserService $userService;
+                    <pre><code><?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Services\User\UserService;
+use App\Http\{Request, Response, JsonResponse};
+use App\Exceptions\{ValidationException, DuplicateEmailException};
+use App\ValueObjects\UserId;
+use Psr\Log\LoggerInterface;
+
+// Controller Layer - HTTP concerns only
+final readonly class UserController
+{
+    public function __construct(
+        private UserService $userService,
+        private LoggerInterface $logger,
+    ) {}
     
-    public function __construct(UserService $userService) {
-        $this->userService = $userService;
-    }
-    
-    public function createUser(Request $request): Response {
+    public function createUser(Request $request): Response
+    {
         $userData = $request->getValidatedData();
         
         try {
             $user = $this->userService->createUser($userData);
-            return new JsonResponse($user, 201);
+            
+            return new JsonResponse([
+                'id' => $user->getId()->value,
+                'email' => $user->getEmail()->value,
+                'name' => $user->getName()->value,
+                'created_at' => $user->getCreatedAt()->format('c'),
+            ], 201);
         } catch (ValidationException $e) {
-            return new JsonResponse(['errors' => $e->getErrors()], 400);
+            return new JsonResponse([
+                'error' => 'Validation failed',
+                'violations' => $e->getViolations(),
+            ], 400);
         } catch (DuplicateEmailException $e) {
-            return new JsonResponse(['error' => 'Email already exists'], 409);
+            return new JsonResponse([
+                'error' => 'Email already exists',
+                'code' => 'DUPLICATE_EMAIL',
+            ], 409);
         }
     }
 }
 
 // Service Layer - Business logic
-class UserService {
-    private UserRepository $userRepository;
-    private EmailService $emailService;
-    private EventDispatcher $eventDispatcher;
+final readonly class UserService
+{
+    public function __construct(
+        private UserRepository $userRepository,
+        private EmailService $emailService,
+        private EventDispatcher $eventDispatcher,
+        private UserValidator $validator,
+        private PasswordHasher $passwordHasher,
+    ) {}
     
-    public function createUser(array $userData): User {
-        // Validate business rules
-        $this->validateUserData($userData);
+    public function createUser(array $userData): User
+    {
+        $this->validator->validate($userData);
         
-        // Create user
-        $user = new User($userData);
-        $user->setPassword(password_hash($userData['password'], PASSWORD_DEFAULT));
+        $user = User::create(
+            UserId::generate(),
+            EmailAddress::fromString($userData['email']),
+            UserName::fromString($userData['name']),
+            $this->passwordHasher->hash($userData['password'])
+        );
         
-        // Persist
         $this->userRepository->save($user);
         
-        // Send welcome email
         $this->emailService->sendWelcomeEmail($user);
         
-        // Dispatch event
-        $this->eventDispatcher->dispatch(new UserCreatedEvent($user));
+        $this->eventDispatcher->dispatch(
+            new UserCreatedEvent($user->getId(), $user->getEmail())
+        );
         
         return $user;
     }
 }
 
 // Repository Layer - Data access
-class UserRepository {
-    private PDO $pdo;
+final readonly class UserRepository
+{
+    public function __construct(
+        private PDO $connection,
+        private UserHydrator $hydrator,
+    ) {}
     
-    public function save(User $user): void {
-        $sql = "INSERT INTO users (email, name, password_hash, created_at) 
-                VALUES (:email, :name, :password_hash, :created_at)";
+    public function save(User $user): void
+    {
+        $stmt = $this->connection->prepare(<<< 'SQL'
+            INSERT INTO users (id, email, name, password_hash, created_at) 
+            VALUES (:id, :email, :name, :password_hash, :created_at)
+            SQL);
         
-        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'email' => $user->getEmail(),
-            'name' => $user->getName(),
-            'password_hash' => $user->getPasswordHash(),
+            'id' => $user->getId()->value,
+            'email' => $user->getEmail()->value,
+            'name' => $user->getName()->value,
+            'password_hash' => $user->getPasswordHash()->value,
             'created_at' => $user->getCreatedAt()->format('Y-m-d H:i:s')
         ]);
+    }
+    
+    public function findById(UserId $id): ?User
+    {
+        $stmt = $this->connection->prepare(<<< 'SQL'
+            SELECT id, email, name, password_hash, created_at
+            FROM users 
+            WHERE id = :id AND deleted_at IS NULL
+            SQL);
         
-        $user->setId($this->pdo->lastInsertId());
+        $stmt->execute(['id' => $id->value]);
+        $userData = $stmt->fetch();
+        
+        return $userData ? $this->hydrator->hydrate($userData) : null;
     }
 }</code></pre>
 
@@ -127,45 +179,100 @@ class UserRepository {
 
                     <p>Model your business domain explicitly:</p>
 
-                    <pre><code>// Domain Entity
-class User {
-    private ?int $id = null;
-    private string $email;
-    private string $name;
-    private string $passwordHash;
-    private UserStatus $status;
-    private DateTimeImmutable $createdAt;
+                    <pre><code><?php
+
+declare(strict_types=1);
+
+namespace App\Domain\User;
+
+use App\ValueObjects\{UserId, EmailAddress, UserName, PasswordHash};
+use App\Exceptions\{UserAlreadyDeactivatedException, InvalidStateTransitionException};
+use App\Domain\{AggregateRoot, DomainEvent};
+use DateTimeImmutable;
+
+// Domain Entity
+final class User extends AggregateRoot
+{
+    private function __construct(
+        private readonly UserId $id,
+        private EmailAddress $email,
+        private readonly UserName $name,
+        private readonly PasswordHash $passwordHash,
+        private UserStatus $status,
+        private readonly DateTimeImmutable $createdAt,
+    ) {}
     
-    public function __construct(string $email, string $name) {
-        $this->email = $this->validateEmail($email);
-        $this->name = $name;
-        $this->status = UserStatus::ACTIVE;
-        $this->createdAt = new DateTimeImmutable();
+    public static function create(
+        UserId $id,
+        EmailAddress $email,
+        UserName $name,
+        PasswordHash $passwordHash
+    ): self {
+        $user = new self(
+            $id,
+            $email,
+            $name,
+            $passwordHash,
+            UserStatus::ACTIVE,
+            new DateTimeImmutable()
+        );
+        
+        $user->recordEvent(new UserCreatedEvent($id, $email));
+        
+        return $user;
     }
     
-    public function changeEmail(string $newEmail): void {
-        $this->email = $this->validateEmail($newEmail);
+    public function changeEmail(EmailAddress $newEmail): void
+    {
+        if ($this->email->equals($newEmail)) {
+            return;
+        }
+        
+        $previousEmail = $this->email;
+        $this->email = $newEmail;
+        
+        $this->recordEvent(new UserEmailChangedEvent(
+            $this->id,
+            $previousEmail,
+            $newEmail
+        ));
     }
     
-    public function deactivate(): void {
+    public function deactivate(): void
+    {
         if ($this->status === UserStatus::DEACTIVATED) {
-            throw new UserAlreadyDeactivatedException();
+            throw new UserAlreadyDeactivatedException(
+                "User {$this->id->value} is already deactivated"
+            );
         }
         
         $this->status = UserStatus::DEACTIVATED;
+        $this->recordEvent(new UserDeactivatedEvent($this->id));
     }
     
-    public function isActive(): bool {
+    public function activate(): void
+    {
+        if ($this->status === UserStatus::SUSPENDED) {
+            throw new InvalidStateTransitionException(
+                "Cannot activate suspended user {$this->id->value}"
+            );
+        }
+        
+        $this->status = UserStatus::ACTIVE;
+        $this->recordEvent(new UserActivatedEvent($this->id));
+    }
+    
+    public function isActive(): bool
+    {
         return $this->status === UserStatus::ACTIVE;
     }
     
-    private function validateEmail(string $email): string {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidEmailException($email);
-        }
-        
-        return $email;
-    }
+    public function getId(): UserId { return $this->id; }
+    public function getEmail(): EmailAddress { return $this->email; }
+    public function getName(): UserName { return $this->name; }
+    public function getPasswordHash(): PasswordHash { return $this->passwordHash; }
+    public function getStatus(): UserStatus { return $this->status; }
+    public function getCreatedAt(): DateTimeImmutable { return $this->createdAt; }
 }
 
 // Value Object
@@ -173,11 +280,24 @@ enum UserStatus: string {
     case ACTIVE = 'active';
     case DEACTIVATED = 'deactivated';
     case SUSPENDED = 'suspended';
+    
+    public function canTransitionTo(self $newStatus): bool
+    {
+        return match ([$this, $newStatus]) {
+            [self::ACTIVE, self::DEACTIVATED] => true,
+            [self::ACTIVE, self::SUSPENDED] => true,
+            [self::DEACTIVATED, self::ACTIVE] => true,
+            [self::SUSPENDED, self::DEACTIVATED] => true,
+            default => false,
+        };
+    }
 }
 
 // Domain Service
-class UserDomainService {
-    public function canUserAccessResource(User $user, Resource $resource): bool {
+final readonly class UserDomainService
+{
+    public function canUserAccessResource(User $user, Resource $resource): bool
+    {
         if (!$user->isActive()) {
             return false;
         }
@@ -187,6 +307,15 @@ class UserDomainService {
         }
         
         return $user->hasPermission($resource->getRequiredPermission());
+    }
+    
+    public function canUserPerformAction(User $user, Action $action): bool
+    {
+        return match ($user->getStatus()) {
+            UserStatus::ACTIVE => true,
+            UserStatus::SUSPENDED => $action->isAllowedForSuspendedUsers(),
+            UserStatus::DEACTIVATED => false,
+        };
     }
 }</code></pre>
 
@@ -922,5 +1051,6 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
     </footer>
 
     <script src="../js/main.js"></script>
+    <script src="../js/syntax-highlighter.js"></script>
 </body>
 </html>

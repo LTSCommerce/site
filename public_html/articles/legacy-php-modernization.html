@@ -7,6 +7,7 @@
     <title>Managing Legacy PHP: From Technical Debt to Modern Architecture | Joseph</title>
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/articles.css">
+    <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -90,23 +91,37 @@
 
                     <p>This pattern allows you to gradually replace old code with new code by routing requests through a facade:</p>
 
-                    <pre><code>class LegacyUserService
+                    <pre><code><?php
+
+declare(strict_types=1);
+
+namespace App\Services\User;
+
+use App\Contracts\UserServiceInterface;
+use App\ValueObjects\UserId;
+use App\Entities\User;
+use App\Exceptions\UserNotFoundException;
+
+final readonly class StranglerFigUserService implements UserServiceInterface
 {
-    public function getUser($id)
+    public function __construct(
+        private UserServiceInterface $legacyService,
+        private UserServiceInterface $modernService,
+        private FeatureToggleService $featureToggle,
+    ) {}
+
+    public function getUser(UserId $id): User
     {
-        // Route to new implementation for some users
-        if ($this->shouldUseNewImplementation($id)) {
-            return $this->newUserService->getUser($id);
-        }
-        
-        // Fall back to legacy implementation
-        return $this->legacyGetUser($id);
+        return match ($this->featureToggle->isEnabled('modern_user_service', $id)) {
+            true => $this->modernService->getUser($id),
+            false => $this->legacyService->getUser($id),
+        };
     }
-    
-    private function shouldUseNewImplementation($id)
+
+    private function shouldUseModernImplementation(UserId $id): bool
     {
-        // Gradually roll out new implementation
-        return $id % 10 === 0; // 10% of users
+        // Canary release: 10% of users
+        return $id->value % 10 === 0;
     }
 }</code></pre>
 
@@ -116,24 +131,37 @@
 
                     <p>Replace global state with explicit dependencies:</p>
 
-                    <pre><code>// Before: Global database connection
-function getUser($id) {
+                    <pre><code><?php
+
+declare(strict_types=1);
+
+// Before: Global database connection
+function getUser(int $id): array|false
+{
     global $db;
-    return $db->query("SELECT * FROM users WHERE id = $id")->fetch();
+    return $db->query("SELECT * FROM users WHERE id = {$id}")->fetch();
 }
 
-// After: Dependency injection
-class UserRepository {
-    private $db;
-    
-    public function __construct(PDO $db) {
-        $this->db = $db;
-    }
-    
-    public function getUser($id) {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        return $stmt->fetch();
+// After: Modern dependency injection with proper typing
+final readonly class UserRepository implements UserRepositoryInterface
+{
+    public function __construct(
+        private PDO $connection,
+        private UserHydrator $hydrator,
+    ) {}
+
+    public function findById(UserId $id): ?User
+    {
+        $stmt = $this->connection->prepare(<<< 'SQL'
+            SELECT id, email, name, created_at, updated_at
+            FROM users 
+            WHERE id = :id AND deleted_at IS NULL
+            SQL);
+        
+        $stmt->execute(['id' => $id->value]);
+        $userData = $stmt->fetch();
+        
+        return $userData ? $this->hydrator->hydrate($userData) : null;
     }
 }</code></pre>
 
@@ -141,19 +169,55 @@ class UserRepository {
 
                     <p>Move business logic out of controllers and into dedicated service classes:</p>
 
-                    <pre><code>class OrderService {
-    public function processOrder($orderData) {
-        // Validate order
-        $this->validateOrder($orderData);
+                    <pre><code><?php
+
+declare(strict_types=1);
+
+namespace App\Services\Order;
+
+use App\ValueObjects\{OrderId, Money, CustomerId};
+use App\Entities\Order;
+use App\Events\OrderPlaced;
+use App\Exceptions\{OrderValidationException, PaymentFailedException};
+
+final readonly class OrderService
+{
+    public function __construct(
+        private OrderValidator $validator,
+        private PriceCalculator $calculator,
+        private PaymentGateway $paymentGateway,
+        private OrderRepository $repository,
+        private EventDispatcher $eventDispatcher,
+    ) {}
+
+    public function processOrder(OrderData $orderData): Order
+    {
+        $this->validator->validate($orderData);
         
-        // Calculate totals
-        $total = $this->calculateTotal($orderData);
+        $order = Order::create(
+            OrderId::generate(),
+            $orderData->customerId,
+            $orderData->items,
+            $this->calculator->calculate($orderData->items)
+        );
         
-        // Process payment
-        $paymentResult = $this->paymentService->processPayment($total);
+        $paymentResult = $this->paymentGateway->charge(
+            $order->total,
+            $orderData->paymentMethod
+        );
         
-        // Save order
-        return $this->orderRepository->save($orderData, $paymentResult);
+        if (!$paymentResult->isSuccessful()) {
+            throw new PaymentFailedException($paymentResult->errorMessage);
+        }
+        
+        $order->markAsPaid($paymentResult->transactionId);
+        $this->repository->save($order);
+        
+        $this->eventDispatcher->dispatch(
+            new OrderPlaced($order->id, $order->customerId)
+        );
+        
+        return $order;
     }
 }</code></pre>
 
@@ -161,17 +225,56 @@ class UserRepository {
 
                     <p>Start with integration tests for critical paths, then add unit tests as you refactor:</p>
 
-                    <pre><code>class OrderProcessingTest extends TestCase {
-    public function testOrderProcessing() {
+                    <pre><code><?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Services\Order;
+
+use App\Services\Order\OrderService;
+use App\Testing\{OrderDataBuilder, PaymentResultBuilder};
+use App\Exceptions\PaymentFailedException;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\{Test, TestDox};
+
+final class OrderServiceTest extends TestCase
+{
+    #[Test]
+    #[TestDox('Successfully processes valid order with payment')]
+    public function processOrder_WithValidData_CreatesOrderAndProcessesPayment(): void
+    {
         // Arrange
-        $orderData = $this->createTestOrder();
+        $orderData = OrderDataBuilder::new()
+            ->withCustomer(CustomerId::fromString('cust_123'))
+            ->withItems([
+                OrderItemBuilder::new()->withProduct('prod_456')->build(),
+            ])
+            ->build();
+        
+        $paymentResult = PaymentResultBuilder::successful()
+            ->withTransactionId('txn_789')
+            ->build();
+        
+        $this->paymentGateway->shouldReceive('charge')
+            ->once()
+            ->with(Money::fromCents(1000), $orderData->paymentMethod)
+            ->andReturn($paymentResult);
         
         // Act
-        $result = $this->orderService->processOrder($orderData);
+        $order = $this->orderService->processOrder($orderData);
         
         // Assert
-        $this->assertTrue($result->isSuccessful());
-        $this->assertOrderSavedInDatabase($result->getOrderId());
+        $this->assertInstanceOf(Order::class, $order);
+        $this->assertTrue($order->isPaid());
+        $this->assertEquals('txn_789', $order->transactionId->value);
+        
+        $this->repository->shouldHaveReceived('save')
+            ->once()
+            ->with($order);
+        
+        $this->eventDispatcher->shouldHaveReceived('dispatch')
+            ->once()
+            ->with(\Mockery::type(OrderPlaced::class));
     }
 }</code></pre>
 
@@ -256,5 +359,6 @@ class UserRepository {
     </footer>
 
     <script src="../js/main.js"></script>
+    <script src="../js/syntax-highlighter.js"></script>
 </body>
 </html>
