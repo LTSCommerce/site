@@ -1,30 +1,38 @@
-// Mobile Navigation Toggle
+// Main JavaScript functionality
+import './prism-setup.js';
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Mobile Navigation Toggle
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
     
-    // Toggle mobile menu
-    navToggle.addEventListener('click', function() {
-        navMenu.classList.toggle('active');
-        document.body.classList.toggle('menu-open');
-    });
-    
-    // Close menu when clicking on a link
-    navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            navMenu.classList.remove('active');
-            document.body.classList.remove('menu-open');
+    if (navToggle && navMenu) {
+        // Toggle mobile menu
+        navToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            navToggle.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
         });
-    });
-    
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
-            navMenu.classList.remove('active');
-            document.body.classList.remove('menu-open');
-        }
-    });
+        
+        // Close menu when clicking on a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                navToggle.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('active');
+                navToggle.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            }
+        });
+    }
     
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -40,20 +48,77 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Add scroll effect to header
+    // Enhanced header scroll effect
     let lastScroll = 0;
-    window.addEventListener('scroll', function() {
+    const header = document.querySelector('.site-header');
+    
+    const handleScroll = utils.throttle(function() {
         const currentScroll = window.pageYOffset;
-        const header = document.querySelector('.site-header');
         
         if (currentScroll > 100) {
-            header.classList.add('scrolled');
+            header?.classList.add('scrolled');
         } else {
-            header.classList.remove('scrolled');
+            header?.classList.remove('scrolled');
         }
         
         lastScroll = currentScroll;
+    }, 16);
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    // Article search functionality
+    const searchInput = document.querySelector('.search-input');
+    const articleCards = document.querySelectorAll('.article-card');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    if (searchInput && articleCards.length > 0) {
+        searchInput.addEventListener('input', utils.debounce(function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            articleCards.forEach(card => {
+                const title = card.querySelector('.article-title')?.textContent.toLowerCase() || '';
+                const excerpt = card.querySelector('.article-excerpt')?.textContent.toLowerCase() || '';
+                
+                if (title.includes(searchTerm) || excerpt.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }, 300));
+    }
+    
+    // Filter functionality
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            
+            // Update active filter button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter articles
+            articleCards.forEach(card => {
+                const category = card.querySelector('.article-category')?.textContent.toLowerCase() || '';
+                
+                if (filter === 'all' || category === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
     });
+    
+    // Performance monitoring
+    if ('performance' in window) {
+        window.addEventListener('load', function() {
+            const perfData = performance.getEntriesByType('navigation')[0];
+            if (perfData) {
+                console.log(`Page loaded in ${Math.round(perfData.loadEventEnd - perfData.loadEventStart)}ms`);
+            }
+        });
+    }
 });
 
 // Page router for single page navigation (if needed later)

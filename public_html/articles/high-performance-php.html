@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios">
@@ -9,8 +7,8 @@
     <link rel="stylesheet" href="../css/articles.css">
     <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="site-header">
@@ -55,7 +53,7 @@
 
                     <p>You can't optimize what you don't measure. Essential profiling tools:</p>
 
-                    <pre><code># Install Xdebug for profiling
+                    <pre><code class="language-php"># Install Xdebug for profiling
 pecl install xdebug
 
 # php.ini configuration
@@ -69,7 +67,7 @@ xdebug.profiler_output_name="cachegrind.out.%p"</code></pre>
 
                     <h3>Application Performance Monitoring</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -81,7 +79,7 @@ use Psr\Log\LoggerInterface;
 
 final class PerformanceMonitor
 {
-    /** @var array<string, float> */
+    /** @var array&lt;string, float--&gt; */
     private array $timers = [];
     
     public function __construct(
@@ -91,28 +89,28 @@ final class PerformanceMonitor
     
     public function start(MetricName $name): void
     {
-        $this->timers[$name->value] = hrtime(true);
+        $this-&gt;timers[$name-&gt;value] = hrtime(true);
     }
     
     public function end(MetricName $name): Duration
     {
-        $timerKey = $name->value;
+        $timerKey = $name-&gt;value;
         
-        if (!isset($this->timers[$timerKey])) {
+        if (!isset($this-&gt;timers[$timerKey])) {
             throw new TimerNotFoundException("Timer '{$timerKey}' not found");
         }
         
         $elapsed = Duration::fromNanoseconds(
-            hrtime(true) - $this->timers[$timerKey]
+            hrtime(true) - $this-&gt;timers[$timerKey]
         );
         
-        unset($this->timers[$timerKey]);
+        unset($this-&gt;timers[$timerKey]);
         
-        $this->metricsCollector->timing($name, $elapsed);
+        $this-&gt;metricsCollector-&gt;timing($name, $elapsed);
         
-        $this->logger->debug('Performance metric recorded', [
-            'metric' => $name->value,
-            'duration_ms' => $elapsed->toMilliseconds(),
+        $this-&gt;logger-&gt;debug('Performance metric recorded', [
+            'metric' =&gt; $name-&gt;value,
+            'duration_ms' =&gt; $elapsed-&gt;toMilliseconds(),
         ]);
         
         return $elapsed;
@@ -125,7 +123,7 @@ final class PerformanceMonitor
 
                     <h3>Production OPcache Configuration</h3>
 
-                    <pre><code># php.ini
+                    <pre><code class="language-php"># php.ini
 opcache.enable=1
 opcache.enable_cli=1
 opcache.memory_consumption=512
@@ -143,7 +141,7 @@ opcache.jit=1255</code></pre>
 
                     <h3>OPcache Monitoring</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -165,8 +163,8 @@ final readonly class OPcacheMonitor
             throw new OPcacheNotAvailableException('OPcache extension not loaded');
         }
         
-        $status = $this->statusReader->read();
-        $config = $this->configReader->read();
+        $status = $this---&gt;statusReader-&gt;read();
+        $config = $this-&gt;configReader-&gt;read();
         
         return new OPcacheStats(
             enabled: $status['opcache_enabled'],
@@ -174,7 +172,7 @@ final readonly class OPcacheMonitor
             memoryUsage: MemoryUsage::fromArray($status['memory_usage']),
             cachedScripts: $status['opcache_statistics']['num_cached_scripts'],
             maxCachedKeys: $config['directives']['opcache.max_accelerated_files'],
-            jitEnabled: $config['directives']['opcache.jit_buffer_size'] > 0,
+            jitEnabled: $config['directives']['opcache.jit_buffer_size'] &gt; 0,
             jitBufferSize: $config['directives']['opcache.jit_buffer_size'],
         );
     }
@@ -202,7 +200,7 @@ final readonly class OPcacheMonitor
 
                     <p>Database connections are expensive. Use persistent connections wisely:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -214,10 +212,10 @@ use WeakMap;
 
 final class DatabaseConnectionPool
 {
-    /** @var WeakMap<ConnectionId, PDO> */
+    /** @var WeakMap&lt;ConnectionId, PDO--&gt; */
     private WeakMap $connections;
     
-    /** @var array<string, ConnectionId> */
+    /** @var array&lt;string, connectionid=""&gt; */
     private array $connectionIds = [];
     
     public function __construct(
@@ -226,21 +224,21 @@ final class DatabaseConnectionPool
         private readonly int $maxConnections = 20,
         private readonly ConnectionOptions $options = new ConnectionOptions(),
     ) {
-        $this->connections = new WeakMap();
+        $this-&gt;connections = new WeakMap();
     }
     
     public function getConnection(): PDO
     {
-        $connectionId = $this->findAvailableConnection() 
-            ?? $this->createNewConnection();
+        $connectionId = $this-&gt;findAvailableConnection() 
+            ?? $this-&gt;createNewConnection();
         
-        return $this->connections[$connectionId];
+        return $this-&gt;connections[$connectionId];
     }
     
     private function findAvailableConnection(): ?ConnectionId
     {
-        foreach ($this->connectionIds as $id) {
-            if ($this->connections->offsetExists($id)) {
+        foreach ($this-&gt;connectionIds as $id) {
+            if ($this-&gt;connections-&gt;offsetExists($id)) {
                 return $id;
             }
         }
@@ -250,9 +248,9 @@ final class DatabaseConnectionPool
     
     private function createNewConnection(): ConnectionId
     {
-        if (count($this->connectionIds) >= $this->maxConnections) {
+        if (count($this-&gt;connectionIds) &gt;= $this-&gt;maxConnections) {
             throw new ConnectionPoolExhaustedException(
-                "Maximum connections ({$this->maxConnections}) reached"
+                "Maximum connections ({$this-&gt;maxConnections}) reached"
             );
         }
         
@@ -260,28 +258,28 @@ final class DatabaseConnectionPool
         
         try {
             $pdo = new PDO(
-                $this->dsn->value,
-                $this->credentials->username,
-                $this->credentials->password,
-                $this->options->toPdoOptions(),
+                $this-&gt;dsn-&gt;value,
+                $this-&gt;credentials-&gt;username,
+                $this-&gt;credentials-&gt;password,
+                $this-&gt;options-&gt;toPdoOptions(),
             );
             
-            $this->connections[$connectionId] = $pdo;
-            $this->connectionIds[] = $connectionId;
+            $this-&gt;connections[$connectionId] = $pdo;
+            $this-&gt;connectionIds[] = $connectionId;
             
             return $connectionId;
         } catch (PDOException $e) {
             throw new ConnectionCreationFailedException(
-                "Failed to create database connection: {$e->getMessage()}",
+                "Failed to create database connection: {$e-&gt;getMessage()}",
                 previous: $e
             );
         }
     }
-}</code></pre>
+}&lt;/string,&gt;</code></pre>
 
                     <h3>Query Optimization</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -293,7 +291,7 @@ use Psr\Log\LoggerInterface;
 
 final readonly class QueryOptimizer
 {
-    /** @var array<int, QueryMetrics> */
+    /** @var array&lt;int, QueryMetrics--&gt; */
     private array $queryLog = [];
     
     public function __construct(
@@ -307,14 +305,14 @@ final readonly class QueryOptimizer
     {
         $startTime = hrtime(true);
         
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        $result = $stmt->fetchAll();
+        $stmt = $this-&gt;pdo-&gt;prepare($sql);
+        $stmt-&gt;execute($params);
+        $result = $stmt-&gt;fetchAll();
         
         $duration = QueryDuration::fromNanoseconds(hrtime(true) - $startTime);
         
-        if ($duration->exceeds($this->slowQueryThreshold)) {
-            $this->logSlowQuery($sql, $params, $duration);
+        if ($duration-&gt;exceeds($this-&gt;slowQueryThreshold)) {
+            $this-&gt;logSlowQuery($sql, $params, $duration);
         }
         
         return $result;
@@ -329,49 +327,49 @@ final readonly class QueryOptimizer
             executedAt: new DateTimeImmutable()
         );
         
-        $this->queryLog[] = $metrics;
+        $this-&gt;queryLog[] = $metrics;
         
-        $this->logger->warning('Slow query detected', [
-            'sql' => $sql,
-            'duration_ms' => $duration->toMilliseconds(),
-            'parameters' => $params,
+        $this-&gt;logger-&gt;warning('Slow query detected', [
+            'sql' =&gt; $sql,
+            'duration_ms' =&gt; $duration-&gt;toMilliseconds(),
+            'parameters' =&gt; $params,
         ]);
         
-        if (count($this->queryLog) > $this->maxSlowQueries) {
+        if (count($this-&gt;queryLog) &gt; $this-&gt;maxSlowQueries) {
             throw new SlowQueryThresholdExceededException(
-                "Too many slow queries detected: {$this->maxSlowQueries}"
+                "Too many slow queries detected: {$this-&gt;maxSlowQueries}"
             );
         }
     }
     
-    /** @return array<QueryMetrics> */
+    /** @return array&lt;querymetrics&gt; */
     public function getQueryLog(): array
     {
-        return $this->queryLog;
+        return $this-&gt;queryLog;
     }
     
     public function getAverageQueryTime(): QueryDuration
     {
-        if (empty($this->queryLog)) {
+        if (empty($this-&gt;queryLog)) {
             return QueryDuration::fromMilliseconds(0);
         }
         
         $totalNanoseconds = array_sum(
             array_map(
-                fn(QueryMetrics $metrics) => $metrics->duration->toNanoseconds(),
-                $this->queryLog
+                fn(QueryMetrics $metrics) =&gt; $metrics-&gt;duration-&gt;toNanoseconds(),
+                $this-&gt;queryLog
             )
         );
         
-        return QueryDuration::fromNanoseconds($totalNanoseconds / count($this->queryLog));
+        return QueryDuration::fromNanoseconds($totalNanoseconds / count($this-&gt;queryLog));
     }
-}</code></pre>
+}&lt;/querymetrics&gt;</code></pre>
 
                     <h2>Caching Strategies</h2>
 
                     <h3>Multi-Level Caching</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -384,7 +382,7 @@ use WeakMap;
 
 final class MultiLevelCacheManager
 {
-    /** @var array<string, mixed> */
+    /** @var array&lt;string, mixed--&gt; */
     private array $memoryCache = [];
     private readonly bool $apcuAvailable;
     
@@ -392,35 +390,35 @@ final class MultiLevelCacheManager
         private readonly Redis $redis,
         private readonly CacheTTL $defaultTtl = new CacheTTL(3600),
     ) {
-        $this->apcuAvailable = extension_loaded('apcu');
+        $this-&gt;apcuAvailable = extension_loaded('apcu');
     }
     
     public function get(CacheKey $key, ?callable $callback = null, ?CacheTTL $ttl = null): mixed
     {
-        $keyString = $key->toString();
-        $ttl ??= $this->defaultTtl;
+        $keyString = $key-&gt;toString();
+        $ttl ??= $this-&gt;defaultTtl;
         
         // Level 1: Memory cache (fastest)
-        if (isset($this->memoryCache[$keyString])) {
-            return $this->memoryCache[$keyString];
+        if (isset($this-&gt;memoryCache[$keyString])) {
+            return $this-&gt;memoryCache[$keyString];
         }
         
         // Level 2: APCu (shared memory)
-        if ($this->apcuAvailable && apcu_exists($keyString)) {
+        if ($this-&gt;apcuAvailable &amp;&amp; apcu_exists($keyString)) {
             $value = apcu_fetch($keyString);
-            $this->memoryCache[$keyString] = $value;
+            $this-&gt;memoryCache[$keyString] = $value;
             return $value;
         }
         
         // Level 3: Redis (distributed cache)
-        $serializedValue = $this->redis->get($keyString);
+        $serializedValue = $this-&gt;redis-&gt;get($keyString);
         if ($serializedValue !== false) {
             try {
                 $value = unserialize($serializedValue);
-                $this->memoryCache[$keyString] = $value;
+                $this-&gt;memoryCache[$keyString] = $value;
                 
-                if ($this->apcuAvailable) {
-                    apcu_store($keyString, $value, $ttl->toSeconds());
+                if ($this-&gt;apcuAvailable) {
+                    apcu_store($keyString, $value, $ttl-&gt;toSeconds());
                 }
                 
                 return $value;
@@ -435,7 +433,7 @@ final class MultiLevelCacheManager
         // Generate value if callback provided
         if ($callback !== null) {
             $value = $callback();
-            $this->set($key, $value, $ttl);
+            $this-&gt;set($key, $value, $ttl);
             return $value;
         }
         
@@ -444,18 +442,18 @@ final class MultiLevelCacheManager
     
     public function set(CacheKey $key, mixed $value, ?CacheTTL $ttl = null): void
     {
-        $keyString = $key->toString();
-        $ttl ??= $this->defaultTtl;
+        $keyString = $key-&gt;toString();
+        $ttl ??= $this-&gt;defaultTtl;
         
         // Store in all cache levels
-        $this->memoryCache[$keyString] = $value;
+        $this-&gt;memoryCache[$keyString] = $value;
         
-        if ($this->apcuAvailable) {
-            apcu_store($keyString, $value, $ttl->toSeconds());
+        if ($this-&gt;apcuAvailable) {
+            apcu_store($keyString, $value, $ttl-&gt;toSeconds());
         }
         
         try {
-            $this->redis->setex($keyString, $ttl->toSeconds(), serialize($value));
+            $this-&gt;redis-&gt;setex($keyString, $ttl-&gt;toSeconds(), serialize($value));
         } catch (Throwable $e) {
             throw new CacheSerializationException(
                 "Failed to serialize value for key: {$keyString}",
@@ -466,32 +464,32 @@ final class MultiLevelCacheManager
     
     public function delete(CacheKey $key): void
     {
-        $keyString = $key->toString();
+        $keyString = $key-&gt;toString();
         
-        unset($this->memoryCache[$keyString]);
+        unset($this-&gt;memoryCache[$keyString]);
         
-        if ($this->apcuAvailable) {
+        if ($this-&gt;apcuAvailable) {
             apcu_delete($keyString);
         }
         
-        $this->redis->del($keyString);
+        $this-&gt;redis-&gt;del($keyString);
     }
     
     public function clear(): void
     {
-        $this->memoryCache = [];
+        $this-&gt;memoryCache = [];
         
-        if ($this->apcuAvailable) {
+        if ($this-&gt;apcuAvailable) {
             apcu_clear_cache();
         }
         
-        $this->redis->flushdb();
+        $this-&gt;redis-&gt;flushdb();
     }
 }</code></pre>
 
                     <h3>Smart Cache Invalidation</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -509,98 +507,98 @@ final readonly class TaggedCacheInvalidator
         private LoggerInterface $logger,
     ) {}
     
-    /** @param array<CacheTag> $tags */
+    /** @param array&lt;CacheTag--&gt; $tags */
     public function setWithTags(
         CacheKey $key,
         mixed $value,
         array $tags,
         ?CacheTTL $ttl = null
     ): void {
-        $this->cache->set($key, $value, $ttl);
+        $this-&gt;cache-&gt;set($key, $value, $ttl);
         
         // Associate key with tags
         foreach ($tags as $tag) {
             $tagKey = CacheKey::forTag($tag);
-            $existingKeys = $this->cache->get($tagKey, fn() => []);
-            $existingKeys[] = $key->toString();
+            $existingKeys = $this-&gt;cache-&gt;get($tagKey, fn() =&gt; []);
+            $existingKeys[] = $key-&gt;toString();
             
-            $this->cache->set(
+            $this-&gt;cache-&gt;set(
                 $tagKey,
                 array_unique($existingKeys),
                 $ttl
             );
         }
         
-        $this->logger->debug('Cache entry created with tags', [
-            'key' => $key->toString(),
-            'tags' => array_map(fn(CacheTag $tag) => $tag->toString(), $tags),
+        $this-&gt;logger-&gt;debug('Cache entry created with tags', [
+            'key' =&gt; $key-&gt;toString(),
+            'tags' =&gt; array_map(fn(CacheTag $tag) =&gt; $tag-&gt;toString(), $tags),
         ]);
     }
     
     public function invalidateTag(CacheTag $tag): void
     {
         $tagKey = CacheKey::forTag($tag);
-        $keys = $this->cache->get($tagKey, fn() => []);
+        $keys = $this-&gt;cache-&gt;get($tagKey, fn() =&gt; []);
         
         $invalidatedCount = 0;
         
         foreach ($keys as $keyString) {
             try {
-                $this->cache->delete(CacheKey::fromString($keyString));
+                $this-&gt;cache-&gt;delete(CacheKey::fromString($keyString));
                 $invalidatedCount++;
             } catch (Throwable $e) {
-                $this->logger->error('Failed to invalidate cache key', [
-                    'key' => $keyString,
-                    'tag' => $tag->toString(),
-                    'error' => $e->getMessage(),
+                $this-&gt;logger-&gt;error('Failed to invalidate cache key', [
+                    'key' =&gt; $keyString,
+                    'tag' =&gt; $tag-&gt;toString(),
+                    'error' =&gt; $e-&gt;getMessage(),
                 ]);
             }
         }
         
-        $this->cache->delete($tagKey);
+        $this-&gt;cache-&gt;delete($tagKey);
         
-        $this->logger->info('Cache tag invalidated', [
-            'tag' => $tag->toString(),
-            'keys_invalidated' => $invalidatedCount,
+        $this-&gt;logger-&gt;info('Cache tag invalidated', [
+            'tag' =&gt; $tag-&gt;toString(),
+            'keys_invalidated' =&gt; $invalidatedCount,
         ]);
     }
     
-    /** @param array<CacheTag> $tags */
+    /** @param array&lt;cachetag&gt; $tags */
     public function invalidateTags(array $tags): void
     {
         foreach ($tags as $tag) {
-            $this->invalidateTag($tag);
+            $this-&gt;invalidateTag($tag);
         }
     }
     
     public function invalidatePattern(string $pattern): void
     {
-        if (!$this->cache instanceof RedisCache) {
+        if (!$this-&gt;cache instanceof RedisCache) {
             throw new CacheInvalidationException(
                 'Pattern invalidation only supported for Redis cache'
             );
         }
         
-        $keys = $this->cache->getRedisInstance()->keys($pattern);
+        $keys = $this-&gt;cache-&gt;getRedisInstance()-&gt;keys($pattern);
         
         if (empty($keys)) {
             return;
         }
         
-        $this->cache->getRedisInstance()->del($keys);
+        $this-&gt;cache-&gt;getRedisInstance()-&gt;del($keys);
         
-        $this->logger->info('Cache pattern invalidated', [
-            'pattern' => $pattern,
-            'keys_invalidated' => count($keys),
+        $this-&gt;logger-&gt;info('Cache pattern invalidated', [
+            'pattern' =&gt; $pattern,
+            'keys_invalidated' =&gt; count($keys),
         ]);
     }
-}</code></pre>
+}&lt;/cachetag&gt;</code></pre>
 
                     <h2>Memory Management</h2>
 
                     <h3>Object Pooling</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -620,40 +618,40 @@ final class ObjectPool
         private readonly ObjectFactoryInterface $factory,
         private readonly PoolSize $maxSize = new PoolSize(100),
     ) {
-        $this->pool = new SplQueue();
+        $this---&gt;pool = new SplQueue();
     }
     
     public function get(): PoolableInterface
     {
-        if ($this->pool->isEmpty()) {
-            return $this->factory->create();
+        if ($this-&gt;pool-&gt;isEmpty()) {
+            return $this-&gt;factory-&gt;create();
         }
         
-        return $this->pool->dequeue();
+        return $this-&gt;pool-&gt;dequeue();
     }
     
     public function return(PoolableInterface $object): void
     {
-        if ($this->pool->count() >= $this->maxSize->value) {
+        if ($this-&gt;pool-&gt;count() &gt;= $this-&gt;maxSize-&gt;value) {
             // Pool is full, let object be garbage collected
             return;
         }
         
         // Reset object state before returning to pool
-        $object->reset();
+        $object-&gt;reset();
         
-        $this->pool->enqueue($object);
+        $this-&gt;pool-&gt;enqueue($object);
     }
     
     public function size(): int
     {
-        return $this->pool->count();
+        return $this-&gt;pool-&gt;count();
     }
     
     public function drain(): void
     {
-        while (!$this->pool->isEmpty()) {
-            $this->pool->dequeue();
+        while (!$this-&gt;pool-&gt;isEmpty()) {
+            $this-&gt;pool-&gt;dequeue();
         }
     }
 }
@@ -665,8 +663,8 @@ final readonly class HttpClientFactory implements ObjectFactoryInterface
     {
         return new PoolableHttpClient(
             new GuzzleHttp\Client([
-                'timeout' => 30,
-                'connect_timeout' => 5,
+                'timeout' =&gt; 30,
+                'connect_timeout' =&gt; 5,
             ])
         );
     }
@@ -679,18 +677,18 @@ $httpClientPool = new ObjectPool(
 
 function makeHttpRequest(string $url): string
 {
-    $client = $httpClientPool->get();
+    $client = $httpClientPool-&gt;get();
     try {
-        $response = $client->get($url);
-        return $response->getBody();
+        $response = $client-&gt;get($url);
+        return $response-&gt;getBody();
     } finally {
-        $httpClientPool->return($client);
+        $httpClientPool-&gt;return($client);
     }
 }</code></pre>
 
                     <h3>Memory Leak Detection</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -702,12 +700,12 @@ use DateTimeImmutable;
 
 final class MemoryProfiler
 {
-    /** @var array<string, MemoryCheckpoint> */
+    /** @var array&lt;string, MemoryCheckpoint--&gt; */
     private array $checkpoints = [];
     
     public function checkpoint(CheckpointName $name): void
     {
-        $this->checkpoints[$name->value] = new MemoryCheckpoint(
+        $this-&gt;checkpoints[$name-&gt;value] = new MemoryCheckpoint(
             name: $name,
             memoryUsage: MemoryUsage::current(),
             peakMemoryUsage: MemoryUsage::peak(),
@@ -717,34 +715,34 @@ final class MemoryProfiler
     
     public function getDiff(CheckpointName $from, CheckpointName $to): MemoryDiff
     {
-        $fromCheckpoint = $this->checkpoints[$from->value] ?? null;
-        $toCheckpoint = $this->checkpoints[$to->value] ?? null;
+        $fromCheckpoint = $this-&gt;checkpoints[$from-&gt;value] ?? null;
+        $toCheckpoint = $this-&gt;checkpoints[$to-&gt;value] ?? null;
         
         if ($fromCheckpoint === null || $toCheckpoint === null) {
             throw new CheckpointNotFoundException(
-                "Checkpoint not found: {$from->value} or {$to->value}"
+                "Checkpoint not found: {$from-&gt;value} or {$to-&gt;value}"
             );
         }
         
         return new MemoryDiff(
             from: $fromCheckpoint,
             to: $toCheckpoint,
-            memoryDiff: $toCheckpoint->memoryUsage->subtract($fromCheckpoint->memoryUsage),
-            peakDiff: $toCheckpoint->peakMemoryUsage->subtract($fromCheckpoint->peakMemoryUsage),
-            timeDiff: Duration::between($fromCheckpoint->timestamp, $toCheckpoint->timestamp)
+            memoryDiff: $toCheckpoint-&gt;memoryUsage-&gt;subtract($fromCheckpoint-&gt;memoryUsage),
+            peakDiff: $toCheckpoint-&gt;peakMemoryUsage-&gt;subtract($fromCheckpoint-&gt;peakMemoryUsage),
+            timeDiff: Duration::between($fromCheckpoint-&gt;timestamp, $toCheckpoint-&gt;timestamp)
         );
     }
     
-    /** @return array<string, MemoryDiff> */
+    /** @return array&lt;string, memorydiff=""&gt; */
     public function getReport(): array
     {
         $report = [];
-        $checkpointNames = array_keys($this->checkpoints);
+        $checkpointNames = array_keys($this-&gt;checkpoints);
         
-        for ($i = 1; $i < count($checkpointNames); $i++) {
+        for ($i = 1; $i &lt; count($checkpointNames); $i++) {
             $from = CheckpointName::fromString($checkpointNames[$i - 1]);
             $to = CheckpointName::fromString($checkpointNames[$i]);
-            $report["{$from->value} → {$to->value}"] = $this->getDiff($from, $to);
+            $report["{$from-&gt;value} → {$to-&gt;value}"] = $this-&gt;getDiff($from, $to);
         }
         
         return $report;
@@ -752,25 +750,25 @@ final class MemoryProfiler
     
     public function reset(): void
     {
-        $this->checkpoints = [];
+        $this-&gt;checkpoints = [];
     }
     
     public function hasCheckpoint(CheckpointName $name): bool
     {
-        return isset($this->checkpoints[$name->value]);
+        return isset($this-&gt;checkpoints[$name-&gt;value]);
     }
     
     public function getCheckpoint(CheckpointName $name): ?MemoryCheckpoint
     {
-        return $this->checkpoints[$name->value] ?? null;
+        return $this-&gt;checkpoints[$name-&gt;value] ?? null;
     }
-}</code></pre>
+}&lt;/string,&gt;</code></pre>
 
                     <h2>Asynchronous Processing</h2>
 
                     <h3>Job Queue Implementation</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -801,28 +799,28 @@ final readonly class RedisJobQueue implements QueueInterface
             );
         }
         
-        if ($delay !== null && $delay->getSeconds() > 0) {
-            $this->redis->zadd(
-                "queue:{$this->queueName->value}:delayed",
-                time() + $delay->getSeconds(),
+        if ($delay !== null &amp;&amp; $delay---&gt;getSeconds() &gt; 0) {
+            $this-&gt;redis-&gt;zadd(
+                "queue:{$this-&gt;queueName-&gt;value}:delayed",
+                time() + $delay-&gt;getSeconds(),
                 $payload
             );
         } else {
-            $this->redis->lpush("queue:{$this->queueName->value}", $payload);
+            $this-&gt;redis-&gt;lpush("queue:{$this-&gt;queueName-&gt;value}", $payload);
         }
         
-        $this->logger->debug('Job pushed to queue', [
-            'queue' => $this->queueName->value,
-            'job_type' => $job::class,
-            'delayed' => $delay?->getSeconds() ?? 0,
+        $this-&gt;logger-&gt;debug('Job pushed to queue', [
+            'queue' =&gt; $this-&gt;queueName-&gt;value,
+            'job_type' =&gt; $job::class,
+            'delayed' =&gt; $delay?-&gt;getSeconds() ?? 0,
         ]);
     }
     
     public function pop(int $timeout = 0): ?JobInterface
     {
-        $this->moveDelayedJobs();
+        $this-&gt;moveDelayedJobs();
         
-        $result = $this->redis->brpop("queue:{$this->queueName->value}", $timeout);
+        $result = $this-&gt;redis-&gt;brpop("queue:{$this-&gt;queueName-&gt;value}", $timeout);
         
         if (!$result) {
             return null;
@@ -832,7 +830,7 @@ final readonly class RedisJobQueue implements QueueInterface
             return unserialize($result[1]);
         } catch (Throwable $e) {
             throw new JobSerializationException(
-                "Failed to unserialize job from queue: {$this->queueName->value}",
+                "Failed to unserialize job from queue: {$this-&gt;queueName-&gt;value}",
                 previous: $e
             );
         }
@@ -841,27 +839,27 @@ final readonly class RedisJobQueue implements QueueInterface
     private function moveDelayedJobs(): void
     {
         $now = time();
-        $jobs = $this->redis->zrangebyscore(
-            "queue:{$this->queueName->value}:delayed",
+        $jobs = $this-&gt;redis-&gt;zrangebyscore(
+            "queue:{$this-&gt;queueName-&gt;value}:delayed",
             0,
             $now
         );
         
         foreach ($jobs as $job) {
-            $this->redis->lpush("queue:{$this->queueName->value}", $job);
-            $this->redis->zrem("queue:{$this->queueName->value}:delayed", $job);
+            $this-&gt;redis-&gt;lpush("queue:{$this-&gt;queueName-&gt;value}", $job);
+            $this-&gt;redis-&gt;zrem("queue:{$this-&gt;queueName-&gt;value}:delayed", $job);
         }
     }
     
     public function size(): int
     {
-        return $this->redis->llen("queue:{$this->queueName->value}");
+        return $this-&gt;redis-&gt;llen("queue:{$this-&gt;queueName-&gt;value}");
     }
     
     public function clear(): void
     {
-        $this->redis->del("queue:{$this->queueName->value}");
-        $this->redis->del("queue:{$this->queueName->value}:delayed");
+        $this-&gt;redis-&gt;del("queue:{$this-&gt;queueName-&gt;value}");
+        $this-&gt;redis-&gt;del("queue:{$this-&gt;queueName-&gt;value}:delayed");
     }
 }
 
@@ -884,27 +882,27 @@ abstract readonly class Job implements JobInterface
     
     public function shouldRetry(): bool
     {
-        return $this->attempts < $this->maxAttempts;
+        return $this-&gt;attempts &lt; $this-&gt;maxAttempts;
     }
     
     public function incrementAttempts(): void
     {
-        $this->attempts++;
+        $this-&gt;attempts++;
     }
     
     public function getAttempts(): int
     {
-        return $this->attempts;
+        return $this-&gt;attempts;
     }
     
     public function getMaxAttempts(): int
     {
-        return $this->maxAttempts;
+        return $this-&gt;maxAttempts;
     }
     
     public function getId(): JobId
     {
-        return $this->id;
+        return $this-&gt;id;
     }
 }</code></pre>
 
@@ -912,21 +910,21 @@ abstract readonly class Job implements JobInterface
 
                     <h3>Response Streaming</h3>
 
-                    <pre><code>class StreamingResponse {
+                    <pre><code class="language-php">class StreamingResponse {
     private $callback;
     private $headers = [];
     
     public function __construct(callable $callback) {
-        $this->callback = $callback;
+        $this-&gt;callback = $callback;
     }
     
     public function setHeader(string $name, string $value): void {
-        $this->headers[$name] = $value;
+        $this-&gt;headers[$name] = $value;
     }
     
     public function send(): void {
         // Send headers
-        foreach ($this->headers as $name => $value) {
+        foreach ($this-&gt;headers as $name =&gt; $value) {
             header("{$name}: {$value}");
         }
         
@@ -936,7 +934,7 @@ abstract readonly class Job implements JobInterface
         }
         
         // Send content in chunks
-        ($this->callback)();
+        ($this-&gt;callback)();
     }
 }
 
@@ -960,13 +958,13 @@ function streamLargeDataset(): void {
         echo "\n]";
     });
     
-    $response->setHeader('Content-Type', 'application/json');
-    $response->send();
+    $response-&gt;setHeader('Content-Type', 'application/json');
+    $response-&gt;send();
 }</code></pre>
 
                     <h3>Response Compression</h3>
 
-                    <pre><code>class CompressionMiddleware {
+                    <pre><code class="language-php">class CompressionMiddleware {
     private $minSize = 1024;
     private $supportedEncodings = ['gzip', 'deflate'];
     
@@ -974,24 +972,24 @@ function streamLargeDataset(): void {
         $response = $next($request);
         
         // Check if compression is supported
-        $acceptEncoding = $request->getHeader('Accept-Encoding');
-        $encoding = $this->getBestEncoding($acceptEncoding);
+        $acceptEncoding = $request-&gt;getHeader('Accept-Encoding');
+        $encoding = $this-&gt;getBestEncoding($acceptEncoding);
         
-        if (!$encoding || strlen($response->getBody()) < $this->minSize) {
+        if (!$encoding || strlen($response-&gt;getBody()) &lt; $this-&gt;minSize) {
             return $response;
         }
         
         // Compress response
-        $compressed = $this->compress($response->getBody(), $encoding);
+        $compressed = $this-&gt;compress($response-&gt;getBody(), $encoding);
         
         return $response
-            ->withBody($compressed)
-            ->withHeader('Content-Encoding', $encoding)
-            ->withHeader('Content-Length', strlen($compressed));
+            -&gt;withBody($compressed)
+            -&gt;withHeader('Content-Encoding', $encoding)
+            -&gt;withHeader('Content-Length', strlen($compressed));
     }
     
     private function getBestEncoding(string $acceptEncoding): ?string {
-        foreach ($this->supportedEncodings as $encoding) {
+        foreach ($this-&gt;supportedEncodings as $encoding) {
             if (strpos($acceptEncoding, $encoding) !== false) {
                 return $encoding;
             }
@@ -1015,11 +1013,11 @@ function streamLargeDataset(): void {
 
                     <h3>Efficient Array Operations</h3>
 
-                    <pre><code>class ArrayOptimizer {
+                    <pre><code class="language-php">class ArrayOptimizer {
     // Slow: Multiple array iterations
     public static function slowProcess(array $items): array {
-        $filtered = array_filter($items, fn($item) => $item > 10);
-        $mapped = array_map(fn($item) => $item * 2, $filtered);
+        $filtered = array_filter($items, fn($item) =&gt; $item &gt; 10);
+        $mapped = array_map(fn($item) =&gt; $item * 2, $filtered);
         return array_values($mapped);
     }
     
@@ -1027,7 +1025,7 @@ function streamLargeDataset(): void {
     public static function fastProcess(array $items): array {
         $result = [];
         foreach ($items as $item) {
-            if ($item > 10) {
+            if ($item &gt; 10) {
                 $result[] = $item * 2;
             }
         }
@@ -1052,7 +1050,7 @@ function streamLargeDataset(): void {
 
                     <h3>String Optimization</h3>
 
-                    <pre><code>class StringOptimizer {
+                    <pre><code class="language-php">class StringOptimizer {
     // Use string concatenation efficiently
     public static function buildString(array $parts): string {
         // Slow: Multiple concatenations
@@ -1083,22 +1081,22 @@ function streamLargeDataset(): void {
 
                     <h3>Simple Benchmarking</h3>
 
-                    <pre><code>class Benchmark {
+                    <pre><code class="language-php">class Benchmark {
     public static function run(callable $callback, int $iterations = 1000): array {
         $times = [];
         
-        for ($i = 0; $i < $iterations; $i++) {
+        for ($i = 0; $i &lt; $iterations; $i++) {
             $start = microtime(true);
             $callback();
             $times[] = microtime(true) - $start;
         }
         
         return [
-            'min' => min($times),
-            'max' => max($times),
-            'avg' => array_sum($times) / count($times),
-            'median' => self::median($times),
-            'total' => array_sum($times)
+            'min' =&gt; min($times),
+            'max' =&gt; max($times),
+            'avg' =&gt; array_sum($times) / count($times),
+            'median' =&gt; self::median($times),
+            'total' =&gt; array_sum($times)
         ];
     }
     
@@ -1119,11 +1117,11 @@ function streamLargeDataset(): void {
 
                     <h3>Real-time Performance Dashboard</h3>
 
-                    <pre><code>class PerformanceDashboard {
+                    <pre><code class="language-php">class PerformanceDashboard {
     private $redis;
     
     public function __construct(Redis $redis) {
-        $this->redis = $redis;
+        $this-&gt;redis = $redis;
     }
     
     public function recordMetric(string $name, float $value): void {
@@ -1131,23 +1129,23 @@ function streamLargeDataset(): void {
         $key = "metrics:{$name}";
         
         // Store in time series
-        $this->redis->zadd($key, $timestamp, $value);
+        $this-&gt;redis-&gt;zadd($key, $timestamp, $value);
         
         // Keep only last hour of data
-        $this->redis->zremrangebyscore($key, 0, $timestamp - 3600);
+        $this-&gt;redis-&gt;zremrangebyscore($key, 0, $timestamp - 3600);
     }
     
     public function getMetrics(string $name, int $duration = 3600): array {
         $key = "metrics:{$name}";
         $from = time() - $duration;
         
-        return $this->redis->zrangebyscore($key, $from, '+inf', [
-            'withscores' => true
+        return $this-&gt;redis-&gt;zrangebyscore($key, $from, '+inf', [
+            'withscores' =&gt; true
         ]);
     }
     
     public function getAverageResponseTime(): float {
-        $metrics = $this->getMetrics('response_time');
+        $metrics = $this-&gt;getMetrics('response_time');
         if (empty($metrics)) {
             return 0;
         }
@@ -1194,7 +1192,7 @@ function streamLargeDataset(): void {
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <p>© 2025 Joseph. All rights reserved.</p>
                 <nav class="footer-nav">
                 </nav>
             </div>
@@ -1203,5 +1201,5 @@ function streamLargeDataset(): void {
 
     <script src="../js/main.js"></script>
     <script src="../js/syntax-highlighter.js"></script>
-</body>
-</html>
+
+</body></html>

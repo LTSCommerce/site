@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact Joseph - Get in touch for bespoke PHP development projects">
+    <title>Contact - Joseph | Bespoke PHP Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" crossorigin href="/assets/contact-B--sLtab.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-CsAo-9fC.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="brand-link">Joseph</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/services.html" class="nav-link">Services</a></li>
+                <li><a href="/articles.html" class="nav-link">Articles</a></li>
+                <li><a href="/about.html" class="nav-link">About</a></li>
+                <li><a href="/author.html" class="nav-link">Author</a></li>
+                <li><a href="/contact.html" class="nav-link active">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="hamburger"></span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="page-hero">
+            <div class="container">
+                <h1 class="page-title">Let's Work Together</h1>
+                <p class="page-subtitle">Have a project in mind? I'd love to hear about it.</p>
+            </div>
+        </section>
+
+        <section class="contact-section">
+            <div class="container">
+                <div class="contact-grid">
+                    <div class="contact-form-container">
+                        <form id="contactForm" class="contact-form">
+                            <div class="form-group">
+                                <label for="name">Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="company">Company</label>
+                                <input type="text" id="company" name="company">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectType">Project Type *</label>
+                                <select id="projectType" name="projectType" required>
+                                    <option value="">Select a project type</option>
+                                    <option value="bespoke-php">Bespoke PHP Development</option>
+                                    <option value="legacy-php">Legacy PHP Modernization</option>
+                                    <option value="infrastructure">Infrastructure & Automation</option>
+                                    <option value="cto-services">CTO-Level Services</option>
+                                    <option value="ai-development">AI-Enhanced Development</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="budget">Budget Range</label>
+                                <select id="budget" name="budget">
+                                    <option value="">Select budget range</option>
+                                    <option value="5k-10k">$5,000 - $10,000</option>
+                                    <option value="10k-25k">$10,000 - $25,000</option>
+                                    <option value="25k-50k">$25,000 - $50,000</option>
+                                    <option value="50k+">$50,000+</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="timeline">Project Timeline</label>
+                                <select id="timeline" name="timeline">
+                                    <option value="">Select timeline</option>
+                                    <option value="asap">ASAP</option>
+                                    <option value="1month">Within 1 month</option>
+                                    <option value="3months">Within 3 months</option>
+                                    <option value="6months">Within 6 months</option>
+                                    <option value="flexible">Flexible</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="message">Project Details *</label>
+                                <textarea id="message" name="message" rows="6" required placeholder="Tell me about your project, goals, and any specific requirements..."></textarea>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <button type="button" id="sendEmailBtn" class="btn btn-primary">Send Message</button>
+                            </div>
+                            
+                            <div id="formMessage" class="form-message"></div>
+                        </form>
+                    </div>
+                    
+                    <div class="contact-info">
+                        <h2>Get in Touch</h2>
+                        <p>I'm always interested in hearing about new projects and opportunities. Whether you need a complete solution built from scratch or help with an existing system, I'm here to help.</p>
+                        
+                        <div class="info-section">
+                            <h3>Response Time</h3>
+                            <p>I typically respond within 24 hours during business days.</p>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>Project Process</h3>
+                            <ol class="process-list">
+                                <li>Initial consultation to understand your needs</li>
+                                <li>Detailed project proposal and timeline</li>
+                                <li>Agile development with regular updates</li>
+                                <li>Thorough testing and quality assurance</li>
+                                <li>Deployment and ongoing support</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>Other Ways to Connect</h3>
+                            <div class="social-links">
+                                <a href="https://uk.linkedin.com/in/edmondscommerce" class="social-link">LinkedIn</a>
+                                <a href="https://github.com/LTSCommerce" class="social-link">GitHub</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <nav class="footer-nav">
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+</html>

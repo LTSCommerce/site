@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Practical strategies for transforming legacy PHP codebases into maintainable, modern systems without breaking production">
@@ -9,8 +7,8 @@
     <link rel="stylesheet" href="../css/articles.css">
     <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="site-header">
@@ -91,7 +89,7 @@
 
                     <p>This pattern allows you to gradually replace old code with new code by routing requests through a facade:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -112,16 +110,16 @@ final readonly class StranglerFigUserService implements UserServiceInterface
 
     public function getUser(UserId $id): User
     {
-        return match ($this->featureToggle->isEnabled('modern_user_service', $id)) {
-            true => $this->modernService->getUser($id),
-            false => $this->legacyService->getUser($id),
+        return match ($this---&gt;featureToggle-&gt;isEnabled('modern_user_service', $id)) {
+            true =&gt; $this-&gt;modernService-&gt;getUser($id),
+            false =&gt; $this-&gt;legacyService-&gt;getUser($id),
         };
     }
 
     private function shouldUseModernImplementation(UserId $id): bool
     {
         // Canary release: 10% of users
-        return $id->value % 10 === 0;
+        return $id-&gt;value % 10 === 0;
     }
 }</code></pre>
 
@@ -131,7 +129,7 @@ final readonly class StranglerFigUserService implements UserServiceInterface
 
                     <p>Replace global state with explicit dependencies:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-sql">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -139,7 +137,7 @@ declare(strict_types=1);
 function getUser(int $id): array|false
 {
     global $db;
-    return $db->query("SELECT * FROM users WHERE id = {$id}")->fetch();
+    return $db---&gt;query("SELECT * FROM users WHERE id = {$id}")-&gt;fetch();
 }
 
 // After: Modern dependency injection with proper typing
@@ -152,16 +150,16 @@ final readonly class UserRepository implements UserRepositoryInterface
 
     public function findById(UserId $id): ?User
     {
-        $stmt = $this->connection->prepare(<<< 'SQL'
+        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; 'SQL'
             SELECT id, email, name, created_at, updated_at
             FROM users 
             WHERE id = :id AND deleted_at IS NULL
             SQL);
         
-        $stmt->execute(['id' => $id->value]);
-        $userData = $stmt->fetch();
+        $stmt-&gt;execute(['id' =&gt; $id-&gt;value]);
+        $userData = $stmt-&gt;fetch();
         
-        return $userData ? $this->hydrator->hydrate($userData) : null;
+        return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
     }
 }</code></pre>
 
@@ -169,7 +167,7 @@ final readonly class UserRepository implements UserRepositoryInterface
 
                     <p>Move business logic out of controllers and into dedicated service classes:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -192,29 +190,29 @@ final readonly class OrderService
 
     public function processOrder(OrderData $orderData): Order
     {
-        $this->validator->validate($orderData);
+        $this---&gt;validator-&gt;validate($orderData);
         
         $order = Order::create(
             OrderId::generate(),
-            $orderData->customerId,
-            $orderData->items,
-            $this->calculator->calculate($orderData->items)
+            $orderData-&gt;customerId,
+            $orderData-&gt;items,
+            $this-&gt;calculator-&gt;calculate($orderData-&gt;items)
         );
         
-        $paymentResult = $this->paymentGateway->charge(
-            $order->total,
-            $orderData->paymentMethod
+        $paymentResult = $this-&gt;paymentGateway-&gt;charge(
+            $order-&gt;total,
+            $orderData-&gt;paymentMethod
         );
         
-        if (!$paymentResult->isSuccessful()) {
-            throw new PaymentFailedException($paymentResult->errorMessage);
+        if (!$paymentResult-&gt;isSuccessful()) {
+            throw new PaymentFailedException($paymentResult-&gt;errorMessage);
         }
         
-        $order->markAsPaid($paymentResult->transactionId);
-        $this->repository->save($order);
+        $order-&gt;markAsPaid($paymentResult-&gt;transactionId);
+        $this-&gt;repository-&gt;save($order);
         
-        $this->eventDispatcher->dispatch(
-            new OrderPlaced($order->id, $order->customerId)
+        $this-&gt;eventDispatcher-&gt;dispatch(
+            new OrderPlaced($order-&gt;id, $order-&gt;customerId)
         );
         
         return $order;
@@ -225,7 +223,7 @@ final readonly class OrderService
 
                     <p>Start with integration tests for critical paths, then add unit tests as you refactor:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -245,36 +243,36 @@ final class OrderServiceTest extends TestCase
     {
         // Arrange
         $orderData = OrderDataBuilder::new()
-            ->withCustomer(CustomerId::fromString('cust_123'))
-            ->withItems([
-                OrderItemBuilder::new()->withProduct('prod_456')->build(),
+            ---&gt;withCustomer(CustomerId::fromString('cust_123'))
+            -&gt;withItems([
+                OrderItemBuilder::new()-&gt;withProduct('prod_456')-&gt;build(),
             ])
-            ->build();
+            -&gt;build();
         
         $paymentResult = PaymentResultBuilder::successful()
-            ->withTransactionId('txn_789')
-            ->build();
+            -&gt;withTransactionId('txn_789')
+            -&gt;build();
         
-        $this->paymentGateway->shouldReceive('charge')
-            ->once()
-            ->with(Money::fromCents(1000), $orderData->paymentMethod)
-            ->andReturn($paymentResult);
+        $this-&gt;paymentGateway-&gt;shouldReceive('charge')
+            -&gt;once()
+            -&gt;with(Money::fromCents(1000), $orderData-&gt;paymentMethod)
+            -&gt;andReturn($paymentResult);
         
         // Act
-        $order = $this->orderService->processOrder($orderData);
+        $order = $this-&gt;orderService-&gt;processOrder($orderData);
         
         // Assert
-        $this->assertInstanceOf(Order::class, $order);
-        $this->assertTrue($order->isPaid());
-        $this->assertEquals('txn_789', $order->transactionId->value);
+        $this-&gt;assertInstanceOf(Order::class, $order);
+        $this-&gt;assertTrue($order-&gt;isPaid());
+        $this-&gt;assertEquals('txn_789', $order-&gt;transactionId-&gt;value);
         
-        $this->repository->shouldHaveReceived('save')
-            ->once()
-            ->with($order);
+        $this-&gt;repository-&gt;shouldHaveReceived('save')
+            -&gt;once()
+            -&gt;with($order);
         
-        $this->eventDispatcher->shouldHaveReceived('dispatch')
-            ->once()
-            ->with(\Mockery::type(OrderPlaced::class));
+        $this-&gt;eventDispatcher-&gt;shouldHaveReceived('dispatch')
+            -&gt;once()
+            -&gt;with(\Mockery::type(OrderPlaced::class));
     }
 }</code></pre>
 
@@ -351,7 +349,7 @@ final class OrderServiceTest extends TestCase
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <p>© 2025 Joseph. All rights reserved.</p>
                 <nav class="footer-nav">
                 </nav>
             </div>
@@ -360,5 +358,5 @@ final class OrderServiceTest extends TestCase
 
     <script src="../js/main.js"></script>
     <script src="../js/syntax-highlighter.js"></script>
-</body>
-</html>
+
+</body></html>
