@@ -5,8 +5,8 @@
     "require-dev": {
         "phpstan/phpstan": "^1.12",
         "friendsofphp/php-cs-fixer": "^3.64",
-        "phpunit/phpunit": "^11.0",
-        "psalm/psalm": "^5.26",
+        "phpunit/phpunit": "^10.0",
+        "vimeo/psalm": "^5.26",
         "rector/rector": "^1.2"
     },
     "config": {
