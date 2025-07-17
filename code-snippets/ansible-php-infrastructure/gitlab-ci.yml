@@ -1,0 +1,52 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/.composer-cache"
+  APP_ENV: "production"
+
+cache:
+  paths:
+    - .composer-cache/
+    - node_modules/
+    - vendor/
+
+test:
+  stage: test
+  image: php:8.2-cli
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq git unzip
+    - curl -sS https://getcomposer.org/installer | php
+    - php composer.phar install --no-interaction --prefer-dist --no-progress
+  script:
+    - php vendor/bin/phpunit --coverage-text --colors=never
+    - php vendor/bin/psalm
+    - php vendor/bin/php-cs-fixer fix --dry-run --diff
+
+build:
+  stage: build
+  image: php:8.2-cli
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+  script:
+    - composer install --no-dev --optimize-autoloader
+    - tar -czf dist/app-${CI_COMMIT_SHA}.tar.gz --exclude=dist .
+
+deploy_production:
+  stage: deploy
+  image: ansible/ansible-runner:latest
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - echo "$SSH_HOST_KEY" >> ~/.ssh/known_hosts
+  script:
+    - ansible-playbook -i inventories/production/hosts playbooks/deploy.yml
+      --extra-vars "app_download_url=${CI_JOB_URL}/artifacts/raw/dist/app-${CI_COMMIT_SHA}.tar.gz"
+  only:
+    - main
+  when: manual

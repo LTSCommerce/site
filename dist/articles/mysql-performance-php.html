@@ -5,10 +5,10 @@
     <title>MySQL Performance Tuning for Complex PHP Applications | Joseph</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" crossorigin href="/assets/main-CsAo-9fC.css">
   <link rel="stylesheet" crossorigin href="/assets/articles-BQWs99fv.css">
-  <link rel="stylesheet" crossorigin href="/assets/syntax-highlighting-CqqxTdk4.css">
+  <link rel="stylesheet" crossorigin href="/assets/syntax-highlighting-DRdm8rDs.css">
 </head>
 <body>
     <header class="site-header">
@@ -53,7 +53,7 @@
 
                     <p>Proper memory allocation is crucial for MySQL performance:</p>
 
-                    <pre><code class="language-php"># /etc/mysql/mysql.conf.d/mysqld.cnf
+                    <pre><code class="language-nginx"># /etc/mysql/mysql.conf.d/mysqld.cnf
 [mysqld]
 # InnoDB Buffer Pool (most important setting)
 innodb_buffer_pool_size = 16G  # 70-80% of available RAM
@@ -85,7 +85,7 @@ max_heap_table_size = 64M</code></pre>
 
                     <h3>InnoDB Optimization</h3>
 
-                    <pre><code class="language-php"># InnoDB specific settings
+                    <pre><code class="language-nginx"># InnoDB specific settings
 innodb_flush_log_at_trx_commit = 2  # Better performance, slight durability trade-off
 innodb_log_file_size = 1G
 innodb_log_buffer_size = 64M
@@ -109,20 +109,20 @@ innodb_purge_threads = 4</code></pre>
 
                     <p>Proper indexing is fundamental to query performance:</p>
 
-                    <pre><code class="language-php">-- Compound indexes for complex WHERE clauses
+                    <pre><code class="language-sql">-- Compound indexes for complex WHERE clauses
 CREATE INDEX idx_user_orders ON orders (user_id, status, created_at);
 
 -- Covering indexes to avoid table lookups
 CREATE INDEX idx_product_details ON products (category_id, status, price, name);
 
 -- Partial indexes for filtered queries
-CREATE INDEX idx_active_users ON users (email) WHERE status = 'active';
+CREATE INDEX idx_active_users ON users (email) WHERE status = &#39;active&#39;;
 
 -- Functional indexes for computed columns
-CREATE INDEX idx_user_full_name ON users ((CONCAT(first_name, ' ', last_name)));
+CREATE INDEX idx_user_full_name ON users ((CONCAT(first_name, &#39; &#39;, last_name)));
 
 -- JSON indexes for JSON column queries
-CREATE INDEX idx_user_preferences ON users ((JSON_EXTRACT(preferences, '$.language')));</code></pre>
+CREATE INDEX idx_user_preferences ON users ((JSON_EXTRACT(preferences, &#39;$.language&#39;)));</code></pre>
 
                     <h3>Query Rewriting</h3>
 
@@ -152,7 +152,7 @@ LIMIT 20 OFFSET 10000;
 
 -- Fast: Using cursor-based pagination
 SELECT * FROM products 
-WHERE created_at &lt; '2024-01-01 12:00:00'
+WHERE created_at &lt; &#39;2024-01-01 12:00:00&#39;
 ORDER BY created_at DESC 
 LIMIT 20;</code></pre>
 
@@ -160,7 +160,7 @@ LIMIT 20;</code></pre>
 
                     <h3>Connection Optimization</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -183,7 +183,7 @@ final readonly class DatabaseOptimizer
         private QueryMetricsInterface $metrics,
         private LoggerInterface $logger,
     ) {
-        $this---&gt;connection = $this-&gt;createOptimizedConnection($config);
+        $this-&gt;connection = $this-&gt;createOptimizedConnection($config);
     }
     
     private function createOptimizedConnection(DatabaseConfig $config): PDO
@@ -198,18 +198,18 @@ final readonly class DatabaseOptimizer
                     PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES =&gt; false,
-                    PDO::MYSQL_ATTR_INIT_COMMAND =&gt; implode(';', [
-                        'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci',
-                        'SET SESSION sql_mode="STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"',
-                        'SET SESSION time_zone="+00:00"',
-                        'SET SESSION group_concat_max_len=1000000',
-                        'SET SESSION optimizer_switch="mrr=on,mrr_cost_based=on"',
+                    PDO::MYSQL_ATTR_INIT_COMMAND =&gt; implode(&#39;;&#39;, [
+                        &#39;SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci&#39;,
+                        &#39;SET SESSION sql_mode=&quot;STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION&quot;&#39;,
+                        &#39;SET SESSION time_zone=&quot;+00:00&quot;&#39;,
+                        &#39;SET SESSION group_concat_max_len=1000000&#39;,
+                        &#39;SET SESSION optimizer_switch=&quot;mrr=on,mrr_cost_based=on&quot;&#39;,
                     ])
                 ]
             );
         } catch (PDOException $e) {
             throw new DatabaseConnectionException(
-                "Failed to connect to database: {$e-&gt;getMessage()}",
+                &quot;Failed to connect to database: {$e-&gt;getMessage()}&quot;,
                 previous: $e
             );
         }
@@ -234,14 +234,14 @@ final readonly class DatabaseOptimizer
                 rowCount: $stmt-&gt;rowCount()
             );
         } catch (PDOException $e) {
-            $this-&gt;logger-&gt;error('Query execution failed', [
-                'sql' =&gt; $sql,
-                'params' =&gt; $params,
-                'error' =&gt; $e-&gt;getMessage(),
+            $this-&gt;logger-&gt;error(&#39;Query execution failed&#39;, [
+                &#39;sql&#39; =&gt; $sql,
+                &#39;params&#39; =&gt; $params,
+                &#39;error&#39; =&gt; $e-&gt;getMessage(),
             ]);
             
             throw new QueryExecutionException(
-                "Query execution failed: {$e-&gt;getMessage()}",
+                &quot;Query execution failed: {$e-&gt;getMessage()}&quot;,
                 previous: $e
             );
         }
@@ -283,7 +283,7 @@ final readonly class DatabaseOptimizer
 
                     <h3>Prepared Statement Optimization</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -299,7 +299,7 @@ use WeakMap;
 
 final class PreparedStatementPool
 {
-    /** @var array&lt;string, PDOStatement--&gt; */
+    /** @var array&lt;string, PDOStatement&gt; */
     private array $statements = [];
     private readonly WeakMap $statementMetadata;
     
@@ -323,12 +323,12 @@ final class PreparedStatementPool
             try {
                 $this-&gt;statements[$key] = $this-&gt;connection-&gt;prepare($sql-&gt;value);
                 $this-&gt;statementMetadata[$this-&gt;statements[$key]] = [
-                    'created_at' =&gt; time(),
-                    'usage_count' =&gt; 0,
+                    &#39;created_at&#39; =&gt; time(),
+                    &#39;usage_count&#39; =&gt; 0,
                 ];
             } catch (PDOException $e) {
                 throw new StatementExecutionException(
-                    "Failed to prepare statement: {$e-&gt;getMessage()}",
+                    &quot;Failed to prepare statement: {$e-&gt;getMessage()}&quot;,
                     previous: $e
                 );
             }
@@ -336,7 +336,7 @@ final class PreparedStatementPool
         
         $stmt = $this-&gt;statements[$key];
         $metadata = $this-&gt;statementMetadata[$stmt];
-        $metadata['usage_count']++;
+        $metadata[&#39;usage_count&#39;]++;
         $this-&gt;statementMetadata[$stmt] = $metadata;
         
         return $stmt;
@@ -350,14 +350,14 @@ final class PreparedStatementPool
             $stmt-&gt;execute($params);
             return $stmt-&gt;fetchAll();
         } catch (PDOException $e) {
-            $this-&gt;logger-&gt;error('Statement execution failed', [
-                'sql' =&gt; $sql-&gt;value,
-                'params' =&gt; $params,
-                'error' =&gt; $e-&gt;getMessage(),
+            $this-&gt;logger-&gt;error(&#39;Statement execution failed&#39;, [
+                &#39;sql&#39; =&gt; $sql-&gt;value,
+                &#39;params&#39; =&gt; $params,
+                &#39;error&#39; =&gt; $e-&gt;getMessage(),
             ]);
             
             throw new StatementExecutionException(
-                "Statement execution failed: {$e-&gt;getMessage()}",
+                &quot;Statement execution failed: {$e-&gt;getMessage()}&quot;,
                 previous: $e
             );
         }
@@ -381,7 +381,7 @@ final class PreparedStatementPool
                     
                     if (count($errors) &gt; 10) { // Fail fast after too many errors
                         throw new BatchExecutionException(
-                            "Too many errors in batch execution",
+                            &quot;Too many errors in batch execution&quot;,
                             $errors
                         );
                     }
@@ -391,7 +391,7 @@ final class PreparedStatementPool
             if (!empty($errors)) {
                 $this-&gt;connection-&gt;rollBack();
                 throw new BatchExecutionException(
-                    "Batch execution failed with errors",
+                    &quot;Batch execution failed with errors&quot;,
                     $errors
                 );
             }
@@ -416,8 +416,8 @@ final class PreparedStatementPool
         
         foreach ($this-&gt;statements as $key =&gt; $stmt) {
             $metadata = $this-&gt;statementMetadata[$stmt];
-            if ($metadata['created_at'] &lt; $oldestTime) {
-                $oldestTime = $metadata['created_at'];
+            if ($metadata[&#39;created_at&#39;] &lt; $oldestTime) {
+                $oldestTime = $metadata[&#39;created_at&#39;];
                 $oldestKey = $key;
             }
         }
@@ -430,14 +430,14 @@ final class PreparedStatementPool
     public function getPoolStats(): array
     {
         $stats = [
-            'total_statements' =&gt; count($this-&gt;statements),
-            'max_statements' =&gt; $this-&gt;maxStatements,
-            'usage_stats' =&gt; [],
+            &#39;total_statements&#39; =&gt; count($this-&gt;statements),
+            &#39;max_statements&#39; =&gt; $this-&gt;maxStatements,
+            &#39;usage_stats&#39; =&gt; [],
         ];
         
         foreach ($this-&gt;statements as $key =&gt; $stmt) {
             $metadata = $this-&gt;statementMetadata[$stmt];
-            $stats['usage_stats'][$key] = $metadata;
+            $stats[&#39;usage_stats&#39;][$key] = $metadata;
         }
         
         return $stats;
@@ -452,7 +452,7 @@ final class PreparedStatementPool
 SELECT u.*, 
        (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.id) as order_count
 FROM users u
-WHERE u.status = 'active';
+WHERE u.status = &#39;active&#39;;
 
 -- Fast: LEFT JOIN with GROUP BY
 SELECT u.*, COALESCE(o.order_count, 0) as order_count
@@ -462,13 +462,13 @@ LEFT JOIN (
     FROM orders
     GROUP BY user_id
 ) o ON u.id = o.user_id
-WHERE u.status = 'active';
+WHERE u.status = &#39;active&#39;;
 
 -- Slow: IN subquery with large result set
 SELECT * FROM products 
 WHERE id IN (
     SELECT product_id FROM order_items 
-    WHERE order_id IN (SELECT id FROM orders WHERE status = 'completed')
+    WHERE order_id IN (SELECT id FROM orders WHERE status = &#39;completed&#39;)
 );
 
 -- Fast: EXISTS with proper indexing
@@ -476,22 +476,22 @@ SELECT p.* FROM products p
 WHERE EXISTS (
     SELECT 1 FROM order_items oi
     JOIN orders o ON oi.order_id = o.id
-    WHERE oi.product_id = p.id AND o.status = 'completed'
+    WHERE oi.product_id = p.id AND o.status = &#39;completed&#39;
 );</code></pre>
 
                     <h3>Aggregation Optimization</h3>
 
                     <pre><code class="language-sql">-- Slow: Multiple aggregations in separate queries
-$totalOrders = $pdo-&gt;query("SELECT COUNT(*) FROM orders")-&gt;fetchColumn();
-$totalRevenue = $pdo-&gt;query("SELECT SUM(total) FROM orders")-&gt;fetchColumn();
-$avgOrderValue = $pdo-&gt;query("SELECT AVG(total) FROM orders")-&gt;fetchColumn();
+$totalOrders = $pdo-&gt;query(&quot;SELECT COUNT(*) FROM orders&quot;)-&gt;fetchColumn();
+$totalRevenue = $pdo-&gt;query(&quot;SELECT SUM(total) FROM orders&quot;)-&gt;fetchColumn();
+$avgOrderValue = $pdo-&gt;query(&quot;SELECT AVG(total) FROM orders&quot;)-&gt;fetchColumn();
 
 -- Fast: Single query with multiple aggregations
-$sql = "SELECT 
+$sql = &quot;SELECT 
     COUNT(*) as total_orders,
     SUM(total) as total_revenue,
     AVG(total) as avg_order_value
-FROM orders";
+FROM orders&quot;;
 
 $stats = $pdo-&gt;query($sql)-&gt;fetch();
 
@@ -510,21 +510,30 @@ ORDER BY date DESC;</code></pre>
 
                     <h3>Slow Query Log Analysis</h3>
 
-                    <pre><code class="language-sql">class SlowQueryAnalyzer {
-    private $pdo;
+                    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+namespace App\Database\Monitoring;
+
+use PDO;
+
+final class SlowQueryAnalyzer 
+{
+    public function __construct(
+        private readonly PDO $pdo
+    ) {}
     
-    public function __construct(PDO $pdo) {
-        $this-&gt;pdo = $pdo;
+    public function enableSlowQueryLog(): void 
+    {
+        $this-&gt;pdo-&gt;exec(&quot;SET GLOBAL slow_query_log = &#39;ON&#39;&quot;);
+        $this-&gt;pdo-&gt;exec(&quot;SET GLOBAL long_query_time = 1&quot;);
+        $this-&gt;pdo-&gt;exec(&quot;SET GLOBAL log_queries_not_using_indexes = &#39;ON&#39;&quot;);
     }
     
-    public function enableSlowQueryLog(): void {
-        $this-&gt;pdo-&gt;exec("SET GLOBAL slow_query_log = 'ON'");
-        $this-&gt;pdo-&gt;exec("SET GLOBAL long_query_time = 1");
-        $this-&gt;pdo-&gt;exec("SET GLOBAL log_queries_not_using_indexes = 'ON'");
-    }
-    
-    public function getSlowQueries(): array {
-        $sql = "SELECT 
+    public function getSlowQueries(): array 
+    {
+        $sql = &quot;SELECT 
             sql_text,
             exec_count,
             total_latency,
@@ -535,13 +544,14 @@ ORDER BY date DESC;</code></pre>
         FROM sys.statement_analysis
         WHERE avg_latency &gt; 1000000  -- 1 second
         ORDER BY total_latency DESC
-        LIMIT 20";
+        LIMIT 20&quot;;
         
         return $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
     }
     
-    public function getTableScans(): array {
-        $sql = "SELECT 
+    public function getTableScans(): array 
+    {
+        $sql = &quot;SELECT 
             object_name,
             count_read,
             avg_read_latency,
@@ -549,7 +559,7 @@ ORDER BY date DESC;</code></pre>
             avg_write_latency
         FROM sys.table_io_waits_summary_by_table
         ORDER BY count_read DESC
-        LIMIT 20";
+        LIMIT 20&quot;;
         
         return $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
     }

@@ -1,16 +1,17 @@
-/* Prism.js Tomorrow Theme */
+/* Custom Dark Theme for Highlight.js */
 code[class*="language-"],
-pre[class*="language-"] {
-  color: #ccc;
-  background: none;
+pre[class*="language-"],
+.hljs {
+  color: #f8f8f2;
+  background: #282c34;
   font-family: 'Fira Code', 'Cascadia Code', 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  font-size: 1em;
+  font-size: 0.95em;
   text-align: left;
   white-space: pre;
   word-spacing: normal;
   word-break: normal;
   word-wrap: normal;
-  line-height: 1.5;
+  line-height: 1.6;
   -moz-tab-size: 4;
   -o-tab-size: 4;
   tab-size: 4;
@@ -21,17 +22,22 @@ pre[class*="language-"] {
 }
 
 /* Code blocks */
-pre[class*="language-"] {
-  padding: 1em;
-  margin: .5em 0;
+pre[class*="language-"],
+pre.hljs {
+  padding: 1.25em;
+  margin: 1em 0;
   overflow: auto;
   border-radius: 8px;
-  background: #2d2d2d;
+  background: #282c34;
+  border: 1px solid #3e4451;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 :not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-  background: #2d2d2d;
+:not(pre) > code.hljs,
+pre[class*="language-"],
+pre.hljs {
+  background: #282c34;
 }
 
 /* Inline code */

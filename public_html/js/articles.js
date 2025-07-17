@@ -77,7 +77,7 @@ class ArticlesManager {
     setupEventListeners() {
         // Search input
         const searchInput = document.getElementById('articleSearch');
-        searchInput.addEventListener('input', utils.debounce((e) => {
+        searchInput.addEventListener('input', window.appUtils.debounce((e) => {
             this.searchTerm = e.target.value.toLowerCase();
             this.filterArticles();
         }, 300));
@@ -172,6 +172,22 @@ class ArticlesManager {
 }
 
 // Initialize articles manager when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    new ArticlesManager();
-});
+(function() {
+    'use strict';
+    
+    // Wait for both DOM and utils to be ready
+    function initArticles() {
+        if (typeof window.appUtils !== 'undefined') {
+            new ArticlesManager();
+        } else {
+            // Retry in 50ms if utils not loaded yet
+            setTimeout(initArticles, 50);
+        }
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initArticles);
+    } else {
+        initArticles();
+    }
+})();

@@ -1,0 +1,65 @@
+---
+- name: Deploy PHP application
+  hosts: webservers
+  become: yes
+  vars:
+    app_name: "my-php-app"
+    app_version: "{{ ansible_date_time.epoch }}"
+    app_user: "www-data"
+    app_directory: "/var/www/html"
+    backup_directory: "/var/backups/{{ app_name }}"
+    
+  tasks:
+    - name: Create backup directory
+      file:
+        path: "{{ backup_directory }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        
+    - name: Backup current application
+      archive:
+        path: "{{ app_directory }}"
+        dest: "{{ backup_directory }}/backup-{{ ansible_date_time.iso8601 }}.tar.gz"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+      when: app_directory is directory
+      
+    - name: Download application archive
+      get_url:
+        url: "{{ app_download_url }}"
+        dest: "/tmp/{{ app_name }}-{{ app_version }}.tar.gz"
+        mode: '0644'
+        
+    - name: Extract application
+      unarchive:
+        src: "/tmp/{{ app_name }}-{{ app_version }}.tar.gz"
+        dest: "{{ app_directory }}"
+        remote_src: yes
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        
+    - name: Install Composer dependencies
+      composer:
+        command: install
+        working_dir: "{{ app_directory }}"
+        no_dev: yes
+        optimize_autoloader: yes
+      become_user: "{{ app_user }}"
+      
+    - name: Run database migrations
+      command: php artisan migrate --force
+      args:
+        chdir: "{{ app_directory }}"
+      become_user: "{{ app_user }}"
+      when: run_migrations | default(false) | bool
+      
+    - name: Clear application cache
+      command: "{{ item }}"
+      args:
+        chdir: "{{ app_directory }}"
+      become_user: "{{ app_user }}"
+      loop:
+        - "php artisan config:cache"
+        - "php artisan route:cache"
+        - "php artisan view:cache"

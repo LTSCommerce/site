@@ -1,7 +1,15 @@
 // Main JavaScript functionality
-import './prism-setup.js';
+(function() {
+    'use strict';
 
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMain);
+} else {
+    initMain();
+}
+
+function initMain() {
     // Mobile Navigation Toggle
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
@@ -119,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
+}
 
 // Page router for single page navigation (if needed later)
 class Router {
@@ -191,3 +199,5 @@ const utils = {
 // Export for use in other scripts
 window.appUtils = utils;
 window.appRouter = new Router();
+
+})(); // End IIFE

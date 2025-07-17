@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="site-header">
@@ -62,7 +62,7 @@
 
                     <p>Example workflow with Copilot:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -87,7 +87,7 @@ final readonly class UserService
     
     public function createUser(array $userData): User
     {
-        $validationResult = $this---&gt;validator-&gt;validate($userData);
+        $validationResult = $this-&gt;validator-&gt;validate($userData);
         
         if (!$validationResult-&gt;isValid()) {
             throw new ValidationException($validationResult-&gt;getErrors());
@@ -95,9 +95,9 @@ final readonly class UserService
         
         $user = User::create(
             UserId::generate(),
-            EmailAddress::fromString($userData['email']),
-            UserName::fromString($userData['name']),
-            $this-&gt;passwordHasher-&gt;hash($userData['password'])
+            EmailAddress::fromString($userData[&#39;email&#39;]),
+            UserName::fromString($userData[&#39;name&#39;]),
+            $this-&gt;passwordHasher-&gt;hash($userData[&#39;password&#39;])
         );
         
         return $this-&gt;userRepository-&gt;save($user);
@@ -106,14 +106,14 @@ final readonly class UserService
     public function updateUser(UserId $id, array $userData): User
     {
         $user = $this-&gt;userRepository-&gt;findById($id)
-            ?? throw new UserNotFoundException("User not found: {$id-&gt;value}");
+            ?? throw new UserNotFoundException(&quot;User not found: {$id-&gt;value}&quot;);
         
-        if (isset($userData['email'])) {
-            $user-&gt;changeEmail(EmailAddress::fromString($userData['email']));
+        if (isset($userData[&#39;email&#39;])) {
+            $user-&gt;changeEmail(EmailAddress::fromString($userData[&#39;email&#39;]));
         }
         
-        if (isset($userData['name'])) {
-            $user-&gt;changeName(UserName::fromString($userData['name']));
+        if (isset($userData[&#39;name&#39;])) {
+            $user-&gt;changeName(UserName::fromString($userData[&#39;name&#39;]));
         }
         
         return $this-&gt;userRepository-&gt;save($user);
@@ -122,7 +122,7 @@ final readonly class UserService
     public function deleteUser(UserId $id): void
     {
         $user = $this-&gt;userRepository-&gt;findById($id)
-            ?? throw new UserNotFoundException("User not found: {$id-&gt;value}");
+            ?? throw new UserNotFoundException(&quot;User not found: {$id-&gt;value}&quot;);
         
         $this-&gt;userRepository-&gt;delete($user);
     }
@@ -132,7 +132,7 @@ final readonly class UserService
 
                     <p>OpenAI APIs can be integrated directly into your PHP applications:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -148,13 +148,13 @@ final readonly class AICodeReviewer
     public function __construct(
         private AIClientInterface $aiClient,
         private LoggerInterface $logger,
-        private string $model = 'gpt-4-turbo',
+        private string $model = &#39;gpt-4-turbo&#39;,
         private int $maxTokens = 2000,
     ) {}
     
     public function reviewCode(CodeSnippet $code): ReviewResult
     {
-        $systemPrompt = AIPrompt::system(&lt;&lt;&lt; 'PROMPT'
+        $systemPrompt = AIPrompt::system(&lt;&lt;&lt; &#39;PROMPT&#39;
             You are a senior PHP 8.3+ developer reviewing code for:
             - Modern PHP syntax and features
             - Type safety and strict typing
@@ -167,36 +167,36 @@ final readonly class AICodeReviewer
             PROMPT);
         
         $userPrompt = AIPrompt::user(
-            "Please review this PHP code:\n\n" . $code---&gt;content
+            &quot;Please review this PHP code:\n\n&quot; . $code-&gt;content
         );
         
         try {
             $response = $this-&gt;aiClient-&gt;chat([
-                'model' =&gt; $this-&gt;model,
-                'max_tokens' =&gt; $this-&gt;maxTokens,
-                'temperature' =&gt; 0.1, // Low temperature for consistent reviews
-                'messages' =&gt; [
+                &#39;model&#39; =&gt; $this-&gt;model,
+                &#39;max_tokens&#39; =&gt; $this-&gt;maxTokens,
+                &#39;temperature&#39; =&gt; 0.1, // Low temperature for consistent reviews
+                &#39;messages&#39; =&gt; [
                     $systemPrompt-&gt;toArray(),
                     $userPrompt-&gt;toArray(),
                 ],
             ]);
             
-            $reviewContent = $response['choices'][0]['message']['content'];
+            $reviewContent = $response[&#39;choices&#39;][0][&#39;message&#39;][&#39;content&#39;];
             
-            $this-&gt;logger-&gt;info('Code review completed', [
-                'code_length' =&gt; strlen($code-&gt;content),
-                'tokens_used' =&gt; $response['usage']['total_tokens'],
+            $this-&gt;logger-&gt;info(&#39;Code review completed&#39;, [
+                &#39;code_length&#39; =&gt; strlen($code-&gt;content),
+                &#39;tokens_used&#39; =&gt; $response[&#39;usage&#39;][&#39;total_tokens&#39;],
             ]);
             
             return $this-&gt;parseReviewResponse($reviewContent);
         } catch (Throwable $e) {
-            $this-&gt;logger-&gt;error('AI code review failed', [
-                'error' =&gt; $e-&gt;getMessage(),
-                'code_snippet' =&gt; substr($code-&gt;content, 0, 100) . '...',
+            $this-&gt;logger-&gt;error(&#39;AI code review failed&#39;, [
+                &#39;error&#39; =&gt; $e-&gt;getMessage(),
+                &#39;code_snippet&#39; =&gt; substr($code-&gt;content, 0, 100) . &#39;...&#39;,
             ]);
             
             throw new CodeReviewException(
-                "Code review failed: {$e-&gt;getMessage()}",
+                &quot;Code review failed: {$e-&gt;getMessage()}&quot;,
                 previous: $e
             );
         }
@@ -267,12 +267,12 @@ class UserValidatorTest extends TestCase {
 
                     <p>Integrate AI into your review process:</p>
 
-                    <pre><code class="language-bash">// Git hook that runs AI code review
-#!/bin/bash
-git diff --cached --name-only | grep '\.php$' | while read file; do
-    if [ -f "$file" ]; then
-        echo "AI reviewing $file..."
-        php ai-review.php "$file"
+                    <pre><code class="language-bash">#!/bin/bash
+# Git hook that runs AI code review
+git diff --cached --name-only | grep &#39;\.php$&#39; | while read file; do
+    if [ -f &quot;$file&quot; ]; then
+        echo &quot;AI reviewing $file...&quot;
+        php ai-review.php &quot;$file&quot;
     fi
 done</code></pre>
 
@@ -309,7 +309,7 @@ public function processOrder(array $orderData): OrderResult {
 
                     <p>AI excels at creating initial implementations that you can refine:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -325,7 +325,7 @@ class ShoppingCart {
     private $items = [];
     
     public function addItem(Product $product, int $quantity = 1): void {
-        $this---&gt;items[] = ['product' =&gt; $product, 'quantity' =&gt; $quantity];
+        $this-&gt;items[] = ['product' =&gt; $product, 'quantity' =&gt; $quantity];
     }
     
     public function getTotal(): float {
@@ -396,7 +396,7 @@ final class ShoppingCart
 
                     <p>Use AI to identify refactoring opportunities:</p>
 
-                    <pre><code class="language-yaml">&lt;!--?php
+                    <pre><code class="language-yaml">&lt;?php
 
 declare(strict_types=1);
 
@@ -419,7 +419,7 @@ public function processUserRegistration($data) {
         throw new Exception('Password too short');
     }
     
-    return $this---&gt;userRepository-&gt;create($data);
+    return $this-&gt;userRepository-&gt;create($data);
 }
 
 // After: Modern refactored version with proper separation of concerns
@@ -477,7 +477,7 @@ final readonly class UserRegistrationService
 
                     <p>Generate CRUD operations, API endpoints, and admin interfaces:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -520,7 +520,7 @@ final readonly class AICodeGenerator
         }
     }
     
-    /** @param array&lt;fielddefinition&gt; $fields */
+    /** @param array<fielddefinition> $fields */
     private function buildPrompt(EntityName $entityName, array $fields, CodeTemplate $template): string
     {
         $fieldDescriptions = array_map(
@@ -548,13 +548,13 @@ final readonly class AICodeGenerator
         // Post-process generated code to ensure consistency
         return $code;
     }
-}&lt;/fielddefinition&gt;</code></pre>
+}</fielddefinition></code></pre>
 
                     <h3>Intelligent Error Handling</h3>
 
                     <p>AI can suggest solutions for common errors:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -576,7 +576,7 @@ final readonly class AIErrorHandler
     
     public function handleError(Throwable $error): ErrorSolution
     {
-        $context = $this---&gt;contextBuilder-&gt;buildFromThrowable($error);
+        $context = $this-&gt;contextBuilder-&gt;buildFromThrowable($error);
         
         try {
             $solution = $this-&gt;aiClient-&gt;suggestSolution($context);

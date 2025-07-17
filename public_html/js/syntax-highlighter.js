@@ -1,30 +1,29 @@
-// Simple client-side syntax highlighting without ES modules
+// Modern syntax highlighting with Highlight.js
 (function() {
   'use strict';
   
-  // Load Prism.js from CDN
-  function loadPrism() {
-    // Load main Prism.js
-    const prismScript = document.createElement('script');
-    prismScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js';
-    prismScript.onload = function() {
-      // Load language components
-      const languages = ['php', 'bash', 'yaml', 'sql', 'json', 'nginx'];
-      let loadedCount = 0;
+  // Load Highlight.js - more reliable than Prism.js
+  function loadHighlightJS() {
+    // Load CSS theme
+    const hlCSS = document.createElement('link');
+    hlCSS.rel = 'stylesheet';
+    hlCSS.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css';
+    document.head.appendChild(hlCSS);
+    
+    // Load main Highlight.js
+    const hlScript = document.createElement('script');
+    hlScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
+    hlScript.onload = function() {
+      console.log('✓ Highlight.js loaded successfully');
       
-      languages.forEach(lang => {
-        const script = document.createElement('script');
-        script.src = `https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-${lang}.min.js`;
-        script.onload = function() {
-          loadedCount++;
-          if (loadedCount === languages.length) {
-            processSyntaxHighlighting();
-          }
-        };
-        document.head.appendChild(script);
-      });
+      // Initialize highlighting immediately
+      setTimeout(processSyntaxHighlighting, 100);
     };
-    document.head.appendChild(prismScript);
+    hlScript.onerror = function() {
+      console.error('✗ Failed to load Highlight.js, using fallback');
+      setTimeout(processSyntaxHighlighting, 100);
+    };
+    document.head.appendChild(hlScript);
   }
   
   function processSyntaxHighlighting() {
@@ -32,10 +31,10 @@
     const codeBlocks = document.querySelectorAll('pre code');
     
     codeBlocks.forEach(block => {
-      // Get raw HTML content and decode entities
+      // Get both textContent and innerHTML to handle entities properly
       let content = block.innerHTML;
       
-      // Decode HTML entities thoroughly
+      // First decode common HTML entities
       content = content
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
@@ -49,11 +48,15 @@
         .replace(/&hellip;/g, '...')
         .replace(/&mdash;/g, '—')
         .replace(/&ndash;/g, '–');
+        
+      // Use browser's built-in HTML entity decoder as fallback
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = content;
+      const decodedContent = tempDiv.textContent || tempDiv.innerText || content;
       
-      // Set cleaned content
-      block.textContent = content.trim();
-      
-      const code = block.textContent;
+      // Only update textContent if we don't already have clean content
+      // This preserves the original formatting for Highlight.js
+      const code = decodedContent.trim();
       
       // Auto-detect language if not already set
       let language = 'php'; // default
@@ -82,21 +85,69 @@
         block.className = `language-${language}`;
       }
       
-      // Highlight with Prism if available
-      if (typeof Prism !== 'undefined' && Prism.languages[language]) {
+      // Highlight with Highlight.js if available
+      if (typeof hljs !== 'undefined') {
         try {
-          Prism.highlightElement(block);
+          // Convert language names to hljs equivalents
+          const hlLang = getHLJSLanguage(language);
+          
+          // Highlight the element
+          hljs.highlightElement(block);
+          console.log(`✓ Highlighted code block with language: ${language} (${hlLang})`);
         } catch (error) {
-          console.warn('Failed to highlight code block:', error);
+          console.warn(`Failed to highlight code block (${language}):`, error);
+          // Apply fallback styling
+          if (language === 'php' && code.includes('<?php')) {
+            applyBasicPhpStyling(block);
+          }
+        }
+      } else {
+        // Fallback for when hljs isn't loaded
+        if (language === 'php' && code.includes('<?php')) {
+          applyBasicPhpStyling(block);
         }
       }
     });
   }
   
+  // Convert language names to Highlight.js equivalents
+  function getHLJSLanguage(language) {
+    const langMap = {
+      'php': 'php',
+      'javascript': 'javascript',
+      'bash': 'bash',
+      'yaml': 'yaml',
+      'sql': 'sql',
+      'json': 'json',
+      'nginx': 'nginx',
+      'css': 'css',
+      'html': 'xml'
+    };
+    return langMap[language] || language;
+  }
+  
+  // Basic PHP syntax styling as fallback
+  function applyBasicPhpStyling(block) {
+    let content = block.innerHTML;
+    
+    // Apply basic PHP syntax highlighting
+    content = content
+      .replace(/(&lt;\?php|&lt;\?)/g, '<span style="color: #ff6b35;">&lt;?php</span>')
+      .replace(/(public|private|protected|function|class|interface|namespace|use|return|if|else|foreach|for|while|try|catch|finally|throw|new|extends|implements|const|static|final|readonly)/g, '<span style="color: #ff6b35;">$1</span>')
+      .replace(/(\$\w+)/g, '<span style="color: #50fa7b;">$1</span>')
+      .replace(/(\/\/.*|#.*)/g, '<span style="color: #6272a4;">$1</span>')
+      .replace(/(\/\*[\s\S]*?\*\/)/g, '<span style="color: #6272a4;">$1</span>')
+      .replace(/('([^'\\]|\\.)*'|"([^"\\]|\\.)*")/g, '<span style="color: #f1fa8c;">$1</span>')
+      .replace(/(-&gt;|\:\:)/g, '<span style="color: #ff79c6;">$1</span>');
+    
+    block.innerHTML = content;
+    console.log('✓ Applied basic PHP styling');
+  }
+  
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadPrism);
+    document.addEventListener('DOMContentLoaded', loadHighlightJS);
   } else {
-    loadPrism();
+    loadHighlightJS();
   }
 })();
