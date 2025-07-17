@@ -47,6 +47,14 @@ const articlesData = [
         category: "php",
         date: "2024-12-15",
         slug: "scalable-php-apis"
+    },
+    {
+        id: 7,
+        title: "AI-Enhanced PHP Development: Tools and Workflows",
+        excerpt: "How to leverage AI tools like GitHub Copilot and OpenAI APIs to boost PHP development efficiency without compromising quality.",
+        category: "ai",
+        date: "2024-12-10",
+        slug: "ai-enhanced-php-development"
     }
 ];
 

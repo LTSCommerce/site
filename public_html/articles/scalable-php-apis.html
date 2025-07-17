@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP">
+    <title>Building Scalable Backend APIs with Modern PHP | Joseph</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/articles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="brand-link">Joseph</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/services.html" class="nav-link">Services</a></li>
+                <li><a href="/articles.html" class="nav-link">Articles</a></li>
+                <li><a href="/about.html" class="nav-link">About</a></li>
+                <li><a href="/contact.html" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="hamburger"></span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <article class="article-content">
+            <div class="container">
+                <header class="article-header">
+                    <div class="article-meta">
+                        <span class="article-category php">PHP</span>
+                        <time datetime="2024-12-15">December 15, 2024</time>
+                    </div>
+                    <h1>Building Scalable Backend APIs with Modern PHP</h1>
+                    <p class="article-lead">Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP.</p>
+                </header>
+
+                <div class="article-body">
+                    <p>Building scalable APIs is about more than just handling high traffic—it's about creating systems that can grow with your business while maintaining performance, reliability, and maintainability. Modern PHP provides excellent tools for building enterprise-grade APIs that can handle millions of requests.</p>
+
+                    <p>This article covers architectural patterns, design principles, and implementation strategies I've used to build APIs that scale from thousands to millions of users.</p>
+
+                    <h2>API Architecture Principles</h2>
+
+                    <h3>Layered Architecture</h3>
+
+                    <p>Separate concerns into distinct layers for better maintainability and testability:</p>
+
+                    <pre><code>// Controller Layer - HTTP concerns only
+class UserController {
+    private UserService $userService;
+    
+    public function __construct(UserService $userService) {
+        $this->userService = $userService;
+    }
+    
+    public function createUser(Request $request): Response {
+        $userData = $request->getValidatedData();
+        
+        try {
+            $user = $this->userService->createUser($userData);
+            return new JsonResponse($user, 201);
+        } catch (ValidationException $e) {
+            return new JsonResponse(['errors' => $e->getErrors()], 400);
+        } catch (DuplicateEmailException $e) {
+            return new JsonResponse(['error' => 'Email already exists'], 409);
+        }
+    }
+}
+
+// Service Layer - Business logic
+class UserService {
+    private UserRepository $userRepository;
+    private EmailService $emailService;
+    private EventDispatcher $eventDispatcher;
+    
+    public function createUser(array $userData): User {
+        // Validate business rules
+        $this->validateUserData($userData);
+        
+        // Create user
+        $user = new User($userData);
+        $user->setPassword(password_hash($userData['password'], PASSWORD_DEFAULT));
+        
+        // Persist
+        $this->userRepository->save($user);
+        
+        // Send welcome email
+        $this->emailService->sendWelcomeEmail($user);
+        
+        // Dispatch event
+        $this->eventDispatcher->dispatch(new UserCreatedEvent($user));
+        
+        return $user;
+    }
+}
+
+// Repository Layer - Data access
+class UserRepository {
+    private PDO $pdo;
+    
+    public function save(User $user): void {
+        $sql = "INSERT INTO users (email, name, password_hash, created_at) 
+                VALUES (:email, :name, :password_hash, :created_at)";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'email' => $user->getEmail(),
+            'name' => $user->getName(),
+            'password_hash' => $user->getPasswordHash(),
+            'created_at' => $user->getCreatedAt()->format('Y-m-d H:i:s')
+        ]);
+        
+        $user->setId($this->pdo->lastInsertId());
+    }
+}</code></pre>
+
+                    <h3>Domain-Driven Design</h3>
+
+                    <p>Model your business domain explicitly:</p>
+
+                    <pre><code>// Domain Entity
+class User {
+    private ?int $id = null;
+    private string $email;
+    private string $name;
+    private string $passwordHash;
+    private UserStatus $status;
+    private DateTimeImmutable $createdAt;
+    
+    public function __construct(string $email, string $name) {
+        $this->email = $this->validateEmail($email);
+        $this->name = $name;
+        $this->status = UserStatus::ACTIVE;
+        $this->createdAt = new DateTimeImmutable();
+    }
+    
+    public function changeEmail(string $newEmail): void {
+        $this->email = $this->validateEmail($newEmail);
+    }
+    
+    public function deactivate(): void {
+        if ($this->status === UserStatus::DEACTIVATED) {
+            throw new UserAlreadyDeactivatedException();
+        }
+        
+        $this->status = UserStatus::DEACTIVATED;
+    }
+    
+    public function isActive(): bool {
+        return $this->status === UserStatus::ACTIVE;
+    }
+    
+    private function validateEmail(string $email): string {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidEmailException($email);
+        }
+        
+        return $email;
+    }
+}
+
+// Value Object
+enum UserStatus: string {
+    case ACTIVE = 'active';
+    case DEACTIVATED = 'deactivated';
+    case SUSPENDED = 'suspended';
+}
+
+// Domain Service
+class UserDomainService {
+    public function canUserAccessResource(User $user, Resource $resource): bool {
+        if (!$user->isActive()) {
+            return false;
+        }
+        
+        if ($resource->requiresPremium() && !$user->isPremium()) {
+            return false;
+        }
+        
+        return $user->hasPermission($resource->getRequiredPermission());
+    }
+}</code></pre>
+
+                    <h2>API Design Patterns</h2>
+
+                    <h3>CQRS (Command Query Responsibility Segregation)</h3>
+
+                    <p>Separate read and write operations for better scalability:</p>
+
+                    <pre><code>// Command Handler - Write operations
+class CreateUserCommandHandler {
+    private UserRepository $userRepository;
+    private EventStore $eventStore;
+    
+    public function handle(CreateUserCommand $command): void {
+        $user = new User($command->email, $command->name);
+        $user->setPassword(password_hash($command->password, PASSWORD_DEFAULT));
+        
+        // Save to write database
+        $this->userRepository->save($user);
+        
+        // Store event for read model updates
+        $event = new UserCreatedEvent($user->getId(), $user->getEmail(), $user->getName());
+        $this->eventStore->store($event);
+    }
+}
+
+// Query Handler - Read operations
+class GetUserQueryHandler {
+    private UserReadModel $userReadModel;
+    
+    public function handle(GetUserQuery $query): UserView {
+        // Read from optimized read model
+        return $this->userReadModel->getUserById($query->userId);
+    }
+}
+
+// Read Model - Optimized for queries
+class UserReadModel {
+    private Redis $redis;
+    private PDO $readDb;
+    
+    public function getUserById(int $userId): UserView {
+        // Try cache first
+        $cached = $this->redis->get("user:$userId");
+        if ($cached) {
+            return unserialize($cached);
+        }
+        
+        // Read from database
+        $sql = "SELECT u.*, p.name as profile_name, p.avatar_url 
+                FROM users u 
+                LEFT JOIN profiles p ON u.id = p.user_id 
+                WHERE u.id = :id";
+        
+        $stmt = $this->readDb->prepare($sql);
+        $stmt->execute(['id' => $userId]);
+        $userData = $stmt->fetch();
+        
+        $userView = new UserView($userData);
+        
+        // Cache for future requests
+        $this->redis->setex("user:$userId", 3600, serialize($userView));
+        
+        return $userView;
+    }
+}</code></pre>
+
+                    <h3>Event-Driven Architecture</h3>
+
+                    <p>Decouple components using events:</p>
+
+                    <pre><code>// Event System
+class EventDispatcher {
+    private array $listeners = [];
+    
+    public function subscribe(string $eventClass, callable $listener): void {
+        $this->listeners[$eventClass][] = $listener;
+    }
+    
+    public function dispatch(object $event): void {
+        $eventClass = get_class($event);
+        
+        if (isset($this->listeners[$eventClass])) {
+            foreach ($this->listeners[$eventClass] as $listener) {
+                $listener($event);
+            }
+        }
+    }
+}
+
+// Event
+class UserCreatedEvent {
+    public function __construct(
+        public readonly int $userId,
+        public readonly string $email,
+        public readonly string $name,
+        public readonly DateTimeImmutable $occurredAt = new DateTimeImmutable()
+    ) {}
+}
+
+// Event Listeners
+class SendWelcomeEmailListener {
+    private EmailService $emailService;
+    
+    public function __invoke(UserCreatedEvent $event): void {
+        $this->emailService->sendWelcomeEmail($event->email, $event->name);
+    }
+}
+
+class UpdateUserStatsListener {
+    private UserStatsService $userStatsService;
+    
+    public function __invoke(UserCreatedEvent $event): void {
+        $this->userStatsService->incrementUserCount();
+    }
+}
+
+// Event Registration
+$eventDispatcher = new EventDispatcher();
+$eventDispatcher->subscribe(UserCreatedEvent::class, new SendWelcomeEmailListener($emailService));
+$eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener($userStatsService));</code></pre>
+
+                    <h2>Performance Optimization</h2>
+
+                    <h3>Database Connection Pooling</h3>
+
+                    <pre><code>class DatabasePool {
+    private array $connections = [];
+    private array $config;
+    private int $maxConnections;
+    private int $currentConnections = 0;
+    
+    public function __construct(array $config, int $maxConnections = 20) {
+        $this->config = $config;
+        $this->maxConnections = $maxConnections;
+    }
+    
+    public function getConnection(): PDO {
+        // Return existing connection if available
+        if (!empty($this->connections)) {
+            return array_pop($this->connections);
+        }
+        
+        // Create new connection if under limit
+        if ($this->currentConnections < $this->maxConnections) {
+            $connection = new PDO(
+                $this->config['dsn'],
+                $this->config['username'],
+                $this->config['password'],
+                [
+                    PDO::ATTR_PERSISTENT => false,
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                ]
+            );
+            
+            $this->currentConnections++;
+            return $connection;
+        }
+        
+        // Wait for available connection
+        usleep(10000); // 10ms
+        return $this->getConnection();
+    }
+    
+    public function releaseConnection(PDO $connection): void {
+        // Reset connection state
+        $connection->rollBack();
+        $connection->exec('SET autocommit = 1');
+        
+        // Return to pool
+        $this->connections[] = $connection;
+    }
+}</code></pre>
+
+                    <h3>Response Caching</h3>
+
+                    <pre><code>class ResponseCache {
+    private Redis $redis;
+    private int $defaultTtl = 3600;
+    
+    public function __construct(Redis $redis) {
+        $this->redis = $redis;
+    }
+    
+    public function get(Request $request): ?Response {
+        $key = $this->generateCacheKey($request);
+        $cached = $this->redis->get($key);
+        
+        if ($cached) {
+            $data = json_decode($cached, true);
+            return new Response($data['body'], $data['status'], $data['headers']);
+        }
+        
+        return null;
+    }
+    
+    public function set(Request $request, Response $response, int $ttl = null): void {
+        $key = $this->generateCacheKey($request);
+        $ttl = $ttl ?? $this->defaultTtl;
+        
+        $data = [
+            'body' => $response->getBody(),
+            'status' => $response->getStatusCode(),
+            'headers' => $response->getHeaders(),
+            'cached_at' => time()
+        ];
+        
+        $this->redis->setex($key, $ttl, json_encode($data));
+    }
+    
+    private function generateCacheKey(Request $request): string {
+        $components = [
+            $request->getMethod(),
+            $request->getUri(),
+            $request->getQueryParams(),
+            $request->getHeader('Accept'),
+            $request->getHeader('Authorization') ? 'auth' : 'public'
+        ];
+        
+        return 'response:' . md5(serialize($components));
+    }
+}</code></pre>
+
+                    <h2>Rate Limiting and Throttling</h2>
+
+                    <h3>Token Bucket Algorithm</h3>
+
+                    <pre><code>class TokenBucketRateLimiter {
+    private Redis $redis;
+    private int $capacity;
+    private int $refillRate;
+    private int $refillPeriod;
+    
+    public function __construct(Redis $redis, int $capacity = 100, int $refillRate = 10, int $refillPeriod = 60) {
+        $this->redis = $redis;
+        $this->capacity = $capacity;
+        $this->refillRate = $refillRate;
+        $this->refillPeriod = $refillPeriod;
+    }
+    
+    public function isAllowed(string $identifier): bool {
+        $key = "rate_limit:$identifier";
+        $now = time();
+        
+        // Get current bucket state
+        $bucketData = $this->redis->hmget($key, ['tokens', 'last_refill']);
+        $tokens = $bucketData['tokens'] ?? $this->capacity;
+        $lastRefill = $bucketData['last_refill'] ?? $now;
+        
+        // Calculate tokens to add
+        $timePassed = $now - $lastRefill;
+        $tokensToAdd = floor($timePassed / $this->refillPeriod) * $this->refillRate;
+        $tokens = min($this->capacity, $tokens + $tokensToAdd);
+        
+        // Check if request is allowed
+        if ($tokens >= 1) {
+            $tokens--;
+            
+            // Update bucket state
+            $this->redis->hmset($key, [
+                'tokens' => $tokens,
+                'last_refill' => $now
+            ]);
+            $this->redis->expire($key, $this->refillPeriod * 2);
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public function getRemainingTokens(string $identifier): int {
+        $key = "rate_limit:$identifier";
+        $bucketData = $this->redis->hmget($key, ['tokens']);
+        return $bucketData['tokens'] ?? $this->capacity;
+    }
+}</code></pre>
+
+                    <h3>Sliding Window Rate Limiter</h3>
+
+                    <pre><code>class SlidingWindowRateLimiter {
+    private Redis $redis;
+    private int $limit;
+    private int $windowSize;
+    
+    public function __construct(Redis $redis, int $limit = 1000, int $windowSize = 3600) {
+        $this->redis = $redis;
+        $this->limit = $limit;
+        $this->windowSize = $windowSize;
+    }
+    
+    public function isAllowed(string $identifier): bool {
+        $key = "sliding_window:$identifier";
+        $now = time();
+        $windowStart = $now - $this->windowSize;
+        
+        // Remove old entries
+        $this->redis->zremrangebyscore($key, 0, $windowStart);
+        
+        // Count current requests
+        $currentCount = $this->redis->zcard($key);
+        
+        if ($currentCount < $this->limit) {
+            // Add current request
+            $this->redis->zadd($key, $now, uniqid());
+            $this->redis->expire($key, $this->windowSize);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public function getRemainingRequests(string $identifier): int {
+        $key = "sliding_window:$identifier";
+        $now = time();
+        $windowStart = $now - $this->windowSize;
+        
+        $this->redis->zremrangebyscore($key, 0, $windowStart);
+        $currentCount = $this->redis->zcard($key);
+        
+        return max(0, $this->limit - $currentCount);
+    }
+}</code></pre>
+
+                    <h2>Error Handling and Resilience</h2>
+
+                    <h3>Circuit Breaker Pattern</h3>
+
+                    <pre><code>class CircuitBreaker {
+    private Redis $redis;
+    private int $failureThreshold;
+    private int $recoveryTimeout;
+    private int $monitoringPeriod;
+    
+    public function __construct(Redis $redis, int $failureThreshold = 5, int $recoveryTimeout = 300, int $monitoringPeriod = 60) {
+        $this->redis = $redis;
+        $this->failureThreshold = $failureThreshold;
+        $this->recoveryTimeout = $recoveryTimeout;
+        $this->monitoringPeriod = $monitoringPeriod;
+    }
+    
+    public function call(string $service, callable $operation) {
+        $state = $this->getState($service);
+        
+        switch ($state) {
+            case 'open':
+                if ($this->shouldAttemptReset($service)) {
+                    $this->setState($service, 'half-open');
+                    return $this->executeOperation($service, $operation);
+                }
+                throw new CircuitBreakerOpenException("Circuit breaker is open for $service");
+                
+            case 'half-open':
+                return $this->executeOperation($service, $operation);
+                
+            case 'closed':
+            default:
+                return $this->executeOperation($service, $operation);
+        }
+    }
+    
+    private function executeOperation(string $service, callable $operation) {
+        try {
+            $result = $operation();
+            $this->recordSuccess($service);
+            return $result;
+        } catch (Exception $e) {
+            $this->recordFailure($service);
+            throw $e;
+        }
+    }
+    
+    private function recordSuccess(string $service): void {
+        $key = "circuit_breaker:$service";
+        $this->redis->hdel($key, 'failures');
+        $this->setState($service, 'closed');
+    }
+    
+    private function recordFailure(string $service): void {
+        $key = "circuit_breaker:$service";
+        $failures = $this->redis->hincrby($key, 'failures', 1);
+        $this->redis->expire($key, $this->monitoringPeriod);
+        
+        if ($failures >= $this->failureThreshold) {
+            $this->setState($service, 'open');
+        }
+    }
+    
+    private function getState(string $service): string {
+        $key = "circuit_breaker:$service";
+        return $this->redis->hget($key, 'state') ?: 'closed';
+    }
+    
+    private function setState(string $service, string $state): void {
+        $key = "circuit_breaker:$service";
+        $this->redis->hset($key, 'state', $state);
+        
+        if ($state === 'open') {
+            $this->redis->hset($key, 'opened_at', time());
+        }
+    }
+    
+    private function shouldAttemptReset(string $service): bool {
+        $key = "circuit_breaker:$service";
+        $openedAt = $this->redis->hget($key, 'opened_at');
+        
+        return $openedAt && (time() - $openedAt) > $this->recoveryTimeout;
+    }
+}</code></pre>
+
+                    <h2>API Security</h2>
+
+                    <h3>JWT Authentication</h3>
+
+                    <pre><code>class JWTManager {
+    private string $secretKey;
+    private string $algorithm = 'HS256';
+    private int $defaultTtl = 3600;
+    
+    public function __construct(string $secretKey) {
+        $this->secretKey = $secretKey;
+    }
+    
+    public function generateToken(array $payload, int $ttl = null): string {
+        $ttl = $ttl ?? $this->defaultTtl;
+        $now = time();
+        
+        $header = json_encode(['typ' => 'JWT', 'alg' => $this->algorithm]);
+        $payload = json_encode(array_merge($payload, [
+            'iat' => $now,
+            'exp' => $now + $ttl
+        ]));
+        
+        $headerPayload = $this->base64UrlEncode($header) . '.' . $this->base64UrlEncode($payload);
+        $signature = $this->sign($headerPayload);
+        
+        return $headerPayload . '.' . $signature;
+    }
+    
+    public function validateToken(string $token): array {
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            throw new InvalidTokenException('Invalid token format');
+        }
+        
+        [$header, $payload, $signature] = $parts;
+        
+        // Verify signature
+        $expectedSignature = $this->sign($header . '.' . $payload);
+        if (!hash_equals($signature, $expectedSignature)) {
+            throw new InvalidTokenException('Invalid signature');
+        }
+        
+        // Decode payload
+        $decodedPayload = json_decode($this->base64UrlDecode($payload), true);
+        
+        // Check expiration
+        if (isset($decodedPayload['exp']) && $decodedPayload['exp'] < time()) {
+            throw new ExpiredTokenException('Token has expired');
+        }
+        
+        return $decodedPayload;
+    }
+    
+    private function sign(string $data): string {
+        return $this->base64UrlEncode(hash_hmac('sha256', $data, $this->secretKey, true));
+    }
+    
+    private function base64UrlEncode(string $data): string {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+    
+    private function base64UrlDecode(string $data): string {
+        return base64_decode(strtr($data, '-_', '+/'));
+    }
+}</code></pre>
+
+                    <h2>API Documentation and Versioning</h2>
+
+                    <h3>OpenAPI Documentation</h3>
+
+                    <pre><code>class OpenAPIGenerator {
+    private array $paths = [];
+    private array $components = [];
+    
+    public function addEndpoint(string $path, string $method, array $definition): void {
+        $this->paths[$path][$method] = $definition;
+    }
+    
+    public function addComponent(string $name, array $schema): void {
+        $this->components['schemas'][$name] = $schema;
+    }
+    
+    public function generate(): array {
+        return [
+            'openapi' => '3.0.0',
+            'info' => [
+                'title' => 'API Documentation',
+                'version' => '1.0.0',
+                'description' => 'Scalable PHP API'
+            ],
+            'servers' => [
+                ['url' => 'https://api.example.com/v1']
+            ],
+            'paths' => $this->paths,
+            'components' => $this->components
+        ];
+    }
+    
+    public function generateFromAnnotations(): array {
+        $reflection = new ReflectionClass(UserController::class);
+        $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
+        
+        foreach ($methods as $method) {
+            $docComment = $method->getDocComment();
+            if ($docComment) {
+                $this->parseDocComment($docComment, $method);
+            }
+        }
+        
+        return $this->generate();
+    }
+    
+    private function parseDocComment(string $docComment, ReflectionMethod $method): void {
+        // Parse PHPDoc annotations for OpenAPI spec
+        if (preg_match('/@Route\("([^"]+)".*method="([^"]+)"\)/', $docComment, $matches)) {
+            $path = $matches[1];
+            $httpMethod = strtolower($matches[2]);
+            
+            // Extract other annotations
+            $summary = $this->extractAnnotation($docComment, 'summary');
+            $description = $this->extractAnnotation($docComment, 'description');
+            
+            $this->addEndpoint($path, $httpMethod, [
+                'summary' => $summary,
+                'description' => $description,
+                'operationId' => $method->getName()
+            ]);
+        }
+    }
+    
+    private function extractAnnotation(string $docComment, string $annotation): ?string {
+        if (preg_match("/@{$annotation}\s+(.+)/", $docComment, $matches)) {
+            return trim($matches[1]);
+        }
+        return null;
+    }
+}</code></pre>
+
+                    <h2>Monitoring and Observability</h2>
+
+                    <h3>Metrics Collection</h3>
+
+                    <pre><code>class MetricsCollector {
+    private Redis $redis;
+    private array $metrics = [];
+    
+    public function __construct(Redis $redis) {
+        $this->redis = $redis;
+    }
+    
+    public function increment(string $metric, int $value = 1, array $tags = []): void {
+        $key = $this->buildKey($metric, $tags);
+        $this->redis->incrby($key, $value);
+        $this->redis->expire($key, 3600);
+    }
+    
+    public function gauge(string $metric, float $value, array $tags = []): void {
+        $key = $this->buildKey($metric, $tags);
+        $this->redis->set($key, $value);
+        $this->redis->expire($key, 3600);
+    }
+    
+    public function timing(string $metric, float $duration, array $tags = []): void {
+        $key = $this->buildKey($metric . '.timing', $tags);
+        $this->redis->lpush($key, $duration);
+        $this->redis->ltrim($key, 0, 999); // Keep last 1000 measurements
+        $this->redis->expire($key, 3600);
+    }
+    
+    public function histogram(string $metric, float $value, array $tags = []): void {
+        $buckets = [0.1, 0.5, 1, 2.5, 5, 10];
+        
+        foreach ($buckets as $bucket) {
+            if ($value <= $bucket) {
+                $key = $this->buildKey($metric . '.bucket', array_merge($tags, ['le' => $bucket]));
+                $this->redis->incr($key);
+                $this->redis->expire($key, 3600);
+            }
+        }
+    }
+    
+    private function buildKey(string $metric, array $tags): string {
+        $tagString = '';
+        if (!empty($tags)) {
+            ksort($tags);
+            $tagString = ':' . implode(':', array_map(
+                fn($k, $v) => "$k=$v",
+                array_keys($tags),
+                array_values($tags)
+            ));
+        }
+        
+        return "metrics:$metric$tagString";
+    }
+    
+    public function flush(): void {
+        // Send metrics to monitoring system
+        $keys = $this->redis->keys('metrics:*');
+        
+        foreach ($keys as $key) {
+            $value = $this->redis->get($key);
+            // Send to StatsD, Prometheus, etc.
+            $this->sendMetric($key, $value);
+        }
+    }
+    
+    private function sendMetric(string $key, $value): void {
+        // Implementation depends on monitoring system
+        // Example: StatsD
+        $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+        $metric = str_replace('metrics:', '', $key);
+        $packet = "$metric:$value|c";
+        socket_sendto($socket, $packet, strlen($packet), 0, '127.0.0.1', 8125);
+        socket_close($socket);
+    }
+}</code></pre>
+
+                    <h2>Testing Strategies</h2>
+
+                    <h3>API Testing</h3>
+
+                    <pre><code>class APITestCase extends TestCase {
+    protected ApiClient $client;
+    protected DatabaseSeeder $seeder;
+    
+    protected function setUp(): void {
+        parent::setUp();
+        $this->client = new ApiClient('http://localhost:8000');
+        $this->seeder = new DatabaseSeeder();
+    }
+    
+    public function testCreateUser(): void {
+        $userData = [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'password' => 'password123'
+        ];
+        
+        $response = $this->client->post('/api/users', $userData);
+        
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertJsonStructure($response->getBody(), [
+            'id', 'name', 'email', 'created_at'
+        ]);
+        
+        // Verify user was created in database
+        $this->assertDatabaseHas('users', [
+            'email' => 'john@example.com'
+        ]);
+    }
+    
+    public function testRateLimiting(): void {
+        $this->seeder->createUser(['email' => 'test@example.com']);
+        
+        // Make requests up to limit
+        for ($i = 0; $i < 100; $i++) {
+            $response = $this->client->get('/api/users/1');
+            $this->assertEquals(200, $response->getStatusCode());
+        }
+        
+        // Next request should be rate limited
+        $response = $this->client->get('/api/users/1');
+        $this->assertEquals(429, $response->getStatusCode());
+    }
+    
+    public function testConcurrentRequests(): void {
+        $responses = [];
+        $promises = [];
+        
+        // Create 10 concurrent requests
+        for ($i = 0; $i < 10; $i++) {
+            $promises[] = $this->client->getAsync('/api/users');
+        }
+        
+        $responses = Promise::all($promises)->wait();
+        
+        // All requests should succeed
+        foreach ($responses as $response) {
+            $this->assertEquals(200, $response->getStatusCode());
+        }
+    }
+}</code></pre>
+
+                    <h2>Best Practices Summary</h2>
+
+                    <ul>
+                        <li><strong>Layered architecture:</strong> Separate concerns into distinct layers</li>
+                        <li><strong>Domain modeling:</strong> Use domain-driven design principles</li>
+                        <li><strong>CQRS:</strong> Separate read and write operations</li>
+                        <li><strong>Event-driven:</strong> Use events for loose coupling</li>
+                        <li><strong>Caching:</strong> Cache at multiple levels</li>
+                        <li><strong>Rate limiting:</strong> Protect against abuse</li>
+                        <li><strong>Circuit breakers:</strong> Handle external service failures</li>
+                        <li><strong>Security:</strong> Implement proper authentication and authorization</li>
+                        <li><strong>Documentation:</strong> Maintain up-to-date API documentation</li>
+                        <li><strong>Monitoring:</strong> Collect metrics and logs</li>
+                        <li><strong>Testing:</strong> Comprehensive testing strategy</li>
+                    </ul>
+
+                    <p>Building scalable APIs requires careful planning and implementation of proven patterns. Start with a solid architectural foundation, implement proper caching and rate limiting, and continuously monitor and optimize performance. Remember that scalability is not just about handling more requests—it's about building systems that can evolve and grow with your business needs.</p>
+                </div>
+
+                <footer class="article-footer">
+                    <div class="article-nav">
+                        <a href="/articles.html" class="back-link">← Back to Articles</a>
+                    </div>
+                </footer>
+            </div>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <nav class="footer-nav">
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

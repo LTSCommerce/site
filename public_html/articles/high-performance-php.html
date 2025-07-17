@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios">
+    <title>High-Performance PHP: Optimization Strategies | Joseph</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/articles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="brand-link">Joseph</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/services.html" class="nav-link">Services</a></li>
+                <li><a href="/articles.html" class="nav-link">Articles</a></li>
+                <li><a href="/about.html" class="nav-link">About</a></li>
+                <li><a href="/contact.html" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="hamburger"></span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <article class="article-content">
+            <div class="container">
+                <header class="article-header">
+                    <div class="article-meta">
+                        <span class="article-category php">PHP</span>
+                        <time datetime="2024-12-28">December 28, 2024</time>
+                    </div>
+                    <h1>High-Performance PHP: Optimization Strategies</h1>
+                    <p class="article-lead">Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios.</p>
+                </header>
+
+                <div class="article-body">
+                    <p>PHP has a reputation for being slow, but that's largely outdated. Modern PHP 8.2+ with proper optimization can handle thousands of requests per second. The key is knowing where to optimize and how to measure the impact of your changes.</p>
+
+                    <p>Over the years, I've optimized PHP applications handling millions of requests daily. Here are the techniques that deliver real performance gains.</p>
+
+                    <h2>Performance Measurement Foundation</h2>
+
+                    <h3>Profiling Tools</h3>
+
+                    <p>You can't optimize what you don't measure. Essential profiling tools:</p>
+
+                    <pre><code># Install Xdebug for profiling
+pecl install xdebug
+
+# php.ini configuration
+zend_extension=xdebug.so
+xdebug.mode=profile
+xdebug.start_with_request=trigger
+xdebug.output_dir="/tmp/xdebug"
+xdebug.profiler_output_name="cachegrind.out.%p"</code></pre>
+
+                    <p>Use with tools like KCacheGrind or Webgrind to visualize performance bottlenecks.</p>
+
+                    <h3>Application Performance Monitoring</h3>
+
+                    <pre><code>class PerformanceMonitor {
+    private static $timers = [];
+    
+    public static function start(string $name): void {
+        self::$timers[$name] = microtime(true);
+    }
+    
+    public static function end(string $name): float {
+        if (!isset(self::$timers[$name])) {
+            throw new InvalidArgumentException("Timer $name not found");
+        }
+        
+        $elapsed = microtime(true) - self::$timers[$name];
+        unset(self::$timers[$name]);
+        
+        // Log to monitoring system
+        self::logMetric($name, $elapsed);
+        
+        return $elapsed;
+    }
+    
+    private static function logMetric(string $name, float $value): void {
+        // Send to monitoring system (StatsD, Prometheus, etc.)
+        file_put_contents('/var/log/app/performance.log', 
+            sprintf("[%s] %s: %.4f\n", date('Y-m-d H:i:s'), $name, $value), 
+            FILE_APPEND | LOCK_EX
+        );
+    }
+}</code></pre>
+
+                    <h2>OPcache Optimization</h2>
+
+                    <p>OPcache is the most important PHP optimization. It caches compiled bytecode, eliminating the need to parse and compile PHP files on every request.</p>
+
+                    <h3>Production OPcache Configuration</h3>
+
+                    <pre><code># php.ini
+opcache.enable=1
+opcache.enable_cli=1
+opcache.memory_consumption=512
+opcache.interned_strings_buffer=64
+opcache.max_accelerated_files=32531
+opcache.validate_timestamps=0
+opcache.save_comments=0
+opcache.fast_shutdown=1
+opcache.enable_file_override=1
+opcache.optimization_level=0xffffffff
+
+# JIT compilation for PHP 8.0+
+opcache.jit_buffer_size=256M
+opcache.jit=1255</code></pre>
+
+                    <h3>OPcache Monitoring</h3>
+
+                    <pre><code>class OPcacheMonitor {
+    public static function getStats(): array {
+        if (!extension_loaded('opcache')) {
+            return ['error' => 'OPcache not loaded'];
+        }
+        
+        $status = opcache_get_status();
+        $config = opcache_get_configuration();
+        
+        return [
+            'enabled' => $status['opcache_enabled'],
+            'hit_rate' => $status['opcache_statistics']['opcache_hit_rate'],
+            'memory_usage' => $status['memory_usage'],
+            'cached_scripts' => $status['opcache_statistics']['num_cached_scripts'],
+            'max_cached_keys' => $config['directives']['opcache.max_accelerated_files'],
+            'jit_enabled' => $config['directives']['opcache.jit_buffer_size'] > 0
+        ];
+    }
+    
+    public static function reset(): bool {
+        return opcache_reset();
+    }
+}</code></pre>
+
+                    <h2>Database Optimization</h2>
+
+                    <h3>Connection Pooling</h3>
+
+                    <p>Database connections are expensive. Use persistent connections wisely:</p>
+
+                    <pre><code>class DatabasePool {
+    private static $connections = [];
+    private static $maxConnections = 10;
+    
+    public static function getConnection(string $dsn): PDO {
+        $key = md5($dsn);
+        
+        if (!isset(self::$connections[$key])) {
+            if (count(self::$connections) >= self::$maxConnections) {
+                // Remove oldest connection
+                array_shift(self::$connections);
+            }
+            
+            self::$connections[$key] = new PDO($dsn, null, null, [
+                PDO::ATTR_PERSISTENT => true,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+            ]);
+        }
+        
+        return self::$connections[$key];
+    }
+}</code></pre>
+
+                    <h3>Query Optimization</h3>
+
+                    <pre><code>class QueryOptimizer {
+    private $pdo;
+    private $queryLog = [];
+    
+    public function __construct(PDO $pdo) {
+        $this->pdo = $pdo;
+    }
+    
+    public function executeQuery(string $sql, array $params = []): array {
+        $start = microtime(true);
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        $result = $stmt->fetchAll();
+        
+        $duration = microtime(true) - $start;
+        
+        // Log slow queries
+        if ($duration > 0.1) {
+            $this->logSlowQuery($sql, $params, $duration);
+        }
+        
+        return $result;
+    }
+    
+    private function logSlowQuery(string $sql, array $params, float $duration): void {
+        $this->queryLog[] = [
+            'sql' => $sql,
+            'params' => $params,
+            'duration' => $duration,
+            'timestamp' => time()
+        ];
+        
+        // Alert if too many slow queries
+        if (count($this->queryLog) > 10) {
+            error_log('Too many slow queries detected');
+        }
+    }
+    
+    public function getQueryLog(): array {
+        return $this->queryLog;
+    }
+}</code></pre>
+
+                    <h2>Caching Strategies</h2>
+
+                    <h3>Multi-Level Caching</h3>
+
+                    <pre><code>class CacheManager {
+    private $redis;
+    private $apcu;
+    private $memoryCache = [];
+    
+    public function __construct(Redis $redis) {
+        $this->redis = $redis;
+        $this->apcu = extension_loaded('apcu');
+    }
+    
+    public function get(string $key, callable $callback = null, int $ttl = 3600) {
+        // Level 1: Memory cache
+        if (isset($this->memoryCache[$key])) {
+            return $this->memoryCache[$key];
+        }
+        
+        // Level 2: APCu (shared memory)
+        if ($this->apcu && apcu_exists($key)) {
+            $value = apcu_fetch($key);
+            $this->memoryCache[$key] = $value;
+            return $value;
+        }
+        
+        // Level 3: Redis (distributed cache)
+        $value = $this->redis->get($key);
+        if ($value !== false) {
+            $value = unserialize($value);
+            $this->memoryCache[$key] = $value;
+            
+            if ($this->apcu) {
+                apcu_store($key, $value, $ttl);
+            }
+            
+            return $value;
+        }
+        
+        // Generate value if callback provided
+        if ($callback) {
+            $value = $callback();
+            $this->set($key, $value, $ttl);
+            return $value;
+        }
+        
+        return null;
+    }
+    
+    public function set(string $key, $value, int $ttl = 3600): void {
+        // Store in all cache levels
+        $this->memoryCache[$key] = $value;
+        
+        if ($this->apcu) {
+            apcu_store($key, $value, $ttl);
+        }
+        
+        $this->redis->setex($key, $ttl, serialize($value));
+    }
+    
+    public function delete(string $key): void {
+        unset($this->memoryCache[$key]);
+        
+        if ($this->apcu) {
+            apcu_delete($key);
+        }
+        
+        $this->redis->del($key);
+    }
+}</code></pre>
+
+                    <h3>Smart Cache Invalidation</h3>
+
+                    <pre><code>class CacheInvalidator {
+    private $cache;
+    private $tags = [];
+    
+    public function __construct(CacheManager $cache) {
+        $this->cache = $cache;
+    }
+    
+    public function setWithTags(string $key, $value, array $tags, int $ttl = 3600): void {
+        $this->cache->set($key, $value, $ttl);
+        
+        // Associate key with tags
+        foreach ($tags as $tag) {
+            $tagKey = "tag:{$tag}";
+            $keys = $this->cache->get($tagKey, fn() => []);
+            $keys[] = $key;
+            $this->cache->set($tagKey, array_unique($keys), $ttl);
+        }
+    }
+    
+    public function invalidateTag(string $tag): void {
+        $tagKey = "tag:{$tag}";
+        $keys = $this->cache->get($tagKey, fn() => []);
+        
+        foreach ($keys as $key) {
+            $this->cache->delete($key);
+        }
+        
+        $this->cache->delete($tagKey);
+    }
+    
+    public function invalidatePattern(string $pattern): void {
+        // For Redis cache
+        $keys = $this->cache->redis->keys($pattern);
+        if (!empty($keys)) {
+            $this->cache->redis->del($keys);
+        }
+    }
+}</code></pre>
+
+                    <h2>Memory Management</h2>
+
+                    <h3>Object Pooling</h3>
+
+                    <pre><code>class ObjectPool {
+    private $pool = [];
+    private $maxSize;
+    private $factory;
+    
+    public function __construct(callable $factory, int $maxSize = 100) {
+        $this->factory = $factory;
+        $this->maxSize = $maxSize;
+    }
+    
+    public function get() {
+        if (empty($this->pool)) {
+            return ($this->factory)();
+        }
+        
+        return array_pop($this->pool);
+    }
+    
+    public function return($object): void {
+        if (count($this->pool) < $this->maxSize) {
+            // Reset object state
+            if (method_exists($object, 'reset')) {
+                $object->reset();
+            }
+            
+            $this->pool[] = $object;
+        }
+    }
+    
+    public function size(): int {
+        return count($this->pool);
+    }
+}
+
+// Usage example
+$httpClientPool = new ObjectPool(fn() => new HttpClient(), 50);
+
+function makeHttpRequest(string $url): string {
+    $client = $httpClientPool->get();
+    try {
+        $response = $client->get($url);
+        return $response->getBody();
+    } finally {
+        $httpClientPool->return($client);
+    }
+}</code></pre>
+
+                    <h3>Memory Leak Detection</h3>
+
+                    <pre><code>class MemoryProfiler {
+    private $checkpoints = [];
+    
+    public function checkpoint(string $name): void {
+        $this->checkpoints[$name] = [
+            'memory' => memory_get_usage(true),
+            'peak' => memory_get_peak_usage(true),
+            'timestamp' => microtime(true)
+        ];
+    }
+    
+    public function getDiff(string $from, string $to): array {
+        if (!isset($this->checkpoints[$from], $this->checkpoints[$to])) {
+            throw new InvalidArgumentException('Invalid checkpoint names');
+        }
+        
+        $start = $this->checkpoints[$from];
+        $end = $this->checkpoints[$to];
+        
+        return [
+            'memory_diff' => $end['memory'] - $start['memory'],
+            'peak_diff' => $end['peak'] - $start['peak'],
+            'time_diff' => $end['timestamp'] - $start['timestamp']
+        ];
+    }
+    
+    public function getReport(): array {
+        $report = [];
+        $checkpoints = array_keys($this->checkpoints);
+        
+        for ($i = 1; $i < count($checkpoints); $i++) {
+            $from = $checkpoints[$i - 1];
+            $to = $checkpoints[$i];
+            $report[$from . ' → ' . $to] = $this->getDiff($from, $to);
+        }
+        
+        return $report;
+    }
+}</code></pre>
+
+                    <h2>Asynchronous Processing</h2>
+
+                    <h3>Job Queue Implementation</h3>
+
+                    <pre><code>class JobQueue {
+    private $redis;
+    private $queueName;
+    
+    public function __construct(Redis $redis, string $queueName = 'default') {
+        $this->redis = $redis;
+        $this->queueName = $queueName;
+    }
+    
+    public function push(Job $job, int $delay = 0): void {
+        $payload = serialize($job);
+        
+        if ($delay > 0) {
+            $this->redis->zadd(
+                "queue:{$this->queueName}:delayed",
+                time() + $delay,
+                $payload
+            );
+        } else {
+            $this->redis->lpush("queue:{$this->queueName}", $payload);
+        }
+    }
+    
+    public function pop(int $timeout = 0): ?Job {
+        // Move delayed jobs to main queue
+        $this->moveDelayedJobs();
+        
+        $result = $this->redis->brpop("queue:{$this->queueName}", $timeout);
+        
+        if ($result) {
+            return unserialize($result[1]);
+        }
+        
+        return null;
+    }
+    
+    private function moveDelayedJobs(): void {
+        $now = time();
+        $jobs = $this->redis->zrangebyscore(
+            "queue:{$this->queueName}:delayed",
+            0,
+            $now
+        );
+        
+        foreach ($jobs as $job) {
+            $this->redis->lpush("queue:{$this->queueName}", $job);
+            $this->redis->zrem("queue:{$this->queueName}:delayed", $job);
+        }
+    }
+}
+
+abstract class Job {
+    protected $data;
+    protected $attempts = 0;
+    protected $maxAttempts = 3;
+    
+    public function __construct(array $data = []) {
+        $this->data = $data;
+    }
+    
+    abstract public function handle(): void;
+    
+    public function failed(Exception $e): void {
+        // Log failure
+        error_log("Job failed: " . $e->getMessage());
+    }
+    
+    public function shouldRetry(): bool {
+        return $this->attempts < $this->maxAttempts;
+    }
+    
+    public function incrementAttempts(): void {
+        $this->attempts++;
+    }
+}</code></pre>
+
+                    <h2>HTTP Performance Optimization</h2>
+
+                    <h3>Response Streaming</h3>
+
+                    <pre><code>class StreamingResponse {
+    private $callback;
+    private $headers = [];
+    
+    public function __construct(callable $callback) {
+        $this->callback = $callback;
+    }
+    
+    public function setHeader(string $name, string $value): void {
+        $this->headers[$name] = $value;
+    }
+    
+    public function send(): void {
+        // Send headers
+        foreach ($this->headers as $name => $value) {
+            header("{$name}: {$value}");
+        }
+        
+        // Disable output buffering
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        // Send content in chunks
+        ($this->callback)();
+    }
+}
+
+// Usage for large data sets
+function streamLargeDataset(): void {
+    $response = new StreamingResponse(function() {
+        echo "[\n";
+        
+        $first = true;
+        foreach (getLargeDataset() as $item) {
+            if (!$first) {
+                echo ",\n";
+            }
+            echo json_encode($item);
+            $first = false;
+            
+            // Flush output buffer
+            flush();
+        }
+        
+        echo "\n]";
+    });
+    
+    $response->setHeader('Content-Type', 'application/json');
+    $response->send();
+}</code></pre>
+
+                    <h3>Response Compression</h3>
+
+                    <pre><code>class CompressionMiddleware {
+    private $minSize = 1024;
+    private $supportedEncodings = ['gzip', 'deflate'];
+    
+    public function handle(Request $request, callable $next): Response {
+        $response = $next($request);
+        
+        // Check if compression is supported
+        $acceptEncoding = $request->getHeader('Accept-Encoding');
+        $encoding = $this->getBestEncoding($acceptEncoding);
+        
+        if (!$encoding || strlen($response->getBody()) < $this->minSize) {
+            return $response;
+        }
+        
+        // Compress response
+        $compressed = $this->compress($response->getBody(), $encoding);
+        
+        return $response
+            ->withBody($compressed)
+            ->withHeader('Content-Encoding', $encoding)
+            ->withHeader('Content-Length', strlen($compressed));
+    }
+    
+    private function getBestEncoding(string $acceptEncoding): ?string {
+        foreach ($this->supportedEncodings as $encoding) {
+            if (strpos($acceptEncoding, $encoding) !== false) {
+                return $encoding;
+            }
+        }
+        return null;
+    }
+    
+    private function compress(string $data, string $encoding): string {
+        switch ($encoding) {
+            case 'gzip':
+                return gzencode($data, 6);
+            case 'deflate':
+                return gzcompress($data, 6);
+            default:
+                return $data;
+        }
+    }
+}</code></pre>
+
+                    <h2>Code-Level Optimizations</h2>
+
+                    <h3>Efficient Array Operations</h3>
+
+                    <pre><code>class ArrayOptimizer {
+    // Slow: Multiple array iterations
+    public static function slowProcess(array $items): array {
+        $filtered = array_filter($items, fn($item) => $item > 10);
+        $mapped = array_map(fn($item) => $item * 2, $filtered);
+        return array_values($mapped);
+    }
+    
+    // Fast: Single iteration
+    public static function fastProcess(array $items): array {
+        $result = [];
+        foreach ($items as $item) {
+            if ($item > 10) {
+                $result[] = $item * 2;
+            }
+        }
+        return $result;
+    }
+    
+    // Use array_column for efficient data extraction
+    public static function extractColumn(array $data, string $column): array {
+        return array_column($data, $column);
+    }
+    
+    // Efficient array search
+    public static function fastSearch(array $haystack, $needle): bool {
+        // Use isset for array keys
+        return isset($haystack[$needle]);
+        
+        // Use array_flip for value searches
+        $flipped = array_flip($haystack);
+        return isset($flipped[$needle]);
+    }
+}</code></pre>
+
+                    <h3>String Optimization</h3>
+
+                    <pre><code>class StringOptimizer {
+    // Use string concatenation efficiently
+    public static function buildString(array $parts): string {
+        // Slow: Multiple concatenations
+        $result = '';
+        foreach ($parts as $part) {
+            $result .= $part;
+        }
+        return $result;
+    }
+    
+    public static function buildStringFast(array $parts): string {
+        // Fast: Single join operation
+        return implode('', $parts);
+    }
+    
+    // Use substr for string operations
+    public static function extractSubstring(string $str, int $start, int $length): string {
+        return substr($str, $start, $length);
+    }
+    
+    // Use strpos for string searches
+    public static function containsString(string $haystack, string $needle): bool {
+        return strpos($haystack, $needle) !== false;
+    }
+}</code></pre>
+
+                    <h2>Load Testing and Benchmarking</h2>
+
+                    <h3>Simple Benchmarking</h3>
+
+                    <pre><code>class Benchmark {
+    public static function run(callable $callback, int $iterations = 1000): array {
+        $times = [];
+        
+        for ($i = 0; $i < $iterations; $i++) {
+            $start = microtime(true);
+            $callback();
+            $times[] = microtime(true) - $start;
+        }
+        
+        return [
+            'min' => min($times),
+            'max' => max($times),
+            'avg' => array_sum($times) / count($times),
+            'median' => self::median($times),
+            'total' => array_sum($times)
+        ];
+    }
+    
+    private static function median(array $values): float {
+        sort($values);
+        $count = count($values);
+        $middle = floor($count / 2);
+        
+        if ($count % 2 === 0) {
+            return ($values[$middle - 1] + $values[$middle]) / 2;
+        }
+        
+        return $values[$middle];
+    }
+}</code></pre>
+
+                    <h2>Production Monitoring</h2>
+
+                    <h3>Real-time Performance Dashboard</h3>
+
+                    <pre><code>class PerformanceDashboard {
+    private $redis;
+    
+    public function __construct(Redis $redis) {
+        $this->redis = $redis;
+    }
+    
+    public function recordMetric(string $name, float $value): void {
+        $timestamp = time();
+        $key = "metrics:{$name}";
+        
+        // Store in time series
+        $this->redis->zadd($key, $timestamp, $value);
+        
+        // Keep only last hour of data
+        $this->redis->zremrangebyscore($key, 0, $timestamp - 3600);
+    }
+    
+    public function getMetrics(string $name, int $duration = 3600): array {
+        $key = "metrics:{$name}";
+        $from = time() - $duration;
+        
+        return $this->redis->zrangebyscore($key, $from, '+inf', [
+            'withscores' => true
+        ]);
+    }
+    
+    public function getAverageResponseTime(): float {
+        $metrics = $this->getMetrics('response_time');
+        if (empty($metrics)) {
+            return 0;
+        }
+        
+        return array_sum($metrics) / count($metrics);
+    }
+}</code></pre>
+
+                    <h2>Best Practices Summary</h2>
+
+                    <ul>
+                        <li><strong>Measure first:</strong> Use profiling tools to identify bottlenecks</li>
+                        <li><strong>Optimize OPcache:</strong> Enable and configure properly</li>
+                        <li><strong>Cache everything:</strong> Use multi-level caching strategies</li>
+                        <li><strong>Database optimization:</strong> Connection pooling, query optimization</li>
+                        <li><strong>Async processing:</strong> Move heavy operations to background jobs</li>
+                        <li><strong>Memory management:</strong> Monitor memory usage and prevent leaks</li>
+                        <li><strong>HTTP optimization:</strong> Compression, streaming, efficient headers</li>
+                        <li><strong>Code optimization:</strong> Efficient algorithms and data structures</li>
+                    </ul>
+
+                    <h2>Common Pitfalls</h2>
+
+                    <ul>
+                        <li><strong>Premature optimization:</strong> Profile before optimizing</li>
+                        <li><strong>Over-caching:</strong> Cache invalidation complexity</li>
+                        <li><strong>Ignoring memory limits:</strong> Monitor memory usage</li>
+                        <li><strong>Database over-optimization:</strong> Sometimes simple queries are better</li>
+                        <li><strong>Micro-optimizations:</strong> Focus on significant bottlenecks</li>
+                    </ul>
+
+                    <p>High-performance PHP is achievable with the right techniques and tools. Start with measuring your current performance, identify the biggest bottlenecks, and apply optimizations systematically. Remember: the best optimization is the one that makes a measurable difference in your specific use case.</p>
+                </div>
+
+                <footer class="article-footer">
+                    <div class="article-nav">
+                        <a href="/articles.html" class="back-link">← Back to Articles</a>
+                    </div>
+                </footer>
+            </div>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <nav class="footer-nav">
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>
