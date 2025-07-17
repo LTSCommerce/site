@@ -5,10 +5,10 @@
     <title>Managing Legacy PHP: From Technical Debt to Modern Architecture | Joseph</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" crossorigin href="/assets/main-CsAo-9fC.css">
   <link rel="stylesheet" crossorigin href="/assets/articles-BQWs99fv.css">
-  <link rel="stylesheet" crossorigin href="/assets/syntax-highlighting-CqqxTdk4.css">
+  <link rel="stylesheet" crossorigin href="/assets/syntax-highlighting-DRdm8rDs.css">
 </head>
 <body>
     <header class="site-header">
@@ -89,7 +89,7 @@
 
                     <p>This pattern allows you to gradually replace old code with new code by routing requests through a facade:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -110,7 +110,7 @@ final readonly class StranglerFigUserService implements UserServiceInterface
 
     public function getUser(UserId $id): User
     {
-        return match ($this---&gt;featureToggle-&gt;isEnabled('modern_user_service', $id)) {
+        return match ($this-&gt;featureToggle-&gt;isEnabled(&#39;modern_user_service&#39;, $id)) {
             true =&gt; $this-&gt;modernService-&gt;getUser($id),
             false =&gt; $this-&gt;legacyService-&gt;getUser($id),
         };
@@ -129,7 +129,7 @@ final readonly class StranglerFigUserService implements UserServiceInterface
 
                     <p>Replace global state with explicit dependencies:</p>
 
-                    <pre><code class="language-sql">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -137,7 +137,7 @@ declare(strict_types=1);
 function getUser(int $id): array|false
 {
     global $db;
-    return $db---&gt;query("SELECT * FROM users WHERE id = {$id}")-&gt;fetch();
+    return $db-&gt;query(&quot;SELECT * FROM users WHERE id = {$id}&quot;)-&gt;fetch();
 }
 
 // After: Modern dependency injection with proper typing
@@ -150,13 +150,13 @@ final readonly class UserRepository implements UserRepositoryInterface
 
     public function findById(UserId $id): ?User
     {
-        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; 'SQL'
+        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
             SELECT id, email, name, created_at, updated_at
             FROM users 
             WHERE id = :id AND deleted_at IS NULL
             SQL);
         
-        $stmt-&gt;execute(['id' =&gt; $id-&gt;value]);
+        $stmt-&gt;execute([&#39;id&#39; =&gt; $id-&gt;value]);
         $userData = $stmt-&gt;fetch();
         
         return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
@@ -167,7 +167,7 @@ final readonly class UserRepository implements UserRepositoryInterface
 
                     <p>Move business logic out of controllers and into dedicated service classes:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -190,7 +190,7 @@ final readonly class OrderService
 
     public function processOrder(OrderData $orderData): Order
     {
-        $this---&gt;validator-&gt;validate($orderData);
+        $this-&gt;validator-&gt;validate($orderData);
         
         $order = Order::create(
             OrderId::generate(),
@@ -223,7 +223,7 @@ final readonly class OrderService
 
                     <p>Start with integration tests for critical paths, then add unit tests as you refactor:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -238,22 +238,22 @@ use PHPUnit\Framework\Attributes\{Test, TestDox};
 final class OrderServiceTest extends TestCase
 {
     #[Test]
-    #[TestDox('Successfully processes valid order with payment')]
+    #[TestDox(&#39;Successfully processes valid order with payment&#39;)]
     public function processOrder_WithValidData_CreatesOrderAndProcessesPayment(): void
     {
         // Arrange
         $orderData = OrderDataBuilder::new()
-            ---&gt;withCustomer(CustomerId::fromString('cust_123'))
+            -&gt;withCustomer(CustomerId::fromString(&#39;cust_123&#39;))
             -&gt;withItems([
-                OrderItemBuilder::new()-&gt;withProduct('prod_456')-&gt;build(),
+                OrderItemBuilder::new()-&gt;withProduct(&#39;prod_456&#39;)-&gt;build(),
             ])
             -&gt;build();
         
         $paymentResult = PaymentResultBuilder::successful()
-            -&gt;withTransactionId('txn_789')
+            -&gt;withTransactionId(&#39;txn_789&#39;)
             -&gt;build();
         
-        $this-&gt;paymentGateway-&gt;shouldReceive('charge')
+        $this-&gt;paymentGateway-&gt;shouldReceive(&#39;charge&#39;)
             -&gt;once()
             -&gt;with(Money::fromCents(1000), $orderData-&gt;paymentMethod)
             -&gt;andReturn($paymentResult);
@@ -264,13 +264,13 @@ final class OrderServiceTest extends TestCase
         // Assert
         $this-&gt;assertInstanceOf(Order::class, $order);
         $this-&gt;assertTrue($order-&gt;isPaid());
-        $this-&gt;assertEquals('txn_789', $order-&gt;transactionId-&gt;value);
+        $this-&gt;assertEquals(&#39;txn_789&#39;, $order-&gt;transactionId-&gt;value);
         
-        $this-&gt;repository-&gt;shouldHaveReceived('save')
+        $this-&gt;repository-&gt;shouldHaveReceived(&#39;save&#39;)
             -&gt;once()
             -&gt;with($order);
         
-        $this-&gt;eventDispatcher-&gt;shouldHaveReceived('dispatch')
+        $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
             -&gt;once()
             -&gt;with(\Mockery::type(OrderPlaced::class));
     }

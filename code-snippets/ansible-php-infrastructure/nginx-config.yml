@@ -1,0 +1,38 @@
+---
+- name: Configure Nginx for PHP applications
+  hosts: webservers
+  become: yes
+  vars:
+    nginx_sites:
+      - name: "{{ app_domain }}"
+        template: "php-app.conf.j2"
+        server_name: "{{ app_domain }}"
+        document_root: "{{ app_directory }}/public"
+        
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+        
+    - name: Remove default site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: restart nginx
+      
+    - name: Create application site config
+      template:
+        src: "{{ item.template }}"
+        dest: "/etc/nginx/sites-available/{{ item.name }}"
+      loop: "{{ nginx_sites }}"
+      notify: restart nginx
+      
+    - name: Enable application site
+      file:
+        src: "/etc/nginx/sites-available/{{ item.name }}"
+        dest: "/etc/nginx/sites-enabled/{{ item.name }}"
+        state: link
+      loop: "{{ nginx_sites }}"
+      notify: restart nginx

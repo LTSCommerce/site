@@ -5,10 +5,10 @@
     <title>Building Scalable Backend APIs with Modern PHP | Joseph</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" crossorigin href="/assets/main-CsAo-9fC.css">
   <link rel="stylesheet" crossorigin href="/assets/articles-BQWs99fv.css">
-  <link rel="stylesheet" crossorigin href="/assets/syntax-highlighting-CqqxTdk4.css">
+  <link rel="stylesheet" crossorigin href="/assets/syntax-highlighting-DRdm8rDs.css">
 </head>
 <body>
     <header class="site-header">
@@ -53,7 +53,7 @@
 
                     <p>Separate concerns into distinct layers for better maintainability and testability:</p>
 
-                    <pre><code class="language-sql">&lt;!--?php
+                    <pre><code class="language-sql">&lt;?php
 
 declare(strict_types=1);
 
@@ -75,7 +75,7 @@ final readonly class UserController
     
     public function createUser(Request $request): Response
     {
-        $userData = $request---&gt;getValidatedData();
+        $userData = $request-&gt;getValidatedData();
         
         try {
             $user = $this-&gt;userService-&gt;createUser($userData);
@@ -177,7 +177,7 @@ final readonly class UserRepository
 
                     <p>Model your business domain explicitly:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -215,7 +215,7 @@ final class User extends AggregateRoot
             new DateTimeImmutable()
         );
         
-        $user---&gt;recordEvent(new UserCreatedEvent($id, $email));
+        $user-&gt;recordEvent(new UserCreatedEvent($id, $email));
         
         return $user;
     }
@@ -300,7 +300,7 @@ final readonly class UserDomainService
             return false;
         }
         
-        if ($resource-&gt;requiresPremium() &amp;&amp; !$user-&gt;isPremium()) {
+        if ($resource-&gt;requiresPremium() && !$user-&gt;isPremium()) {
             return false;
         }
         
@@ -722,7 +722,7 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         $key = "circuit_breaker:$service";
         $openedAt = $this-&gt;redis-&gt;hget($key, 'opened_at');
         
-        return $openedAt &amp;&amp; (time() - $openedAt) &gt; $this-&gt;recoveryTimeout;
+        return $openedAt && (time() - $openedAt) &gt; $this-&gt;recoveryTimeout;
     }
 }</code></pre>
 
@@ -773,7 +773,7 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         $decodedPayload = json_decode($this-&gt;base64UrlDecode($payload), true);
         
         // Check expiration
-        if (isset($decodedPayload['exp']) &amp;&amp; $decodedPayload['exp'] &lt; time()) {
+        if (isset($decodedPayload['exp']) && $decodedPayload['exp'] &lt; time()) {
             throw new ExpiredTokenException('Token has expired');
         }
         

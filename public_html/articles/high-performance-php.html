@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="site-header">
@@ -67,7 +67,7 @@ xdebug.profiler_output_name="cachegrind.out.%p"</code></pre>
 
                     <h3>Application Performance Monitoring</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -141,7 +141,7 @@ opcache.jit=1255</code></pre>
 
                     <h3>OPcache Monitoring</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -163,7 +163,7 @@ final readonly class OPcacheMonitor
             throw new OPcacheNotAvailableException('OPcache extension not loaded');
         }
         
-        $status = $this---&gt;statusReader-&gt;read();
+        $status = $this-&gt;statusReader-&gt;read();
         $config = $this-&gt;configReader-&gt;read();
         
         return new OPcacheStats(
@@ -200,7 +200,7 @@ final readonly class OPcacheMonitor
 
                     <p>Database connections are expensive. Use persistent connections wisely:</p>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -279,7 +279,7 @@ final class DatabaseConnectionPool
 
                     <h3>Query Optimization</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -342,7 +342,7 @@ final readonly class QueryOptimizer
         }
     }
     
-    /** @return array&lt;querymetrics&gt; */
+    /** @return array<querymetrics> */
     public function getQueryLog(): array
     {
         return $this-&gt;queryLog;
@@ -363,13 +363,13 @@ final readonly class QueryOptimizer
         
         return QueryDuration::fromNanoseconds($totalNanoseconds / count($this-&gt;queryLog));
     }
-}&lt;/querymetrics&gt;</code></pre>
+}</querymetrics></code></pre>
 
                     <h2>Caching Strategies</h2>
 
                     <h3>Multi-Level Caching</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -404,7 +404,7 @@ final class MultiLevelCacheManager
         }
         
         // Level 2: APCu (shared memory)
-        if ($this-&gt;apcuAvailable &amp;&amp; apcu_exists($keyString)) {
+        if ($this-&gt;apcuAvailable && apcu_exists($keyString)) {
             $value = apcu_fetch($keyString);
             $this-&gt;memoryCache[$keyString] = $value;
             return $value;
@@ -489,7 +489,7 @@ final class MultiLevelCacheManager
 
                     <h3>Smart Cache Invalidation</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -563,7 +563,7 @@ final readonly class TaggedCacheInvalidator
         ]);
     }
     
-    /** @param array&lt;cachetag&gt; $tags */
+    /** @param array<cachetag> $tags */
     public function invalidateTags(array $tags): void
     {
         foreach ($tags as $tag) {
@@ -592,13 +592,13 @@ final readonly class TaggedCacheInvalidator
             'keys_invalidated' =&gt; count($keys),
         ]);
     }
-}&lt;/cachetag&gt;</code></pre>
+}</cachetag></code></pre>
 
                     <h2>Memory Management</h2>
 
                     <h3>Object Pooling</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -618,7 +618,7 @@ final class ObjectPool
         private readonly ObjectFactoryInterface $factory,
         private readonly PoolSize $maxSize = new PoolSize(100),
     ) {
-        $this---&gt;pool = new SplQueue();
+        $this-&gt;pool = new SplQueue();
     }
     
     public function get(): PoolableInterface
@@ -688,7 +688,7 @@ function makeHttpRequest(string $url): string
 
                     <h3>Memory Leak Detection</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -768,7 +768,7 @@ final class MemoryProfiler
 
                     <h3>Job Queue Implementation</h3>
 
-                    <pre><code class="language-php">&lt;!--?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -799,7 +799,7 @@ final readonly class RedisJobQueue implements QueueInterface
             );
         }
         
-        if ($delay !== null &amp;&amp; $delay---&gt;getSeconds() &gt; 0) {
+        if ($delay !== null && $delay-&gt;getSeconds() &gt; 0) {
             $this-&gt;redis-&gt;zadd(
                 "queue:{$this-&gt;queueName-&gt;value}:delayed",
                 time() + $delay-&gt;getSeconds(),

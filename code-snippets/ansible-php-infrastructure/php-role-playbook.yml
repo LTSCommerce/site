@@ -1,0 +1,37 @@
+---
+- name: Install and configure PHP application
+  hosts: webservers
+  become: yes
+  vars:
+    php_version: "8.2"
+    app_user: "www-data"
+    app_directory: "/var/www/html"
+    
+  tasks:
+    - name: Install PHP packages
+      apt:
+        name:
+          - "php{{ php_version }}-fpm"
+          - "php{{ php_version }}-mysql"
+          - "php{{ php_version }}-curl"
+          - "php{{ php_version }}-xml"
+          - "php{{ php_version }}-mbstring"
+          - "php{{ php_version }}-intl"
+          - "php{{ php_version }}-zip"
+          - "php{{ php_version }}-gd"
+        state: present
+        update_cache: yes
+        
+    - name: Configure PHP-FPM pool
+      template:
+        src: php-fpm-pool.conf.j2
+        dest: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
+        backup: yes
+      notify: restart php-fpm
+      
+    - name: Configure PHP settings
+      template:
+        src: php.ini.j2
+        dest: "/etc/php/{{ php_version }}/fpm/php.ini"
+        backup: yes
+      notify: restart php-fpm

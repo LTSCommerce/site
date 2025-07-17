@@ -1,0 +1,24 @@
+ansible/
+├── inventories/
+│   ├── production/
+│   │   ├── hosts
+│   │   └── group_vars/
+│   ├── staging/
+│   │   ├── hosts
+│   │   └── group_vars/
+│   └── development/
+│       ├── hosts
+│       └── group_vars/
+├── roles/
+│   ├── common/
+│   ├── php/
+│   ├── nginx/
+│   ├── mysql/
+│   └── application/
+├── playbooks/
+│   ├── site.yml
+│   ├── deploy.yml
+│   └── maintenance.yml
+├── templates/
+├── files/
+└── ansible.cfg
