@@ -1,0 +1,29 @@
+parameters:
+    level: 8
+    paths:
+        - ../code-snippets
+    fileExtensions:
+        - php
+    checkGenericClassInNonGenericObjectType: false
+    checkMissingIterableValueType: false
+    ignoreErrors:
+        # Allow usage of undefined classes for code snippets (they're examples)
+        - '#Class .* not found#'
+        - '#Interface .* not found#'
+        - '#Trait .* not found#'
+        # Allow undefined functions for code snippets
+        - '#Function .* not found#'
+        # Allow undefined constants
+        - '#Constant .* not found#'
+        # Allow example code with missing properties
+        - '#Access to an undefined property#'
+        # Allow example methods with missing implementations
+        - '#Call to an undefined method#'
+        # Allow missing namespaces in examples
+        - '#Class .* should be written with ::class#'
+    reportUnmatchedIgnoredErrors: false
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    checkImplicitMixed: false
+    checkBenevolentUnionTypes: true
+    checkUninitializedProperties: true
