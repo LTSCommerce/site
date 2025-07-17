@@ -10,6 +10,7 @@ permissions:
   contents: write
   actions: read
   checks: write
+  workflows: write
 
 jobs:
   lint-and-format:
