@@ -53,7 +53,7 @@
 
                     <p>Separate concerns into distinct layers for better maintainability and testability:</p>
 
-                    <pre><code class="language-sql">&lt;?php
+                    <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -81,20 +81,20 @@ final readonly class UserController
             $user = $this-&gt;userService-&gt;createUser($userData);
             
             return new JsonResponse([
-                'id' =&gt; $user-&gt;getId()-&gt;value,
-                'email' =&gt; $user-&gt;getEmail()-&gt;value,
-                'name' =&gt; $user-&gt;getName()-&gt;value,
-                'created_at' =&gt; $user-&gt;getCreatedAt()-&gt;format('c'),
+                &#39;id&#39; =&gt; $user-&gt;getId()-&gt;value,
+                &#39;email&#39; =&gt; $user-&gt;getEmail()-&gt;value,
+                &#39;name&#39; =&gt; $user-&gt;getName()-&gt;value,
+                &#39;created_at&#39; =&gt; $user-&gt;getCreatedAt()-&gt;format(&#39;c&#39;),
             ], 201);
         } catch (ValidationException $e) {
             return new JsonResponse([
-                'error' =&gt; 'Validation failed',
-                'violations' =&gt; $e-&gt;getViolations(),
+                &#39;error&#39; =&gt; &#39;Validation failed&#39;,
+                &#39;violations&#39; =&gt; $e-&gt;getViolations(),
             ], 400);
         } catch (DuplicateEmailException $e) {
             return new JsonResponse([
-                'error' =&gt; 'Email already exists',
-                'code' =&gt; 'DUPLICATE_EMAIL',
+                &#39;error&#39; =&gt; &#39;Email already exists&#39;,
+                &#39;code&#39; =&gt; &#39;DUPLICATE_EMAIL&#39;,
             ], 409);
         }
     }
@@ -117,9 +117,9 @@ final readonly class UserService
         
         $user = User::create(
             UserId::generate(),
-            EmailAddress::fromString($userData['email']),
-            UserName::fromString($userData['name']),
-            $this-&gt;passwordHasher-&gt;hash($userData['password'])
+            EmailAddress::fromString($userData[&#39;email&#39;]),
+            UserName::fromString($userData[&#39;name&#39;]),
+            $this-&gt;passwordHasher-&gt;hash($userData[&#39;password&#39;])
         );
         
         $this-&gt;userRepository-&gt;save($user);
@@ -144,29 +144,29 @@ final readonly class UserRepository
     
     public function save(User $user): void
     {
-        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; 'SQL'
+        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
             INSERT INTO users (id, email, name, password_hash, created_at) 
             VALUES (:id, :email, :name, :password_hash, :created_at)
             SQL);
         
         $stmt-&gt;execute([
-            'id' =&gt; $user-&gt;getId()-&gt;value,
-            'email' =&gt; $user-&gt;getEmail()-&gt;value,
-            'name' =&gt; $user-&gt;getName()-&gt;value,
-            'password_hash' =&gt; $user-&gt;getPasswordHash()-&gt;value,
-            'created_at' =&gt; $user-&gt;getCreatedAt()-&gt;format('Y-m-d H:i:s')
+            &#39;id&#39; =&gt; $user-&gt;getId()-&gt;value,
+            &#39;email&#39; =&gt; $user-&gt;getEmail()-&gt;value,
+            &#39;name&#39; =&gt; $user-&gt;getName()-&gt;value,
+            &#39;password_hash&#39; =&gt; $user-&gt;getPasswordHash()-&gt;value,
+            &#39;created_at&#39; =&gt; $user-&gt;getCreatedAt()-&gt;format(&#39;Y-m-d H:i:s&#39;)
         ]);
     }
     
     public function findById(UserId $id): ?User
     {
-        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; 'SQL'
+        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
             SELECT id, email, name, password_hash, created_at
             FROM users 
             WHERE id = :id AND deleted_at IS NULL
             SQL);
         
-        $stmt-&gt;execute(['id' =&gt; $id-&gt;value]);
+        $stmt-&gt;execute([&#39;id&#39; =&gt; $id-&gt;value]);
         $userData = $stmt-&gt;fetch();
         
         return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
@@ -240,7 +240,7 @@ final class User extends AggregateRoot
     {
         if ($this-&gt;status === UserStatus::DEACTIVATED) {
             throw new UserAlreadyDeactivatedException(
-                "User {$this-&gt;id-&gt;value} is already deactivated"
+                &quot;User {$this-&gt;id-&gt;value} is already deactivated&quot;
             );
         }
         
@@ -252,7 +252,7 @@ final class User extends AggregateRoot
     {
         if ($this-&gt;status === UserStatus::SUSPENDED) {
             throw new InvalidStateTransitionException(
-                "Cannot activate suspended user {$this-&gt;id-&gt;value}"
+                &quot;Cannot activate suspended user {$this-&gt;id-&gt;value}&quot;
             );
         }
         
@@ -275,9 +275,9 @@ final class User extends AggregateRoot
 
 // Value Object
 enum UserStatus: string {
-    case ACTIVE = 'active';
-    case DEACTIVATED = 'deactivated';
-    case SUSPENDED = 'suspended';
+    case ACTIVE = &#39;active&#39;;
+    case DEACTIVATED = &#39;deactivated&#39;;
+    case SUSPENDED = &#39;suspended&#39;;
     
     public function canTransitionTo(self $newStatus): bool
     {
@@ -300,7 +300,7 @@ final readonly class UserDomainService
             return false;
         }
         
-        if ($resource-&gt;requiresPremium() && !$user-&gt;isPremium()) {
+        if ($resource-&gt;requiresPremium() &amp;&amp; !$user-&gt;isPremium()) {
             return false;
         }
         
@@ -323,7 +323,9 @@ final readonly class UserDomainService
 
                     <p>Separate read and write operations for better scalability:</p>
 
-                    <pre><code class="language-sql">// Command Handler - Write operations
+                    <pre><code class="language-php">&lt;?php
+
+// Command Handler - Write operations
 class CreateUserCommandHandler {
     private UserRepository $userRepository;
     private EventStore $eventStore;
@@ -358,25 +360,25 @@ class UserReadModel {
     
     public function getUserById(int $userId): UserView {
         // Try cache first
-        $cached = $this-&gt;redis-&gt;get("user:$userId");
+        $cached = $this-&gt;redis-&gt;get(&quot;user:$userId&quot;);
         if ($cached) {
             return unserialize($cached);
         }
         
         // Read from database
-        $sql = "SELECT u.*, p.name as profile_name, p.avatar_url 
+        $sql = &quot;SELECT u.*, p.name as profile_name, p.avatar_url 
                 FROM users u 
                 LEFT JOIN profiles p ON u.id = p.user_id 
-                WHERE u.id = :id";
+                WHERE u.id = :id&quot;;
         
         $stmt = $this-&gt;readDb-&gt;prepare($sql);
-        $stmt-&gt;execute(['id' =&gt; $userId]);
+        $stmt-&gt;execute([&#39;id&#39; =&gt; $userId]);
         $userData = $stmt-&gt;fetch();
         
         $userView = new UserView($userData);
         
         // Cache for future requests
-        $this-&gt;redis-&gt;setex("user:$userId", 3600, serialize($userView));
+        $this-&gt;redis-&gt;setex(&quot;user:$userId&quot;, 3600, serialize($userView));
         
         return $userView;
     }
@@ -386,7 +388,9 @@ class UserReadModel {
 
                     <p>Decouple components using events:</p>
 
-                    <pre><code class="language-php">// Event System
+                    <pre><code class="language-php">&lt;?php
+
+// Event System
 class EventDispatcher {
     private array $listeners = [];
     
@@ -441,7 +445,9 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
 
                     <h3>Database Connection Pooling</h3>
 
-                    <pre><code class="language-php">class DatabasePool {
+                    <pre><code class="language-php">&lt;?php
+
+class DatabasePool {
     private array $connections = [];
     private array $config;
     private int $maxConnections;
@@ -461,9 +467,9 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         // Create new connection if under limit
         if ($this-&gt;currentConnections &lt; $this-&gt;maxConnections) {
             $connection = new PDO(
-                $this-&gt;config['dsn'],
-                $this-&gt;config['username'],
-                $this-&gt;config['password'],
+                $this-&gt;config[&#39;dsn&#39;],
+                $this-&gt;config[&#39;username&#39;],
+                $this-&gt;config[&#39;password&#39;],
                 [
                     PDO::ATTR_PERSISTENT =&gt; false,
                     PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
@@ -483,7 +489,7 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     public function releaseConnection(PDO $connection): void {
         // Reset connection state
         $connection-&gt;rollBack();
-        $connection-&gt;exec('SET autocommit = 1');
+        $connection-&gt;exec(&#39;SET autocommit = 1&#39;);
         
         // Return to pool
         $this-&gt;connections[] = $connection;
@@ -492,7 +498,9 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
 
                     <h3>Response Caching</h3>
 
-                    <pre><code class="language-php">class ResponseCache {
+                    <pre><code class="language-php">&lt;?php
+
+class ResponseCache {
     private Redis $redis;
     private int $defaultTtl = 3600;
     
@@ -506,7 +514,7 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         
         if ($cached) {
             $data = json_decode($cached, true);
-            return new Response($data['body'], $data['status'], $data['headers']);
+            return new Response($data[&#39;body&#39;], $data[&#39;status&#39;], $data[&#39;headers&#39;]);
         }
         
         return null;
@@ -517,10 +525,10 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         $ttl = $ttl ?? $this-&gt;defaultTtl;
         
         $data = [
-            'body' =&gt; $response-&gt;getBody(),
-            'status' =&gt; $response-&gt;getStatusCode(),
-            'headers' =&gt; $response-&gt;getHeaders(),
-            'cached_at' =&gt; time()
+            &#39;body&#39; =&gt; $response-&gt;getBody(),
+            &#39;status&#39; =&gt; $response-&gt;getStatusCode(),
+            &#39;headers&#39; =&gt; $response-&gt;getHeaders(),
+            &#39;cached_at&#39; =&gt; time()
         ];
         
         $this-&gt;redis-&gt;setex($key, $ttl, json_encode($data));
@@ -531,11 +539,11 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
             $request-&gt;getMethod(),
             $request-&gt;getUri(),
             $request-&gt;getQueryParams(),
-            $request-&gt;getHeader('Accept'),
-            $request-&gt;getHeader('Authorization') ? 'auth' : 'public'
+            $request-&gt;getHeader(&#39;Accept&#39;),
+            $request-&gt;getHeader(&#39;Authorization&#39;) ? &#39;auth&#39; : &#39;public&#39;
         ];
         
-        return 'response:' . md5(serialize($components));
+        return &#39;response:&#39; . md5(serialize($components));
     }
 }</code></pre>
 
@@ -543,7 +551,9 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
 
                     <h3>Token Bucket Algorithm</h3>
 
-                    <pre><code class="language-php">class TokenBucketRateLimiter {
+                    <pre><code class="language-php">&lt;?php
+
+class TokenBucketRateLimiter {
     private Redis $redis;
     private int $capacity;
     private int $refillRate;
@@ -557,13 +567,13 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     }
     
     public function isAllowed(string $identifier): bool {
-        $key = "rate_limit:$identifier";
+        $key = &quot;rate_limit:$identifier&quot;;
         $now = time();
         
         // Get current bucket state
-        $bucketData = $this-&gt;redis-&gt;hmget($key, ['tokens', 'last_refill']);
-        $tokens = $bucketData['tokens'] ?? $this-&gt;capacity;
-        $lastRefill = $bucketData['last_refill'] ?? $now;
+        $bucketData = $this-&gt;redis-&gt;hmget($key, [&#39;tokens&#39;, &#39;last_refill&#39;]);
+        $tokens = $bucketData[&#39;tokens&#39;] ?? $this-&gt;capacity;
+        $lastRefill = $bucketData[&#39;last_refill&#39;] ?? $now;
         
         // Calculate tokens to add
         $timePassed = $now - $lastRefill;
@@ -576,8 +586,8 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
             
             // Update bucket state
             $this-&gt;redis-&gt;hmset($key, [
-                'tokens' =&gt; $tokens,
-                'last_refill' =&gt; $now
+                &#39;tokens&#39; =&gt; $tokens,
+                &#39;last_refill&#39; =&gt; $now
             ]);
             $this-&gt;redis-&gt;expire($key, $this-&gt;refillPeriod * 2);
             
@@ -588,15 +598,17 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     }
     
     public function getRemainingTokens(string $identifier): int {
-        $key = "rate_limit:$identifier";
-        $bucketData = $this-&gt;redis-&gt;hmget($key, ['tokens']);
-        return $bucketData['tokens'] ?? $this-&gt;capacity;
+        $key = &quot;rate_limit:$identifier&quot;;
+        $bucketData = $this-&gt;redis-&gt;hmget($key, [&#39;tokens&#39;]);
+        return $bucketData[&#39;tokens&#39;] ?? $this-&gt;capacity;
     }
 }</code></pre>
 
                     <h3>Sliding Window Rate Limiter</h3>
 
-                    <pre><code class="language-php">class SlidingWindowRateLimiter {
+                    <pre><code class="language-php">&lt;?php
+
+class SlidingWindowRateLimiter {
     private Redis $redis;
     private int $limit;
     private int $windowSize;
@@ -608,7 +620,7 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     }
     
     public function isAllowed(string $identifier): bool {
-        $key = "sliding_window:$identifier";
+        $key = &quot;sliding_window:$identifier&quot;;
         $now = time();
         $windowStart = $now - $this-&gt;windowSize;
         
@@ -629,7 +641,7 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     }
     
     public function getRemainingRequests(string $identifier): int {
-        $key = "sliding_window:$identifier";
+        $key = &quot;sliding_window:$identifier&quot;;
         $now = time();
         $windowStart = $now - $this-&gt;windowSize;
         
@@ -644,7 +656,9 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
 
                     <h3>Circuit Breaker Pattern</h3>
 
-                    <pre><code class="language-php">class CircuitBreaker {
+                    <pre><code class="language-php">&lt;?php
+
+class CircuitBreaker {
     private Redis $redis;
     private int $failureThreshold;
     private int $recoveryTimeout;
@@ -661,17 +675,17 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         $state = $this-&gt;getState($service);
         
         switch ($state) {
-            case 'open':
+            case &#39;open&#39;:
                 if ($this-&gt;shouldAttemptReset($service)) {
-                    $this-&gt;setState($service, 'half-open');
+                    $this-&gt;setState($service, &#39;half-open&#39;);
                     return $this-&gt;executeOperation($service, $operation);
                 }
-                throw new CircuitBreakerOpenException("Circuit breaker is open for $service");
+                throw new CircuitBreakerOpenException(&quot;Circuit breaker is open for $service&quot;);
                 
-            case 'half-open':
+            case &#39;half-open&#39;:
                 return $this-&gt;executeOperation($service, $operation);
                 
-            case 'closed':
+            case &#39;closed&#39;:
             default:
                 return $this-&gt;executeOperation($service, $operation);
         }
@@ -689,40 +703,40 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     }
     
     private function recordSuccess(string $service): void {
-        $key = "circuit_breaker:$service";
-        $this-&gt;redis-&gt;hdel($key, 'failures');
-        $this-&gt;setState($service, 'closed');
+        $key = &quot;circuit_breaker:$service&quot;;
+        $this-&gt;redis-&gt;hdel($key, &#39;failures&#39;);
+        $this-&gt;setState($service, &#39;closed&#39;);
     }
     
     private function recordFailure(string $service): void {
-        $key = "circuit_breaker:$service";
-        $failures = $this-&gt;redis-&gt;hincrby($key, 'failures', 1);
+        $key = &quot;circuit_breaker:$service&quot;;
+        $failures = $this-&gt;redis-&gt;hincrby($key, &#39;failures&#39;, 1);
         $this-&gt;redis-&gt;expire($key, $this-&gt;monitoringPeriod);
         
         if ($failures &gt;= $this-&gt;failureThreshold) {
-            $this-&gt;setState($service, 'open');
+            $this-&gt;setState($service, &#39;open&#39;);
         }
     }
     
     private function getState(string $service): string {
-        $key = "circuit_breaker:$service";
-        return $this-&gt;redis-&gt;hget($key, 'state') ?: 'closed';
+        $key = &quot;circuit_breaker:$service&quot;;
+        return $this-&gt;redis-&gt;hget($key, &#39;state&#39;) ?: &#39;closed&#39;;
     }
     
     private function setState(string $service, string $state): void {
-        $key = "circuit_breaker:$service";
-        $this-&gt;redis-&gt;hset($key, 'state', $state);
+        $key = &quot;circuit_breaker:$service&quot;;
+        $this-&gt;redis-&gt;hset($key, &#39;state&#39;, $state);
         
-        if ($state === 'open') {
-            $this-&gt;redis-&gt;hset($key, 'opened_at', time());
+        if ($state === &#39;open&#39;) {
+            $this-&gt;redis-&gt;hset($key, &#39;opened_at&#39;, time());
         }
     }
     
     private function shouldAttemptReset(string $service): bool {
-        $key = "circuit_breaker:$service";
-        $openedAt = $this-&gt;redis-&gt;hget($key, 'opened_at');
+        $key = &quot;circuit_breaker:$service&quot;;
+        $openedAt = $this-&gt;redis-&gt;hget($key, &#39;opened_at&#39;);
         
-        return $openedAt && (time() - $openedAt) &gt; $this-&gt;recoveryTimeout;
+        return $openedAt &amp;&amp; (time() - $openedAt) &gt; $this-&gt;recoveryTimeout;
     }
 }</code></pre>
 
@@ -730,9 +744,11 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
 
                     <h3>JWT Authentication</h3>
 
-                    <pre><code class="language-php">class JWTManager {
+                    <pre><code class="language-php">&lt;?php
+
+class JWTManager {
     private string $secretKey;
-    private string $algorithm = 'HS256';
+    private string $algorithm = &#39;HS256&#39;;
     private int $defaultTtl = 3600;
     
     public function __construct(string $secretKey) {
@@ -743,53 +759,53 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         $ttl = $ttl ?? $this-&gt;defaultTtl;
         $now = time();
         
-        $header = json_encode(['typ' =&gt; 'JWT', 'alg' =&gt; $this-&gt;algorithm]);
+        $header = json_encode([&#39;typ&#39; =&gt; &#39;JWT&#39;, &#39;alg&#39; =&gt; $this-&gt;algorithm]);
         $payload = json_encode(array_merge($payload, [
-            'iat' =&gt; $now,
-            'exp' =&gt; $now + $ttl
+            &#39;iat&#39; =&gt; $now,
+            &#39;exp&#39; =&gt; $now + $ttl
         ]));
         
-        $headerPayload = $this-&gt;base64UrlEncode($header) . '.' . $this-&gt;base64UrlEncode($payload);
+        $headerPayload = $this-&gt;base64UrlEncode($header) . &#39;.&#39; . $this-&gt;base64UrlEncode($payload);
         $signature = $this-&gt;sign($headerPayload);
         
-        return $headerPayload . '.' . $signature;
+        return $headerPayload . &#39;.&#39; . $signature;
     }
     
     public function validateToken(string $token): array {
-        $parts = explode('.', $token);
+        $parts = explode(&#39;.&#39;, $token);
         if (count($parts) !== 3) {
-            throw new InvalidTokenException('Invalid token format');
+            throw new InvalidTokenException(&#39;Invalid token format&#39;);
         }
         
         [$header, $payload, $signature] = $parts;
         
         // Verify signature
-        $expectedSignature = $this-&gt;sign($header . '.' . $payload);
+        $expectedSignature = $this-&gt;sign($header . &#39;.&#39; . $payload);
         if (!hash_equals($signature, $expectedSignature)) {
-            throw new InvalidTokenException('Invalid signature');
+            throw new InvalidTokenException(&#39;Invalid signature&#39;);
         }
         
         // Decode payload
         $decodedPayload = json_decode($this-&gt;base64UrlDecode($payload), true);
         
         // Check expiration
-        if (isset($decodedPayload['exp']) && $decodedPayload['exp'] &lt; time()) {
-            throw new ExpiredTokenException('Token has expired');
+        if (isset($decodedPayload[&#39;exp&#39;]) &amp;&amp; $decodedPayload[&#39;exp&#39;] &lt; time()) {
+            throw new ExpiredTokenException(&#39;Token has expired&#39;);
         }
         
         return $decodedPayload;
     }
     
     private function sign(string $data): string {
-        return $this-&gt;base64UrlEncode(hash_hmac('sha256', $data, $this-&gt;secretKey, true));
+        return $this-&gt;base64UrlEncode(hash_hmac(&#39;sha256&#39;, $data, $this-&gt;secretKey, true));
     }
     
     private function base64UrlEncode(string $data): string {
-        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+        return rtrim(strtr(base64_encode($data), &#39;+/&#39;, &#39;-_&#39;), &#39;=&#39;);
     }
     
     private function base64UrlDecode(string $data): string {
-        return base64_decode(strtr($data, '-_', '+/'));
+        return base64_decode(strtr($data, &#39;-_&#39;, &#39;+/&#39;));
     }
 }</code></pre>
 
@@ -797,7 +813,9 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
 
                     <h3>OpenAPI Documentation</h3>
 
-                    <pre><code class="language-php">class OpenAPIGenerator {
+                    <pre><code class="language-php">&lt;?php
+
+class OpenAPIGenerator {
     private array $paths = [];
     private array $components = [];
     
@@ -806,22 +824,22 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     }
     
     public function addComponent(string $name, array $schema): void {
-        $this-&gt;components['schemas'][$name] = $schema;
+        $this-&gt;components[&#39;schemas&#39;][$name] = $schema;
     }
     
     public function generate(): array {
         return [
-            'openapi' =&gt; '3.0.0',
-            'info' =&gt; [
-                'title' =&gt; 'API Documentation',
-                'version' =&gt; '1.0.0',
-                'description' =&gt; 'Scalable PHP API'
+            &#39;openapi&#39; =&gt; &#39;3.0.0&#39;,
+            &#39;info&#39; =&gt; [
+                &#39;title&#39; =&gt; &#39;API Documentation&#39;,
+                &#39;version&#39; =&gt; &#39;1.0.0&#39;,
+                &#39;description&#39; =&gt; &#39;Scalable PHP API&#39;
             ],
-            'servers' =&gt; [
-                ['url' =&gt; 'https://api.example.com/v1']
+            &#39;servers&#39; =&gt; [
+                [&#39;url&#39; =&gt; &#39;https://api.example.com/v1&#39;]
             ],
-            'paths' =&gt; $this-&gt;paths,
-            'components' =&gt; $this-&gt;components
+            &#39;paths&#39; =&gt; $this-&gt;paths,
+            &#39;components&#39; =&gt; $this-&gt;components
         ];
     }
     
@@ -841,24 +859,24 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     
     private function parseDocComment(string $docComment, ReflectionMethod $method): void {
         // Parse PHPDoc annotations for OpenAPI spec
-        if (preg_match('/@Route\("([^"]+)".*method="([^"]+)"\)/', $docComment, $matches)) {
+        if (preg_match(&#39;/@Route\(&quot;([^&quot;]+)&quot;.*method=&quot;([^&quot;]+)&quot;\)/&#39;, $docComment, $matches)) {
             $path = $matches[1];
             $httpMethod = strtolower($matches[2]);
             
             // Extract other annotations
-            $summary = $this-&gt;extractAnnotation($docComment, 'summary');
-            $description = $this-&gt;extractAnnotation($docComment, 'description');
+            $summary = $this-&gt;extractAnnotation($docComment, &#39;summary&#39;);
+            $description = $this-&gt;extractAnnotation($docComment, &#39;description&#39;);
             
             $this-&gt;addEndpoint($path, $httpMethod, [
-                'summary' =&gt; $summary,
-                'description' =&gt; $description,
-                'operationId' =&gt; $method-&gt;getName()
+                &#39;summary&#39; =&gt; $summary,
+                &#39;description&#39; =&gt; $description,
+                &#39;operationId&#39; =&gt; $method-&gt;getName()
             ]);
         }
     }
     
     private function extractAnnotation(string $docComment, string $annotation): ?string {
-        if (preg_match("/@{$annotation}\s+(.+)/", $docComment, $matches)) {
+        if (preg_match(&quot;/@{$annotation}\s+(.+)/&quot;, $docComment, $matches)) {
             return trim($matches[1]);
         }
         return null;
@@ -869,7 +887,9 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
 
                     <h3>Metrics Collection</h3>
 
-                    <pre><code class="language-php">class MetricsCollector {
+                    <pre><code class="language-php">&lt;?php
+
+class MetricsCollector {
     private Redis $redis;
     private array $metrics = [];
     
@@ -890,7 +910,7 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     }
     
     public function timing(string $metric, float $duration, array $tags = []): void {
-        $key = $this-&gt;buildKey($metric . '.timing', $tags);
+        $key = $this-&gt;buildKey($metric . &#39;.timing&#39;, $tags);
         $this-&gt;redis-&gt;lpush($key, $duration);
         $this-&gt;redis-&gt;ltrim($key, 0, 999); // Keep last 1000 measurements
         $this-&gt;redis-&gt;expire($key, 3600);
@@ -901,7 +921,7 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         
         foreach ($buckets as $bucket) {
             if ($value &lt;= $bucket) {
-                $key = $this-&gt;buildKey($metric . '.bucket', array_merge($tags, ['le' =&gt; $bucket]));
+                $key = $this-&gt;buildKey($metric . &#39;.bucket&#39;, array_merge($tags, [&#39;le&#39; =&gt; $bucket]));
                 $this-&gt;redis-&gt;incr($key);
                 $this-&gt;redis-&gt;expire($key, 3600);
             }
@@ -909,22 +929,22 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
     }
     
     private function buildKey(string $metric, array $tags): string {
-        $tagString = '';
+        $tagString = &#39;&#39;;
         if (!empty($tags)) {
             ksort($tags);
-            $tagString = ':' . implode(':', array_map(
-                fn($k, $v) =&gt; "$k=$v",
+            $tagString = &#39;:&#39; . implode(&#39;:&#39;, array_map(
+                fn($k, $v) =&gt; &quot;$k=$v&quot;,
                 array_keys($tags),
                 array_values($tags)
             ));
         }
         
-        return "metrics:$metric$tagString";
+        return &quot;metrics:$metric$tagString&quot;;
     }
     
     public function flush(): void {
         // Send metrics to monitoring system
-        $keys = $this-&gt;redis-&gt;keys('metrics:*');
+        $keys = $this-&gt;redis-&gt;keys(&#39;metrics:*&#39;);
         
         foreach ($keys as $key) {
             $value = $this-&gt;redis-&gt;get($key);
@@ -937,9 +957,9 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         // Implementation depends on monitoring system
         // Example: StatsD
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-        $metric = str_replace('metrics:', '', $key);
-        $packet = "$metric:$value|c";
-        socket_sendto($socket, $packet, strlen($packet), 0, '127.0.0.1', 8125);
+        $metric = str_replace(&#39;metrics:&#39;, &#39;&#39;, $key);
+        $packet = &quot;$metric:$value|c&quot;;
+        socket_sendto($socket, $packet, strlen($packet), 0, &#39;127.0.0.1&#39;, 8125);
         socket_close($socket);
     }
 }</code></pre>
@@ -948,47 +968,49 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
 
                     <h3>API Testing</h3>
 
-                    <pre><code class="language-php">class APITestCase extends TestCase {
+                    <pre><code class="language-php">&lt;?php
+
+class APITestCase extends TestCase {
     protected ApiClient $client;
     protected DatabaseSeeder $seeder;
     
     protected function setUp(): void {
         parent::setUp();
-        $this-&gt;client = new ApiClient('http://localhost:8000');
+        $this-&gt;client = new ApiClient(&#39;http://localhost:8000&#39;);
         $this-&gt;seeder = new DatabaseSeeder();
     }
     
     public function testCreateUser(): void {
         $userData = [
-            'name' =&gt; 'John Doe',
-            'email' =&gt; 'john@example.com',
-            'password' =&gt; 'password123'
+            &#39;name&#39; =&gt; &#39;John Doe&#39;,
+            &#39;email&#39; =&gt; &#39;john@example.com&#39;,
+            &#39;password&#39; =&gt; &#39;password123&#39;
         ];
         
-        $response = $this-&gt;client-&gt;post('/api/users', $userData);
+        $response = $this-&gt;client-&gt;post(&#39;/api/users&#39;, $userData);
         
         $this-&gt;assertEquals(201, $response-&gt;getStatusCode());
         $this-&gt;assertJsonStructure($response-&gt;getBody(), [
-            'id', 'name', 'email', 'created_at'
+            &#39;id&#39;, &#39;name&#39;, &#39;email&#39;, &#39;created_at&#39;
         ]);
         
         // Verify user was created in database
-        $this-&gt;assertDatabaseHas('users', [
-            'email' =&gt; 'john@example.com'
+        $this-&gt;assertDatabaseHas(&#39;users&#39;, [
+            &#39;email&#39; =&gt; &#39;john@example.com&#39;
         ]);
     }
     
     public function testRateLimiting(): void {
-        $this-&gt;seeder-&gt;createUser(['email' =&gt; 'test@example.com']);
+        $this-&gt;seeder-&gt;createUser([&#39;email&#39; =&gt; &#39;test@example.com&#39;]);
         
         // Make requests up to limit
         for ($i = 0; $i &lt; 100; $i++) {
-            $response = $this-&gt;client-&gt;get('/api/users/1');
+            $response = $this-&gt;client-&gt;get(&#39;/api/users/1&#39;);
             $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
         }
         
         // Next request should be rate limited
-        $response = $this-&gt;client-&gt;get('/api/users/1');
+        $response = $this-&gt;client-&gt;get(&#39;/api/users/1&#39;);
         $this-&gt;assertEquals(429, $response-&gt;getStatusCode());
     }
     
@@ -998,7 +1020,7 @@ $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListe
         
         // Create 10 concurrent requests
         for ($i = 0; $i &lt; 10; $i++) {
-            $promises[] = $this-&gt;client-&gt;getAsync('/api/users');
+            $promises[] = $this-&gt;client-&gt;getAsync(&#39;/api/users&#39;);
         }
         
         $responses = Promise::all($promises)-&gt;wait();
