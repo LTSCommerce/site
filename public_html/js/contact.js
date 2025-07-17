@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'legacy-php': 'Legacy PHP Modernization',
             'infrastructure': 'Infrastructure & Automation',
             'cto-services': 'CTO-Level Services',
+            'ai-development': 'AI-Enhanced Development',
             'other': 'Other'
         };
         return projectTypes[value] || value;
