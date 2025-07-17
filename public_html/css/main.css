@@ -344,3 +344,21 @@ body {
         text-align: center;
     }
 }
+
+.book-highlight {
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.book-highlight p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.book-highlight strong {
+    color: #3498db;
+}
