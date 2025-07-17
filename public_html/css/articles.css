@@ -19,8 +19,9 @@
 }
 
 .article-body {
-    line-height: 1.8;
+    line-height: 1.7;
     color: var(--color-text);
+    font-size: 1.0625rem; /* 17px - matches about page */
 }
 
 /* Mathematical spacing for headings */
@@ -74,42 +75,57 @@
 
 /* Paragraph spacing */
 .article-body p {
-    margin-bottom: 1.5rem;
-    line-height: 1.8;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.7;
+    color: var(--color-text-light);
 }
 
 /* List spacing */
 .article-body ul,
 .article-body ol {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--spacing-md);
     padding-left: 2rem;
 }
 
 .article-body li {
     margin-bottom: 0.5rem;
     line-height: 1.7;
+    color: var(--color-text-light);
+}
+
+.article-body li strong {
+    color: var(--color-text);
 }
 
 /* Code block spacing */
 .article-body pre {
-    margin: 2rem 0;
+    margin: var(--spacing-lg) 0;
     overflow-x: auto;
+    border-radius: 8px;
+    background-color: var(--color-bg-secondary);
+}
+
+.article-body pre code {
+    font-size: 0.875rem;
+    line-height: 1.5;
 }
 
 /* Blockquote spacing */
 .article-body blockquote {
-    margin: 2rem 0;
-    padding: 1.5rem;
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md);
     border-left: 4px solid var(--color-primary);
     background: var(--color-bg-secondary);
     border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--color-text-light);
 }
 
 /* Table spacing */
 .article-body table {
     width: 100%;
     border-collapse: collapse;
-    margin: 2rem 0;
+    margin: var(--spacing-lg) 0;
     background: var(--color-bg);
     border-radius: 8px;
     overflow: hidden;
@@ -118,9 +134,10 @@
 
 .article-body th,
 .article-body td {
-    padding: 1rem;
+    padding: var(--spacing-sm);
     text-align: left;
     border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-light);
 }
 
 .article-body th {
@@ -135,8 +152,8 @@
 
 /* Article footer */
 .article-footer {
-    margin-top: 3rem;
-    padding-top: 2rem;
+    margin-top: var(--spacing-xxl);
+    padding-top: var(--spacing-lg);
     border-top: 1px solid var(--color-border);
 }
 
