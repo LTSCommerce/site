@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications">
@@ -9,8 +7,8 @@
     <link rel="stylesheet" href="../css/articles.css">
     <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="site-header">
@@ -55,7 +53,7 @@
 
                     <p>Ansible playbooks are written in YAML, making them readable by both developers and operations teams:</p>
 
-                    <pre><code>---
+                    <pre><code class="language-yaml">---
 - name: Install and configure PHP application
   hosts: webservers
   become: yes
@@ -82,7 +80,7 @@
 
                     <h3>Directory Structure</h3>
 
-                    <pre><code>ansible/
+                    <pre><code class="language-php">ansible/
 ├── inventories/
 │   ├── production/
 │   │   ├── hosts
@@ -111,7 +109,7 @@
 
                     <p>Define your servers and groups:</p>
 
-                    <pre><code># inventories/production/hosts
+                    <pre><code class="language-php"># inventories/production/hosts
 [webservers]
 web1.example.com ansible_host=192.168.1.10
 web2.example.com ansible_host=192.168.1.11
@@ -133,7 +131,7 @@ loadbalancers</code></pre>
 
                     <p>Base configuration for all servers:</p>
 
-                    <pre><code># roles/common/tasks/main.yml
+                    <pre><code class="language-yaml"># roles/common/tasks/main.yml
 ---
 - name: Update package cache
   apt:
@@ -183,7 +181,7 @@ loadbalancers</code></pre>
 
                     <p>PHP-FPM installation and configuration:</p>
 
-                    <pre><code># roles/php/tasks/main.yml
+                    <pre><code class="language-yaml"># roles/php/tasks/main.yml
 ---
 - name: Add PHP repository
   apt_repository:
@@ -231,7 +229,7 @@ loadbalancers</code></pre>
 
                     <p>Web server configuration:</p>
 
-                    <pre><code># roles/nginx/tasks/main.yml
+                    <pre><code class="language-yaml"># roles/nginx/tasks/main.yml
 ---
 - name: Install Nginx
   apt:
@@ -283,7 +281,7 @@ loadbalancers</code></pre>
 
                     <h3>Zero-Downtime Deployment</h3>
 
-                    <pre><code># playbooks/deploy.yml
+                    <pre><code class="language-yaml"># playbooks/deploy.yml
 ---
 - name: Deploy PHP application
   hosts: webservers
@@ -386,7 +384,7 @@ loadbalancers</code></pre>
 
                     <h3>Blue-Green Deployment</h3>
 
-                    <pre><code># playbooks/blue-green-deploy.yml
+                    <pre><code class="language-yaml"># playbooks/blue-green-deploy.yml
 ---
 - name: Blue-Green deployment
   hosts: webservers
@@ -430,7 +428,7 @@ loadbalancers</code></pre>
 
                     <h3>Database Migration Handling</h3>
 
-                    <pre><code># roles/application/tasks/migrate.yml
+                    <pre><code class="language-yaml"># roles/application/tasks/migrate.yml
 ---
 - name: Check if migrations are needed
   shell: |
@@ -445,27 +443,27 @@ loadbalancers</code></pre>
     name: "{{ app_db_name }}"
     state: dump
     target: "/tmp/{{ app_db_name }}_{{ ansible_date_time.epoch }}.sql"
-  when: pending_migrations.stdout | int > 0
+  when: pending_migrations.stdout | int &gt; 0
 
 - name: Run database migrations
   shell: |
     cd {{ app_path }}/current
     php artisan migrate --force
-  when: pending_migrations.stdout | int > 0
+  when: pending_migrations.stdout | int &gt; 0
 
 - name: Seed database if needed
   shell: |
     cd {{ app_path }}/current
     php artisan db:seed --force
   when: 
-    - pending_migrations.stdout | int > 0
+    - pending_migrations.stdout | int &gt; 0
     - app_env != 'production'</code></pre>
 
                     <h2>Monitoring and Maintenance</h2>
 
                     <h3>Log Rotation</h3>
 
-                    <pre><code># roles/application/tasks/logs.yml
+                    <pre><code class="language-yaml"># roles/application/tasks/logs.yml
 ---
 - name: Configure log rotation
   template:
@@ -487,7 +485,7 @@ loadbalancers</code></pre>
 
                     <h3>Performance Monitoring</h3>
 
-                    <pre><code># roles/monitoring/tasks/main.yml
+                    <pre><code class="language-yaml"># roles/monitoring/tasks/main.yml
 ---
 - name: Install monitoring tools
   apt:
@@ -522,7 +520,7 @@ loadbalancers</code></pre>
 
                     <h3>SSL/TLS Configuration</h3>
 
-                    <pre><code># roles/nginx/templates/vhost.conf.j2
+                    <pre><code class="language-nginx"># roles/nginx/templates/vhost.conf.j2
 server {
     listen 80;
     server_name {{ app_domain }};
@@ -570,7 +568,7 @@ server {
 
                     <h3>Group Variables</h3>
 
-                    <pre><code># inventories/production/group_vars/all.yml
+                    <pre><code class="language-yaml"># inventories/production/group_vars/all.yml
 ---
 app_name: myapp
 app_domain: myapp.com
@@ -592,7 +590,7 @@ php_upload_max_filesize: 64M</code></pre>
 
                     <h3>Staging Environment</h3>
 
-                    <pre><code># inventories/staging/group_vars/all.yml
+                    <pre><code class="language-yaml"># inventories/staging/group_vars/all.yml
 ---
 app_name: myapp
 app_domain: staging.myapp.com
@@ -616,7 +614,7 @@ app_debug: true</code></pre>
 
                     <h3>GitLab CI Integration</h3>
 
-                    <pre><code># .gitlab-ci.yml
+                    <pre><code class="language-php"># .gitlab-ci.yml
 stages:
   - test
   - deploy
@@ -654,7 +652,7 @@ deploy_production:
 
                     <h3>Connection Problems</h3>
 
-                    <pre><code># Test connectivity
+                    <pre><code class="language-php"># Test connectivity
 ansible all -m ping -i inventories/production/hosts
 
 # Check SSH configuration
@@ -665,7 +663,7 @@ ansible-playbook -i inventories/production/hosts playbooks/deploy.yml -vvv</code
 
                     <h3>Permission Issues</h3>
 
-                    <pre><code># Fix common permission problems
+                    <pre><code class="language-php"># Fix common permission problems
 - name: Fix application permissions
   file:
     path: "{{ item }}"
@@ -708,7 +706,7 @@ ansible-playbook -i inventories/production/hosts playbooks/deploy.yml -vvv</code
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <p>© 2025 Joseph. All rights reserved.</p>
                 <nav class="footer-nav">
                 </nav>
             </div>
@@ -717,5 +715,5 @@ ansible-playbook -i inventories/production/hosts playbooks/deploy.yml -vvv</code
 
     <script src="../js/main.js"></script>
     <script src="../js/syntax-highlighter.js"></script>
-</body>
-</html>
+
+</body></html>

@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP">
@@ -9,8 +7,8 @@
     <link rel="stylesheet" href="../css/articles.css">
     <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="site-header">
@@ -55,7 +53,7 @@
 
                     <p>Separate concerns into distinct layers for better maintainability and testability:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-sql">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -77,26 +75,26 @@ final readonly class UserController
     
     public function createUser(Request $request): Response
     {
-        $userData = $request->getValidatedData();
+        $userData = $request---&gt;getValidatedData();
         
         try {
-            $user = $this->userService->createUser($userData);
+            $user = $this-&gt;userService-&gt;createUser($userData);
             
             return new JsonResponse([
-                'id' => $user->getId()->value,
-                'email' => $user->getEmail()->value,
-                'name' => $user->getName()->value,
-                'created_at' => $user->getCreatedAt()->format('c'),
+                'id' =&gt; $user-&gt;getId()-&gt;value,
+                'email' =&gt; $user-&gt;getEmail()-&gt;value,
+                'name' =&gt; $user-&gt;getName()-&gt;value,
+                'created_at' =&gt; $user-&gt;getCreatedAt()-&gt;format('c'),
             ], 201);
         } catch (ValidationException $e) {
             return new JsonResponse([
-                'error' => 'Validation failed',
-                'violations' => $e->getViolations(),
+                'error' =&gt; 'Validation failed',
+                'violations' =&gt; $e-&gt;getViolations(),
             ], 400);
         } catch (DuplicateEmailException $e) {
             return new JsonResponse([
-                'error' => 'Email already exists',
-                'code' => 'DUPLICATE_EMAIL',
+                'error' =&gt; 'Email already exists',
+                'code' =&gt; 'DUPLICATE_EMAIL',
             ], 409);
         }
     }
@@ -115,21 +113,21 @@ final readonly class UserService
     
     public function createUser(array $userData): User
     {
-        $this->validator->validate($userData);
+        $this-&gt;validator-&gt;validate($userData);
         
         $user = User::create(
             UserId::generate(),
             EmailAddress::fromString($userData['email']),
             UserName::fromString($userData['name']),
-            $this->passwordHasher->hash($userData['password'])
+            $this-&gt;passwordHasher-&gt;hash($userData['password'])
         );
         
-        $this->userRepository->save($user);
+        $this-&gt;userRepository-&gt;save($user);
         
-        $this->emailService->sendWelcomeEmail($user);
+        $this-&gt;emailService-&gt;sendWelcomeEmail($user);
         
-        $this->eventDispatcher->dispatch(
-            new UserCreatedEvent($user->getId(), $user->getEmail())
+        $this-&gt;eventDispatcher-&gt;dispatch(
+            new UserCreatedEvent($user-&gt;getId(), $user-&gt;getEmail())
         );
         
         return $user;
@@ -146,32 +144,32 @@ final readonly class UserRepository
     
     public function save(User $user): void
     {
-        $stmt = $this->connection->prepare(<<< 'SQL'
+        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; 'SQL'
             INSERT INTO users (id, email, name, password_hash, created_at) 
             VALUES (:id, :email, :name, :password_hash, :created_at)
             SQL);
         
-        $stmt->execute([
-            'id' => $user->getId()->value,
-            'email' => $user->getEmail()->value,
-            'name' => $user->getName()->value,
-            'password_hash' => $user->getPasswordHash()->value,
-            'created_at' => $user->getCreatedAt()->format('Y-m-d H:i:s')
+        $stmt-&gt;execute([
+            'id' =&gt; $user-&gt;getId()-&gt;value,
+            'email' =&gt; $user-&gt;getEmail()-&gt;value,
+            'name' =&gt; $user-&gt;getName()-&gt;value,
+            'password_hash' =&gt; $user-&gt;getPasswordHash()-&gt;value,
+            'created_at' =&gt; $user-&gt;getCreatedAt()-&gt;format('Y-m-d H:i:s')
         ]);
     }
     
     public function findById(UserId $id): ?User
     {
-        $stmt = $this->connection->prepare(<<< 'SQL'
+        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; 'SQL'
             SELECT id, email, name, password_hash, created_at
             FROM users 
             WHERE id = :id AND deleted_at IS NULL
             SQL);
         
-        $stmt->execute(['id' => $id->value]);
-        $userData = $stmt->fetch();
+        $stmt-&gt;execute(['id' =&gt; $id-&gt;value]);
+        $userData = $stmt-&gt;fetch();
         
-        return $userData ? $this->hydrator->hydrate($userData) : null;
+        return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
     }
 }</code></pre>
 
@@ -179,7 +177,7 @@ final readonly class UserRepository
 
                     <p>Model your business domain explicitly:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -217,22 +215,22 @@ final class User extends AggregateRoot
             new DateTimeImmutable()
         );
         
-        $user->recordEvent(new UserCreatedEvent($id, $email));
+        $user---&gt;recordEvent(new UserCreatedEvent($id, $email));
         
         return $user;
     }
     
     public function changeEmail(EmailAddress $newEmail): void
     {
-        if ($this->email->equals($newEmail)) {
+        if ($this-&gt;email-&gt;equals($newEmail)) {
             return;
         }
         
-        $previousEmail = $this->email;
-        $this->email = $newEmail;
+        $previousEmail = $this-&gt;email;
+        $this-&gt;email = $newEmail;
         
-        $this->recordEvent(new UserEmailChangedEvent(
-            $this->id,
+        $this-&gt;recordEvent(new UserEmailChangedEvent(
+            $this-&gt;id,
             $previousEmail,
             $newEmail
         ));
@@ -240,39 +238,39 @@ final class User extends AggregateRoot
     
     public function deactivate(): void
     {
-        if ($this->status === UserStatus::DEACTIVATED) {
+        if ($this-&gt;status === UserStatus::DEACTIVATED) {
             throw new UserAlreadyDeactivatedException(
-                "User {$this->id->value} is already deactivated"
+                "User {$this-&gt;id-&gt;value} is already deactivated"
             );
         }
         
-        $this->status = UserStatus::DEACTIVATED;
-        $this->recordEvent(new UserDeactivatedEvent($this->id));
+        $this-&gt;status = UserStatus::DEACTIVATED;
+        $this-&gt;recordEvent(new UserDeactivatedEvent($this-&gt;id));
     }
     
     public function activate(): void
     {
-        if ($this->status === UserStatus::SUSPENDED) {
+        if ($this-&gt;status === UserStatus::SUSPENDED) {
             throw new InvalidStateTransitionException(
-                "Cannot activate suspended user {$this->id->value}"
+                "Cannot activate suspended user {$this-&gt;id-&gt;value}"
             );
         }
         
-        $this->status = UserStatus::ACTIVE;
-        $this->recordEvent(new UserActivatedEvent($this->id));
+        $this-&gt;status = UserStatus::ACTIVE;
+        $this-&gt;recordEvent(new UserActivatedEvent($this-&gt;id));
     }
     
     public function isActive(): bool
     {
-        return $this->status === UserStatus::ACTIVE;
+        return $this-&gt;status === UserStatus::ACTIVE;
     }
     
-    public function getId(): UserId { return $this->id; }
-    public function getEmail(): EmailAddress { return $this->email; }
-    public function getName(): UserName { return $this->name; }
-    public function getPasswordHash(): PasswordHash { return $this->passwordHash; }
-    public function getStatus(): UserStatus { return $this->status; }
-    public function getCreatedAt(): DateTimeImmutable { return $this->createdAt; }
+    public function getId(): UserId { return $this-&gt;id; }
+    public function getEmail(): EmailAddress { return $this-&gt;email; }
+    public function getName(): UserName { return $this-&gt;name; }
+    public function getPasswordHash(): PasswordHash { return $this-&gt;passwordHash; }
+    public function getStatus(): UserStatus { return $this-&gt;status; }
+    public function getCreatedAt(): DateTimeImmutable { return $this-&gt;createdAt; }
 }
 
 // Value Object
@@ -284,11 +282,11 @@ enum UserStatus: string {
     public function canTransitionTo(self $newStatus): bool
     {
         return match ([$this, $newStatus]) {
-            [self::ACTIVE, self::DEACTIVATED] => true,
-            [self::ACTIVE, self::SUSPENDED] => true,
-            [self::DEACTIVATED, self::ACTIVE] => true,
-            [self::SUSPENDED, self::DEACTIVATED] => true,
-            default => false,
+            [self::ACTIVE, self::DEACTIVATED] =&gt; true,
+            [self::ACTIVE, self::SUSPENDED] =&gt; true,
+            [self::DEACTIVATED, self::ACTIVE] =&gt; true,
+            [self::SUSPENDED, self::DEACTIVATED] =&gt; true,
+            default =&gt; false,
         };
     }
 }
@@ -298,23 +296,23 @@ final readonly class UserDomainService
 {
     public function canUserAccessResource(User $user, Resource $resource): bool
     {
-        if (!$user->isActive()) {
+        if (!$user-&gt;isActive()) {
             return false;
         }
         
-        if ($resource->requiresPremium() && !$user->isPremium()) {
+        if ($resource-&gt;requiresPremium() &amp;&amp; !$user-&gt;isPremium()) {
             return false;
         }
         
-        return $user->hasPermission($resource->getRequiredPermission());
+        return $user-&gt;hasPermission($resource-&gt;getRequiredPermission());
     }
     
     public function canUserPerformAction(User $user, Action $action): bool
     {
-        return match ($user->getStatus()) {
-            UserStatus::ACTIVE => true,
-            UserStatus::SUSPENDED => $action->isAllowedForSuspendedUsers(),
-            UserStatus::DEACTIVATED => false,
+        return match ($user-&gt;getStatus()) {
+            UserStatus::ACTIVE =&gt; true,
+            UserStatus::SUSPENDED =&gt; $action-&gt;isAllowedForSuspendedUsers(),
+            UserStatus::DEACTIVATED =&gt; false,
         };
     }
 }</code></pre>
@@ -325,21 +323,21 @@ final readonly class UserDomainService
 
                     <p>Separate read and write operations for better scalability:</p>
 
-                    <pre><code>// Command Handler - Write operations
+                    <pre><code class="language-sql">// Command Handler - Write operations
 class CreateUserCommandHandler {
     private UserRepository $userRepository;
     private EventStore $eventStore;
     
     public function handle(CreateUserCommand $command): void {
-        $user = new User($command->email, $command->name);
-        $user->setPassword(password_hash($command->password, PASSWORD_DEFAULT));
+        $user = new User($command-&gt;email, $command-&gt;name);
+        $user-&gt;setPassword(password_hash($command-&gt;password, PASSWORD_DEFAULT));
         
         // Save to write database
-        $this->userRepository->save($user);
+        $this-&gt;userRepository-&gt;save($user);
         
         // Store event for read model updates
-        $event = new UserCreatedEvent($user->getId(), $user->getEmail(), $user->getName());
-        $this->eventStore->store($event);
+        $event = new UserCreatedEvent($user-&gt;getId(), $user-&gt;getEmail(), $user-&gt;getName());
+        $this-&gt;eventStore-&gt;store($event);
     }
 }
 
@@ -349,7 +347,7 @@ class GetUserQueryHandler {
     
     public function handle(GetUserQuery $query): UserView {
         // Read from optimized read model
-        return $this->userReadModel->getUserById($query->userId);
+        return $this-&gt;userReadModel-&gt;getUserById($query-&gt;userId);
     }
 }
 
@@ -360,7 +358,7 @@ class UserReadModel {
     
     public function getUserById(int $userId): UserView {
         // Try cache first
-        $cached = $this->redis->get("user:$userId");
+        $cached = $this-&gt;redis-&gt;get("user:$userId");
         if ($cached) {
             return unserialize($cached);
         }
@@ -371,14 +369,14 @@ class UserReadModel {
                 LEFT JOIN profiles p ON u.id = p.user_id 
                 WHERE u.id = :id";
         
-        $stmt = $this->readDb->prepare($sql);
-        $stmt->execute(['id' => $userId]);
-        $userData = $stmt->fetch();
+        $stmt = $this-&gt;readDb-&gt;prepare($sql);
+        $stmt-&gt;execute(['id' =&gt; $userId]);
+        $userData = $stmt-&gt;fetch();
         
         $userView = new UserView($userData);
         
         // Cache for future requests
-        $this->redis->setex("user:$userId", 3600, serialize($userView));
+        $this-&gt;redis-&gt;setex("user:$userId", 3600, serialize($userView));
         
         return $userView;
     }
@@ -388,19 +386,19 @@ class UserReadModel {
 
                     <p>Decouple components using events:</p>
 
-                    <pre><code>// Event System
+                    <pre><code class="language-php">// Event System
 class EventDispatcher {
     private array $listeners = [];
     
     public function subscribe(string $eventClass, callable $listener): void {
-        $this->listeners[$eventClass][] = $listener;
+        $this-&gt;listeners[$eventClass][] = $listener;
     }
     
     public function dispatch(object $event): void {
         $eventClass = get_class($event);
         
-        if (isset($this->listeners[$eventClass])) {
-            foreach ($this->listeners[$eventClass] as $listener) {
+        if (isset($this-&gt;listeners[$eventClass])) {
+            foreach ($this-&gt;listeners[$eventClass] as $listener) {
                 $listener($event);
             }
         }
@@ -422,7 +420,7 @@ class SendWelcomeEmailListener {
     private EmailService $emailService;
     
     public function __invoke(UserCreatedEvent $event): void {
-        $this->emailService->sendWelcomeEmail($event->email, $event->name);
+        $this-&gt;emailService-&gt;sendWelcomeEmail($event-&gt;email, $event-&gt;name);
     }
 }
 
@@ -430,81 +428,81 @@ class UpdateUserStatsListener {
     private UserStatsService $userStatsService;
     
     public function __invoke(UserCreatedEvent $event): void {
-        $this->userStatsService->incrementUserCount();
+        $this-&gt;userStatsService-&gt;incrementUserCount();
     }
 }
 
 // Event Registration
 $eventDispatcher = new EventDispatcher();
-$eventDispatcher->subscribe(UserCreatedEvent::class, new SendWelcomeEmailListener($emailService));
-$eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener($userStatsService));</code></pre>
+$eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new SendWelcomeEmailListener($emailService));
+$eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListener($userStatsService));</code></pre>
 
                     <h2>Performance Optimization</h2>
 
                     <h3>Database Connection Pooling</h3>
 
-                    <pre><code>class DatabasePool {
+                    <pre><code class="language-php">class DatabasePool {
     private array $connections = [];
     private array $config;
     private int $maxConnections;
     private int $currentConnections = 0;
     
     public function __construct(array $config, int $maxConnections = 20) {
-        $this->config = $config;
-        $this->maxConnections = $maxConnections;
+        $this-&gt;config = $config;
+        $this-&gt;maxConnections = $maxConnections;
     }
     
     public function getConnection(): PDO {
         // Return existing connection if available
-        if (!empty($this->connections)) {
-            return array_pop($this->connections);
+        if (!empty($this-&gt;connections)) {
+            return array_pop($this-&gt;connections);
         }
         
         // Create new connection if under limit
-        if ($this->currentConnections < $this->maxConnections) {
+        if ($this-&gt;currentConnections &lt; $this-&gt;maxConnections) {
             $connection = new PDO(
-                $this->config['dsn'],
-                $this->config['username'],
-                $this->config['password'],
+                $this-&gt;config['dsn'],
+                $this-&gt;config['username'],
+                $this-&gt;config['password'],
                 [
-                    PDO::ATTR_PERSISTENT => false,
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_PERSISTENT =&gt; false,
+                    PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
                 ]
             );
             
-            $this->currentConnections++;
+            $this-&gt;currentConnections++;
             return $connection;
         }
         
         // Wait for available connection
         usleep(10000); // 10ms
-        return $this->getConnection();
+        return $this-&gt;getConnection();
     }
     
     public function releaseConnection(PDO $connection): void {
         // Reset connection state
-        $connection->rollBack();
-        $connection->exec('SET autocommit = 1');
+        $connection-&gt;rollBack();
+        $connection-&gt;exec('SET autocommit = 1');
         
         // Return to pool
-        $this->connections[] = $connection;
+        $this-&gt;connections[] = $connection;
     }
 }</code></pre>
 
                     <h3>Response Caching</h3>
 
-                    <pre><code>class ResponseCache {
+                    <pre><code class="language-php">class ResponseCache {
     private Redis $redis;
     private int $defaultTtl = 3600;
     
     public function __construct(Redis $redis) {
-        $this->redis = $redis;
+        $this-&gt;redis = $redis;
     }
     
     public function get(Request $request): ?Response {
-        $key = $this->generateCacheKey($request);
-        $cached = $this->redis->get($key);
+        $key = $this-&gt;generateCacheKey($request);
+        $cached = $this-&gt;redis-&gt;get($key);
         
         if ($cached) {
             $data = json_decode($cached, true);
@@ -515,26 +513,26 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
     }
     
     public function set(Request $request, Response $response, int $ttl = null): void {
-        $key = $this->generateCacheKey($request);
-        $ttl = $ttl ?? $this->defaultTtl;
+        $key = $this-&gt;generateCacheKey($request);
+        $ttl = $ttl ?? $this-&gt;defaultTtl;
         
         $data = [
-            'body' => $response->getBody(),
-            'status' => $response->getStatusCode(),
-            'headers' => $response->getHeaders(),
-            'cached_at' => time()
+            'body' =&gt; $response-&gt;getBody(),
+            'status' =&gt; $response-&gt;getStatusCode(),
+            'headers' =&gt; $response-&gt;getHeaders(),
+            'cached_at' =&gt; time()
         ];
         
-        $this->redis->setex($key, $ttl, json_encode($data));
+        $this-&gt;redis-&gt;setex($key, $ttl, json_encode($data));
     }
     
     private function generateCacheKey(Request $request): string {
         $components = [
-            $request->getMethod(),
-            $request->getUri(),
-            $request->getQueryParams(),
-            $request->getHeader('Accept'),
-            $request->getHeader('Authorization') ? 'auth' : 'public'
+            $request-&gt;getMethod(),
+            $request-&gt;getUri(),
+            $request-&gt;getQueryParams(),
+            $request-&gt;getHeader('Accept'),
+            $request-&gt;getHeader('Authorization') ? 'auth' : 'public'
         ];
         
         return 'response:' . md5(serialize($components));
@@ -545,17 +543,17 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
 
                     <h3>Token Bucket Algorithm</h3>
 
-                    <pre><code>class TokenBucketRateLimiter {
+                    <pre><code class="language-php">class TokenBucketRateLimiter {
     private Redis $redis;
     private int $capacity;
     private int $refillRate;
     private int $refillPeriod;
     
     public function __construct(Redis $redis, int $capacity = 100, int $refillRate = 10, int $refillPeriod = 60) {
-        $this->redis = $redis;
-        $this->capacity = $capacity;
-        $this->refillRate = $refillRate;
-        $this->refillPeriod = $refillPeriod;
+        $this-&gt;redis = $redis;
+        $this-&gt;capacity = $capacity;
+        $this-&gt;refillRate = $refillRate;
+        $this-&gt;refillPeriod = $refillPeriod;
     }
     
     public function isAllowed(string $identifier): bool {
@@ -563,25 +561,25 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
         $now = time();
         
         // Get current bucket state
-        $bucketData = $this->redis->hmget($key, ['tokens', 'last_refill']);
-        $tokens = $bucketData['tokens'] ?? $this->capacity;
+        $bucketData = $this-&gt;redis-&gt;hmget($key, ['tokens', 'last_refill']);
+        $tokens = $bucketData['tokens'] ?? $this-&gt;capacity;
         $lastRefill = $bucketData['last_refill'] ?? $now;
         
         // Calculate tokens to add
         $timePassed = $now - $lastRefill;
-        $tokensToAdd = floor($timePassed / $this->refillPeriod) * $this->refillRate;
-        $tokens = min($this->capacity, $tokens + $tokensToAdd);
+        $tokensToAdd = floor($timePassed / $this-&gt;refillPeriod) * $this-&gt;refillRate;
+        $tokens = min($this-&gt;capacity, $tokens + $tokensToAdd);
         
         // Check if request is allowed
-        if ($tokens >= 1) {
+        if ($tokens &gt;= 1) {
             $tokens--;
             
             // Update bucket state
-            $this->redis->hmset($key, [
-                'tokens' => $tokens,
-                'last_refill' => $now
+            $this-&gt;redis-&gt;hmset($key, [
+                'tokens' =&gt; $tokens,
+                'last_refill' =&gt; $now
             ]);
-            $this->redis->expire($key, $this->refillPeriod * 2);
+            $this-&gt;redis-&gt;expire($key, $this-&gt;refillPeriod * 2);
             
             return true;
         }
@@ -591,39 +589,39 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
     
     public function getRemainingTokens(string $identifier): int {
         $key = "rate_limit:$identifier";
-        $bucketData = $this->redis->hmget($key, ['tokens']);
-        return $bucketData['tokens'] ?? $this->capacity;
+        $bucketData = $this-&gt;redis-&gt;hmget($key, ['tokens']);
+        return $bucketData['tokens'] ?? $this-&gt;capacity;
     }
 }</code></pre>
 
                     <h3>Sliding Window Rate Limiter</h3>
 
-                    <pre><code>class SlidingWindowRateLimiter {
+                    <pre><code class="language-php">class SlidingWindowRateLimiter {
     private Redis $redis;
     private int $limit;
     private int $windowSize;
     
     public function __construct(Redis $redis, int $limit = 1000, int $windowSize = 3600) {
-        $this->redis = $redis;
-        $this->limit = $limit;
-        $this->windowSize = $windowSize;
+        $this-&gt;redis = $redis;
+        $this-&gt;limit = $limit;
+        $this-&gt;windowSize = $windowSize;
     }
     
     public function isAllowed(string $identifier): bool {
         $key = "sliding_window:$identifier";
         $now = time();
-        $windowStart = $now - $this->windowSize;
+        $windowStart = $now - $this-&gt;windowSize;
         
         // Remove old entries
-        $this->redis->zremrangebyscore($key, 0, $windowStart);
+        $this-&gt;redis-&gt;zremrangebyscore($key, 0, $windowStart);
         
         // Count current requests
-        $currentCount = $this->redis->zcard($key);
+        $currentCount = $this-&gt;redis-&gt;zcard($key);
         
-        if ($currentCount < $this->limit) {
+        if ($currentCount &lt; $this-&gt;limit) {
             // Add current request
-            $this->redis->zadd($key, $now, uniqid());
-            $this->redis->expire($key, $this->windowSize);
+            $this-&gt;redis-&gt;zadd($key, $now, uniqid());
+            $this-&gt;redis-&gt;expire($key, $this-&gt;windowSize);
             return true;
         }
         
@@ -633,12 +631,12 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
     public function getRemainingRequests(string $identifier): int {
         $key = "sliding_window:$identifier";
         $now = time();
-        $windowStart = $now - $this->windowSize;
+        $windowStart = $now - $this-&gt;windowSize;
         
-        $this->redis->zremrangebyscore($key, 0, $windowStart);
-        $currentCount = $this->redis->zcard($key);
+        $this-&gt;redis-&gt;zremrangebyscore($key, 0, $windowStart);
+        $currentCount = $this-&gt;redis-&gt;zcard($key);
         
-        return max(0, $this->limit - $currentCount);
+        return max(0, $this-&gt;limit - $currentCount);
     }
 }</code></pre>
 
@@ -646,85 +644,85 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
 
                     <h3>Circuit Breaker Pattern</h3>
 
-                    <pre><code>class CircuitBreaker {
+                    <pre><code class="language-php">class CircuitBreaker {
     private Redis $redis;
     private int $failureThreshold;
     private int $recoveryTimeout;
     private int $monitoringPeriod;
     
     public function __construct(Redis $redis, int $failureThreshold = 5, int $recoveryTimeout = 300, int $monitoringPeriod = 60) {
-        $this->redis = $redis;
-        $this->failureThreshold = $failureThreshold;
-        $this->recoveryTimeout = $recoveryTimeout;
-        $this->monitoringPeriod = $monitoringPeriod;
+        $this-&gt;redis = $redis;
+        $this-&gt;failureThreshold = $failureThreshold;
+        $this-&gt;recoveryTimeout = $recoveryTimeout;
+        $this-&gt;monitoringPeriod = $monitoringPeriod;
     }
     
     public function call(string $service, callable $operation) {
-        $state = $this->getState($service);
+        $state = $this-&gt;getState($service);
         
         switch ($state) {
             case 'open':
-                if ($this->shouldAttemptReset($service)) {
-                    $this->setState($service, 'half-open');
-                    return $this->executeOperation($service, $operation);
+                if ($this-&gt;shouldAttemptReset($service)) {
+                    $this-&gt;setState($service, 'half-open');
+                    return $this-&gt;executeOperation($service, $operation);
                 }
                 throw new CircuitBreakerOpenException("Circuit breaker is open for $service");
                 
             case 'half-open':
-                return $this->executeOperation($service, $operation);
+                return $this-&gt;executeOperation($service, $operation);
                 
             case 'closed':
             default:
-                return $this->executeOperation($service, $operation);
+                return $this-&gt;executeOperation($service, $operation);
         }
     }
     
     private function executeOperation(string $service, callable $operation) {
         try {
             $result = $operation();
-            $this->recordSuccess($service);
+            $this-&gt;recordSuccess($service);
             return $result;
         } catch (Exception $e) {
-            $this->recordFailure($service);
+            $this-&gt;recordFailure($service);
             throw $e;
         }
     }
     
     private function recordSuccess(string $service): void {
         $key = "circuit_breaker:$service";
-        $this->redis->hdel($key, 'failures');
-        $this->setState($service, 'closed');
+        $this-&gt;redis-&gt;hdel($key, 'failures');
+        $this-&gt;setState($service, 'closed');
     }
     
     private function recordFailure(string $service): void {
         $key = "circuit_breaker:$service";
-        $failures = $this->redis->hincrby($key, 'failures', 1);
-        $this->redis->expire($key, $this->monitoringPeriod);
+        $failures = $this-&gt;redis-&gt;hincrby($key, 'failures', 1);
+        $this-&gt;redis-&gt;expire($key, $this-&gt;monitoringPeriod);
         
-        if ($failures >= $this->failureThreshold) {
-            $this->setState($service, 'open');
+        if ($failures &gt;= $this-&gt;failureThreshold) {
+            $this-&gt;setState($service, 'open');
         }
     }
     
     private function getState(string $service): string {
         $key = "circuit_breaker:$service";
-        return $this->redis->hget($key, 'state') ?: 'closed';
+        return $this-&gt;redis-&gt;hget($key, 'state') ?: 'closed';
     }
     
     private function setState(string $service, string $state): void {
         $key = "circuit_breaker:$service";
-        $this->redis->hset($key, 'state', $state);
+        $this-&gt;redis-&gt;hset($key, 'state', $state);
         
         if ($state === 'open') {
-            $this->redis->hset($key, 'opened_at', time());
+            $this-&gt;redis-&gt;hset($key, 'opened_at', time());
         }
     }
     
     private function shouldAttemptReset(string $service): bool {
         $key = "circuit_breaker:$service";
-        $openedAt = $this->redis->hget($key, 'opened_at');
+        $openedAt = $this-&gt;redis-&gt;hget($key, 'opened_at');
         
-        return $openedAt && (time() - $openedAt) > $this->recoveryTimeout;
+        return $openedAt &amp;&amp; (time() - $openedAt) &gt; $this-&gt;recoveryTimeout;
     }
 }</code></pre>
 
@@ -732,27 +730,27 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
 
                     <h3>JWT Authentication</h3>
 
-                    <pre><code>class JWTManager {
+                    <pre><code class="language-php">class JWTManager {
     private string $secretKey;
     private string $algorithm = 'HS256';
     private int $defaultTtl = 3600;
     
     public function __construct(string $secretKey) {
-        $this->secretKey = $secretKey;
+        $this-&gt;secretKey = $secretKey;
     }
     
     public function generateToken(array $payload, int $ttl = null): string {
-        $ttl = $ttl ?? $this->defaultTtl;
+        $ttl = $ttl ?? $this-&gt;defaultTtl;
         $now = time();
         
-        $header = json_encode(['typ' => 'JWT', 'alg' => $this->algorithm]);
+        $header = json_encode(['typ' =&gt; 'JWT', 'alg' =&gt; $this-&gt;algorithm]);
         $payload = json_encode(array_merge($payload, [
-            'iat' => $now,
-            'exp' => $now + $ttl
+            'iat' =&gt; $now,
+            'exp' =&gt; $now + $ttl
         ]));
         
-        $headerPayload = $this->base64UrlEncode($header) . '.' . $this->base64UrlEncode($payload);
-        $signature = $this->sign($headerPayload);
+        $headerPayload = $this-&gt;base64UrlEncode($header) . '.' . $this-&gt;base64UrlEncode($payload);
+        $signature = $this-&gt;sign($headerPayload);
         
         return $headerPayload . '.' . $signature;
     }
@@ -766,16 +764,16 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
         [$header, $payload, $signature] = $parts;
         
         // Verify signature
-        $expectedSignature = $this->sign($header . '.' . $payload);
+        $expectedSignature = $this-&gt;sign($header . '.' . $payload);
         if (!hash_equals($signature, $expectedSignature)) {
             throw new InvalidTokenException('Invalid signature');
         }
         
         // Decode payload
-        $decodedPayload = json_decode($this->base64UrlDecode($payload), true);
+        $decodedPayload = json_decode($this-&gt;base64UrlDecode($payload), true);
         
         // Check expiration
-        if (isset($decodedPayload['exp']) && $decodedPayload['exp'] < time()) {
+        if (isset($decodedPayload['exp']) &amp;&amp; $decodedPayload['exp'] &lt; time()) {
             throw new ExpiredTokenException('Token has expired');
         }
         
@@ -783,7 +781,7 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
     }
     
     private function sign(string $data): string {
-        return $this->base64UrlEncode(hash_hmac('sha256', $data, $this->secretKey, true));
+        return $this-&gt;base64UrlEncode(hash_hmac('sha256', $data, $this-&gt;secretKey, true));
     }
     
     private function base64UrlEncode(string $data): string {
@@ -799,46 +797,46 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
 
                     <h3>OpenAPI Documentation</h3>
 
-                    <pre><code>class OpenAPIGenerator {
+                    <pre><code class="language-php">class OpenAPIGenerator {
     private array $paths = [];
     private array $components = [];
     
     public function addEndpoint(string $path, string $method, array $definition): void {
-        $this->paths[$path][$method] = $definition;
+        $this-&gt;paths[$path][$method] = $definition;
     }
     
     public function addComponent(string $name, array $schema): void {
-        $this->components['schemas'][$name] = $schema;
+        $this-&gt;components['schemas'][$name] = $schema;
     }
     
     public function generate(): array {
         return [
-            'openapi' => '3.0.0',
-            'info' => [
-                'title' => 'API Documentation',
-                'version' => '1.0.0',
-                'description' => 'Scalable PHP API'
+            'openapi' =&gt; '3.0.0',
+            'info' =&gt; [
+                'title' =&gt; 'API Documentation',
+                'version' =&gt; '1.0.0',
+                'description' =&gt; 'Scalable PHP API'
             ],
-            'servers' => [
-                ['url' => 'https://api.example.com/v1']
+            'servers' =&gt; [
+                ['url' =&gt; 'https://api.example.com/v1']
             ],
-            'paths' => $this->paths,
-            'components' => $this->components
+            'paths' =&gt; $this-&gt;paths,
+            'components' =&gt; $this-&gt;components
         ];
     }
     
     public function generateFromAnnotations(): array {
         $reflection = new ReflectionClass(UserController::class);
-        $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
+        $methods = $reflection-&gt;getMethods(ReflectionMethod::IS_PUBLIC);
         
         foreach ($methods as $method) {
-            $docComment = $method->getDocComment();
+            $docComment = $method-&gt;getDocComment();
             if ($docComment) {
-                $this->parseDocComment($docComment, $method);
+                $this-&gt;parseDocComment($docComment, $method);
             }
         }
         
-        return $this->generate();
+        return $this-&gt;generate();
     }
     
     private function parseDocComment(string $docComment, ReflectionMethod $method): void {
@@ -848,13 +846,13 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
             $httpMethod = strtolower($matches[2]);
             
             // Extract other annotations
-            $summary = $this->extractAnnotation($docComment, 'summary');
-            $description = $this->extractAnnotation($docComment, 'description');
+            $summary = $this-&gt;extractAnnotation($docComment, 'summary');
+            $description = $this-&gt;extractAnnotation($docComment, 'description');
             
-            $this->addEndpoint($path, $httpMethod, [
-                'summary' => $summary,
-                'description' => $description,
-                'operationId' => $method->getName()
+            $this-&gt;addEndpoint($path, $httpMethod, [
+                'summary' =&gt; $summary,
+                'description' =&gt; $description,
+                'operationId' =&gt; $method-&gt;getName()
             ]);
         }
     }
@@ -871,41 +869,41 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
 
                     <h3>Metrics Collection</h3>
 
-                    <pre><code>class MetricsCollector {
+                    <pre><code class="language-php">class MetricsCollector {
     private Redis $redis;
     private array $metrics = [];
     
     public function __construct(Redis $redis) {
-        $this->redis = $redis;
+        $this-&gt;redis = $redis;
     }
     
     public function increment(string $metric, int $value = 1, array $tags = []): void {
-        $key = $this->buildKey($metric, $tags);
-        $this->redis->incrby($key, $value);
-        $this->redis->expire($key, 3600);
+        $key = $this-&gt;buildKey($metric, $tags);
+        $this-&gt;redis-&gt;incrby($key, $value);
+        $this-&gt;redis-&gt;expire($key, 3600);
     }
     
     public function gauge(string $metric, float $value, array $tags = []): void {
-        $key = $this->buildKey($metric, $tags);
-        $this->redis->set($key, $value);
-        $this->redis->expire($key, 3600);
+        $key = $this-&gt;buildKey($metric, $tags);
+        $this-&gt;redis-&gt;set($key, $value);
+        $this-&gt;redis-&gt;expire($key, 3600);
     }
     
     public function timing(string $metric, float $duration, array $tags = []): void {
-        $key = $this->buildKey($metric . '.timing', $tags);
-        $this->redis->lpush($key, $duration);
-        $this->redis->ltrim($key, 0, 999); // Keep last 1000 measurements
-        $this->redis->expire($key, 3600);
+        $key = $this-&gt;buildKey($metric . '.timing', $tags);
+        $this-&gt;redis-&gt;lpush($key, $duration);
+        $this-&gt;redis-&gt;ltrim($key, 0, 999); // Keep last 1000 measurements
+        $this-&gt;redis-&gt;expire($key, 3600);
     }
     
     public function histogram(string $metric, float $value, array $tags = []): void {
         $buckets = [0.1, 0.5, 1, 2.5, 5, 10];
         
         foreach ($buckets as $bucket) {
-            if ($value <= $bucket) {
-                $key = $this->buildKey($metric . '.bucket', array_merge($tags, ['le' => $bucket]));
-                $this->redis->incr($key);
-                $this->redis->expire($key, 3600);
+            if ($value &lt;= $bucket) {
+                $key = $this-&gt;buildKey($metric . '.bucket', array_merge($tags, ['le' =&gt; $bucket]));
+                $this-&gt;redis-&gt;incr($key);
+                $this-&gt;redis-&gt;expire($key, 3600);
             }
         }
     }
@@ -915,7 +913,7 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
         if (!empty($tags)) {
             ksort($tags);
             $tagString = ':' . implode(':', array_map(
-                fn($k, $v) => "$k=$v",
+                fn($k, $v) =&gt; "$k=$v",
                 array_keys($tags),
                 array_values($tags)
             ));
@@ -926,12 +924,12 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
     
     public function flush(): void {
         // Send metrics to monitoring system
-        $keys = $this->redis->keys('metrics:*');
+        $keys = $this-&gt;redis-&gt;keys('metrics:*');
         
         foreach ($keys as $key) {
-            $value = $this->redis->get($key);
+            $value = $this-&gt;redis-&gt;get($key);
             // Send to StatsD, Prometheus, etc.
-            $this->sendMetric($key, $value);
+            $this-&gt;sendMetric($key, $value);
         }
     }
     
@@ -950,48 +948,48 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
 
                     <h3>API Testing</h3>
 
-                    <pre><code>class APITestCase extends TestCase {
+                    <pre><code class="language-php">class APITestCase extends TestCase {
     protected ApiClient $client;
     protected DatabaseSeeder $seeder;
     
     protected function setUp(): void {
         parent::setUp();
-        $this->client = new ApiClient('http://localhost:8000');
-        $this->seeder = new DatabaseSeeder();
+        $this-&gt;client = new ApiClient('http://localhost:8000');
+        $this-&gt;seeder = new DatabaseSeeder();
     }
     
     public function testCreateUser(): void {
         $userData = [
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => 'password123'
+            'name' =&gt; 'John Doe',
+            'email' =&gt; 'john@example.com',
+            'password' =&gt; 'password123'
         ];
         
-        $response = $this->client->post('/api/users', $userData);
+        $response = $this-&gt;client-&gt;post('/api/users', $userData);
         
-        $this->assertEquals(201, $response->getStatusCode());
-        $this->assertJsonStructure($response->getBody(), [
+        $this-&gt;assertEquals(201, $response-&gt;getStatusCode());
+        $this-&gt;assertJsonStructure($response-&gt;getBody(), [
             'id', 'name', 'email', 'created_at'
         ]);
         
         // Verify user was created in database
-        $this->assertDatabaseHas('users', [
-            'email' => 'john@example.com'
+        $this-&gt;assertDatabaseHas('users', [
+            'email' =&gt; 'john@example.com'
         ]);
     }
     
     public function testRateLimiting(): void {
-        $this->seeder->createUser(['email' => 'test@example.com']);
+        $this-&gt;seeder-&gt;createUser(['email' =&gt; 'test@example.com']);
         
         // Make requests up to limit
-        for ($i = 0; $i < 100; $i++) {
-            $response = $this->client->get('/api/users/1');
-            $this->assertEquals(200, $response->getStatusCode());
+        for ($i = 0; $i &lt; 100; $i++) {
+            $response = $this-&gt;client-&gt;get('/api/users/1');
+            $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
         }
         
         // Next request should be rate limited
-        $response = $this->client->get('/api/users/1');
-        $this->assertEquals(429, $response->getStatusCode());
+        $response = $this-&gt;client-&gt;get('/api/users/1');
+        $this-&gt;assertEquals(429, $response-&gt;getStatusCode());
     }
     
     public function testConcurrentRequests(): void {
@@ -999,15 +997,15 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
         $promises = [];
         
         // Create 10 concurrent requests
-        for ($i = 0; $i < 10; $i++) {
-            $promises[] = $this->client->getAsync('/api/users');
+        for ($i = 0; $i &lt; 10; $i++) {
+            $promises[] = $this-&gt;client-&gt;getAsync('/api/users');
         }
         
-        $responses = Promise::all($promises)->wait();
+        $responses = Promise::all($promises)-&gt;wait();
         
         // All requests should succeed
         foreach ($responses as $response) {
-            $this->assertEquals(200, $response->getStatusCode());
+            $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
         }
     }
 }</code></pre>
@@ -1043,7 +1041,7 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <p>© 2025 Joseph. All rights reserved.</p>
                 <nav class="footer-nav">
                 </nav>
             </div>
@@ -1052,5 +1050,5 @@ $eventDispatcher->subscribe(UserCreatedEvent::class, new UpdateUserStatsListener
 
     <script src="../js/main.js"></script>
     <script src="../js/syntax-highlighter.js"></script>
-</body>
-</html>
+
+</body></html>

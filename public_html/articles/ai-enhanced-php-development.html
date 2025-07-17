@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="How to leverage AI tools like GitHub Copilot and OpenAI APIs to boost PHP development efficiency without compromising quality">
@@ -9,8 +7,8 @@
     <link rel="stylesheet" href="../css/articles.css">
     <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="site-header">
@@ -64,7 +62,7 @@
 
                     <p>Example workflow with Copilot:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -89,44 +87,44 @@ final readonly class UserService
     
     public function createUser(array $userData): User
     {
-        $validationResult = $this->validator->validate($userData);
+        $validationResult = $this---&gt;validator-&gt;validate($userData);
         
-        if (!$validationResult->isValid()) {
-            throw new ValidationException($validationResult->getErrors());
+        if (!$validationResult-&gt;isValid()) {
+            throw new ValidationException($validationResult-&gt;getErrors());
         }
         
         $user = User::create(
             UserId::generate(),
             EmailAddress::fromString($userData['email']),
             UserName::fromString($userData['name']),
-            $this->passwordHasher->hash($userData['password'])
+            $this-&gt;passwordHasher-&gt;hash($userData['password'])
         );
         
-        return $this->userRepository->save($user);
+        return $this-&gt;userRepository-&gt;save($user);
     }
     
     public function updateUser(UserId $id, array $userData): User
     {
-        $user = $this->userRepository->findById($id)
-            ?? throw new UserNotFoundException("User not found: {$id->value}");
+        $user = $this-&gt;userRepository-&gt;findById($id)
+            ?? throw new UserNotFoundException("User not found: {$id-&gt;value}");
         
         if (isset($userData['email'])) {
-            $user->changeEmail(EmailAddress::fromString($userData['email']));
+            $user-&gt;changeEmail(EmailAddress::fromString($userData['email']));
         }
         
         if (isset($userData['name'])) {
-            $user->changeName(UserName::fromString($userData['name']));
+            $user-&gt;changeName(UserName::fromString($userData['name']));
         }
         
-        return $this->userRepository->save($user);
+        return $this-&gt;userRepository-&gt;save($user);
     }
     
     public function deleteUser(UserId $id): void
     {
-        $user = $this->userRepository->findById($id)
-            ?? throw new UserNotFoundException("User not found: {$id->value}");
+        $user = $this-&gt;userRepository-&gt;findById($id)
+            ?? throw new UserNotFoundException("User not found: {$id-&gt;value}");
         
-        $this->userRepository->delete($user);
+        $this-&gt;userRepository-&gt;delete($user);
     }
 }</code></pre>
 
@@ -134,7 +132,7 @@ final readonly class UserService
 
                     <p>OpenAI APIs can be integrated directly into your PHP applications:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -156,7 +154,7 @@ final readonly class AICodeReviewer
     
     public function reviewCode(CodeSnippet $code): ReviewResult
     {
-        $systemPrompt = AIPrompt::system(<<< 'PROMPT'
+        $systemPrompt = AIPrompt::system(&lt;&lt;&lt; 'PROMPT'
             You are a senior PHP 8.3+ developer reviewing code for:
             - Modern PHP syntax and features
             - Type safety and strict typing
@@ -169,36 +167,36 @@ final readonly class AICodeReviewer
             PROMPT);
         
         $userPrompt = AIPrompt::user(
-            "Please review this PHP code:\n\n" . $code->content
+            "Please review this PHP code:\n\n" . $code---&gt;content
         );
         
         try {
-            $response = $this->aiClient->chat([
-                'model' => $this->model,
-                'max_tokens' => $this->maxTokens,
-                'temperature' => 0.1, // Low temperature for consistent reviews
-                'messages' => [
-                    $systemPrompt->toArray(),
-                    $userPrompt->toArray(),
+            $response = $this-&gt;aiClient-&gt;chat([
+                'model' =&gt; $this-&gt;model,
+                'max_tokens' =&gt; $this-&gt;maxTokens,
+                'temperature' =&gt; 0.1, // Low temperature for consistent reviews
+                'messages' =&gt; [
+                    $systemPrompt-&gt;toArray(),
+                    $userPrompt-&gt;toArray(),
                 ],
             ]);
             
             $reviewContent = $response['choices'][0]['message']['content'];
             
-            $this->logger->info('Code review completed', [
-                'code_length' => strlen($code->content),
-                'tokens_used' => $response['usage']['total_tokens'],
+            $this-&gt;logger-&gt;info('Code review completed', [
+                'code_length' =&gt; strlen($code-&gt;content),
+                'tokens_used' =&gt; $response['usage']['total_tokens'],
             ]);
             
-            return $this->parseReviewResponse($reviewContent);
+            return $this-&gt;parseReviewResponse($reviewContent);
         } catch (Throwable $e) {
-            $this->logger->error('AI code review failed', [
-                'error' => $e->getMessage(),
-                'code_snippet' => substr($code->content, 0, 100) . '...',
+            $this-&gt;logger-&gt;error('AI code review failed', [
+                'error' =&gt; $e-&gt;getMessage(),
+                'code_snippet' =&gt; substr($code-&gt;content, 0, 100) . '...',
             ]);
             
             throw new CodeReviewException(
-                "Code review failed: {$e->getMessage()}",
+                "Code review failed: {$e-&gt;getMessage()}",
                 previous: $e
             );
         }
@@ -216,7 +214,7 @@ final readonly class AICodeReviewer
         
         foreach ($files as $file) {
             $code = CodeSnippet::fromFile($file);
-            $reviews[$file] = $this->reviewCode($code);
+            $reviews[$file] = $this-&gt;reviewCode($code);
         }
         
         return $reviews;
@@ -240,7 +238,7 @@ final readonly class AICodeReviewer
 
                     <p>AI can accelerate TDD by generating comprehensive test cases:</p>
 
-                    <pre><code>// Describe your class functionality
+                    <pre><code class="language-php">// Describe your class functionality
 // Generate test cases for a UserValidator class that validates email, password strength, and required fields
 
 // AI generates:
@@ -248,18 +246,18 @@ class UserValidatorTest extends TestCase {
     private $validator;
     
     protected function setUp(): void {
-        $this->validator = new UserValidator();
+        $this-&gt;validator = new UserValidator();
     }
     
     public function testValidEmailIsAccepted() {
-        $result = $this->validator->validateEmail('user@example.com');
-        $this->assertTrue($result->isValid());
+        $result = $this-&gt;validator-&gt;validateEmail('user@example.com');
+        $this-&gt;assertTrue($result-&gt;isValid());
     }
     
     public function testInvalidEmailIsRejected() {
-        $result = $this->validator->validateEmail('invalid-email');
-        $this->assertFalse($result->isValid());
-        $this->assertContains('Invalid email format', $result->getErrors());
+        $result = $this-&gt;validator-&gt;validateEmail('invalid-email');
+        $this-&gt;assertFalse($result-&gt;isValid());
+        $this-&gt;assertContains('Invalid email format', $result-&gt;getErrors());
     }
     
     // ... more test cases
@@ -269,7 +267,7 @@ class UserValidatorTest extends TestCase {
 
                     <p>Integrate AI into your review process:</p>
 
-                    <pre><code>// Git hook that runs AI code review
+                    <pre><code class="language-bash">// Git hook that runs AI code review
 #!/bin/bash
 git diff --cached --name-only | grep '\.php$' | while read file; do
     if [ -f "$file" ]; then
@@ -282,7 +280,7 @@ done</code></pre>
 
                     <p>AI can generate comprehensive documentation:</p>
 
-                    <pre><code>/**
+                    <pre><code class="language-php">/**
  * AI-generated PHPDoc example
  * 
  * @param array $orderData The order data containing items, customer info, and payment details
@@ -311,7 +309,7 @@ public function processOrder(array $orderData): OrderResult {
 
                     <p>AI excels at creating initial implementations that you can refine:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -327,13 +325,13 @@ class ShoppingCart {
     private $items = [];
     
     public function addItem(Product $product, int $quantity = 1): void {
-        $this->items[] = ['product' => $product, 'quantity' => $quantity];
+        $this---&gt;items[] = ['product' =&gt; $product, 'quantity' =&gt; $quantity];
     }
     
     public function getTotal(): float {
         return array_sum(array_map(function($item) {
-            return $item['product']->getPrice() * $item['quantity'];
-        }, $this->items));
+            return $item['product']-&gt;getPrice() * $item['quantity'];
+        }, $this-&gt;items));
     }
 }
 
@@ -344,53 +342,53 @@ final class ShoppingCart
     
     public function __construct()
     {
-        $this->items = new CartItemCollection();
+        $this-&gt;items = new CartItemCollection();
     }
     
     public function addItem(Product $product, Quantity $quantity): void
     {
-        if ($quantity->isZero()) {
+        if ($quantity-&gt;isZero()) {
             throw new InvalidQuantityException('Quantity must be positive');
         }
         
-        $existingItem = $this->items->findByProductId($product->getId());
+        $existingItem = $this-&gt;items-&gt;findByProductId($product-&gt;getId());
         
         if ($existingItem !== null) {
-            $existingItem->increaseQuantity($quantity);
+            $existingItem-&gt;increaseQuantity($quantity);
         } else {
-            $this->items->add(new CartItem($product, $quantity));
+            $this-&gt;items-&gt;add(new CartItem($product, $quantity));
         }
     }
     
     public function removeItem(ProductId $productId): void
     {
-        $item = $this->items->findByProductId($productId)
-            ?? throw new ProductNotFoundException("Product not found: {$productId->value}");
+        $item = $this-&gt;items-&gt;findByProductId($productId)
+            ?? throw new ProductNotFoundException("Product not found: {$productId-&gt;value}");
         
-        $this->items->remove($item);
+        $this-&gt;items-&gt;remove($item);
     }
     
     public function getTotal(): Money
     {
-        return $this->items->reduce(
+        return $this-&gt;items-&gt;reduce(
             Money::zero(),
-            fn(Money $total, CartItem $item) => $total->add($item->getSubtotal())
+            fn(Money $total, CartItem $item) =&gt; $total-&gt;add($item-&gt;getSubtotal())
         );
     }
     
     public function getItemCount(): int
     {
-        return $this->items->count();
+        return $this-&gt;items-&gt;count();
     }
     
     public function isEmpty(): bool
     {
-        return $this->items->isEmpty();
+        return $this-&gt;items-&gt;isEmpty();
     }
     
     public function clear(): void
     {
-        $this->items = new CartItemCollection();
+        $this-&gt;items = new CartItemCollection();
     }
 }</code></pre>
 
@@ -398,7 +396,7 @@ final class ShoppingCart
 
                     <p>Use AI to identify refactoring opportunities:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-yaml">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -417,11 +415,11 @@ public function processUserRegistration($data) {
         throw new Exception('Invalid email');
     }
     
-    if (!isset($data['password']) || strlen($data['password']) < 8) {
+    if (!isset($data['password']) || strlen($data['password']) &lt; 8) {
         throw new Exception('Password too short');
     }
     
-    return $this->userRepository->create($data);
+    return $this---&gt;userRepository-&gt;create($data);
 }
 
 // After: Modern refactored version with proper separation of concerns
@@ -436,18 +434,18 @@ final readonly class UserRegistrationService
     
     public function processUserRegistration(array $data): User
     {
-        $registrationData = $this->createRegistrationData($data);
+        $registrationData = $this-&gt;createRegistrationData($data);
         
-        $validationResult = $this->validator->validate($registrationData);
-        if (!$validationResult->isValid()) {
-            throw new ValidationException($validationResult->getViolations());
+        $validationResult = $this-&gt;validator-&gt;validate($registrationData);
+        if (!$validationResult-&gt;isValid()) {
+            throw new ValidationException($validationResult-&gt;getViolations());
         }
         
-        $user = $this->createUser($registrationData);
-        $this->userRepository->save($user);
+        $user = $this-&gt;createUser($registrationData);
+        $this-&gt;userRepository-&gt;save($user);
         
-        $this->eventDispatcher->dispatch(
-            new UserRegisteredEvent($user->getId(), $user->getEmail())
+        $this-&gt;eventDispatcher-&gt;dispatch(
+            new UserRegisteredEvent($user-&gt;getId(), $user-&gt;getEmail())
         );
         
         return $user;
@@ -466,9 +464,9 @@ final readonly class UserRegistrationService
     {
         return User::register(
             UserId::generate(),
-            $data->email,
-            $data->name,
-            $this->passwordHasher->hash($data->password)
+            $data-&gt;email,
+            $data-&gt;name,
+            $this-&gt;passwordHasher-&gt;hash($data-&gt;password)
         );
     }
 }</code></pre>
@@ -479,7 +477,7 @@ final readonly class UserRegistrationService
 
                     <p>Generate CRUD operations, API endpoints, and admin interfaces:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -498,42 +496,42 @@ final readonly class AICodeGenerator
         private CodeTemplateRepository $templateRepository,
     ) {}
     
-    /** @param array<FieldDefinition> $fields */
+    /** @param array&lt;FieldDefinition--&gt; $fields */
     public function generateCRUD(EntityName $entityName, array $fields): string
     {
-        $template = $this->templateRepository->getTemplate('modern-php-entity');
+        $template = $this-&gt;templateRepository-&gt;getTemplate('modern-php-entity');
         
-        $prompt = $this->buildPrompt($entityName, $fields, $template);
+        $prompt = $this-&gt;buildPrompt($entityName, $fields, $template);
         
         try {
-            $generatedCode = $this->aiClient->generateCode($prompt);
+            $generatedCode = $this-&gt;aiClient-&gt;generateCode($prompt);
             
-            $this->logger->info('CRUD code generated successfully', [
-                'entity' => $entityName->value,
-                'fields_count' => count($fields),
+            $this-&gt;logger-&gt;info('CRUD code generated successfully', [
+                'entity' =&gt; $entityName-&gt;value,
+                'fields_count' =&gt; count($fields),
             ]);
             
-            return $this->postProcessCode($generatedCode);
+            return $this-&gt;postProcessCode($generatedCode);
         } catch (Throwable $e) {
             throw new CodeGenerationException(
-                "Failed to generate CRUD for {$entityName->value}: {$e->getMessage()}",
+                "Failed to generate CRUD for {$entityName-&gt;value}: {$e-&gt;getMessage()}",
                 previous: $e
             );
         }
     }
     
-    /** @param array<FieldDefinition> $fields */
+    /** @param array&lt;fielddefinition&gt; $fields */
     private function buildPrompt(EntityName $entityName, array $fields, CodeTemplate $template): string
     {
         $fieldDescriptions = array_map(
-            fn(FieldDefinition $field) => $field->toPromptString(),
+            fn(FieldDefinition $field) =&gt; $field-&gt;toPromptString(),
             $fields
         );
         
-        return $template->render([
-            'entity_name' => $entityName->value,
-            'fields' => implode(', ', $fieldDescriptions),
-            'requirements' => [
+        return $template-&gt;render([
+            'entity_name' =&gt; $entityName-&gt;value,
+            'fields' =&gt; implode(', ', $fieldDescriptions),
+            'requirements' =&gt; [
                 'Use PHP 8.3+ features',
                 'Include strict typing with declare(strict_types=1)',
                 'Use readonly properties where appropriate',
@@ -550,13 +548,13 @@ final readonly class AICodeGenerator
         // Post-process generated code to ensure consistency
         return $code;
     }
-}</code></pre>
+}&lt;/fielddefinition&gt;</code></pre>
 
                     <h3>Intelligent Error Handling</h3>
 
                     <p>AI can suggest solutions for common errors:</p>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -578,26 +576,26 @@ final readonly class AIErrorHandler
     
     public function handleError(Throwable $error): ErrorSolution
     {
-        $context = $this->contextBuilder->buildFromThrowable($error);
+        $context = $this---&gt;contextBuilder-&gt;buildFromThrowable($error);
         
         try {
-            $solution = $this->aiClient->suggestSolution($context);
+            $solution = $this-&gt;aiClient-&gt;suggestSolution($context);
             
-            $this->logger->info('AI error solution generated', [
-                'error_type' => $error::class,
-                'error_message' => $error->getMessage(),
-                'solution_confidence' => $solution->getConfidence(),
+            $this-&gt;logger-&gt;info('AI error solution generated', [
+                'error_type' =&gt; $error::class,
+                'error_message' =&gt; $error-&gt;getMessage(),
+                'solution_confidence' =&gt; $solution-&gt;getConfidence(),
             ]);
             
             return $solution;
         } catch (Throwable $e) {
-            $this->logger->error('Failed to generate AI solution', [
-                'original_error' => $error->getMessage(),
-                'ai_error' => $e->getMessage(),
+            $this-&gt;logger-&gt;error('Failed to generate AI solution', [
+                'original_error' =&gt; $error-&gt;getMessage(),
+                'ai_error' =&gt; $e-&gt;getMessage(),
             ]);
             
             throw new ErrorAnalysisException(
-                "Failed to analyze error: {$e->getMessage()}",
+                "Failed to analyze error: {$e-&gt;getMessage()}",
                 previous: $e
             );
         }
@@ -609,14 +607,14 @@ final readonly class AIErrorHandler
             type: 'performance',
             description: 'Slow database query detected',
             metadata: [
-                'query' => $slowQuery,
-                'execution_time' => $metrics['execution_time'],
-                'memory_usage' => $metrics['memory_usage'],
-                'affected_rows' => $metrics['affected_rows'],
+                'query' =&gt; $slowQuery,
+                'execution_time' =&gt; $metrics['execution_time'],
+                'memory_usage' =&gt; $metrics['memory_usage'],
+                'affected_rows' =&gt; $metrics['affected_rows'],
             ]
         );
         
-        return $this->aiClient->suggestSolution($context);
+        return $this-&gt;aiClient-&gt;suggestSolution($context);
     }
     
     public function analyzeSecurityVulnerability(string $code, array $scanResults): ErrorSolution
@@ -625,14 +623,14 @@ final readonly class AIErrorHandler
             type: 'security',
             description: 'Security vulnerability detected',
             metadata: [
-                'code_snippet' => $code,
-                'vulnerability_type' => $scanResults['type'],
-                'severity' => $scanResults['severity'],
-                'cwe_id' => $scanResults['cwe_id'] ?? null,
+                'code_snippet' =&gt; $code,
+                'vulnerability_type' =&gt; $scanResults['type'],
+                'severity' =&gt; $scanResults['severity'],
+                'cwe_id' =&gt; $scanResults['cwe_id'] ?? null,
             ]
         );
         
-        return $this->aiClient->suggestSolution($context);
+        return $this-&gt;aiClient-&gt;suggestSolution($context);
     }
 }</code></pre>
 
@@ -707,7 +705,7 @@ final readonly class AIErrorHandler
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <p>© 2025 Joseph. All rights reserved.</p>
                 <nav class="footer-nav">
                 </nav>
             </div>
@@ -716,5 +714,5 @@ final readonly class AIErrorHandler
 
     <script src="../js/main.js"></script>
     <script src="../js/syntax-highlighter.js"></script>
-</body>
-</html>
+
+</body></html>

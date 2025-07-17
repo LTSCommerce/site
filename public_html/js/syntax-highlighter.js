@@ -1,127 +1,102 @@
-/**
- * Lightweight syntax highlighter for PHP code blocks
- * Optimized for modern PHP 8.3+ syntax
- */
-class SyntaxHighlighter {
-    constructor() {
-        this.patterns = {
-            // PHP tags
-            phpTags: /(&lt;\?php|&lt;\?=|\?&gt;)/g,
-            
-            // Keywords
-            keywords: /\b(abstract|and|array|as|break|callable|case|catch|class|clone|const|continue|declare|default|die|do|echo|else|elseif|empty|enddeclare|endfor|endforeach|endif|endswitch|endwhile|enum|eval|exit|extends|final|finally|fn|for|foreach|function|global|goto|if|implements|include|include_once|instanceof|insteadof|interface|isset|list|match|namespace|new|or|print|private|protected|public|readonly|require|require_once|return|static|switch|throw|trait|try|unset|use|var|while|xor|yield|from)\b/g,
-            
-            // Types
-            types: /\b(string|int|float|bool|array|object|mixed|never|void|null|false|true|self|parent|static|iterable|callable)\b/g,
-            
-            // Attributes
-            attributes: /#\[\s*[\w\\]+[^\]]*\]/g,
-            
-            // Strings
-            strings: /(["'])((?:\\.|(?!\1)[^\\])*?)\1/g,
-            
-            // Comments
-            comments: /(\/\/.*$|\/\*[\s\S]*?\*\/|#.*$)/gm,
-            
-            // Variables
-            variables: /\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/g,
-            
-            // Numbers
-            numbers: /\b(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\b/g,
-            
-            // Operators
-            operators: /(\+\+|--|===|!==|==|!=|<=|>=|<=>|&&|\|\||[+\-*\/%<>=!&|^~])/g,
-            
-            // Functions
-            functions: /\b([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\s*(?=\()/g,
-            
-            // Class names
-            classes: /\b([A-Z][a-zA-Z0-9_]*)\b/g,
-            
-            // Constants
-            constants: /\b([A-Z_][A-Z0-9_]*)\b/g,
-            
-            // Namespaces
-            namespaces: /\\?([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\\)+/g
+// Simple client-side syntax highlighting without ES modules
+(function() {
+  'use strict';
+  
+  // Load Prism.js from CDN
+  function loadPrism() {
+    // Load main Prism.js
+    const prismScript = document.createElement('script');
+    prismScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js';
+    prismScript.onload = function() {
+      // Load language components
+      const languages = ['php', 'bash', 'yaml', 'sql', 'json', 'nginx'];
+      let loadedCount = 0;
+      
+      languages.forEach(lang => {
+        const script = document.createElement('script');
+        script.src = `https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-${lang}.min.js`;
+        script.onload = function() {
+          loadedCount++;
+          if (loadedCount === languages.length) {
+            processSyntaxHighlighting();
+          }
         };
-        
-        this.init();
-    }
+        document.head.appendChild(script);
+      });
+    };
+    document.head.appendChild(prismScript);
+  }
+  
+  function processSyntaxHighlighting() {
+    // Process all code blocks
+    const codeBlocks = document.querySelectorAll('pre code');
     
-    init() {
-        // Find all code blocks and highlight them
-        document.querySelectorAll('pre code').forEach(block => {
-            this.highlightBlock(block);
-        });
+    codeBlocks.forEach(block => {
+      // Get raw HTML content and decode entities
+      let content = block.innerHTML;
+      
+      // Decode HTML entities thoroughly
+      content = content
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/---&gt;/g, '->')
+        .replace(/&lt;!--/g, '<!--')
+        .replace(/--&gt;/g, '-->')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&hellip;/g, '...')
+        .replace(/&mdash;/g, '—')
+        .replace(/&ndash;/g, '–');
+      
+      // Set cleaned content
+      block.textContent = content.trim();
+      
+      const code = block.textContent;
+      
+      // Auto-detect language if not already set
+      let language = 'php'; // default
+      const existingClasses = block.className;
+      const languageMatch = existingClasses.match(/language-(\w+)/);
+      
+      if (languageMatch) {
+        language = languageMatch[1];
+      } else {
+        // Auto-detect language
+        if (code.includes('<?php') || code.includes('declare(strict_types=1)')) {
+          language = 'php';
+        } else if (code.includes('#!/bin/bash') || code.includes('apt install') || code.includes('git diff')) {
+          language = 'bash';
+        } else if (code.includes('---') && code.includes('name:')) {
+          language = 'yaml';
+        } else if (code.includes('SELECT') || code.includes('CREATE TABLE') || code.includes('INSERT INTO')) {
+          language = 'sql';
+        } else if (code.includes('server {') || code.includes('location') || code.includes('listen 80')) {
+          language = 'nginx';
+        } else if (code.startsWith('{') || code.startsWith('[')) {
+          language = 'json';
+        }
         
-        // Also handle plain pre blocks
-        document.querySelectorAll('pre:not(:has(code))').forEach(block => {
-            this.highlightBlock(block);
-        });
-    }
-    
-    highlightBlock(block) {
-        let code = block.innerHTML;
-        
-        // Escape HTML entities first
-        code = code.replace(/&/g, '&amp;')
-                  .replace(/</g, '&lt;')
-                  .replace(/>/g, '&gt;');
-        
-        // Apply syntax highlighting
-        code = this.applyHighlighting(code);
-        
-        block.innerHTML = code;
-        block.classList.add('syntax-highlighted');
-    }
-    
-    applyHighlighting(code) {
-        // Apply highlighting in specific order to avoid conflicts
-        
-        // 1. Comments (do first to avoid highlighting inside them)
-        code = code.replace(this.patterns.comments, '<span class="comment">$1</span>');
-        
-        // 2. Strings
-        code = code.replace(this.patterns.strings, '<span class="string">$1$2$1</span>');
-        
-        // 3. PHP tags
-        code = code.replace(this.patterns.phpTags, '<span class="php-tag">$1</span>');
-        
-        // 4. Attributes
-        code = code.replace(this.patterns.attributes, '<span class="attribute">$&</span>');
-        
-        // 5. Keywords
-        code = code.replace(this.patterns.keywords, '<span class="keyword">$1</span>');
-        
-        // 6. Types
-        code = code.replace(this.patterns.types, '<span class="type">$1</span>');
-        
-        // 7. Variables
-        code = code.replace(this.patterns.variables, '<span class="variable">$&</span>');
-        
-        // 8. Numbers
-        code = code.replace(this.patterns.numbers, '<span class="number">$1</span>');
-        
-        // 9. Functions
-        code = code.replace(this.patterns.functions, '<span class="function">$1</span>');
-        
-        // 10. Classes
-        code = code.replace(this.patterns.classes, '<span class="class">$1</span>');
-        
-        // 11. Constants
-        code = code.replace(this.patterns.constants, '<span class="constant">$1</span>');
-        
-        // 12. Namespaces
-        code = code.replace(this.patterns.namespaces, '<span class="namespace">$1</span>');
-        
-        // 13. Operators
-        code = code.replace(this.patterns.operators, '<span class="operator">$1</span>');
-        
-        return code;
-    }
-}
-
-// Initialize syntax highlighter when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    new SyntaxHighlighter();
-});
+        // Add language class
+        block.className = `language-${language}`;
+      }
+      
+      // Highlight with Prism if available
+      if (typeof Prism !== 'undefined' && Prism.languages[language]) {
+        try {
+          Prism.highlightElement(block);
+        } catch (error) {
+          console.warn('Failed to highlight code block:', error);
+        }
+      }
+    });
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadPrism);
+  } else {
+    loadPrism();
+  }
+})();

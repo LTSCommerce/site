@@ -1,0 +1,62 @@
+{
+  "name": "lts-site",
+  "version": "1.0.0",
+  "description": "Professional PHP developer portfolio site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --ext .js,.html --fix",
+    "lint:check": "eslint . --ext .js,.html",
+    "clean": "rm -rf dist",
+    "deploy": "npm run build && rsync -avz --delete dist/ public_html/",
+    "syntax-highlight": "node scripts/syntax-highlight.js"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "prismjs": "^1.29.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "cheerio": "^1.0.0-rc.12",
+    "glob": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "quoteProps": "as-needed",
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "arrowParens": "avoid",
+    "endOfLine": "lf",
+    "htmlWhitespaceSensitivity": "css"
+  },
+  "eslintConfig": {
+    "extends": ["eslint:recommended", "prettier"],
+    "env": {
+      "browser": true,
+      "es2022": true,
+      "node": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-unused-vars": "warn",
+      "no-console": "warn",
+      "prefer-const": "error",
+      "no-var": "error"
+    }
+  }
+}

@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Real-world comparison of Proxmox private cloud infrastructure versus public cloud solutions for PHP applications">
@@ -9,8 +7,8 @@
     <link rel="stylesheet" href="../css/articles.css">
     <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="site-header">
@@ -68,7 +66,7 @@
 
                     <p>With Proxmox, you control the entire stack:</p>
 
-                    <pre><code># Proxmox VM configuration for high-performance PHP
+                    <pre><code class="language-php"># Proxmox VM configuration for high-performance PHP
 cores: 8
 memory: 32768
 scsi0: local-lvm:vm-100-disk-0,size=100G,ssd=1
@@ -106,7 +104,7 @@ cpu: host</code></pre>
 
                     <h3>Proxmox Cluster Configuration</h3>
 
-                    <pre><code># /etc/pve/cluster.conf
+                    <pre><code class="language-php"># /etc/pve/cluster.conf
 totem {
     version: 2
     secauth: on
@@ -142,7 +140,7 @@ logging {
 
                     <p>Create standardized templates for your PHP applications:</p>
 
-                    <pre><code># VM template for PHP applications
+                    <pre><code class="language-php"># VM template for PHP applications
 agent: 1
 boot: c
 bootdisk: scsi0
@@ -179,7 +177,7 @@ vmgenid: auto</code></pre>
                     <p>MySQL performance on Proxmox vs AWS RDS:</p>
 
                     <table>
-                        <tr>
+                        <tbody><tr>
                             <th>Metric</th>
                             <th>Proxmox (NVMe)</th>
                             <th>AWS RDS (gp3)</th>
@@ -204,7 +202,7 @@ vmgenid: auto</code></pre>
                             <td>$200</td>
                             <td>$800</td>
                         </tr>
-                    </table>
+                    </tbody></table>
 
                     <h3>PHP Application Performance</h3>
 
@@ -246,7 +244,7 @@ vmgenid: auto</code></pre>
 
                     <p>Implement comprehensive monitoring:</p>
 
-                    <pre><code># Prometheus configuration for Proxmox
+                    <pre><code class="language-php"># Prometheus configuration for Proxmox
 global:
   scrape_interval: 15s
 
@@ -263,7 +261,7 @@ scrape_configs:
 
                     <p>Automated backups are crucial:</p>
 
-                    <pre><code># Proxmox backup script
+                    <pre><code class="language-bash"># Proxmox backup script
 #!/bin/bash
 vzdump --mode snapshot --compress lzo --storage backup-storage --all --mailto admin@company.com
 
@@ -274,7 +272,7 @@ rclone sync /backup-storage/dump/ remote:backups/$(date +%Y-%m-%d)/</code></pre>
 
                     <p>Configure HA for critical services:</p>
 
-                    <pre><code># HA group configuration
+                    <pre><code class="language-php"># HA group configuration
 ha-manager add group:web-servers \
   --nodes "proxmox1:1,proxmox2:1,proxmox3:1" \
   --restricted 0 \
@@ -338,7 +336,7 @@ ha-manager add vm:101 \
 
                     <p>Calculate the real cost comparison:</p>
 
-                    <pre><code># 3-year TCO comparison
+                    <pre><code class="language-php"># 3-year TCO comparison
 # Proxmox setup
 hardware_cost = 75000
 electricity_per_year = 3600
@@ -382,7 +380,7 @@ savings = total_3_year_cloud - total_3_year_proxmox
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <p>© 2025 Joseph. All rights reserved.</p>
                 <nav class="footer-nav">
                 </nav>
             </div>
@@ -391,5 +389,5 @@ savings = total_3_year_cloud - total_3_year_proxmox
 
     <script src="../js/main.js"></script>
     <script src="../js/syntax-highlighter.js"></script>
-</body>
-</html>
+
+</body></html>

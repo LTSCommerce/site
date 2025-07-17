@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Database optimization strategies specifically tailored for bespoke PHP systems with complex queries">
@@ -9,8 +7,8 @@
     <link rel="stylesheet" href="../css/articles.css">
     <link rel="stylesheet" href="../css/syntax-highlighting.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="site-header">
@@ -55,7 +53,7 @@
 
                     <p>Proper memory allocation is crucial for MySQL performance:</p>
 
-                    <pre><code># /etc/mysql/mysql.conf.d/mysqld.cnf
+                    <pre><code class="language-php"># /etc/mysql/mysql.conf.d/mysqld.cnf
 [mysqld]
 # InnoDB Buffer Pool (most important setting)
 innodb_buffer_pool_size = 16G  # 70-80% of available RAM
@@ -87,7 +85,7 @@ max_heap_table_size = 64M</code></pre>
 
                     <h3>InnoDB Optimization</h3>
 
-                    <pre><code># InnoDB specific settings
+                    <pre><code class="language-php"># InnoDB specific settings
 innodb_flush_log_at_trx_commit = 2  # Better performance, slight durability trade-off
 innodb_log_file_size = 1G
 innodb_log_buffer_size = 64M
@@ -111,7 +109,7 @@ innodb_purge_threads = 4</code></pre>
 
                     <p>Proper indexing is fundamental to query performance:</p>
 
-                    <pre><code>-- Compound indexes for complex WHERE clauses
+                    <pre><code class="language-php">-- Compound indexes for complex WHERE clauses
 CREATE INDEX idx_user_orders ON orders (user_id, status, created_at);
 
 -- Covering indexes to avoid table lookups
@@ -130,7 +128,7 @@ CREATE INDEX idx_user_preferences ON users ((JSON_EXTRACT(preferences, '$.langua
 
                     <p>Transform slow queries into efficient ones:</p>
 
-                    <pre><code>-- Slow: Using OR conditions
+                    <pre><code class="language-sql">-- Slow: Using OR conditions
 SELECT * FROM products 
 WHERE category_id = 1 OR category_id = 2 OR category_id = 3;
 
@@ -154,7 +152,7 @@ LIMIT 20 OFFSET 10000;
 
 -- Fast: Using cursor-based pagination
 SELECT * FROM products 
-WHERE created_at < '2024-01-01 12:00:00'
+WHERE created_at &lt; '2024-01-01 12:00:00'
 ORDER BY created_at DESC 
 LIMIT 20;</code></pre>
 
@@ -162,7 +160,7 @@ LIMIT 20;</code></pre>
 
                     <h3>Connection Optimization</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -185,22 +183,22 @@ final readonly class DatabaseOptimizer
         private QueryMetricsInterface $metrics,
         private LoggerInterface $logger,
     ) {
-        $this->connection = $this->createOptimizedConnection($config);
+        $this---&gt;connection = $this-&gt;createOptimizedConnection($config);
     }
     
     private function createOptimizedConnection(DatabaseConfig $config): PDO
     {
         try {
             return new PDO(
-                $config->dsn,
-                $config->username,
-                $config->password,
+                $config-&gt;dsn,
+                $config-&gt;username,
+                $config-&gt;password,
                 [
-                    PDO::ATTR_PERSISTENT => true,
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false,
-                    PDO::MYSQL_ATTR_INIT_COMMAND => implode(';', [
+                    PDO::ATTR_PERSISTENT =&gt; true,
+                    PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES =&gt; false,
+                    PDO::MYSQL_ATTR_INIT_COMMAND =&gt; implode(';', [
                         'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci',
                         'SET SESSION sql_mode="STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"',
                         'SET SESSION time_zone="+00:00"',
@@ -211,7 +209,7 @@ final readonly class DatabaseOptimizer
             );
         } catch (PDOException $e) {
             throw new DatabaseConnectionException(
-                "Failed to connect to database: {$e->getMessage()}",
+                "Failed to connect to database: {$e-&gt;getMessage()}",
                 previous: $e
             );
         }
@@ -222,28 +220,28 @@ final readonly class DatabaseOptimizer
         $startTime = hrtime(true);
         
         try {
-            $stmt = $this->connection->prepare($sql);
-            $stmt->execute($params);
-            $data = $stmt->fetchAll();
+            $stmt = $this-&gt;connection-&gt;prepare($sql);
+            $stmt-&gt;execute($params);
+            $data = $stmt-&gt;fetchAll();
             
             $executionTime = hrtime(true) - $startTime;
             
-            $this->metrics->recordQuery($sql, $params, $executionTime);
+            $this-&gt;metrics-&gt;recordQuery($sql, $params, $executionTime);
             
             return new QueryResult(
                 data: $data,
                 executionTime: $executionTime,
-                rowCount: $stmt->rowCount()
+                rowCount: $stmt-&gt;rowCount()
             );
         } catch (PDOException $e) {
-            $this->logger->error('Query execution failed', [
-                'sql' => $sql,
-                'params' => $params,
-                'error' => $e->getMessage(),
+            $this-&gt;logger-&gt;error('Query execution failed', [
+                'sql' =&gt; $sql,
+                'params' =&gt; $params,
+                'error' =&gt; $e-&gt;getMessage(),
             ]);
             
             throw new QueryExecutionException(
-                "Query execution failed: {$e->getMessage()}",
+                "Query execution failed: {$e-&gt;getMessage()}",
                 previous: $e
             );
         }
@@ -257,27 +255,27 @@ final readonly class DatabaseOptimizer
         $cacheKey = CacheKey::forQuery($sql, $params);
         
         // Check cache first
-        $cached = $this->cache->get($cacheKey);
+        $cached = $this-&gt;cache-&gt;get($cacheKey);
         if ($cached !== null) {
             return $cached;
         }
         
-        $result = $this->executeQuery($sql, $params);
-        $this->cache->set($cacheKey, $result, $ttl ?? new CacheTTL(300));
+        $result = $this-&gt;executeQuery($sql, $params);
+        $this-&gt;cache-&gt;set($cacheKey, $result, $ttl ?? new CacheTTL(300));
         
         return $result;
     }
     
     public function transaction(callable $callback): mixed
     {
-        $this->connection->beginTransaction();
+        $this-&gt;connection-&gt;beginTransaction();
         
         try {
-            $result = $callback($this->connection);
-            $this->connection->commit();
+            $result = $callback($this-&gt;connection);
+            $this-&gt;connection-&gt;commit();
             return $result;
         } catch (Throwable $e) {
-            $this->connection->rollBack();
+            $this-&gt;connection-&gt;rollBack();
             throw $e;
         }
     }
@@ -285,7 +283,7 @@ final readonly class DatabaseOptimizer
 
                     <h3>Prepared Statement Optimization</h3>
 
-                    <pre><code><?php
+                    <pre><code class="language-php">&lt;!--?php
 
 declare(strict_types=1);
 
@@ -301,7 +299,7 @@ use WeakMap;
 
 final class PreparedStatementPool
 {
-    /** @var array<string, PDOStatement> */
+    /** @var array&lt;string, PDOStatement--&gt; */
     private array $statements = [];
     private readonly WeakMap $statementMetadata;
     
@@ -310,56 +308,56 @@ final class PreparedStatementPool
         private readonly LoggerInterface $logger,
         private readonly int $maxStatements = 1000,
     ) {
-        $this->statementMetadata = new WeakMap();
+        $this-&gt;statementMetadata = new WeakMap();
     }
     
     public function getStatement(SqlStatement $sql): PDOStatement
     {
-        $key = $sql->getHash();
+        $key = $sql-&gt;getHash();
         
-        if (!isset($this->statements[$key])) {
-            if (count($this->statements) >= $this->maxStatements) {
-                $this->evictOldestStatement();
+        if (!isset($this-&gt;statements[$key])) {
+            if (count($this-&gt;statements) &gt;= $this-&gt;maxStatements) {
+                $this-&gt;evictOldestStatement();
             }
             
             try {
-                $this->statements[$key] = $this->connection->prepare($sql->value);
-                $this->statementMetadata[$this->statements[$key]] = [
-                    'created_at' => time(),
-                    'usage_count' => 0,
+                $this-&gt;statements[$key] = $this-&gt;connection-&gt;prepare($sql-&gt;value);
+                $this-&gt;statementMetadata[$this-&gt;statements[$key]] = [
+                    'created_at' =&gt; time(),
+                    'usage_count' =&gt; 0,
                 ];
             } catch (PDOException $e) {
                 throw new StatementExecutionException(
-                    "Failed to prepare statement: {$e->getMessage()}",
+                    "Failed to prepare statement: {$e-&gt;getMessage()}",
                     previous: $e
                 );
             }
         }
         
-        $stmt = $this->statements[$key];
-        $metadata = $this->statementMetadata[$stmt];
+        $stmt = $this-&gt;statements[$key];
+        $metadata = $this-&gt;statementMetadata[$stmt];
         $metadata['usage_count']++;
-        $this->statementMetadata[$stmt] = $metadata;
+        $this-&gt;statementMetadata[$stmt] = $metadata;
         
         return $stmt;
     }
     
     public function executeStatement(SqlStatement $sql, array $params = []): array
     {
-        $stmt = $this->getStatement($sql);
+        $stmt = $this-&gt;getStatement($sql);
         
         try {
-            $stmt->execute($params);
-            return $stmt->fetchAll();
+            $stmt-&gt;execute($params);
+            return $stmt-&gt;fetchAll();
         } catch (PDOException $e) {
-            $this->logger->error('Statement execution failed', [
-                'sql' => $sql->value,
-                'params' => $params,
-                'error' => $e->getMessage(),
+            $this-&gt;logger-&gt;error('Statement execution failed', [
+                'sql' =&gt; $sql-&gt;value,
+                'params' =&gt; $params,
+                'error' =&gt; $e-&gt;getMessage(),
             ]);
             
             throw new StatementExecutionException(
-                "Statement execution failed: {$e->getMessage()}",
+                "Statement execution failed: {$e-&gt;getMessage()}",
                 previous: $e
             );
         }
@@ -367,21 +365,21 @@ final class PreparedStatementPool
     
     public function executeBatch(SqlStatement $sql, array $batchParams): BatchResult
     {
-        $stmt = $this->getStatement($sql);
+        $stmt = $this-&gt;getStatement($sql);
         $affected = 0;
         $errors = [];
         
-        $this->connection->beginTransaction();
+        $this-&gt;connection-&gt;beginTransaction();
         
         try {
-            foreach ($batchParams as $index => $params) {
+            foreach ($batchParams as $index =&gt; $params) {
                 try {
-                    $stmt->execute($params);
-                    $affected += $stmt->rowCount();
+                    $stmt-&gt;execute($params);
+                    $affected += $stmt-&gt;rowCount();
                 } catch (PDOException $e) {
-                    $errors[$index] = $e->getMessage();
+                    $errors[$index] = $e-&gt;getMessage();
                     
-                    if (count($errors) > 10) { // Fail fast after too many errors
+                    if (count($errors) &gt; 10) { // Fail fast after too many errors
                         throw new BatchExecutionException(
                             "Too many errors in batch execution",
                             $errors
@@ -391,14 +389,14 @@ final class PreparedStatementPool
             }
             
             if (!empty($errors)) {
-                $this->connection->rollBack();
+                $this-&gt;connection-&gt;rollBack();
                 throw new BatchExecutionException(
                     "Batch execution failed with errors",
                     $errors
                 );
             }
             
-            $this->connection->commit();
+            $this-&gt;connection-&gt;commit();
             
             return new BatchResult(
                 affectedRows: $affected,
@@ -406,7 +404,7 @@ final class PreparedStatementPool
                 errors: $errors
             );
         } catch (Throwable $e) {
-            $this->connection->rollBack();
+            $this-&gt;connection-&gt;rollBack();
             throw $e;
         }
     }
@@ -416,29 +414,29 @@ final class PreparedStatementPool
         $oldestKey = null;
         $oldestTime = PHP_INT_MAX;
         
-        foreach ($this->statements as $key => $stmt) {
-            $metadata = $this->statementMetadata[$stmt];
-            if ($metadata['created_at'] < $oldestTime) {
+        foreach ($this-&gt;statements as $key =&gt; $stmt) {
+            $metadata = $this-&gt;statementMetadata[$stmt];
+            if ($metadata['created_at'] &lt; $oldestTime) {
                 $oldestTime = $metadata['created_at'];
                 $oldestKey = $key;
             }
         }
         
         if ($oldestKey !== null) {
-            unset($this->statements[$oldestKey]);
+            unset($this-&gt;statements[$oldestKey]);
         }
     }
     
     public function getPoolStats(): array
     {
         $stats = [
-            'total_statements' => count($this->statements),
-            'max_statements' => $this->maxStatements,
-            'usage_stats' => [],
+            'total_statements' =&gt; count($this-&gt;statements),
+            'max_statements' =&gt; $this-&gt;maxStatements,
+            'usage_stats' =&gt; [],
         ];
         
-        foreach ($this->statements as $key => $stmt) {
-            $metadata = $this->statementMetadata[$stmt];
+        foreach ($this-&gt;statements as $key =&gt; $stmt) {
+            $metadata = $this-&gt;statementMetadata[$stmt];
             $stats['usage_stats'][$key] = $metadata;
         }
         
@@ -450,7 +448,7 @@ final class PreparedStatementPool
 
                     <h3>Subquery Optimization</h3>
 
-                    <pre><code>-- Slow: Correlated subquery
+                    <pre><code class="language-sql">-- Slow: Correlated subquery
 SELECT u.*, 
        (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.id) as order_count
 FROM users u
@@ -483,10 +481,10 @@ WHERE EXISTS (
 
                     <h3>Aggregation Optimization</h3>
 
-                    <pre><code>-- Slow: Multiple aggregations in separate queries
-$totalOrders = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
-$totalRevenue = $pdo->query("SELECT SUM(total) FROM orders")->fetchColumn();
-$avgOrderValue = $pdo->query("SELECT AVG(total) FROM orders")->fetchColumn();
+                    <pre><code class="language-sql">-- Slow: Multiple aggregations in separate queries
+$totalOrders = $pdo-&gt;query("SELECT COUNT(*) FROM orders")-&gt;fetchColumn();
+$totalRevenue = $pdo-&gt;query("SELECT SUM(total) FROM orders")-&gt;fetchColumn();
+$avgOrderValue = $pdo-&gt;query("SELECT AVG(total) FROM orders")-&gt;fetchColumn();
 
 -- Fast: Single query with multiple aggregations
 $sql = "SELECT 
@@ -495,7 +493,7 @@ $sql = "SELECT
     AVG(total) as avg_order_value
 FROM orders";
 
-$stats = $pdo->query($sql)->fetch();
+$stats = $pdo-&gt;query($sql)-&gt;fetch();
 
 -- Optimized aggregation with filtering
 SELECT 
@@ -504,7 +502,7 @@ SELECT
     SUM(total) as revenue,
     AVG(total) as avg_value
 FROM orders 
-WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+WHERE created_at &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY)
 GROUP BY DATE(created_at)
 ORDER BY date DESC;</code></pre>
 
@@ -512,17 +510,17 @@ ORDER BY date DESC;</code></pre>
 
                     <h3>Slow Query Log Analysis</h3>
 
-                    <pre><code>class SlowQueryAnalyzer {
+                    <pre><code class="language-sql">class SlowQueryAnalyzer {
     private $pdo;
     
     public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
+        $this-&gt;pdo = $pdo;
     }
     
     public function enableSlowQueryLog(): void {
-        $this->pdo->exec("SET GLOBAL slow_query_log = 'ON'");
-        $this->pdo->exec("SET GLOBAL long_query_time = 1");
-        $this->pdo->exec("SET GLOBAL log_queries_not_using_indexes = 'ON'");
+        $this-&gt;pdo-&gt;exec("SET GLOBAL slow_query_log = 'ON'");
+        $this-&gt;pdo-&gt;exec("SET GLOBAL long_query_time = 1");
+        $this-&gt;pdo-&gt;exec("SET GLOBAL log_queries_not_using_indexes = 'ON'");
     }
     
     public function getSlowQueries(): array {
@@ -535,11 +533,11 @@ ORDER BY date DESC;</code></pre>
             rows_sent,
             rows_examined
         FROM sys.statement_analysis
-        WHERE avg_latency > 1000000  -- 1 second
+        WHERE avg_latency &gt; 1000000  -- 1 second
         ORDER BY total_latency DESC
         LIMIT 20";
         
-        return $this->pdo->query($sql)->fetchAll();
+        return $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
     }
     
     public function getTableScans(): array {
@@ -553,17 +551,17 @@ ORDER BY date DESC;</code></pre>
         ORDER BY count_read DESC
         LIMIT 20";
         
-        return $this->pdo->query($sql)->fetchAll();
+        return $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
     }
 }</code></pre>
 
                     <h3>Real-time Performance Monitoring</h3>
 
-                    <pre><code>class MySQLMonitor {
+                    <pre><code class="language-sql">class MySQLMonitor {
     private $pdo;
     
     public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
+        $this-&gt;pdo = $pdo;
     }
     
     public function getPerformanceMetrics(): array {
@@ -586,7 +584,7 @@ ORDER BY date DESC;</code></pre>
             'Innodb_rows_deleted'
         )";
         
-        $result = $this->pdo->query($sql)->fetchAll();
+        $result = $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
         $metrics = [];
         
         foreach ($result as $row) {
@@ -615,14 +613,14 @@ ORDER BY date DESC;</code></pre>
         WHERE command != 'Sleep'
         ORDER BY time DESC";
         
-        return $this->pdo->query($sql)->fetchAll();
+        return $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
     }
     
     public function getInnoDBStatus(): array {
         $sql = "SHOW ENGINE INNODB STATUS";
-        $result = $this->pdo->query($sql)->fetch();
+        $result = $this-&gt;pdo-&gt;query($sql)-&gt;fetch();
         
-        return $this->parseInnoDBStatus($result['Status']);
+        return $this-&gt;parseInnoDBStatus($result['Status']);
     }
     
     private function parseInnoDBStatus(string $status): array {
@@ -651,7 +649,7 @@ ORDER BY date DESC;</code></pre>
 
                     <h3>Range Partitioning</h3>
 
-                    <pre><code>-- Partition by date for time-series data
+                    <pre><code class="language-sql">-- Partition by date for time-series data
 CREATE TABLE order_history (
     id INT AUTO_INCREMENT,
     user_id INT,
@@ -678,11 +676,11 @@ CREATE TABLE user_sessions (
 
                     <h3>Partition Pruning</h3>
 
-                    <pre><code>class PartitionManager {
+                    <pre><code class="language-sql">class PartitionManager {
     private $pdo;
     
     public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
+        $this-&gt;pdo = $pdo;
     }
     
     public function addPartition(string $table, string $partition, string $value): void {
@@ -690,7 +688,7 @@ CREATE TABLE user_sessions (
             PARTITION {$partition} VALUES LESS THAN ({$value})
         )";
         
-        $this->pdo->exec($sql);
+        $this-&gt;pdo-&gt;exec($sql);
     }
     
     public function dropOldPartitions(string $table, int $keepDays = 90): void {
@@ -703,21 +701,21 @@ CREATE TABLE user_sessions (
         WHERE table_name = ? AND partition_name IS NOT NULL
         ORDER BY partition_ordinal_position";
         
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$table]);
-        $partitions = $stmt->fetchAll();
+        $stmt = $this-&gt;pdo-&gt;prepare($sql);
+        $stmt-&gt;execute([$table]);
+        $partitions = $stmt-&gt;fetchAll();
         
         foreach ($partitions as $partition) {
             $partitionDate = $partition['partition_description'];
-            if ($partitionDate < $cutoffDate) {
-                $this->dropPartition($table, $partition['partition_name']);
+            if ($partitionDate &lt; $cutoffDate) {
+                $this-&gt;dropPartition($table, $partition['partition_name']);
             }
         }
     }
     
     private function dropPartition(string $table, string $partition): void {
         $sql = "ALTER TABLE {$table} DROP PARTITION {$partition}";
-        $this->pdo->exec($sql);
+        $this-&gt;pdo-&gt;exec($sql);
     }
 }</code></pre>
 
@@ -725,17 +723,17 @@ CREATE TABLE user_sessions (
 
                     <h3>Query Result Caching</h3>
 
-                    <pre><code>class QueryResultCache {
+                    <pre><code class="language-php">class QueryResultCache {
     private $redis;
     private $defaultTTL = 300;
     
     public function __construct(Redis $redis) {
-        $this->redis = $redis;
+        $this-&gt;redis = $redis;
     }
     
     public function getCachedQuery(string $sql, array $params = [], int $ttl = null): ?array {
-        $cacheKey = $this->generateCacheKey($sql, $params);
-        $cached = $this->redis->get($cacheKey);
+        $cacheKey = $this-&gt;generateCacheKey($sql, $params);
+        $cached = $this-&gt;redis-&gt;get($cacheKey);
         
         if ($cached !== false) {
             return json_decode($cached, true);
@@ -745,24 +743,24 @@ CREATE TABLE user_sessions (
     }
     
     public function setCachedQuery(string $sql, array $params, array $result, int $ttl = null): void {
-        $cacheKey = $this->generateCacheKey($sql, $params);
-        $ttl = $ttl ?? $this->defaultTTL;
+        $cacheKey = $this-&gt;generateCacheKey($sql, $params);
+        $ttl = $ttl ?? $this-&gt;defaultTTL;
         
-        $this->redis->setex($cacheKey, $ttl, json_encode($result));
+        $this-&gt;redis-&gt;setex($cacheKey, $ttl, json_encode($result));
     }
     
     public function invalidateQueryCache(string $table): void {
         $pattern = "query:*:{$table}:*";
-        $keys = $this->redis->keys($pattern);
+        $keys = $this-&gt;redis-&gt;keys($pattern);
         
         if (!empty($keys)) {
-            $this->redis->del($keys);
+            $this-&gt;redis-&gt;del($keys);
         }
     }
     
     private function generateCacheKey(string $sql, array $params): string {
-        $normalized = $this->normalizeQuery($sql);
-        $tables = $this->extractTables($normalized);
+        $normalized = $this-&gt;normalizeQuery($sql);
+        $tables = $this-&gt;extractTables($normalized);
         
         return 'query:' . md5($sql . serialize($params)) . ':' . implode(',', $tables);
     }
@@ -780,45 +778,45 @@ CREATE TABLE user_sessions (
 
                     <h3>Database Sharding</h3>
 
-                    <pre><code>class DatabaseShardManager {
+                    <pre><code class="language-php">class DatabaseShardManager {
     private $shards = [];
     private $shardCount;
     
     public function __construct(array $shardConfigs) {
-        $this->shardCount = count($shardConfigs);
+        $this-&gt;shardCount = count($shardConfigs);
         
-        foreach ($shardConfigs as $index => $config) {
-            $this->shards[$index] = new PDO(
+        foreach ($shardConfigs as $index =&gt; $config) {
+            $this-&gt;shards[$index] = new PDO(
                 $config['dsn'],
                 $config['username'],
                 $config['password'],
-                [PDO::ATTR_PERSISTENT => true]
+                [PDO::ATTR_PERSISTENT =&gt; true]
             );
         }
     }
     
     public function getShardForUser(int $userId): PDO {
-        $shardIndex = $userId % $this->shardCount;
-        return $this->shards[$shardIndex];
+        $shardIndex = $userId % $this-&gt;shardCount;
+        return $this-&gt;shards[$shardIndex];
     }
     
     public function executeOnAllShards(string $sql, array $params = []): array {
         $results = [];
         
-        foreach ($this->shards as $index => $pdo) {
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            $results[$index] = $stmt->fetchAll();
+        foreach ($this-&gt;shards as $index =&gt; $pdo) {
+            $stmt = $pdo-&gt;prepare($sql);
+            $stmt-&gt;execute($params);
+            $results[$index] = $stmt-&gt;fetchAll();
         }
         
         return $results;
     }
     
     public function executeOnShard(int $shardIndex, string $sql, array $params = []): array {
-        $pdo = $this->shards[$shardIndex];
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
+        $pdo = $this-&gt;shards[$shardIndex];
+        $stmt = $pdo-&gt;prepare($sql);
+        $stmt-&gt;execute($params);
+        return $stmt-&gt;fetchAll();
     }
 }</code></pre>
 
@@ -826,32 +824,32 @@ CREATE TABLE user_sessions (
 
                     <h3>Hot Backup Strategy</h3>
 
-                    <pre><code>class HotBackupManager {
+                    <pre><code class="language-php">class HotBackupManager {
     private $pdo;
     private $backupPath;
     
     public function __construct(PDO $pdo, string $backupPath) {
-        $this->pdo = $pdo;
-        $this->backupPath = $backupPath;
+        $this-&gt;pdo = $pdo;
+        $this-&gt;backupPath = $backupPath;
     }
     
     public function createIncrementalBackup(): void {
         // Get current binary log position
         $sql = "SHOW MASTER STATUS";
-        $status = $this->pdo->query($sql)->fetch();
+        $status = $this-&gt;pdo-&gt;query($sql)-&gt;fetch();
         
         $backupInfo = [
-            'timestamp' => date('Y-m-d H:i:s'),
-            'log_file' => $status['File'],
-            'log_position' => $status['Position'],
-            'type' => 'incremental'
+            'timestamp' =&gt; date('Y-m-d H:i:s'),
+            'log_file' =&gt; $status['File'],
+            'log_position' =&gt; $status['Position'],
+            'type' =&gt; 'incremental'
         ];
         
         // Create backup using xtrabackup
         $command = sprintf(
             'xtrabackup --backup --target-dir=%s --incremental-basedir=%s',
-            $this->backupPath . '/incremental_' . date('Y-m-d_H-i-s'),
-            $this->getLastFullBackup()
+            $this-&gt;backupPath . '/incremental_' . date('Y-m-d_H-i-s'),
+            $this-&gt;getLastFullBackup()
         );
         
         exec($command, $output, $returnCode);
@@ -862,13 +860,13 @@ CREATE TABLE user_sessions (
         
         // Save backup metadata
         file_put_contents(
-            $this->backupPath . '/backup_info.json',
+            $this-&gt;backupPath . '/backup_info.json',
             json_encode($backupInfo)
         );
     }
     
     public function createFullBackup(): void {
-        $backupDir = $this->backupPath . '/full_' . date('Y-m-d_H-i-s');
+        $backupDir = $this-&gt;backupPath . '/full_' . date('Y-m-d_H-i-s');
         
         $command = sprintf(
             'xtrabackup --backup --target-dir=%s',
@@ -887,7 +885,7 @@ CREATE TABLE user_sessions (
     }
     
     private function getLastFullBackup(): string {
-        $backups = glob($this->backupPath . '/full_*');
+        $backups = glob($this-&gt;backupPath . '/full_*');
         if (empty($backups)) {
             throw new Exception('No full backup found');
         }
@@ -939,7 +937,7 @@ CREATE TABLE user_sessions (
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 Joseph. All rights reserved.</p>
+                <p>© 2025 Joseph. All rights reserved.</p>
                 <nav class="footer-nav">
                 </nav>
             </div>
@@ -948,5 +946,5 @@ CREATE TABLE user_sessions (
 
     <script src="../js/main.js"></script>
     <script src="../js/syntax-highlighter.js"></script>
-</body>
-</html>
+
+</body></html>
