@@ -2,51 +2,51 @@
 const articlesData = [
     {
         id: 1,
-        title: "Building Scalable Ecommerce Platforms with Microservices",
-        excerpt: "Learn how to architect modern ecommerce applications using microservices for better scalability and maintainability.",
-        category: "ecommerce",
+        title: "Managing Legacy PHP: From Technical Debt to Modern Architecture",
+        excerpt: "Practical strategies for transforming legacy PHP codebases into maintainable, modern systems without breaking production.",
+        category: "php",
         date: "2025-01-15",
-        slug: "scalable-ecommerce-microservices"
+        slug: "legacy-php-modernization"
     },
     {
         id: 2,
-        title: "CI/CD Pipeline Best Practices for DevOps Teams",
-        excerpt: "Discover the essential practices for building robust continuous integration and deployment pipelines.",
-        category: "devops",
+        title: "Ansible Automation for PHP Infrastructure",
+        excerpt: "Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications.",
+        category: "infrastructure",
         date: "2025-01-10",
-        slug: "cicd-best-practices"
+        slug: "ansible-php-infrastructure"
     },
     {
         id: 3,
-        title: "Linux Security Hardening: A Comprehensive Guide",
-        excerpt: "Essential security measures every Linux administrator should implement to protect their servers.",
-        category: "linux",
+        title: "Proxmox vs Cloud: Why Private Infrastructure Wins",
+        excerpt: "Real-world comparison of Proxmox private cloud infrastructure versus public cloud solutions for PHP applications.",
+        category: "infrastructure",
         date: "2025-01-05",
-        slug: "linux-security-hardening"
+        slug: "proxmox-vs-cloud"
     },
     {
         id: 4,
-        title: "Implementing AI-Powered Customer Support Systems",
-        excerpt: "How to leverage AI and natural language processing to build intelligent customer support solutions.",
-        category: "ai",
+        title: "High-Performance PHP: Optimization Strategies",
+        excerpt: "Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios.",
+        category: "php",
         date: "2024-12-28",
-        slug: "ai-customer-support"
+        slug: "high-performance-php"
     },
     {
         id: 5,
-        title: "Optimizing Database Performance for Ecommerce",
-        excerpt: "Techniques for improving database performance in high-traffic ecommerce applications.",
-        category: "ecommerce",
+        title: "MySQL Performance Tuning for Complex PHP Applications",
+        excerpt: "Database optimization strategies specifically tailored for bespoke PHP systems with complex queries.",
+        category: "database",
         date: "2024-12-20",
-        slug: "database-optimization-ecommerce"
+        slug: "mysql-performance-php"
     },
     {
         id: 6,
-        title: "Kubernetes Deployment Strategies",
-        excerpt: "Understanding different deployment strategies in Kubernetes and when to use each one.",
-        category: "devops",
+        title: "Building Scalable Backend APIs with Modern PHP",
+        excerpt: "Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP.",
+        category: "php",
         date: "2024-12-15",
-        slug: "kubernetes-deployment-strategies"
+        slug: "scalable-php-apis"
     }
 ];
 
