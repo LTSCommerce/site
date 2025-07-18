@@ -14,7 +14,8 @@
     "lint:check": "eslint . --ext .js,.html",
     "clean": "rm -rf dist",
     "deploy": "npm run build && rsync -avz --delete dist/ public_html/",
-    "embed-code": "node embed-code-snippets.js"
+    "embed-code": "node embed-code-snippets.js",
+    "syntax-highlight": "node embed-code-snippets.js"
   },
   "devDependencies": {
     "cheerio": "^1.0.0-rc.12",
