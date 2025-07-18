@@ -10,8 +10,8 @@ function removeHtmlComments() {
       for (const fileName in bundle) {
         const file = bundle[fileName];
         if (file.type === 'asset' && fileName.endsWith('.html')) {
-          // Remove HTML comments but preserve special comments like deployment timestamps
-          file.source = file.source.toString().replace(/<!--(?!\s*Deployed:)[\s\S]*?-->/g, '');
+          // Remove all HTML comments during build
+          file.source = file.source.toString().replace(/<!--[\s\S]*?-->/g, '');
         }
       }
     }
