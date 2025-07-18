@@ -10,7 +10,6 @@ permissions:
   contents: write
   actions: read
   checks: write
-  workflows: write
 
 jobs:
   lint-and-format:
@@ -31,25 +30,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Auto-format code
-        if: github.ref == 'refs/heads/main'
-        run: npm run format
-
-      - name: Commit formatting changes
-        if: github.ref == 'refs/heads/main'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git diff --staged --quiet || git commit -m "Auto-format code"
-
-      - name: Push formatting changes
-        if: github.ref == 'refs/heads/main'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
 
       - name: Check formatting
         run: npm run format:check
@@ -74,34 +54,9 @@ jobs:
         working-directory: qa-tools
         run: composer install --no-progress --prefer-dist
 
-      - name: Auto-fix PHP code style
-        if: github.ref == 'refs/heads/main'
-        working-directory: qa-tools
-        run: composer run cs-fix
-
-      - name: Commit PHP fixes
-        if: github.ref == 'refs/heads/main'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add code-snippets/
-          git diff --staged --quiet || git commit -m "Auto-fix PHP code style issues"
-
-      - name: Push PHP fixes
-        if: github.ref == 'refs/heads/main'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-
       - name: Check PHP code style
         working-directory: qa-tools
         run: composer run cs-check
-
-      # PHPStan disabled for code snippets - they're examples with missing dependencies
-      # - name: Run PHPStan analysis
-      #   working-directory: qa-tools
-      #   run: composer run phpstan
 
   build:
     name: Build Site
