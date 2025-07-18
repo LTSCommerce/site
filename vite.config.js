@@ -24,6 +24,7 @@ export default defineConfig({
         'articles/ansible-php-infrastructure': resolve(__dirname, 'public_html/articles/ansible-php-infrastructure.html'),
         'articles/ai-enhanced-php-development': resolve(__dirname, 'public_html/articles/ai-enhanced-php-development.html'),
         'articles/proxmox-vs-cloud': resolve(__dirname, 'public_html/articles/proxmox-vs-cloud.html'),
+        'articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'public_html/articles/claude-code-custom-commands-cc-commands.html'),
         // JavaScript entry points
         'js/main': resolve(__dirname, 'public_html/js/main.js'),
         'js/articles': resolve(__dirname, 'public_html/js/articles.js'),
