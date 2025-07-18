@@ -87,7 +87,7 @@ npm run syntax-highlight # Process code syntax highlighting
 
 ### Adding New Articles
 
-**STREAMLINED PROCESS**: Creating articles is now much simpler using templates:
+**FULLY AUTOMATED PROCESS**: Creating articles is now completely automated using metadata extraction:
 
 #### Step 1: Create Article from Template
 ```bash
@@ -95,55 +95,55 @@ npm run syntax-highlight # Process code syntax highlighting
 cp templates/article-template.html private_html/articles/your-article-slug.html
 ```
 
-#### Step 2: Replace Placeholders
+#### Step 2: Edit Article Content
 Edit the new article file and replace all `{{PLACEHOLDER}}` values:
 
-**Required Placeholders:**
+**HTML Head Metadata** (automatically extracted):
+- `<title>` - Article title (automatically extracted, removes " | Joseph")
+- `<meta name="description">` - SEO meta description (becomes excerpt)
+- `<meta name="keywords">` - Article tags (comma-separated)
+- `<time datetime="YYYY-MM-DD">` - Article date (ISO format)
+
+**HTML Comment Metadata** (for article-specific data only):
+```html
+<!-- ARTICLE_META:
+category: php|infrastructure|database|ai
+readingTime: 8
+-->
+```
+
+**Content Placeholders:**
 - `{{ARTICLE_TITLE}}` - Article title (used in multiple places)
 - `{{ARTICLE_DESCRIPTION}}` - SEO meta description
 - `{{ARTICLE_DATE_ISO}}` - Date in ISO format (YYYY-MM-DD)
 - `{{ARTICLE_DATE_FORMATTED}}` - Human-readable date (e.g., "July 18, 2025")
-- `{{ARTICLE_CATEGORY}}` - Category (PHP, Infrastructure, Database, AI)
+- `{{ARTICLE_CATEGORY}}` - Category from comment metadata
+- `{{READING_TIME}}` - Reading time from comment metadata
 - `{{ARTICLE_LEAD}}` - Article introduction/lead paragraph
-- `{{READING_TIME}}` - Estimated reading time in minutes
-
-**Content Placeholders:**
 - `{{SECTION_TITLE_*}}` - Section headings
 - `{{SECTION_CONTENT_*}}` - Section content
 - `{{CODE_EXAMPLE}}` - Code snippets
 - `{{LANGUAGE}}` - Programming language for syntax highlighting
-- `{{CTA_TITLE}}` and `{{CTA_CONTENT}}` - Call-to-action section
 
-#### Step 3: Register in Articles Data
-Add entry to `private_html/js/articles.js` data array:
-```javascript
-{
-  id: 9,  // Next sequential ID
-  title: "Your Article Title",
-  excerpt: "Brief description for article cards",
-  category: "php|infrastructure|database|ai",
-  date: "2025-07-18",  // YYYY-MM-DD format
-  slug: "your-article-slug"
-}
-```
-
-#### Step 4: Register in Build Configuration
-Add entry to `vite.config.js` rollupOptions.input:
-```javascript
-'articles/your-article-slug': resolve(__dirname, 'private_html/articles/your-article-slug.html'),
-```
-
-#### Step 5: Test and Deploy
+#### Step 3: Build and Deploy (Articles Auto-Register!)
 ```bash
-# Test locally
+# Test locally (auto-registers articles)
 npm run dev
 
-# Build and deploy
+# Build and deploy (auto-registers articles)
 npm run build
 git add .
 git commit -m "Add new article: Your Article Title"
 git push origin main
 ```
+
+**✨ AUTOMATIC FEATURES:**
+- **No manual registration needed** - articles are automatically detected and registered
+- **Metadata extraction** - title, description, date extracted from HTML head tags
+- **Auto-generated articles.js** - data array created from scanned articles
+- **Auto-updated vite.config.js** - build paths added automatically
+- **Smart ID generation** - unique IDs created from article slugs
+- **Consistent ordering** - articles sorted by date (newest first)
 
 **Source vs Built Files:**
 - **Source**: `private_html/` contains original HTML with comments and placeholders

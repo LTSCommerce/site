@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node embed-code-snippets.js && vite build",
+    "build": "node scripts/auto-register-articles.js && node embed-code-snippets.js && vite build",
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -15,7 +15,8 @@
     "clean": "rm -rf dist",
     "deploy": "npm run build && rsync -avz --delete dist/ public_html/",
     "embed-code": "node embed-code-snippets.js",
-    "syntax-highlight": "node embed-code-snippets.js"
+    "syntax-highlight": "node embed-code-snippets.js",
+    "articles:register": "node scripts/auto-register-articles.js"
   },
   "devDependencies": {
     "cheerio": "^1.0.0-rc.12",
@@ -64,5 +65,8 @@
       "prefer-const": "error",
       "no-var": "error"
     }
+  },
+  "dependencies": {
+    "jsdom": "^26.1.0"
   }
 }
