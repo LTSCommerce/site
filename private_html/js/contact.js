@@ -1,13 +1,10 @@
-// Import CSS for Vite processing
-import '../css/main.css';
-import '../css/contact.css';
-
-// Contact Form Handler
+// Contact Form Handler - Dynamic mailto link generation
 document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contactForm');
     const formMessage = document.getElementById('formMessage');
+    const sendEmailBtn = document.getElementById('sendEmailBtn');
     
-    contactForm.addEventListener('submit', async function(e) {
+    sendEmailBtn.addEventListener('click', function(e) {
         e.preventDefault();
         
         // Get form data
@@ -20,30 +17,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Disable submit button
-        const submitButton = contactForm.querySelector('button[type="submit"]');
-        const originalText = submitButton.textContent;
-        submitButton.textContent = 'Sending...';
-        submitButton.disabled = true;
+        // Generate mailto link
+        const mailtoLink = generateMailtoLink(data);
         
-        try {
-            // In a real application, this would send data to a server
-            // For now, we'll simulate a successful submission
-            await simulateFormSubmission(data);
-            
-            // Show success message
-            showMessage('Thank you for your message! I\'ll get back to you within 24 hours.', 'success');
-            
-            // Reset form
-            contactForm.reset();
-            
-        } catch (error) {
-            showMessage('Sorry, there was an error sending your message. Please try again.', 'error');
-        } finally {
-            // Re-enable submit button
-            submitButton.textContent = originalText;
-            submitButton.disabled = false;
-        }
+        // Open email client
+        window.location.href = mailtoLink;
+        
+        // Show success message
+        showMessage('Opening your email client... Please send the prepared email.', 'success');
     });
     
     function validateForm(data) {
@@ -65,6 +46,49 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
     
+    function generateMailtoLink(data) {
+        const toEmail = 'contact@ltscommerce.dev';
+        const subject = `Contact Form from ${data.name}`;
+        
+        // Format the email body
+        let body = `Hello Joseph,\n\n`;
+        body += `I'm reaching out regarding a potential project.\n\n`;
+        body += `--- Contact Details ---\n`;
+        body += `Name: ${data.name}\n`;
+        body += `Email: ${data.email}\n`;
+        if (data.company) {
+            body += `Company: ${data.company}\n`;
+        }
+        body += `\n--- Project Information ---\n`;
+        body += `Project Type: ${getProjectTypeLabel(data.projectType)}\n`;
+        if (data.budget) {
+            body += `Budget Range: ${data.budget}\n`;
+        }
+        if (data.timeline) {
+            body += `Timeline: ${data.timeline}\n`;
+        }
+        body += `\n--- Project Details ---\n`;
+        body += `${data.message}\n\n`;
+        body += `Best regards,\n${data.name}`;
+        
+        // Create mailto link
+        const mailtoLink = `mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        
+        return mailtoLink;
+    }
+    
+    function getProjectTypeLabel(value) {
+        const projectTypes = {
+            'bespoke-php': 'Bespoke PHP Development',
+            'legacy-php': 'Legacy PHP Modernization',
+            'infrastructure': 'Infrastructure & Automation',
+            'cto-services': 'CTO-Level Services',
+            'ai-development': 'AI-Enhanced Development',
+            'other': 'Other'
+        };
+        return projectTypes[value] || value;
+    }
+    
     function showMessage(message, type) {
         formMessage.textContent = message;
         formMessage.className = `form-message ${type}`;
@@ -79,16 +103,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 formMessage.style.display = 'none';
             }, 5000);
         }
-    }
-    
-    function simulateFormSubmission(data) {
-        // Simulate API call with a delay
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                console.log('Form submitted with data:', data);
-                resolve();
-            }, 1500);
-        });
     }
     
     // Add input animations
