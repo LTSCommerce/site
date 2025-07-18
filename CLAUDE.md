@@ -9,8 +9,8 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 ### Build System
 - **Build Tool**: Vite 5.x (modern, fast ES module bundler)
 - **Package Manager**: npm with lockfile for reproducible builds
-- **Source Directory**: `public_html/` (development files)
-- **Build Output**: `dist/` (optimized production files)
+- **Source Directory**: `private_html/` (development files)
+- **Build Output**: `public_html/` (optimized production files)
 - **Deployment**: Automated via GitHub Actions
 
 ### Technology Stack
@@ -23,13 +23,14 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 
 ### Site Structure
 ```
-├── public_html/          # Source files
+├── private_html/        # Source files (pre-build)
 │   ├── css/             # Stylesheets  
 │   ├── js/              # JavaScript modules
 │   ├── images/          # Static assets
 │   ├── articles/        # Article pages
 │   └── *.html           # Main pages
-├── dist/                # Built files (production)
+├── public_html/         # Built files (production)
+├── templates/           # Article templates
 ├── scripts/             # Build utilities
 └── .github/workflows/   # CI/CD configuration
 ```
@@ -77,66 +78,84 @@ npm run syntax-highlight # Process code syntax highlighting
 ## Content Management
 
 ### Articles
-- **Location**: `public_html/articles/`
+- **Location**: `private_html/articles/` (source), `public_html/articles/` (built)
 - **Format**: Static HTML with embedded metadata
 - **Syntax Highlighting**: Automatic language detection for code blocks
 - **Categories**: PHP, Infrastructure, Database, AI
 - **SEO**: Proper meta tags, structured data, semantic HTML
+- **Comments**: HTML comments in source files are removed during build
 
 ### Adding New Articles
 
-**CRITICAL**: All 3 steps below are REQUIRED for articles to appear and be accessible:
+**STREAMLINED PROCESS**: Creating articles is now much simpler using templates:
 
-1. **Create HTML file** in `public_html/articles/`
-   - Use semantic HTML with proper heading hierarchy
-   - Include complete SEO meta tags (title, description, keywords, Open Graph, Twitter)
-   - Add JSON-LD structured data for articles
-   - Use proper canonical URLs
-   - Follow existing article format and structure
+#### Step 1: Create Article from Template
+```bash
+# Copy the template to create a new article
+cp templates/article-template.html private_html/articles/your-article-slug.html
+```
 
-2. **Register in articles.js** - Add entry to `public_html/js/articles.js` data array:
-   ```javascript
-   {
-     id: 8,  // Next sequential ID
-     title: "Article Title",
-     excerpt: "Brief description for article cards",
-     category: "php|infrastructure|database|ai",
-     date: "2025-07-18",  // YYYY-MM-DD format
-     slug: "article-filename-without-extension"
-   }
-   ```
+#### Step 2: Replace Placeholders
+Edit the new article file and replace all `{{PLACEHOLDER}}` values:
 
-3. **Register in Vite config** - Add entry to `vite.config.js` rollupOptions.input:
-   ```javascript
-   'articles/article-filename': resolve(__dirname, 'public_html/articles/article-filename.html'),
-   ```
+**Required Placeholders:**
+- `{{ARTICLE_TITLE}}` - Article title (used in multiple places)
+- `{{ARTICLE_DESCRIPTION}}` - SEO meta description
+- `{{ARTICLE_DATE_ISO}}` - Date in ISO format (YYYY-MM-DD)
+- `{{ARTICLE_DATE_FORMATTED}}` - Human-readable date (e.g., "July 18, 2025")
+- `{{ARTICLE_CATEGORY}}` - Category (PHP, Infrastructure, Database, AI)
+- `{{ARTICLE_LEAD}}` - Article introduction/lead paragraph
+- `{{READING_TIME}}` - Estimated reading time in minutes
 
-**WARNING**: If any step is missed, the CI will delete the article file during the build process. The CI should be improved to fail instead of silently deleting unregistered articles.
+**Content Placeholders:**
+- `{{SECTION_TITLE_*}}` - Section headings
+- `{{SECTION_CONTENT_*}}` - Section content
+- `{{CODE_EXAMPLE}}` - Code snippets
+- `{{LANGUAGE}}` - Programming language for syntax highlighting
+- `{{CTA_TITLE}}` and `{{CTA_CONTENT}}` - Call-to-action section
 
-**Testing**: After deployment, verify:
-- Article appears on articles.html page
-- Article URL is accessible (not 404)
-- Article displays correctly with all formatting
-- SEO metadata is properly rendered
+#### Step 3: Register in Articles Data
+Add entry to `private_html/js/articles.js` data array:
+```javascript
+{
+  id: 9,  // Next sequential ID
+  title: "Your Article Title",
+  excerpt: "Brief description for article cards",
+  category: "php|infrastructure|database|ai",
+  date: "2025-07-18",  // YYYY-MM-DD format
+  slug: "your-article-slug"
+}
+```
 
-### Potential Architecture Improvements
+#### Step 4: Register in Build Configuration
+Add entry to `vite.config.js` rollupOptions.input:
+```javascript
+'articles/your-article-slug': resolve(__dirname, 'private_html/articles/your-article-slug.html'),
+```
 
-**Current Issues**:
-1. Manual registration in multiple places (articles.js + vite.config.js) is error-prone
-2. CI silently deletes unregistered articles instead of failing
-3. Source and build directories are confusing (`public_html` contains both)
+#### Step 5: Test and Deploy
+```bash
+# Test locally
+npm run dev
 
-**Suggested Improvements**:
-1. **Separate source/build directories**: Move HTML source to `private_html/` or `src/`, build to `public_html/`
-2. **Automatic article registration**: Build script scans source articles and auto-generates articles.js
-3. **CI validation**: Fail build if articles are malformed or missing metadata
-4. **Metadata extraction**: Parse article HTML for title/excerpt instead of manual entry
+# Build and deploy
+npm run build
+git add .
+git commit -m "Add new article: Your Article Title"
+git push origin main
+```
 
-**Benefits**:
-- Single source of truth (just create HTML file)
-- Reduced manual work and human error
-- Better separation of concerns
-- Fail-fast on missing articles
+**Source vs Built Files:**
+- **Source**: `private_html/` contains original HTML with comments and placeholders
+- **Built**: `public_html/` contains optimized, comment-free production files
+- **Templates**: `templates/` contains reusable article templates
+
+**Benefits of New Structure:**
+- Clear separation between source and built files
+- HTML comments allowed in source for documentation
+- Template-based article creation reduces errors
+- Consistent article structure and formatting
+- Comments automatically removed in production
 
 ## Configuration Files
 
