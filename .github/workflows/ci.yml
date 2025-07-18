@@ -39,17 +39,23 @@ jobs:
           echo "<!-- Deployed: $TIMESTAMP -->" >> public_html/index.html
           sed -i "s/DEPLOYMENT_TIMESTAMP_PLACEHOLDER/$TIMESTAMP/g" public_html/index.html
 
-      - name: Commit built files
+      - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add public_html/
-          git diff --staged --quiet || git commit -m "Update site build"
-
-      - name: Push changes
-        if: github.ref == 'refs/heads/main'
-        uses: ad-m/github-push-action@master
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          path: ./public_html
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
