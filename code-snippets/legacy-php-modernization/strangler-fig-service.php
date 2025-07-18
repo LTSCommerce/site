@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Services\User;
 
 use App\Contracts\UserServiceInterface;
-use App\ValueObjects\UserId;
 use App\Entities\User;
-use App\Exceptions\UserNotFoundException;
+use App\ValueObjects\UserId;
 
 final readonly class StranglerFigUserService implements UserServiceInterface
 {
@@ -15,12 +14,13 @@ final readonly class StranglerFigUserService implements UserServiceInterface
         private UserServiceInterface $legacyService,
         private UserServiceInterface $modernService,
         private FeatureToggleService $featureToggle,
-    ) {}
+    ) {
+    }
 
     public function getUser(UserId $id): User
     {
         return match ($this->featureToggle->isEnabled('modern_user_service', $id)) {
-            true => $this->modernService->getUser($id),
+            true  => $this->modernService->getUser($id),
             false => $this->legacyService->getUser($id),
         };
     }
