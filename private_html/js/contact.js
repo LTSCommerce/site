@@ -1,19 +1,107 @@
-document.addEventListener("DOMContentLoaded",function(){const r=document.getElementById("contactForm"),a=document.getElementById("formMessage");document.getElementById("sendEmailBtn").addEventListener("click",function(e){e.preventDefault();const n=new FormData(r),o=Object.fromEntries(n);if(!c(o)){s("Please fill in all required fields.","error");return}const t=i(o);window.location.href=t,s("Opening your email client... Please send the prepared email.","success")});function c(e){const n=["name","email","projectType","message"];for(const o of n)if(!e[o]||e[o].trim()==="")return!1;return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.email)?!0:(s("Please enter a valid email address.","error"),!1)}function i(e){const n="contact@ltscommerce.dev",o=`Contact Form from ${e.name}`;let t=`Hello Joseph,
+// Import CSS for Vite processing
+import '../css/main.css';
+import '../css/contact.css';
 
-`;return t+=`I'm reaching out regarding a potential project.
-
-`,t+=`--- Contact Details ---
-`,t+=`Name: ${e.name}
-`,t+=`Email: ${e.email}
-`,e.company&&(t+=`Company: ${e.company}
-`),t+=`
---- Project Information ---
-`,t+=`Project Type: ${l(e.projectType)}
-`,e.budget&&(t+=`Budget Range: ${e.budget}
-`),e.timeline&&(t+=`Timeline: ${e.timeline}
-`),t+=`
---- Project Details ---
-`,t+=`${e.message}
-
-`,t+=`Best regards,
-${e.name}`,`mailto:${n}?subject=${encodeURIComponent(o)}&body=${encodeURIComponent(t)}`}function l(e){return{"bespoke-php":"Bespoke PHP Development","legacy-php":"Legacy PHP Modernization",infrastructure:"Infrastructure & Automation","cto-services":"CTO-Level Services","ai-development":"AI-Enhanced Development",other:"Other"}[e]||e}function s(e,n){a.textContent=e,a.className=`form-message ${n}`,a.style.display="block",a.scrollIntoView({behavior:"smooth",block:"nearest"}),n==="success"&&setTimeout(()=>{a.style.display="none"},5e3)}r.querySelectorAll("input, select, textarea").forEach(e=>{e.addEventListener("focus",function(){this.parentElement.classList.add("focused")}),e.addEventListener("blur",function(){this.value||this.parentElement.classList.remove("focused")})})});
+// Contact Form Handler
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+    const formMessage = document.getElementById('formMessage');
+    
+    contactForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Get form data
+        const formData = new FormData(contactForm);
+        const data = Object.fromEntries(formData);
+        
+        // Basic validation
+        if (!validateForm(data)) {
+            showMessage('Please fill in all required fields.', 'error');
+            return;
+        }
+        
+        // Disable submit button
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
+        
+        try {
+            // In a real application, this would send data to a server
+            // For now, we'll simulate a successful submission
+            await simulateFormSubmission(data);
+            
+            // Show success message
+            showMessage('Thank you for your message! I\'ll get back to you within 24 hours.', 'success');
+            
+            // Reset form
+            contactForm.reset();
+            
+        } catch (error) {
+            showMessage('Sorry, there was an error sending your message. Please try again.', 'error');
+        } finally {
+            // Re-enable submit button
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+        }
+    });
+    
+    function validateForm(data) {
+        // Check required fields
+        const requiredFields = ['name', 'email', 'projectType', 'message'];
+        for (const field of requiredFields) {
+            if (!data[field] || data[field].trim() === '') {
+                return false;
+            }
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            showMessage('Please enter a valid email address.', 'error');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    function showMessage(message, type) {
+        formMessage.textContent = message;
+        formMessage.className = `form-message ${type}`;
+        formMessage.style.display = 'block';
+        
+        // Scroll to message
+        formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Hide message after 5 seconds for success messages
+        if (type === 'success') {
+            setTimeout(() => {
+                formMessage.style.display = 'none';
+            }, 5000);
+        }
+    }
+    
+    function simulateFormSubmission(data) {
+        // Simulate API call with a delay
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                console.log('Form submitted with data:', data);
+                resolve();
+            }, 1500);
+        });
+    }
+    
+    // Add input animations
+    const inputs = contactForm.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            if (!this.value) {
+                this.parentElement.classList.remove('focused');
+            }
+        });
+    });
+});

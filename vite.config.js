@@ -44,8 +44,11 @@ export default defineConfig({
         'articles/ai-enhanced-php-development': resolve(__dirname, 'private_html/articles/ai-enhanced-php-development.html'),
         // JavaScript entry points
         'js/main': resolve(__dirname, 'private_html/js/main.js'),
+        'js/about': resolve(__dirname, 'private_html/js/about.js'),
+        'js/services': resolve(__dirname, 'private_html/js/services.js'),
         'js/articles': resolve(__dirname, 'private_html/js/articles.js'),
         'js/contact': resolve(__dirname, 'private_html/js/contact.js'),
+        'js/author': resolve(__dirname, 'private_html/js/author.js'),
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
       },
       output: {
