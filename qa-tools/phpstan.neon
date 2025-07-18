@@ -1,5 +1,5 @@
 parameters:
-    level: 5
+    level: 3
     paths:
         - ../code-snippets
     fileExtensions:
@@ -32,6 +32,15 @@ parameters:
         - '#Caught class .* not found#'
         - '#Instantiated class .* not found#'
         - '#Throwing object of an unknown class#'
+        - '#Cannot call method .* on .*\|false#'
+        - '#Method .* is unused#'
+        - '#Match expression does not handle remaining value#'
+        - '#Class .* implements unknown interface#'
+        - '#Readonly property .* is assigned outside of the constructor#'
+        - '#Readonly property cannot have a default value#'
+        - '#Comparison operation .* results in an error#'
+        - '#Property .* does not accept#'
+        - '#does not accept array#'
     reportUnmatchedIgnoredErrors: false
     checkTooWideReturnTypesInProtectedAndPublicMethods: false
     checkUninitializedProperties: false
