@@ -294,11 +294,11 @@ ${articleInputs}
   
   configContent = configContent.replace(articleSectionRegex, replacement);
   
-  // Add JavaScript entries for articles
-  const jsEntryRegex = /(\/\/ JavaScript entry points\n.*?),(\n\s*},)/s;
+  // Replace JavaScript entries for articles
+  const jsEntryRegex = /(\/\/ JavaScript entry points\n.*?)(,\s*\/\/ Article JavaScript entry points\n.*?)?(\n\s*},)/s;
   configContent = configContent.replace(jsEntryRegex, `$1,
         // Article JavaScript entry points
-${articleJSInputs}$2`);
+${articleJSInputs}$3`);
   
   fs.writeFileSync(configPath, configContent);
   console.log('✓ Updated vite.config.js with article paths');

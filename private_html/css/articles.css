@@ -309,7 +309,7 @@
     transform: translateY(-2px);
 }
 
-.article-meta {
+.article-card .article-meta {
     display: flex;
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-sm);

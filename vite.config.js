@@ -60,26 +60,6 @@ export default defineConfig({
         'js/articles/mysql-performance-php': resolve(__dirname, 'private_html/js/articles/mysql-performance-php.js'),
         'js/articles/scalable-php-apis': resolve(__dirname, 'private_html/js/articles/scalable-php-apis.js'),
         'js/articles/ai-enhanced-php-development': resolve(__dirname, 'private_html/js/articles/ai-enhanced-php-development.js'),
-        // Article JavaScript entry points
-        'js/articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'private_html/js/articles/claude-code-custom-commands-cc-commands.js'),
-        'js/articles/fedora-42-breakthrough-features': resolve(__dirname, 'private_html/js/articles/fedora-42-breakthrough-features.js'),
-        'js/articles/legacy-php-modernization': resolve(__dirname, 'private_html/js/articles/legacy-php-modernization.js'),
-        'js/articles/ansible-php-infrastructure': resolve(__dirname, 'private_html/js/articles/ansible-php-infrastructure.js'),
-        'js/articles/proxmox-vs-cloud': resolve(__dirname, 'private_html/js/articles/proxmox-vs-cloud.js'),
-        'js/articles/high-performance-php': resolve(__dirname, 'private_html/js/articles/high-performance-php.js'),
-        'js/articles/mysql-performance-php': resolve(__dirname, 'private_html/js/articles/mysql-performance-php.js'),
-        'js/articles/scalable-php-apis': resolve(__dirname, 'private_html/js/articles/scalable-php-apis.js'),
-        'js/articles/ai-enhanced-php-development': resolve(__dirname, 'private_html/js/articles/ai-enhanced-php-development.js'),
-        // Article JavaScript entry points
-        'js/articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'private_html/js/articles/claude-code-custom-commands-cc-commands.js'),
-        'js/articles/fedora-42-breakthrough-features': resolve(__dirname, 'private_html/js/articles/fedora-42-breakthrough-features.js'),
-        'js/articles/legacy-php-modernization': resolve(__dirname, 'private_html/js/articles/legacy-php-modernization.js'),
-        'js/articles/ansible-php-infrastructure': resolve(__dirname, 'private_html/js/articles/ansible-php-infrastructure.js'),
-        'js/articles/proxmox-vs-cloud': resolve(__dirname, 'private_html/js/articles/proxmox-vs-cloud.js'),
-        'js/articles/high-performance-php': resolve(__dirname, 'private_html/js/articles/high-performance-php.js'),
-        'js/articles/mysql-performance-php': resolve(__dirname, 'private_html/js/articles/mysql-performance-php.js'),
-        'js/articles/scalable-php-apis': resolve(__dirname, 'private_html/js/articles/scalable-php-apis.js'),
-        'js/articles/ai-enhanced-php-development': resolve(__dirname, 'private_html/js/articles/ai-enhanced-php-development.js'),
       },
       output: {
         // Ensure JS files keep their names and paths
