@@ -45,7 +45,7 @@
                 <div class="article-body">
                     <p>After years of managing both public cloud and private infrastructure, I've become a strong advocate for Proxmox-based private cloud solutions. While public cloud has its place, for many PHP applications—especially those with predictable workloads and specific performance requirements—private infrastructure offers superior cost-effectiveness, performance, and control.</p>
 
-                    <p>Let me break down the real-world comparison based on actual projects I've managed.</p>
+                    <p>Let me break down the comparison based on technical analysis and infrastructure considerations.</p>
 
                     <h2>The Case for Proxmox Private Cloud</h2>
 
@@ -60,7 +60,7 @@
                         <li><strong>No surprise bills:</strong> No bandwidth charges, no storage tier surprises</li>
                     </ul>
 
-                    <p>Real example: A client was paying $8,000/month for AWS infrastructure. We built a Proxmox cluster for $25,000 that provided equivalent performance and paid for itself in 3 months.</p>
+                    <p>Organizations often find significant cost savings when migrating from public cloud to private infrastructure, particularly for predictable workloads with consistent resource requirements.</p>
 
                     <h3>Performance Control</h3>
 
@@ -176,42 +176,24 @@ vmgenid: auto</code></pre>
 
                     <p>MySQL performance on Proxmox vs AWS RDS:</p>
 
-                    <table>
-                        <tbody><tr>
-                            <th>Metric</th>
-                            <th>Proxmox (NVMe)</th>
-                            <th>AWS RDS (gp3)</th>
-                        </tr>
-                        <tr>
-                            <td>SELECT queries/sec</td>
-                            <td>45,000</td>
-                            <td>28,000</td>
-                        </tr>
-                        <tr>
-                            <td>INSERT queries/sec</td>
-                            <td>12,000</td>
-                            <td>8,500</td>
-                        </tr>
-                        <tr>
-                            <td>Average latency</td>
-                            <td>0.8ms</td>
-                            <td>1.2ms</td>
-                        </tr>
-                        <tr>
-                            <td>Monthly cost</td>
-                            <td>$200</td>
-                            <td>$800</td>
-                        </tr>
-                    </tbody></table>
+                    <p>Private infrastructure typically offers performance advantages due to:</p>
+                    <ul>
+                        <li><strong>Dedicated resources:</strong> No noisy neighbor effects</li>
+                        <li><strong>Optimized storage:</strong> Direct NVMe access without virtualization overhead</li>
+                        <li><strong>Network latency:</strong> Local network communication</li>
+                        <li><strong>Custom tuning:</strong> Database and application optimization for specific workloads</li>
+                    </ul>
 
                     <h3>PHP Application Performance</h3>
 
                     <p>Same PHP application, different infrastructure:</p>
 
+                    <p>PHP applications often perform better on private infrastructure due to:</p>
                     <ul>
-                        <li><strong>Proxmox:</strong> 2,800 req/sec, 45ms average response time</li>
-                        <li><strong>AWS EC2:</strong> 2,100 req/sec, 62ms average response time</li>
-                        <li><strong>Cost difference:</strong> Proxmox 65% less expensive</li>
+                        <li><strong>CPU affinity:</strong> Dedicated CPU cores for consistent performance</li>
+                        <li><strong>Memory optimization:</strong> Tuned opcache and buffer pool settings</li>
+                        <li><strong>Storage performance:</strong> Local NVMe storage for session data and file operations</li>
+                        <li><strong>Network latency:</strong> Reduced database connection overhead</li>
                     </ul>
 
                     <h2>Migration Strategy</h2>
@@ -221,7 +203,7 @@ vmgenid: auto</code></pre>
                     <p>Don't migrate everything at once. Start with:</p>
 
                     <ol>
-                        <li><strong>Development environments:</strong> Low risk, immediate cost savings</li>
+                        <li><strong>Development environments:</strong> Low risk, learning opportunity</li>
                         <li><strong>Internal tools:</strong> Non-critical applications</li>
                         <li><strong>Staging environments:</strong> Performance testing</li>
                         <li><strong>Production databases:</strong> Biggest performance gains</li>
@@ -334,29 +316,29 @@ ha-manager add vm:101 \
 
                     <h2>ROI Calculation</h2>
 
-                    <p>Calculate the real cost comparison:</p>
+                    <p>Consider these factors when calculating ROI:</p>
 
-                    <pre><code class="language-php"># 3-year TCO comparison
-# Proxmox setup
-hardware_cost = 75000
-electricity_per_year = 3600
-maintenance_per_year = 5000
-staff_time_per_year = 8000
-total_3_year_proxmox = hardware_cost + (electricity_per_year + maintenance_per_year + staff_time_per_year) * 3
+                    <pre><code class="language-php"># TCO comparison framework
+# Private infrastructure costs
+hardware_cost = initial_investment
+electricity_per_year = power_consumption_cost
+maintenance_per_year = support_and_replacement_budget
+staff_time_per_year = operational_overhead
+total_private = hardware_cost + (electricity_per_year + maintenance_per_year + staff_time_per_year) * years
 
-# Public cloud equivalent
-monthly_cloud_cost = 12000
-total_3_year_cloud = monthly_cloud_cost * 36
+# Public cloud costs
+monthly_cloud_cost = compute_storage_network_costs
+total_cloud = monthly_cloud_cost * months
 
-savings = total_3_year_cloud - total_3_year_proxmox
-# Result: $282,000 savings over 3 years</code></pre>
+# Break-even analysis
+break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost)</code></pre>
 
                     <h2>The Bottom Line</h2>
 
                     <p>Proxmox private cloud infrastructure offers significant advantages for PHP applications with predictable workloads:</p>
 
                     <ul>
-                        <li><strong>Cost savings:</strong> 50-70% reduction in infrastructure costs</li>
+                        <li><strong>Cost predictability:</strong> Fixed infrastructure costs with known depreciation</li>
                         <li><strong>Performance:</strong> Better and more predictable performance</li>
                         <li><strong>Control:</strong> Complete control over the entire stack</li>
                         <li><strong>Security:</strong> Enhanced security and compliance</li>
