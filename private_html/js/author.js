@@ -1,5 +1,6 @@
 // Import CSS for Vite processing
 import '../css/main.css';
+import '../css/author.css';
 
 // Author page functionality
 document.addEventListener('DOMContentLoaded', function() {
