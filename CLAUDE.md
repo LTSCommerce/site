@@ -117,6 +117,10 @@ npm run syntax-highlight # Process code syntax highlighting
 - **Accessibility**: WCAG 2.1 compliant markup and navigation
 - **SEO Optimization**: Structured data, meta tags, semantic HTML
 
+## Content Policy
+
+**No Bullshit Rule**: All content must be factual and verifiable. No fabricated client case studies, made-up performance metrics, or fictional project examples. Use generic examples or theoretical scenarios instead of claiming specific real-world implementations that didn't happen.
+
 ---
 
 *Last Updated: 2025-07-17*
