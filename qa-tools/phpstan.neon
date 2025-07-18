@@ -26,4 +26,3 @@ parameters:
     checkUninitializedProperties: true
     checkImplicitMixed: false
     checkBenevolentUnionTypes: true
-    checkUninitializedProperties: true
