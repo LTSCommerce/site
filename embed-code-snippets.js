@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const articlesDir = path.join(__dirname, 'public_html', 'articles');
+const articlesDir = path.join(__dirname, 'private_html', 'articles');
 const codeSnippetsDir = path.join(__dirname, 'code-snippets');
 
 // Map file extensions to language identifiers
