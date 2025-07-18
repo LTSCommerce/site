@@ -1,3 +1,6 @@
+// Import CSS files for Vite processing
+import '../css/main.css';
+
 // Mobile Navigation Toggle
 document.addEventListener('DOMContentLoaded', function() {
     const navToggle = document.querySelector('.nav-toggle');
