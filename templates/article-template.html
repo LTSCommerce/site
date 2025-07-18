@@ -1,9 +1,110 @@
+<!--
+====================================================================================================
+ARTICLE TEMPLATE - PLACEHOLDER REPLACEMENT GUIDE
+====================================================================================================
+
+This template uses placeholder variables that need to be replaced with actual content.
+Search and replace ALL instances of these placeholders throughout the file:
+
+REQUIRED PLACEHOLDERS (extracted automatically by build system):
+────────────────────────────────────────────────────────────────────────────────────────────────
+
+{{ARTICLE_TITLE}}
+  Description: Main article title used in multiple places
+  Example: "Advanced PHP Performance Optimization Techniques"
+  Used in: <title>, <h1>, meta tags
+
+{{ARTICLE_DESCRIPTION}}
+  Description: SEO meta description and article excerpt
+  Example: "Learn advanced techniques for optimizing PHP applications, including opcode caching, database optimization, and memory management strategies."
+  Used in: <meta name="description">, article lead paragraph
+
+{{ARTICLE_TAGS}}
+  Description: Comma-separated keywords for SEO
+  Example: "php, performance, optimization, opcode, caching, database"
+  Used in: <meta name="keywords">
+
+{{ARTICLE_DATE_ISO}}
+  Description: Article publication date in ISO format
+  Example: "2025-07-18"
+  Used in: <time datetime="">
+
+{{ARTICLE_DATE_FORMATTED}}
+  Description: Human-readable publication date
+  Example: "July 18, 2025"
+  Used in: displayed date
+
+{{ARTICLE_CATEGORY}}
+  Description: Article category for filtering
+  Options: "php", "infrastructure", "database", "ai"
+  Used in: HTML comment metadata
+
+{{READING_TIME}}
+  Description: Estimated reading time in minutes
+  Example: "8"
+  Used in: HTML comment metadata, displayed reading time
+
+CONTENT PLACEHOLDERS (replace with actual article content):
+────────────────────────────────────────────────────────────────────────────────────────────────
+
+{{ARTICLE_LEAD}}
+  Description: Opening paragraph that hooks the reader
+  Example: "PHP performance optimization is crucial for modern web applications. In this comprehensive guide, we'll explore advanced techniques that can dramatically improve your application's speed and efficiency."
+
+{{SECTION_TITLE_1}}, {{SECTION_TITLE_2}}, {{SECTION_TITLE_3}}
+  Description: Main section headings (h2 level)
+  Example: "Understanding PHP OpCache", "Database Query Optimization", "Memory Management Strategies"
+
+{{SECTION_CONTENT_1}}, {{SECTION_CONTENT_2}}, {{SECTION_CONTENT_3}}
+  Description: Content for each main section
+  Example: "OpCache is a powerful tool that can significantly improve PHP performance by caching compiled bytecode..."
+
+{{SUBSECTION_TITLE_1}}
+  Description: Subsection heading (h3 level)
+  Example: "Configuring OpCache Settings"
+
+{{SUBSECTION_CONTENT_1}}
+  Description: Content for the subsection
+  Example: "To maximize OpCache effectiveness, you need to configure several key settings..."
+
+{{CODE_EXAMPLE}}
+  Description: Code snippet or example
+  Example: "opcache.memory_consumption=128\nopcache.max_accelerated_files=10000"
+
+{{LANGUAGE}}
+  Description: Programming language for syntax highlighting
+  Example: "php", "bash", "yaml", "sql", "javascript"
+
+{{LIST_ITEM_1_TITLE}}, {{LIST_ITEM_1_DESCRIPTION}}
+  Description: Title and description for list items
+  Example: Title: "OpCache Configuration", Description: "Optimize bytecode caching for better performance"
+
+{{CTA_TITLE}}
+  Description: Call-to-action section title
+  Example: "Ready to Optimize Your PHP Application?"
+
+{{CTA_CONTENT}}
+  Description: Call-to-action content
+  Example: "Start implementing these performance optimization techniques today and see dramatic improvements in your application's speed and efficiency."
+
+AUTOMATIC FEATURES:
+────────────────────────────────────────────────────────────────────────────────────────────────
+- Articles are automatically registered during build
+- Metadata is extracted from HTML head tags and comments
+- No manual registration in articles.js or vite.config.js needed
+- HTML comments are removed from production build
+- Assets are automatically optimized and hash-versioned
+
+====================================================================================================
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ARTICLE_DESCRIPTION}}">
+    <meta name="keywords" content="{{ARTICLE_TAGS}}">
     <title>{{ARTICLE_TITLE}} | Joseph</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +115,10 @@
     <link rel="stylesheet" href="/css/syntax-highlighting.css">
 </head>
 <body>
+    <!-- ARTICLE_META:
+    category: {{ARTICLE_CATEGORY}}
+    readingTime: {{READING_TIME}}
+    -->
     <!-- Site header with navigation -->
     <header class="site-header">
         <nav class="nav-container">
