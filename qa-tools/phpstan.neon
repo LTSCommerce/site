@@ -30,6 +30,8 @@ parameters:
         - '#Property .* has unknown class .* as its type#'
         - '#has unknown class .* as its type#'
         - '#Caught class .* not found#'
+        - '#Instantiated class .* not found#'
+        - '#Throwing object of an unknown class#'
     reportUnmatchedIgnoredErrors: false
     checkTooWideReturnTypesInProtectedAndPublicMethods: false
     checkUninitializedProperties: false
