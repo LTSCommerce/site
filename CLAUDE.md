@@ -84,11 +84,59 @@ npm run syntax-highlight # Process code syntax highlighting
 - **SEO**: Proper meta tags, structured data, semantic HTML
 
 ### Adding New Articles
-1. Create HTML file in `public_html/articles/`
-2. Add entry to `public_html/js/articles.js` data array
-3. Include proper meta tags and structured markup
-4. Use semantic HTML and proper heading hierarchy
-5. Test locally before deploying
+
+**CRITICAL**: All 3 steps below are REQUIRED for articles to appear and be accessible:
+
+1. **Create HTML file** in `public_html/articles/`
+   - Use semantic HTML with proper heading hierarchy
+   - Include complete SEO meta tags (title, description, keywords, Open Graph, Twitter)
+   - Add JSON-LD structured data for articles
+   - Use proper canonical URLs
+   - Follow existing article format and structure
+
+2. **Register in articles.js** - Add entry to `public_html/js/articles.js` data array:
+   ```javascript
+   {
+     id: 8,  // Next sequential ID
+     title: "Article Title",
+     excerpt: "Brief description for article cards",
+     category: "php|infrastructure|database|ai",
+     date: "2025-07-18",  // YYYY-MM-DD format
+     slug: "article-filename-without-extension"
+   }
+   ```
+
+3. **Register in Vite config** - Add entry to `vite.config.js` rollupOptions.input:
+   ```javascript
+   'articles/article-filename': resolve(__dirname, 'public_html/articles/article-filename.html'),
+   ```
+
+**WARNING**: If any step is missed, the CI will delete the article file during the build process. The CI should be improved to fail instead of silently deleting unregistered articles.
+
+**Testing**: After deployment, verify:
+- Article appears on articles.html page
+- Article URL is accessible (not 404)
+- Article displays correctly with all formatting
+- SEO metadata is properly rendered
+
+### Potential Architecture Improvements
+
+**Current Issues**:
+1. Manual registration in multiple places (articles.js + vite.config.js) is error-prone
+2. CI silently deletes unregistered articles instead of failing
+3. Source and build directories are confusing (`public_html` contains both)
+
+**Suggested Improvements**:
+1. **Separate source/build directories**: Move HTML source to `private_html/` or `src/`, build to `public_html/`
+2. **Automatic article registration**: Build script scans source articles and auto-generates articles.js
+3. **CI validation**: Fail build if articles are malformed or missing metadata
+4. **Metadata extraction**: Parse article HTML for title/excerpt instead of manual entry
+
+**Benefits**:
+- Single source of truth (just create HTML file)
+- Reduced manual work and human error
+- Better separation of concerns
+- Fail-fast on missing articles
 
 ## Configuration Files
 
