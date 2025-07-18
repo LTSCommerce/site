@@ -1,0 +1,15 @@
+name: CI Test
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Test simple command
+        run: echo "CI test successful"
