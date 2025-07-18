@@ -39,12 +39,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
-          git diff --staged --quiet || git commit -m "$(cat <<'EOF'
-          🤖 Auto-format code
-          
-          Co-Authored-By: GitHub Actions <action@github.com>
-          EOF
-          )"
+          git diff --staged --quiet || git commit -m "Auto-format code" -m "Co-Authored-By: GitHub Actions <action@github.com>"
 
       - name: Push formatting changes
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -119,12 +114,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add code-snippets/
-          git diff --staged --quiet || git commit -m "$(cat <<'EOF'
-          🔧 Auto-fix PHP code quality issues
-          
-          Co-Authored-By: GitHub Actions <action@github.com>
-          EOF
-          )"
+          git diff --staged --quiet || git commit -m "Auto-fix PHP code quality issues" -m "Co-Authored-By: GitHub Actions <action@github.com>"
 
       - name: Push QA fixes
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -194,12 +184,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add public_html/
-          git diff --staged --quiet || git commit -m "$(cat <<'EOF'
-          🚀 Update site build for deployment
-          
-          Co-Authored-By: GitHub Actions <action@github.com>
-          EOF
-          )"
+          git diff --staged --quiet || git commit -m "Update site build for deployment" -m "Co-Authored-By: GitHub Actions <action@github.com>"
 
       - name: Push build updates
         uses: ad-m/github-push-action@master
