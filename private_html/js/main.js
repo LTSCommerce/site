@@ -1,1 +1,128 @@
-(function(){document.readyState==="loading"?document.addEventListener("DOMContentLoaded",v):v();function v(){const t=document.querySelector(".nav-toggle"),e=document.querySelector(".nav-menu"),n=document.querySelectorAll(".nav-link");t&&e&&(t.addEventListener("click",function(){e.classList.toggle("active"),t.classList.toggle("active"),document.body.classList.toggle("menu-open")}),n.forEach(o=>{o.addEventListener("click",function(){e.classList.remove("active"),t.classList.remove("active"),document.body.classList.remove("menu-open")})}),document.addEventListener("click",function(o){!t.contains(o.target)&&!e.contains(o.target)&&(e.classList.remove("active"),t.classList.remove("active"),document.body.classList.remove("menu-open"))})),document.querySelectorAll('a[href^="#"]').forEach(o=>{o.addEventListener("click",function(r){r.preventDefault();const c=document.querySelector(this.getAttribute("href"));c&&c.scrollIntoView({behavior:"smooth",block:"start"})})});const s=document.querySelector(".site-header"),i=u.throttle(function(){window.pageYOffset>100?s==null||s.classList.add("scrolled"):s==null||s.classList.remove("scrolled")},16);window.addEventListener("scroll",i);const l=document.querySelector(".search-input"),d=document.querySelectorAll(".article-card"),f=document.querySelectorAll(".filter-btn");l&&d.length>0&&l.addEventListener("input",u.debounce(function(){const o=this.value.toLowerCase();d.forEach(r=>{var c,a;const m=((c=r.querySelector(".article-title"))==null?void 0:c.textContent.toLowerCase())||"",h=((a=r.querySelector(".article-excerpt"))==null?void 0:a.textContent.toLowerCase())||"";m.includes(o)||h.includes(o)?r.style.display="block":r.style.display="none"})},300)),f.forEach(o=>{o.addEventListener("click",function(){const r=this.dataset.filter;f.forEach(c=>c.classList.remove("active")),this.classList.add("active"),d.forEach(c=>{var a;const m=((a=c.querySelector(".article-category"))==null?void 0:a.textContent.toLowerCase())||"";r==="all"||m===r?c.style.display="block":c.style.display="none"})})}),"performance"in window&&window.addEventListener("load",function(){const o=performance.getEntriesByType("navigation")[0];o&&console.log(`Page loaded in ${Math.round(o.loadEventEnd-o.loadEventStart)}ms`)})}class y{constructor(){this.routes={},this.currentRoute=null}add(e,n){return this.routes[e]=n,this}navigate(e){this.routes[e]&&(this.currentRoute=e,this.routes[e]())}}const u={debounce:function(t,e){let n;return function(...s){const i=()=>{clearTimeout(n),t(...s)};clearTimeout(n),n=setTimeout(i,e)}},throttle:function(t,e){let n;return function(...s){n||(t.apply(this,s),n=!0,setTimeout(()=>n=!1,e))}},fadeIn:function(t,e=300){t.style.opacity=0,t.style.display="block";const n=performance.now();requestAnimationFrame(function s(i){const l=(i-n)/e;t.style.opacity=Math.min(l,1),l<1&&requestAnimationFrame(s)})}};window.appUtils=u,window.appRouter=new y})();
+// Mobile Navigation Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    // Toggle mobile menu
+    navToggle.addEventListener('click', function() {
+        navMenu.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
+    });
+    
+    // Close menu when clicking on a link
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+        });
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+            navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+        }
+    });
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Add scroll effect to header
+    let lastScroll = 0;
+    window.addEventListener('scroll', function() {
+        const currentScroll = window.pageYOffset;
+        const header = document.querySelector('.site-header');
+        
+        if (currentScroll > 100) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    });
+});
+
+// Page router for single page navigation (if needed later)
+class Router {
+    constructor() {
+        this.routes = {};
+        this.currentRoute = null;
+    }
+    
+    add(path, callback) {
+        this.routes[path] = callback;
+        return this;
+    }
+    
+    navigate(path) {
+        if (this.routes[path]) {
+            this.currentRoute = path;
+            this.routes[path]();
+        }
+    }
+}
+
+// Utility functions
+const utils = {
+    // Debounce function for performance
+    debounce: function(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+    
+    // Throttle function for performance
+    throttle: function(func, limit) {
+        let inThrottle;
+        return function(...args) {
+            if (!inThrottle) {
+                func.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+    
+    // Fade in animation
+    fadeIn: function(element, duration = 300) {
+        element.style.opacity = 0;
+        element.style.display = 'block';
+        
+        const start = performance.now();
+        
+        requestAnimationFrame(function animate(time) {
+            const elapsed = time - start;
+            const progress = elapsed / duration;
+            
+            element.style.opacity = Math.min(progress, 1);
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        });
+    }
+};
+
+// Export for use in other scripts
+window.appUtils = utils;
+window.appRouter = new Router();
