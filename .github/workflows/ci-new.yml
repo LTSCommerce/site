@@ -1,0 +1,100 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+  actions: read
+  checks: write
+
+jobs:
+  lint-and-format:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint code
+        run: npm run lint:check
+
+  quality-assurance:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install PHP QA tools
+        working-directory: qa-tools
+        run: composer install --no-progress --prefer-dist
+
+      - name: Check PHP code style
+        working-directory: qa-tools
+        run: composer run cs-check
+
+      - name: Run PHPStan analysis
+        working-directory: qa-tools
+        run: composer run phpstan
+
+  build:
+    name: Build Site
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, quality-assurance]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Update public_html
+        if: github.ref == 'refs/heads/main'
+        run: |
+          rm -rf public_html/*
+          cp -r dist/* public_html/
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add public_html/
+          git diff --staged --quiet || git commit -m "Update site build"
+
+      - name: Push changes
+        if: github.ref == 'refs/heads/main'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
