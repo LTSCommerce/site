@@ -277,9 +277,13 @@ function updateViteConfig(articles) {
   
   let configContent = fs.readFileSync(configPath, 'utf-8');
   
-  // Generate article input entries
+  // Generate article input entries (both HTML and JS)
   const articleInputs = articles.map(article => {
     return `        'articles/${article.slug}': resolve(__dirname, 'private_html/articles/${article.slug}.html'),`;
+  }).join('\n');
+  
+  const articleJSInputs = articles.map(article => {
+    return `        'js/articles/${article.slug}': resolve(__dirname, 'private_html/js/articles/${article.slug}.js'),`;
   }).join('\n');
   
   // Replace the articles section in vite.config.js
@@ -290,8 +294,42 @@ ${articleInputs}
   
   configContent = configContent.replace(articleSectionRegex, replacement);
   
+  // Add JavaScript entries for articles
+  const jsEntryRegex = /(\/\/ JavaScript entry points\n.*?),(\n\s*},)/s;
+  configContent = configContent.replace(jsEntryRegex, `$1,
+        // Article JavaScript entry points
+${articleJSInputs}$2`);
+  
   fs.writeFileSync(configPath, configContent);
   console.log('✓ Updated vite.config.js with article paths');
+}
+
+/**
+ * Create JavaScript files for each article
+ */
+function createArticleJSFiles(articles) {
+  const articlesJSDir = path.join(projectRoot, 'private_html', 'js', 'articles');
+  
+  // Create articles JS directory if it doesn't exist
+  if (!fs.existsSync(articlesJSDir)) {
+    fs.mkdirSync(articlesJSDir, { recursive: true });
+  }
+  
+  articles.forEach(article => {
+    const jsContent = `// Import CSS for Vite processing
+import '../../css/main.css';
+import '../../css/articles.css';
+import '../../css/syntax-highlighting.css';
+
+// Article functionality
+import '../main.js';
+import '../syntax-highlighter.js';`;
+    
+    const jsPath = path.join(articlesJSDir, `${article.slug}.js`);
+    fs.writeFileSync(jsPath, jsContent);
+  });
+  
+  console.log('✓ Created JavaScript files for articles');
 }
 
 /**
@@ -322,6 +360,9 @@ async function main() {
   
   // Update vite.config.js
   updateViteConfig(articles);
+  
+  // Create JavaScript files for each article
+  createArticleJSFiles(articles);
   
   console.log('\n✅ Article auto-registration completed!');
 }
