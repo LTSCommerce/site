@@ -44,19 +44,35 @@ npm run build           # Build for production
 npm run preview         # Preview built site
 ```
 
-### Code Quality
+### Code Quality & Formatting
+
+**IMPORTANT: This project uses CI-only formatting. Do NOT run local formatting commands.**
+
+All code formatting and quality checks are handled automatically by GitHub Actions CI/CD pipeline:
+
+- **Auto-Formatting**: Prettier automatically formats code on push to main
+- **Auto-Fixing**: PHP-CS-Fixer automatically fixes PHP code style issues
+- **Quality Gates**: Deployment blocked if CI quality checks fail
+- **Local Development**: Focus on functionality - CI handles formatting
+
+Available scripts (for reference only):
 ```bash
-npm run format          # Auto-format with Prettier
-npm run lint            # Lint JavaScript with ESLint
+npm run format:check    # Check formatting (used by CI)
+npm run lint:check      # Check linting (used by CI)
 npm run syntax-highlight # Process code syntax highlighting
 ```
 
+**Manual Deployment Override**: Use GitHub Actions UI or `gh workflow run "Deploy static content to Pages"`
+
 ### Deployment Process
-1. **Push to main branch** triggers GitHub Actions
-2. **Lint & Format** - Code quality checks and auto-formatting
-3. **Build** - Vite processes and optimizes all assets
-4. **Deploy** - Built files copied to `public_html/` and committed
-5. **Lighthouse** - Performance and SEO auditing
+1. **Push to main branch** triggers GitHub Actions CI/CD pipeline
+2. **Auto-Format** - Prettier automatically formats all code and commits changes
+3. **Auto-Fix PHP** - PHP-CS-Fixer automatically fixes PHP code style issues
+4. **Quality Checks** - Linting and code style validation (deployment blocked if fails)
+5. **Build** - Vite processes and optimizes all assets
+6. **Deploy** - Built files copied to `public_html/` and committed
+7. **GitHub Pages** - Deployment triggered only when CI succeeds
+8. **Lighthouse** - Performance and SEO auditing (post-deployment)
 
 ## Content Management
 
@@ -78,7 +94,10 @@ npm run syntax-highlight # Process code syntax highlighting
 
 - `package.json` - Dependencies and npm scripts
 - `vite.config.js` - Build configuration
-- `.github/workflows/ci.yml` - CI/CD pipeline
+- `.github/workflows/ci.yml` - Main CI/CD pipeline with quality gates
+- `.github/workflows/static.yml` - GitHub Pages deployment (triggered by CI success)
+- `qa-tools/composer.json` - PHP quality assurance tools (PHPStan, PHP-CS-Fixer)
+- `qa-tools/.php-cs-fixer.php` - PHP code style configuration
 - `lighthouserc.js` - Performance auditing
 - `.eslintrc` & `.prettierrc` - Code quality rules
 
