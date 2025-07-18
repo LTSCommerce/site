@@ -36,14 +36,12 @@ jobs:
       - name: Add deployment timestamp
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          echo "<!-- Deployed: $TIMESTAMP -->" >> dist/index.html
-          sed -i "s/DEPLOYMENT_TIMESTAMP_PLACEHOLDER/$TIMESTAMP/g" dist/index.html
+          echo "<!-- Deployed: $TIMESTAMP -->" >> public_html/index.html
+          sed -i "s/DEPLOYMENT_TIMESTAMP_PLACEHOLDER/$TIMESTAMP/g" public_html/index.html
 
-      - name: Update public_html
+      - name: Commit built files
         if: github.ref == 'refs/heads/main'
         run: |
-          rm -rf public_html/*
-          cp -r dist/* public_html/
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add public_html/

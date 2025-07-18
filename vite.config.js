@@ -2,34 +2,50 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import copy from 'rollup-plugin-copy';
 
+// Plugin to remove HTML comments during build
+function removeHtmlComments() {
+  return {
+    name: 'remove-html-comments',
+    generateBundle(options, bundle) {
+      for (const fileName in bundle) {
+        const file = bundle[fileName];
+        if (file.type === 'asset' && fileName.endsWith('.html')) {
+          // Remove HTML comments but preserve special comments like deployment timestamps
+          file.source = file.source.toString().replace(/<!--(?!\s*Deployed:)[\s\S]*?-->/g, '');
+        }
+      }
+    }
+  };
+}
+
 export default defineConfig({
-  root: 'public_html',
+  root: 'private_html',
   build: {
-    outDir: '../dist',
+    outDir: '../public_html',
     emptyOutDir: true,
     rollupOptions: {
       input: {
         // HTML pages
-        main: resolve(__dirname, 'public_html/index.html'),
-        about: resolve(__dirname, 'public_html/about.html'),
-        services: resolve(__dirname, 'public_html/services.html'),
-        articles: resolve(__dirname, 'public_html/articles.html'),
-        contact: resolve(__dirname, 'public_html/contact.html'),
-        author: resolve(__dirname, 'public_html/author.html'),
+        main: resolve(__dirname, 'private_html/index.html'),
+        about: resolve(__dirname, 'private_html/about.html'),
+        services: resolve(__dirname, 'private_html/services.html'),
+        articles: resolve(__dirname, 'private_html/articles.html'),
+        contact: resolve(__dirname, 'private_html/contact.html'),
+        author: resolve(__dirname, 'private_html/author.html'),
         // Article pages
-        'articles/legacy-php-modernization': resolve(__dirname, 'public_html/articles/legacy-php-modernization.html'),
-        'articles/high-performance-php': resolve(__dirname, 'public_html/articles/high-performance-php.html'),
-        'articles/scalable-php-apis': resolve(__dirname, 'public_html/articles/scalable-php-apis.html'),
-        'articles/mysql-performance-php': resolve(__dirname, 'public_html/articles/mysql-performance-php.html'),
-        'articles/ansible-php-infrastructure': resolve(__dirname, 'public_html/articles/ansible-php-infrastructure.html'),
-        'articles/ai-enhanced-php-development': resolve(__dirname, 'public_html/articles/ai-enhanced-php-development.html'),
-        'articles/proxmox-vs-cloud': resolve(__dirname, 'public_html/articles/proxmox-vs-cloud.html'),
-        'articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'public_html/articles/claude-code-custom-commands-cc-commands.html'),
+        'articles/legacy-php-modernization': resolve(__dirname, 'private_html/articles/legacy-php-modernization.html'),
+        'articles/high-performance-php': resolve(__dirname, 'private_html/articles/high-performance-php.html'),
+        'articles/scalable-php-apis': resolve(__dirname, 'private_html/articles/scalable-php-apis.html'),
+        'articles/mysql-performance-php': resolve(__dirname, 'private_html/articles/mysql-performance-php.html'),
+        'articles/ansible-php-infrastructure': resolve(__dirname, 'private_html/articles/ansible-php-infrastructure.html'),
+        'articles/ai-enhanced-php-development': resolve(__dirname, 'private_html/articles/ai-enhanced-php-development.html'),
+        'articles/proxmox-vs-cloud': resolve(__dirname, 'private_html/articles/proxmox-vs-cloud.html'),
+        'articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'private_html/articles/claude-code-custom-commands-cc-commands.html'),
         // JavaScript entry points
-        'js/main': resolve(__dirname, 'public_html/js/main.js'),
-        'js/articles': resolve(__dirname, 'public_html/js/articles.js'),
-        'js/contact': resolve(__dirname, 'public_html/js/contact.js'),
-        'js/syntax-highlighter': resolve(__dirname, 'public_html/js/syntax-highlighter.js'),
+        'js/main': resolve(__dirname, 'private_html/js/main.js'),
+        'js/articles': resolve(__dirname, 'private_html/js/articles.js'),
+        'js/contact': resolve(__dirname, 'private_html/js/contact.js'),
+        'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
       },
       output: {
         // Ensure JS files keep their names and paths
@@ -50,10 +66,11 @@ export default defineConfig({
       plugins: [
         copy({
           targets: [
-            { src: 'public_html/images/*', dest: 'dist/images' }
+            { src: 'private_html/images/*', dest: 'public_html/images' }
           ],
           hook: 'writeBundle'
-        })
+        }),
+        removeHtmlComments()
       ]
     },
   },

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ARTICLE_DESCRIPTION}}">
+    <title>{{ARTICLE_TITLE}} | Joseph</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- CSS assets will be processed by Vite build -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/articles.css">
+    <link rel="stylesheet" href="/css/syntax-highlighting.css">
+</head>
+<body>
+    <!-- Site header with navigation -->
+    <header class="site-header">
+        <nav class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="brand-link">Joseph</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/services.html" class="nav-link">Services</a></li>
+                <li><a href="/articles.html" class="nav-link">Articles</a></li>
+                <li><a href="/about.html" class="nav-link">About</a></li>
+                <li><a href="/author.html" class="nav-link">Author</a></li>
+                <li><a href="/contact.html" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="hamburger"></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main content area -->
+    <main class="main-content">
+        <article class="article-container">
+            <!-- Article header with title and meta information -->
+            <header class="article-header">
+                <h1>{{ARTICLE_TITLE}}</h1>
+                <div class="article-meta">
+                    <time datetime="{{ARTICLE_DATE_ISO}}">{{ARTICLE_DATE_FORMATTED}}</time>
+                    <span class="separator">•</span>
+                    <span class="reading-time">{{READING_TIME}} min read</span>
+                    <span class="separator">•</span>
+                    <span class="category">{{ARTICLE_CATEGORY}}</span>
+                </div>
+            </header>
+
+            <!-- Article lead/introduction -->
+            <section class="intro">
+                <p class="lead">
+                    {{ARTICLE_LEAD}}
+                </p>
+            </section>
+
+            <!-- Article content sections -->
+            <!-- TODO: Replace this section with your actual article content -->
+            <section>
+                <h2>{{SECTION_TITLE_1}}</h2>
+                
+                <p>
+                    {{SECTION_CONTENT_1}}
+                </p>
+                
+                <!-- Code example template -->
+                <pre><code class="language-{{LANGUAGE}}">{{CODE_EXAMPLE}}</code></pre>
+                
+                <!-- List example template -->
+                <ul>
+                    <li><strong>{{LIST_ITEM_1_TITLE}}:</strong> {{LIST_ITEM_1_DESCRIPTION}}</li>
+                    <li><strong>{{LIST_ITEM_2_TITLE}}:</strong> {{LIST_ITEM_2_DESCRIPTION}}</li>
+                    <li><strong>{{LIST_ITEM_3_TITLE}}:</strong> {{LIST_ITEM_3_DESCRIPTION}}</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>{{SECTION_TITLE_2}}</h2>
+                
+                <p>
+                    {{SECTION_CONTENT_2}}
+                </p>
+                
+                <h3>{{SUBSECTION_TITLE_1}}</h3>
+                
+                <p>
+                    {{SUBSECTION_CONTENT_1}}
+                </p>
+            </section>
+
+            <section>
+                <h2>{{SECTION_TITLE_3}}</h2>
+                
+                <p>
+                    {{SECTION_CONTENT_3}}
+                </p>
+            </section>
+
+            <!-- Call to action section (optional) -->
+            <section class="cta">
+                <h2>{{CTA_TITLE}}</h2>
+                <p>
+                    {{CTA_CONTENT}}
+                </p>
+            </section>
+        </article>
+    </main>
+
+    <!-- Site footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>&copy; 2025 Joseph Loveridge. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="/about.html">About</a>
+                <a href="/services.html">Services</a>
+                <a href="/contact.html">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript assets will be processed by Vite build -->
+    <script src="/js/main.js" type="module"></script>
+    <script src="/js/syntax-highlighter.js" type="module"></script>
+</body>
+</html>
