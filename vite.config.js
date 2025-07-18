@@ -34,6 +34,7 @@ export default defineConfig({
         author: resolve(__dirname, 'private_html/author.html'),
         // Article pages
         'articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'private_html/articles/claude-code-custom-commands-cc-commands.html'),
+        'articles/fedora-42-breakthrough-features': resolve(__dirname, 'private_html/articles/fedora-42-breakthrough-features.html'),
         'articles/legacy-php-modernization': resolve(__dirname, 'private_html/articles/legacy-php-modernization.html'),
         'articles/ansible-php-infrastructure': resolve(__dirname, 'private_html/articles/ansible-php-infrastructure.html'),
         'articles/proxmox-vs-cloud': resolve(__dirname, 'private_html/articles/proxmox-vs-cloud.html'),

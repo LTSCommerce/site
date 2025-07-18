@@ -12,6 +12,14 @@ const articles = [
     "slug": "claude-code-custom-commands-cc-commands"
   },
   {
+    "id": 12,
+    "title": "Fedora 42: The Revolutionary Linux Release That Changes Everything",
+    "excerpt": "Discover the groundbreaking features of Fedora 42, including KDE Plasma promotion to full edition status, the revolutionary COSMIC desktop environment, and the modernized Anaconda WebUI installer that transforms Linux computing.",
+    "category": "infrastructure",
+    "date": "2025-07-18",
+    "slug": "fedora-42-breakthrough-features"
+  },
+  {
     "id": 459,
     "title": "Managing Legacy PHP: From Technical Debt to Modern Architecture",
     "excerpt": "Practical strategies for transforming legacy PHP codebases into maintainable, modern systems without breaking production",
