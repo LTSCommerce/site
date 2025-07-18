@@ -2,8 +2,11 @@
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
-  push:
+  # Runs when CI/CD Pipeline workflow completes successfully
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types:
+      - completed
     branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -24,6 +27,8 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
+    # Only run if CI succeeded or if manually triggered
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
