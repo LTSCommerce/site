@@ -1,1 +1,1 @@
-/* empty css                     */document.addEventListener("DOMContentLoaded",function(){console.log("About page loaded")});
+/* empty css                     *//* empty css                      */document.addEventListener("DOMContentLoaded",function(){console.log("About page loaded")});
