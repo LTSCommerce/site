@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Practical strategies for transforming legacy PHP codebases into maintainable, modern systems without breaking production">
+    <title>Managing Legacy PHP: From Technical Debt to Modern Architecture | Joseph</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" crossorigin href="/assets/main-Bp6SiL-t.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="brand-link">Joseph</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/services.html" class="nav-link">Services</a></li>
+                <li><a href="/articles.html" class="nav-link">Articles</a></li>
+                <li><a href="/about.html" class="nav-link">About</a></li>
+                <li><a href="/author.html" class="nav-link">Author</a></li>
+                <li><a href="/contact.html" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="hamburger"></span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <article class="article-content">
+            <div class="container">
+                <header class="article-header">
+                    <div class="article-meta">
+                        <span class="article-category php">PHP</span>
+                        <time datetime="2025-01-15">January 15, 2025</time>
+                    </div>
+                    <h1>Managing Legacy PHP: From Technical Debt to Modern Architecture</h1>
+                    <p class="article-lead">Practical strategies for transforming legacy PHP codebases into maintainable, modern systems without breaking production.</p>
+                </header>
+
+                <div class="article-body">
+                    <p>Legacy PHP systems are everywhere. They're the backbone of countless businesses, running critical operations that can't afford downtime. But they're also riddled with technical debt, outdated patterns, and maintenance nightmares that slow down development and increase costs.</p>
+
+                    <p>After over a decade of wrestling with legacy PHP codebases, I've learned that modernization isn't about rewriting everything from scratch. It's about strategic, incremental improvements that deliver immediate value while building toward a sustainable future.</p>
+
+                    <h2>The Reality of Legacy PHP</h2>
+
+                    <p>Most legacy PHP systems share common characteristics:</p>
+
+                    <ul>
+                        <li><strong>Mixed responsibilities:</strong> Database queries embedded in templates, business logic scattered throughout presentation layers</li>
+                        <li><strong>Global state pollution:</strong> Heavy reliance on global variables, superglobals, and shared mutable state</li>
+                        <li><strong>Inconsistent coding standards:</strong> Multiple developers over many years, each with different approaches</li>
+                        <li><strong>Outdated dependencies:</strong> Old PHP versions, unmaintained libraries, security vulnerabilities</li>
+                        <li><strong>No automated testing:</strong> Manual testing processes that slow down changes and increase risk</li>
+                    </ul>
+
+                    <p>The temptation is always to start fresh, but that's rarely the right answer. These systems work, they generate revenue, and they embody years of business logic that would be expensive to rebuild.</p>
+
+                    <h2>The Modernization Strategy</h2>
+
+                    <h3>1. Establish a Safety Net</h3>
+
+                    <p>Before making any changes, you need confidence that you won't break production. This means:</p>
+
+                    <ul>
+                        <li><strong>Comprehensive monitoring:</strong> Error logging, performance monitoring, user behavior tracking</li>
+                        <li><strong>Automated backups:</strong> Both database and file system, with tested restore procedures</li>
+                        <li><strong>Staging environments:</strong> Production-like environments for testing changes</li>
+                        <li><strong>Feature flags:</strong> Ability to roll back changes without deploying new code</li>
+                    </ul>
+
+                    <h3>2. Identify High-Value Targets</h3>
+
+                    <p>Not all legacy code is created equal. Focus on areas that will give you the biggest impact:</p>
+
+                    <ul>
+                        <li><strong>Performance bottlenecks:</strong> Slow queries, inefficient algorithms, resource-intensive operations</li>
+                        <li><strong>Security vulnerabilities:</strong> SQL injection, XSS vulnerabilities, authentication issues</li>
+                        <li><strong>Frequently changed code:</strong> Areas where developers spend the most time</li>
+                        <li><strong>Business-critical functions:</strong> Core revenue-generating features</li>
+                    </ul>
+
+                    <h3>3. Implement the Strangler Fig Pattern</h3>
+
+                    <p>This pattern allows you to gradually replace old code with new code by routing requests through a facade:</p>
+
+                    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+namespace App\Services\User;
+
+use App\Contracts\UserServiceInterface;
+use App\ValueObjects\UserId;
+use App\Entities\User;
+use App\Exceptions\UserNotFoundException;
+
+final readonly class StranglerFigUserService implements UserServiceInterface
+{
+    public function __construct(
+        private UserServiceInterface $legacyService,
+        private UserServiceInterface $modernService,
+        private FeatureToggleService $featureToggle,
+    ) {}
+
+    public function getUser(UserId $id): User
+    {
+        return match ($this-&gt;featureToggle-&gt;isEnabled(&#39;modern_user_service&#39;, $id)) {
+            true =&gt; $this-&gt;modernService-&gt;getUser($id),
+            false =&gt; $this-&gt;legacyService-&gt;getUser($id),
+        };
+    }
+
+    private function shouldUseModernImplementation(UserId $id): bool
+    {
+        // Canary release: 10% of users
+        return $id-&gt;value % 10 === 0;
+    }
+}</code></pre>
+
+                    <h2>Practical Modernization Techniques</h2>
+
+                    <h3>Dependency Injection</h3>
+
+                    <p>Replace global state with explicit dependencies:</p>
+
+                    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+// Before: Global database connection
+function getUser(int $id): array|false
+{
+    global $db;
+    return $db-&gt;query(&quot;SELECT * FROM users WHERE id = {$id}&quot;)-&gt;fetch();
+}
+
+// After: Modern dependency injection with proper typing
+final readonly class UserRepository implements UserRepositoryInterface
+{
+    public function __construct(
+        private PDO $connection,
+        private UserHydrator $hydrator,
+    ) {}
+
+    public function findById(UserId $id): ?User
+    {
+        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
+            SELECT id, email, name, created_at, updated_at
+            FROM users 
+            WHERE id = :id AND deleted_at IS NULL
+            SQL);
+        
+        $stmt-&gt;execute([&#39;id&#39; =&gt; $id-&gt;value]);
+        $userData = $stmt-&gt;fetch();
+        
+        return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
+    }
+}</code></pre>
+
+                    <h3>Extract Service Classes</h3>
+
+                    <p>Move business logic out of controllers and into dedicated service classes:</p>
+
+                    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+namespace App\Services\Order;
+
+use App\ValueObjects\{OrderId, Money, CustomerId};
+use App\Entities\Order;
+use App\Events\OrderPlaced;
+use App\Exceptions\{OrderValidationException, PaymentFailedException};
+
+final readonly class OrderService
+{
+    public function __construct(
+        private OrderValidator $validator,
+        private PriceCalculator $calculator,
+        private PaymentGateway $paymentGateway,
+        private OrderRepository $repository,
+        private EventDispatcher $eventDispatcher,
+    ) {}
+
+    public function processOrder(OrderData $orderData): Order
+    {
+        $this-&gt;validator-&gt;validate($orderData);
+        
+        $order = Order::create(
+            OrderId::generate(),
+            $orderData-&gt;customerId,
+            $orderData-&gt;items,
+            $this-&gt;calculator-&gt;calculate($orderData-&gt;items)
+        );
+        
+        $paymentResult = $this-&gt;paymentGateway-&gt;charge(
+            $order-&gt;total,
+            $orderData-&gt;paymentMethod
+        );
+        
+        if (!$paymentResult-&gt;isSuccessful()) {
+            throw new PaymentFailedException($paymentResult-&gt;errorMessage);
+        }
+        
+        $order-&gt;markAsPaid($paymentResult-&gt;transactionId);
+        $this-&gt;repository-&gt;save($order);
+        
+        $this-&gt;eventDispatcher-&gt;dispatch(
+            new OrderPlaced($order-&gt;id, $order-&gt;customerId)
+        );
+        
+        return $order;
+    }
+}</code></pre>
+
+                    <h3>Implement Automated Testing</h3>
+
+                    <p>Start with integration tests for critical paths, then add unit tests as you refactor:</p>
+
+                    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Services\Order;
+
+use App\Services\Order\OrderService;
+use App\Testing\{OrderDataBuilder, PaymentResultBuilder};
+use App\Exceptions\PaymentFailedException;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\{Test, TestDox};
+
+final class OrderServiceTest extends TestCase
+{
+    #[Test]
+    #[TestDox(&#39;Successfully processes valid order with payment&#39;)]
+    public function processOrder_WithValidData_CreatesOrderAndProcessesPayment(): void
+    {
+        // Arrange
+        $orderData = OrderDataBuilder::new()
+            -&gt;withCustomer(CustomerId::fromString(&#39;cust_123&#39;))
+            -&gt;withItems([
+                OrderItemBuilder::new()-&gt;withProduct(&#39;prod_456&#39;)-&gt;build(),
+            ])
+            -&gt;build();
+        
+        $paymentResult = PaymentResultBuilder::successful()
+            -&gt;withTransactionId(&#39;txn_789&#39;)
+            -&gt;build();
+        
+        $this-&gt;paymentGateway-&gt;shouldReceive(&#39;charge&#39;)
+            -&gt;once()
+            -&gt;with(Money::fromCents(1000), $orderData-&gt;paymentMethod)
+            -&gt;andReturn($paymentResult);
+        
+        // Act
+        $order = $this-&gt;orderService-&gt;processOrder($orderData);
+        
+        // Assert
+        $this-&gt;assertInstanceOf(Order::class, $order);
+        $this-&gt;assertTrue($order-&gt;isPaid());
+        $this-&gt;assertEquals(&#39;txn_789&#39;, $order-&gt;transactionId-&gt;value);
+        
+        $this-&gt;repository-&gt;shouldHaveReceived(&#39;save&#39;)
+            -&gt;once()
+            -&gt;with($order);
+        
+        $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
+            -&gt;once()
+            -&gt;with(\Mockery::type(OrderPlaced::class));
+    }
+}</code></pre>
+
+                    <h2>Managing the Transition</h2>
+
+                    <h3>Team Buy-in</h3>
+
+                    <p>Modernization efforts fail without team support. Make sure everyone understands:</p>
+
+                    <ul>
+                        <li>The business case for modernization</li>
+                        <li>How changes will improve their daily work</li>
+                        <li>The incremental approach that minimizes risk</li>
+                        <li>Success metrics and how progress will be measured</li>
+                    </ul>
+
+                    <h3>Documentation and Knowledge Transfer</h3>
+
+                    <p>Legacy systems often have tribal knowledge. Document:</p>
+
+                    <ul>
+                        <li>Business rules embedded in code</li>
+                        <li>Integration points and data flows</li>
+                        <li>Deployment procedures and environment setup</li>
+                        <li>Common troubleshooting scenarios</li>
+                    </ul>
+
+                    <h2>Common Pitfalls to Avoid</h2>
+
+                    <ul>
+                        <li><strong>Big bang rewrites:</strong> They rarely work and often fail spectacularly</li>
+                        <li><strong>Perfectionism:</strong> Don't let perfect be the enemy of good</li>
+                        <li><strong>Ignoring performance:</strong> Modern doesn't always mean faster</li>
+                        <li><strong>Over-engineering:</strong> Solve today's problems, not imaginary future ones</li>
+                        <li><strong>Neglecting deployment:</strong> Modernize your deployment process alongside your code</li>
+                    </ul>
+
+                    <h2>Measuring Success</h2>
+
+                    <p>Track metrics that matter to both developers and business stakeholders:</p>
+
+                    <ul>
+                        <li><strong>Code quality:</strong> Test coverage, code complexity, technical debt ratio</li>
+                        <li><strong>Performance:</strong> Page load times, database query performance, memory usage</li>
+                        <li><strong>Developer productivity:</strong> Time to implement features, deployment frequency</li>
+                        <li><strong>Business impact:</strong> Bug reports, customer satisfaction, revenue impact</li>
+                    </ul>
+
+                    <h2>The Long Game</h2>
+
+                    <p>Legacy PHP modernization is a marathon, not a sprint. Success comes from:</p>
+
+                    <ul>
+                        <li>Consistent, incremental improvements</li>
+                        <li>Clear communication with stakeholders</li>
+                        <li>Balancing technical debt with feature delivery</li>
+                        <li>Building team capabilities alongside system improvements</li>
+                    </ul>
+
+                    <p>Remember: the goal isn't to have the most modern technology stack. It's to have a system that serves your business needs reliably, can be maintained efficiently, and can evolve with your requirements.</p>
+
+                    <p>Every legacy system got that way by being successful. Respect that success while building for the future.</p>
+                </div>
+
+                <footer class="article-footer">
+                    <div class="article-nav">
+                        <a href="/articles.html" class="back-link">← Back to Articles</a>
+                    </div>
+                </footer>
+            </div>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>© 2025 Joseph. All rights reserved.</p>
+                <nav class="footer-nav">
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/syntax-highlighter.js"></script>
+
+</body></html>
