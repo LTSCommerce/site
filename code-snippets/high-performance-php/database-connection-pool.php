@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Database\Connection;
 
-use App\ValueObjects\{ConnectionString, ConnectionId};
-use App\Exceptions\{ConnectionPoolExhaustedException, ConnectionCreationFailedException};
+use App\Exceptions\{ConnectionCreationFailedException, ConnectionPoolExhaustedException};
+use App\ValueObjects\{ConnectionId, ConnectionString};
 use WeakMap;
 
 final class DatabaseConnectionPool
 {
     /** @var WeakMap<ConnectionId, PDO> */
     private WeakMap $connections;
-    
+
     /** @var array<string, ConnectionId> */
     private array $connectionIds = [];
-    
+
     public function __construct(
         private readonly ConnectionString $dsn,
         private readonly DatabaseCredentials $credentials,
@@ -24,15 +24,15 @@ final class DatabaseConnectionPool
     ) {
         $this->connections = new WeakMap();
     }
-    
+
     public function getConnection(): PDO
     {
-        $connectionId = $this->findAvailableConnection() 
+        $connectionId = $this->findAvailableConnection()
             ?? $this->createNewConnection();
-        
+
         return $this->connections[$connectionId];
     }
-    
+
     private function findAvailableConnection(): ?ConnectionId
     {
         foreach ($this->connectionIds as $id) {
@@ -40,10 +40,10 @@ final class DatabaseConnectionPool
                 return $id;
             }
         }
-        
+
         return null;
     }
-    
+
     private function createNewConnection(): ConnectionId
     {
         if (count($this->connectionIds) >= $this->maxConnections) {
@@ -51,9 +51,9 @@ final class DatabaseConnectionPool
                 "Maximum connections ({$this->maxConnections}) reached"
             );
         }
-        
+
         $connectionId = ConnectionId::generate();
-        
+
         try {
             $pdo = new PDO(
                 $this->dsn->value,
@@ -61,10 +61,10 @@ final class DatabaseConnectionPool
                 $this->credentials->password,
                 $this->options->toPdoOptions(),
             );
-            
+
             $this->connections[$connectionId] = $pdo;
-            $this->connectionIds[] = $connectionId;
-            
+            $this->connectionIds[]            = $connectionId;
+
             return $connectionId;
         } catch (PDOException $e) {
             throw new ConnectionCreationFailedException(

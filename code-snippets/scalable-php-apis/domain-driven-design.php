@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
-use App\ValueObjects\{UserId, EmailAddress, UserName, PasswordHash};
-use App\Exceptions\{UserAlreadyDeactivatedException, InvalidStateTransitionException};
-use App\Domain\{AggregateRoot, DomainEvent};
+use App\Domain\{AggregateRoot};
+use App\Exceptions\{InvalidStateTransitionException, UserAlreadyDeactivatedException};
+use App\ValueObjects\{EmailAddress, PasswordHash, UserId, UserName};
 use DateTimeImmutable;
 
 // Domain Entity
@@ -19,8 +19,9 @@ final class User extends AggregateRoot
         private readonly PasswordHash $passwordHash,
         private UserStatus $status,
         private readonly DateTimeImmutable $createdAt,
-    ) {}
-    
+    ) {
+    }
+
     public static function create(
         UserId $id,
         EmailAddress $email,
@@ -35,28 +36,28 @@ final class User extends AggregateRoot
             UserStatus::ACTIVE,
             new DateTimeImmutable()
         );
-        
+
         $user->recordEvent(new UserCreatedEvent($id, $email));
-        
+
         return $user;
     }
-    
+
     public function changeEmail(EmailAddress $newEmail): void
     {
         if ($this->email->equals($newEmail)) {
             return;
         }
-        
+
         $previousEmail = $this->email;
-        $this->email = $newEmail;
-        
+        $this->email   = $newEmail;
+
         $this->recordEvent(new UserEmailChangedEvent(
             $this->id,
             $previousEmail,
             $newEmail
         ));
     }
-    
+
     public function deactivate(): void
     {
         if ($this->status === UserStatus::DEACTIVATED) {
@@ -64,11 +65,11 @@ final class User extends AggregateRoot
                 "User {$this->id->value} is already deactivated"
             );
         }
-        
+
         $this->status = UserStatus::DEACTIVATED;
         $this->recordEvent(new UserDeactivatedEvent($this->id));
     }
-    
+
     public function activate(): void
     {
         if ($this->status === UserStatus::SUSPENDED) {
@@ -76,30 +77,54 @@ final class User extends AggregateRoot
                 "Cannot activate suspended user {$this->id->value}"
             );
         }
-        
+
         $this->status = UserStatus::ACTIVE;
         $this->recordEvent(new UserActivatedEvent($this->id));
     }
-    
+
     public function isActive(): bool
     {
         return $this->status === UserStatus::ACTIVE;
     }
-    
-    public function getId(): UserId { return $this->id; }
-    public function getEmail(): EmailAddress { return $this->email; }
-    public function getName(): UserName { return $this->name; }
-    public function getPasswordHash(): PasswordHash { return $this->passwordHash; }
-    public function getStatus(): UserStatus { return $this->status; }
-    public function getCreatedAt(): DateTimeImmutable { return $this->createdAt; }
+
+    public function getId(): UserId
+    {
+        return $this->id;
+    }
+
+    public function getEmail(): EmailAddress
+    {
+        return $this->email;
+    }
+
+    public function getName(): UserName
+    {
+        return $this->name;
+    }
+
+    public function getPasswordHash(): PasswordHash
+    {
+        return $this->passwordHash;
+    }
+
+    public function getStatus(): UserStatus
+    {
+        return $this->status;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
 }
 
 // Value Object
-enum UserStatus: string {
-    case ACTIVE = 'active';
+enum UserStatus: string
+{
+    case ACTIVE      = 'active';
     case DEACTIVATED = 'deactivated';
-    case SUSPENDED = 'suspended';
-    
+    case SUSPENDED   = 'suspended';
+
     public function canTransitionTo(self $newStatus): bool
     {
         return match ([$this, $newStatus]) {
@@ -120,19 +145,19 @@ final readonly class UserDomainService
         if (!$user->isActive()) {
             return false;
         }
-        
+
         if ($resource->requiresPremium() && !$user->isPremium()) {
             return false;
         }
-        
+
         return $user->hasPermission($resource->getRequiredPermission());
     }
-    
+
     public function canUserPerformAction(User $user, Action $action): bool
     {
         return match ($user->getStatus()) {
-            UserStatus::ACTIVE => true,
-            UserStatus::SUSPENDED => $action->isAllowedForSuspendedUsers(),
+            UserStatus::ACTIVE      => true,
+            UserStatus::SUSPENDED   => $action->isAllowedForSuspendedUsers(),
             UserStatus::DEACTIVATED => false,
         };
     }
