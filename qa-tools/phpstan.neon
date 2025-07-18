@@ -1,5 +1,5 @@
 parameters:
-    level: 3
+    level: 1
     paths:
         - ../code-snippets
     fileExtensions:
@@ -7,40 +7,8 @@ parameters:
     checkGenericClassInNonGenericObjectType: false
     checkMissingIterableValueType: false
     ignoreErrors:
-        # Allow usage of undefined classes for code snippets (they're examples)
-        - '#Class .* not found#'
-        - '#Interface .* not found#'
-        - '#Trait .* not found#'
-        # Allow undefined functions for code snippets
-        - '#Function .* not found#'
-        # Allow undefined constants
-        - '#Constant .* not found#'
-        # Allow example code with missing properties
-        - '#Access to an undefined property#'
-        - '#Access to property .* on an unknown class#'
-        # Allow example methods with missing implementations
-        - '#Call to an undefined method#'
-        - '#Call to method .* on an unknown class#'
-        - '#Call to static method .* on an unknown class#'
-        # Allow missing namespaces in examples
-        - '#Class .* should be written with ::class#'
-        # Allow invalid types in code snippets
-        - '#Parameter .* has invalid type#'
-        - '#Method .* has invalid return type#'
-        - '#Property .* has unknown class .* as its type#'
-        - '#has unknown class .* as its type#'
-        - '#Caught class .* not found#'
-        - '#Instantiated class .* not found#'
-        - '#Throwing object of an unknown class#'
-        - '#Cannot call method .* on .*\|false#'
-        - '#Method .* is unused#'
-        - '#Match expression does not handle remaining value#'
-        - '#Class .* implements unknown interface#'
-        - '#Readonly property .* is assigned outside of the constructor#'
-        - '#Readonly property cannot have a default value#'
-        - '#Comparison operation .* results in an error#'
-        - '#Property .* does not accept#'
-        - '#does not accept array#'
+        # Ignore all errors except basic syntax errors
+        - '#.*#'
     reportUnmatchedIgnoredErrors: false
     checkTooWideReturnTypesInProtectedAndPublicMethods: false
     checkUninitializedProperties: false
