@@ -184,7 +184,7 @@
     color: var(--color-text);
     margin-bottom: var(--spacing-md);
     margin-top: var(--spacing-xl);
-    line-height: calc(1 / var(--golden-ratio));
+    line-height: 1.3;
     position: relative;
     padding-left: var(--spacing-md);
 }
@@ -211,7 +211,7 @@
     color: var(--color-text);
     margin-bottom: var(--spacing-sm);
     margin-top: var(--spacing-lg);
-    line-height: calc(1 / var(--golden-ratio));
+    line-height: 1.3;
     position: relative;
     padding-left: var(--spacing-sm);
 }
