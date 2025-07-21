@@ -1,0 +1,3 @@
+# Ignore all files in var/ except this .gitignore
+*
+!.gitignore
