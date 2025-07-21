@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/auto-register-articles.js && node embed-code-snippets.js && node scripts/process-ejs.js && vite",
     "build": "node scripts/auto-register-articles.js && node embed-code-snippets.js && node scripts/process-ejs.js && vite build",
     "preview": "vite preview",
     "format": "prettier --write .",

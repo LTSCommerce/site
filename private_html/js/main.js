@@ -94,8 +94,8 @@ function initializeScrollAnimations() {
         });
     }, observerOptions);
     
-    // Observe all sections and major elements
-    document.querySelectorAll('section, .article-container > *, .expertise-card, .article-card').forEach(el => {
+    // Observe all sections and major elements (exclude article content to prevent conflicts with body fade-in)
+    document.querySelectorAll('section:not(.article-section), .expertise-card, .article-card').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(20px)';
         el.style.transition = 'opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';

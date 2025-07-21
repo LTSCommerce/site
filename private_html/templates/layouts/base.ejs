@@ -12,7 +12,12 @@
     <% if (typeof pageCss !== 'undefined') { %>
     <link rel="stylesheet" href="/css/<%= pageCss %>.css">
     <% } %>
-    <script></script>
+    <script>
+        // Immediate fade-in fallback
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.opacity = '1';
+        });
+    </script>
     <noscript>
         <style>
             body { opacity: 1 !important; }
@@ -28,9 +33,9 @@
 
     <%- include('../partials/footer') %>
 
-    <script src="js/main.js"></script>
+    <script src="js/main.js" type="module"></script>
     <% if (typeof pageJs !== 'undefined') { %>
-    <script src="js/<%= pageJs %>.js"></script>
+    <script src="js/<%= pageJs %>.js" type="module"></script>
     <% } %>
 </body>
 </html>
