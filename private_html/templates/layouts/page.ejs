@@ -1,0 +1,17 @@
+<%- include('./base', {
+  pageTitle: pageTitle,
+  pageDescription: pageDescription, 
+  pageCss: pageCss,
+  pageJs: pageJs,
+  currentPage: currentPage,
+  content: `
+    <section class="page-hero">
+        <div class="container">
+            <h1 class="page-title">${pageHeading || 'Page'}</h1>
+            ${pageSubtitle ? `<p class="page-subtitle">${pageSubtitle}</p>` : ''}
+        </div>
+    </section>
+    
+    ${content}
+  `
+}) %>

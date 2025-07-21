@@ -1,0 +1,159 @@
+<%- include('../templates/layouts/base', {
+  pageTitle: 'About - ' + site.title,
+  pageDescription: 'About ' + (site.author || 'Joseph') + ' - Bespoke PHP developer specializing in complex systems and infrastructure',
+  pageCss: 'about',
+  pageJs: 'about',
+  currentPage: 'about',
+  content: `
+    <section class="about-hero">
+        <div class="container">
+            <div class="about-intro">
+                <h1 class="page-title">About ${site.author || 'Joseph'}</h1>
+                <p class="lead-text">
+                    Bespoke PHP developer specializing in highly complex, large-scale systems. 
+                    Over a decade of experience transforming legacy codebases and building 
+                    high-performance infrastructure. No bullshit, just results.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-content">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-main">
+                    <h2>My Journey</h2>
+                    <p>
+                        I started my career working in an ecommerce business back when ecommerce was still in its infancy. 
+                        In those early days, there simply weren't off-the-shelf solutions that could handle the scale and 
+                        complexity we needed. I basically had to learn to program in order to create the vital business 
+                        systems that would allow us to cope with our sales volume.
+                    </p>
+                    <p>
+                        What began as necessity turned into passion. I discovered that I actually quite liked development, 
+                        so I made the decision to focus on really learning it properly. After mastering the fundamentals 
+                        and gaining substantial experience, I went freelance. That was a long time ago now.
+                    </p>
+                    <p>
+                        I've definitely paid my dues in terms of thousands of hours of hands-on development work. 
+                        I can confidently say I'm at expert level now. Writing <strong>"The Art of Modern PHP 8"</strong> 
+                        was my way of ensuring that was the case—the best way to learn is to teach, they say.
+                    </p>
+                    <p>
+                        Today, I help businesses with large-scale, high-turnover, high-complexity PHP applications. 
+                        I wrangle legacy PHP codebases, manage massive tech debt, and work in high-pressure environments 
+                        where performance and reliability are critical.
+                    </p>
+
+                    <h2>Philosophy</h2>
+                    <p>
+                        I believe in writing clean, maintainable code that stands the test of time. 
+                        Every solution should be scalable, secure, and simple to understand. Technology 
+                        should serve the business, not complicate it.
+                    </p>
+
+                    <h2>Expertise Areas</h2>
+                    <div class="expertise-list">
+                        <div class="expertise-item">
+                            <h3>Bespoke PHP Development</h3>
+                            <p>Highly complex, modern PHP systems. Legacy modernization, tech debt management, 
+                            and high-performance backend development for demanding environments.</p>
+                        </div>
+                        <div class="expertise-item">
+                            <h3>Infrastructure & Automation</h3>
+                            <p>Ansible automation, Proxmox virtualization, bare metal servers. 
+                            Private cloud infrastructure preferred over public cloud solutions.</p>
+                        </div>
+                        <div class="expertise-item">
+                            <h3>Backend Systems</h3>
+                            <p>Pure backend development focus. No design work. Scalable, maintainable 
+                            PHP architecture for complex business requirements.</p>
+                        </div>
+                        <div class="expertise-item">
+                            <h3>CTO-Level Services</h3>
+                            <p>Strategic guidance, hiring assistance, team training, and technical leadership 
+                            for organizations building complex PHP systems.</p>
+                        </div>
+                        <div class="expertise-item">
+                            <h3>AI-Enhanced Development</h3>
+                            <p>Actively embracing AI tools for development efficiency and implementing AI into business processes. 
+                            Modern workflows with traditional reliability.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="about-sidebar">
+                    <div class="skills-section">
+                        <h3>Technical Skills</h3>
+                        <div class="skills-grid">
+                            <div class="skill-category">
+                                <h4>Core Technologies</h4>
+                                <ul>
+                                    <li>PHP (Modern & Legacy)</li>
+                                    <li>TypeScript</li>
+                                    <li>SQL (MySQL preferred)</li>
+                                    <li>Bash</li>
+                                </ul>
+                            </div>
+                            <div class="skill-category">
+                                <h4>Infrastructure</h4>
+                                <ul>
+                                    <li>Ansible</li>
+                                    <li>Proxmox</li>
+                                    <li>Linux Administration</li>
+                                    <li>Bare Metal Servers</li>
+                                </ul>
+                            </div>
+                            <div class="skill-category">
+                                <h4>Systems</h4>
+                                <ul>
+                                    <li>High-Performance PHP</li>
+                                    <li>Database Optimization</li>
+                                    <li>Legacy Modernization</li>
+                                    <li>System Architecture</li>
+                                </ul>
+                            </div>
+                            <div class="skill-category">
+                                <h4>Leadership</h4>
+                                <ul>
+                                    <li>CTO-Level Strategy</li>
+                                    <li>Team Training</li>
+                                    <li>Hiring Assistance</li>
+                                    <li>Technical Audits</li>
+                                </ul>
+                            </div>
+                            <div class="skill-category">
+                                <h4>AI Integration</h4>
+                                <ul>
+                                    <li>AI-Powered Development</li>
+                                    <li>Process Automation</li>
+                                    <li>OpenAI APIs</li>
+                                    <li>Business AI Solutions</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="certifications">
+                        <h3>Credentials & Recognition</h3>
+                        <ul>
+                            <li>Published author - "The Art of Modern PHP 8"</li>
+                            <li>Zend Certified Engineer</li>
+                            <li>20+ years PHP development</li>
+                            <li>Large-scale system architecture</li>
+                            <li>High-pressure environments</li>
+                            <li>Tech debt management expert</li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="cta-section">
+                <h2>Let's Work Together</h2>
+                <p>Ready to bring your project to life? I'd love to hear about your challenges and goals.</p>
+                <a href="/contact.html" class="btn btn-primary">Start a Conversation</a>
+            </div>
+        </div>
+    </section>
+  `
+}) %>
