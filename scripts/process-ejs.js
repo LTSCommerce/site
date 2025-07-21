@@ -78,6 +78,13 @@ try {
 // Helper functions for templates
 const helpers = {
   currentYear: new Date().getFullYear(),
+  deploymentTimestamp: new Date().toLocaleDateString('en-GB', {
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }),
   formatDate: (date) => {
     return new Date(date).toLocaleDateString('en-GB', {
       year: 'numeric', 
