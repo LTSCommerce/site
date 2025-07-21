@@ -34,7 +34,7 @@ const articles = [
     "id": 690,
     "title": "Ansible Automation for PHP Infrastructure",
     "excerpt": "Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications",
-    "category": "php",
+    "category": "infrastructure",
     "date": "2025-01-10",
     "slug": "ansible-php-infrastructure"
   },
@@ -42,7 +42,7 @@ const articles = [
     "id": 656,
     "title": "Proxmox vs Cloud: Why Private Infrastructure Wins",
     "excerpt": "Real-world comparison of Proxmox private cloud infrastructure versus public cloud solutions for PHP applications",
-    "category": "php",
+    "category": "infrastructure",
     "date": "2025-01-05",
     "slug": "proxmox-vs-cloud"
   },
@@ -58,7 +58,7 @@ const articles = [
     "id": 155,
     "title": "MySQL Performance Tuning for Complex PHP Applications",
     "excerpt": "Database optimization strategies specifically tailored for bespoke PHP systems with complex queries",
-    "category": "php",
+    "category": "database",
     "date": "2024-12-20",
     "slug": "mysql-performance-php"
   },
@@ -74,7 +74,7 @@ const articles = [
     "id": 675,
     "title": "AI-Enhanced PHP Development: Tools and Workflows",
     "excerpt": "How to leverage AI tools like GitHub Copilot and OpenAI APIs to boost PHP development efficiency without compromising quality",
-    "category": "php",
+    "category": "ai",
     "date": "2024-12-10",
     "slug": "ai-enhanced-php-development"
   }

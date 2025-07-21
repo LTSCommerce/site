@@ -2,6 +2,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications">
+    <meta name="keywords" content="ansible, php, infrastructure, automation, devops, deployment, configuration management, server provisioning">
     <title>Ansible Automation for PHP Infrastructure | Joseph</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -11,6 +12,10 @@
     <link rel="stylesheet" href="/css/articles.css">
     <link rel="stylesheet" href="/css/syntax-highlighting.css">
 </head>
+<!-- ARTICLE_META:
+category: infrastructure
+readingTime: 11
+-->
 <body>
     <header class="site-header">
         <nav class="nav-container">
@@ -32,21 +37,26 @@
     </header>
 
     <main class="main-content">
-        <article class="article-content">
-            <div class="container">
+        <article class="article-container">
                 <header class="article-header">
-                    <div class="article-meta">
-                        <span class="article-category infrastructure">Infrastructure</span>
-                        <time datetime="2025-01-10">January 10, 2025</time>
-                    </div>
                     <h1>Ansible Automation for PHP Infrastructure</h1>
-                    <p class="article-lead">Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications.</p>
+                    <div class="article-meta">
+                        <time datetime="2025-01-10">January 10, 2025</time>
+                        <span class="separator">•</span>
+                        <span class="reading-time">11 min read</span>
+                        <span class="separator">•</span>
+                        <span class="article-category infrastructure">Infrastructure</span>
+                    </div>
                 </header>
 
-                <div class="article-body">
+                <section class="intro">
+                    <p class="lead">Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications.</p>
                     <p>Manual server configuration is a recipe for disaster. Inconsistent environments, configuration drift, and human error create maintenance nightmares that slow down development and increase downtime. After years of managing PHP infrastructure, I've found Ansible to be the most effective tool for automating PHP application deployments.</p>
 
                     <p>This article covers proven Ansible strategies for PHP applications, from basic server provisioning to complex multi-environment deployments.</p>
+                </section>
+
+                <section>
 
                     <h2>Why Ansible for PHP Infrastructure?</h2>
 
@@ -76,7 +86,9 @@
                     <h3>Idempotency</h3>
 
                     <p>Run playbooks multiple times safely. Ansible only makes changes when needed, ensuring consistent state.</p>
+                </section>
 
+                <section>
                     <h2>Essential Ansible Structure for PHP Projects</h2>
 
                     <h3>Directory Structure</h3>
@@ -125,7 +137,9 @@ lb1.example.com ansible_host=192.168.1.30
 webservers
 dbservers
 loadbalancers</code></pre>
+                </section>
 
+                <section>
                     <h2>Core Ansible Roles for PHP Infrastructure</h2>
 
                     <h3>Common Role</h3>
@@ -277,7 +291,9 @@ loadbalancers</code></pre>
     -subj "/C=US/ST=State/L=City/O=Organization/CN={{ app_domain }}"
   args:
     creates: /etc/nginx/ssl/{{ app_name }}.crt</code></pre>
+                </section>
 
+                <section>
                     <h2>Application Deployment Playbook</h2>
 
                     <h3>Zero-Downtime Deployment</h3>
@@ -380,7 +396,9 @@ loadbalancers</code></pre>
         cd {{ app_path }}/releases
         ls -1dt */ | tail -n +{{ keep_releases | default(5) }} | xargs rm -rf
       become_user: www-data</code></pre>
+                </section>
 
+                <section>
                     <h2>Advanced Deployment Strategies</h2>
 
                     <h3>Blue-Green Deployment</h3>
@@ -459,7 +477,9 @@ loadbalancers</code></pre>
   when: 
     - pending_migrations.stdout | int &gt; 0
     - app_env != 'production'</code></pre>
+                </section>
 
+                <section>
                     <h2>Monitoring and Maintenance</h2>
 
                     <h3>Log Rotation</h3>
@@ -516,7 +536,9 @@ loadbalancers</code></pre>
           deny all;
       }
   notify: restart nginx</code></pre>
+                </section>
 
+                <section>
                     <h2>Security Hardening</h2>
 
                     <h3>SSL/TLS Configuration</h3>
@@ -564,7 +586,9 @@ server {
         deny all;
     }
 }</code></pre>
+                </section>
 
+                <section>
                     <h2>Environment-Specific Configuration</h2>
 
                     <h3>Group Variables</h3>
@@ -610,7 +634,9 @@ app_db_user: myapp_staging_user
 php_display_errors: "On"
 php_log_errors: "On"
 app_debug: true</code></pre>
+                </section>
 
+                <section>
                     <h2>Continuous Integration Integration</h2>
 
                     <h3>GitLab CI Integration</h3>
@@ -648,7 +674,9 @@ deploy_production:
     name: production
     url: https://myapp.com
   when: manual</code></pre>
+                </section>
 
+                <section>
                     <h2>Troubleshooting Common Issues</h2>
 
                     <h3>Connection Problems</h3>
@@ -676,7 +704,9 @@ ansible-playbook -i inventories/production/hosts playbooks/deploy.yml -vvv</code
     - "{{ app_path }}/current/storage"
     - "{{ app_path }}/current/bootstrap/cache"
     - "{{ shared_path }}/logs"</code></pre>
+                </section>
 
+                <section>
                     <h2>Best Practices</h2>
 
                     <ul>
@@ -693,14 +723,21 @@ ansible-playbook -i inventories/production/hosts playbooks/deploy.yml -vvv</code
                     <p>Ansible transforms PHP infrastructure management from a manual, error-prone process into a reliable, repeatable system. The investment in setting up proper automation pays dividends in reduced downtime, consistent environments, and faster deployments.</p>
 
                     <p>Start with basic server provisioning, then gradually add more sophisticated deployment strategies like blue-green deployments and automated rollbacks. Your future self will thank you for the time invested in proper automation.</p>
-                </div>
+                </section>
 
                 <footer class="article-footer">
+                    <div class="article-tags">
+                        <span class="tags-label">Tags:</span>
+                        <span class="tag">Ansible</span>
+                        <span class="tag">PHP</span>
+                        <span class="tag">Infrastructure</span>
+                        <span class="tag">Automation</span>
+                        <span class="tag">DevOps</span>
+                    </div>
                     <div class="article-nav">
                         <a href="/articles.html" class="back-link">← Back to Articles</a>
                     </div>
                 </footer>
-            </div>
         </article>
     </main>
 
@@ -714,7 +751,7 @@ ansible-playbook -i inventories/production/hosts playbooks/deploy.yml -vvv</code
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
-    <script src="../js/syntax-highlighter.js"></script>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/syntax-highlighter.js"></script>
 
 </body></html>

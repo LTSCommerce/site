@@ -2,6 +2,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios">
+    <meta name="keywords" content="PHP optimization, performance tuning, OPcache, database optimization, caching strategies, memory management, high-performance PHP, scalability">
     <title>High-Performance PHP: Optimization Strategies | Joseph</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -11,6 +12,12 @@
     <link rel="stylesheet" href="/css/articles.css">
     <link rel="stylesheet" href="/css/syntax-highlighting.css">
 </head>
+
+<!-- ARTICLE_META:
+category: php
+readingTime: 12
+-->
+
 <body>
     <header class="site-header">
         <nav class="nav-container">
@@ -32,21 +39,25 @@
     </header>
 
     <main class="main-content">
-        <article class="article-content">
-            <div class="container">
-                <header class="article-header">
-                    <div class="article-meta">
-                        <span class="article-category php">PHP</span>
-                        <time datetime="2024-12-28">December 28, 2024</time>
-                    </div>
-                    <h1>High-Performance PHP: Optimization Strategies</h1>
-                    <p class="article-lead">Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios.</p>
-                </header>
+        <article class="article-container">
+            <header class="article-header">
+                <h1>High-Performance PHP: Optimization Strategies</h1>
+                <div class="article-meta">
+                    <time datetime="2024-12-28">December 28, 2024</time>
+                    <span class="separator">•</span>
+                    <span class="reading-time">12 min read</span>
+                    <span class="separator">•</span>
+                    <span class="article-category php">PHP</span>
+                </div>
+            </header>
 
-                <div class="article-body">
-                    <p>PHP has a reputation for being slow, but that's largely outdated. Modern PHP 8.2+ with proper optimization can handle thousands of requests per second. The key is knowing where to optimize and how to measure the impact of your changes.</p>
+            <section class="intro">
+                <p class="lead">Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios.</p>
+                <p>PHP has a reputation for being slow, but that's largely outdated. Modern PHP 8.2+ with proper optimization can handle thousands of requests per second. The key is knowing where to optimize and how to measure the impact of your changes.</p>
+                <p>Over the years, I've optimized PHP applications handling millions of requests daily. Here are the techniques that deliver real performance gains.</p>
+            </section>
 
-                    <p>Over the years, I've optimized PHP applications handling millions of requests daily. Here are the techniques that deliver real performance gains.</p>
+            <section>
 
                     <h2>Performance Measurement Foundation</h2>
 
@@ -118,7 +129,10 @@ final class PerformanceMonitor
     }
 }</code></pre>
 
-                    <h2>OPcache Optimization</h2>
+            </section>
+
+            <section>
+                <h2>OPcache Optimization</h2>
 
                     <p>OPcache is the most important PHP optimization. It caches compiled bytecode, eliminating the need to parse and compile PHP files on every request.</p>
 
@@ -193,7 +207,10 @@ final readonly class OPcacheMonitor
     }
 }</code></pre>
 
-                    <h2>Database Optimization</h2>
+            </section>
+
+            <section>
+                <h2>Database Optimization</h2>
 
                     <h3>Connection Pooling</h3>
 
@@ -347,7 +364,10 @@ final readonly class QueryOptimizer
     }
 }</code></pre>
 
-                    <h2>Caching Strategies</h2>
+            </section>
+
+            <section>
+                <h2>Caching Strategies</h2>
 
                     <h3>Multi-Level Caching</h3>
 
@@ -357,7 +377,10 @@ final readonly class QueryOptimizer
 
                     <pre><code>// Code snippet not found: tagged-cache-invalidator.php</code></pre>
 
-                    <h2>Memory Management</h2>
+            </section>
+
+            <section>
+                <h2>Memory Management</h2>
 
                     <h3>Object Pooling</h3>
 
@@ -369,7 +392,10 @@ final readonly class QueryOptimizer
 
                     <pre><code>// Code snippet not found: memory-profiler.php</code></pre>
 
-                    <h2>Asynchronous Processing</h2>
+            </section>
+
+            <section>
+                <h2>Asynchronous Processing</h2>
 
                     <h3>Job Queue Implementation</h3>
 
@@ -377,7 +403,10 @@ final readonly class QueryOptimizer
 
                     <pre><code>// Code snippet not found: abstract-job.php</code></pre>
 
-                    <h2>HTTP Performance Optimization</h2>
+            </section>
+
+            <section>
+                <h2>HTTP Performance Optimization</h2>
 
                     <h3>Response Streaming</h3>
 
@@ -387,7 +416,10 @@ final readonly class QueryOptimizer
 
                     <pre><code>// Code snippet not found: compression-middleware.php</code></pre>
 
-                    <h2>Code-Level Optimizations</h2>
+            </section>
+
+            <section>
+                <h2>Code-Level Optimizations</h2>
 
                     <h3>Efficient Array Operations</h3>
 
@@ -397,19 +429,28 @@ final readonly class QueryOptimizer
 
                     <pre><code>// Code snippet not found: string-optimizer.php</code></pre>
 
-                    <h2>Load Testing and Benchmarking</h2>
+            </section>
+
+            <section>
+                <h2>Load Testing and Benchmarking</h2>
 
                     <h3>Simple Benchmarking</h3>
 
                     <pre><code>// Code snippet not found: benchmark.php</code></pre>
 
-                    <h2>Production Monitoring</h2>
+            </section>
+
+            <section>
+                <h2>Production Monitoring</h2>
 
                     <h3>Real-time Performance Dashboard</h3>
 
                     <pre><code>// Code snippet not found: performance-dashboard.php</code></pre>
 
-                    <h2>Best Practices Summary</h2>
+            </section>
+
+            <section>
+                <h2>Best Practices Summary</h2>
 
                     <ul>
                         <li><strong>Measure first:</strong> Use profiling tools to identify bottlenecks</li>
@@ -422,7 +463,10 @@ final readonly class QueryOptimizer
                         <li><strong>Code optimization:</strong> Efficient algorithms and data structures</li>
                     </ul>
 
-                    <h2>Common Pitfalls</h2>
+            </section>
+
+            <section>
+                <h2>Common Pitfalls</h2>
 
                     <ul>
                         <li><strong>Premature optimization:</strong> Profile before optimizing</li>
@@ -432,15 +476,21 @@ final readonly class QueryOptimizer
                         <li><strong>Micro-optimizations:</strong> Focus on significant bottlenecks</li>
                     </ul>
 
-                    <p>High-performance PHP is achievable with the right techniques and tools. Start with measuring your current performance, identify the biggest bottlenecks, and apply optimizations systematically. Remember: the best optimization is the one that makes a measurable difference in your specific use case.</p>
-                </div>
+                <p>High-performance PHP is achievable with the right techniques and tools. Start with measuring your current performance, identify the biggest bottlenecks, and apply optimizations systematically. Remember: the best optimization is the one that makes a measurable difference in your specific use case.</p>
+            </section>
 
-                <footer class="article-footer">
-                    <div class="article-nav">
-                        <a href="/articles.html" class="back-link">← Back to Articles</a>
-                    </div>
-                </footer>
-            </div>
+            <footer class="article-footer">
+                <div class="article-tags">
+                    <span class="tag">PHP</span>
+                    <span class="tag">Performance</span>
+                    <span class="tag">Optimization</span>
+                    <span class="tag">OPcache</span>
+                    <span class="tag">Scalability</span>
+                </div>
+                <div class="article-nav">
+                    <a href="/articles.html" class="back-link">← Back to Articles</a>
+                </div>
+            </footer>
         </article>
     </main>
 
@@ -454,7 +504,7 @@ final readonly class QueryOptimizer
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
-    <script src="../js/syntax-highlighter.js"></script>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/syntax-highlighter.js"></script>
 
 </body></html>

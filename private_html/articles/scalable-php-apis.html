@@ -2,6 +2,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP">
+    <meta name="keywords" content="php, api, scalability, architecture, backend, microservices, cqrs, event-driven, performance, monitoring">
     <title>Building Scalable Backend APIs with Modern PHP | Joseph</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -12,6 +13,10 @@
     <link rel="stylesheet" href="/css/syntax-highlighting.css">
 </head>
 <body>
+    <!-- ARTICLE_META:
+    category: php
+    readingTime: 12
+    -->
     <header class="site-header">
         <nav class="nav-container">
             <div class="nav-brand">
@@ -32,29 +37,36 @@
     </header>
 
     <main class="main-content">
-        <article class="article-content">
-            <div class="container">
-                <header class="article-header">
-                    <div class="article-meta">
-                        <span class="article-category php">PHP</span>
-                        <time datetime="2024-12-15">December 15, 2024</time>
-                    </div>
-                    <h1>Building Scalable Backend APIs with Modern PHP</h1>
-                    <p class="article-lead">Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP.</p>
-                </header>
+        <article class="article-container">
+            <header class="article-header">
+                <h1>Building Scalable Backend APIs with Modern PHP</h1>
+                <div class="article-meta">
+                    <time datetime="2024-12-15">December 15, 2024</time>
+                    <span class="separator">•</span>
+                    <span class="reading-time">12 min read</span>
+                    <span class="separator">•</span>
+                    <span class="category">php</span>
+                </div>
+            </header>
 
-                <div class="article-body">
-                    <p>Building scalable APIs is about more than just handling high traffic—it's about creating systems that can grow with your business while maintaining performance, reliability, and maintainability. Modern PHP provides excellent tools for building enterprise-grade APIs that can handle millions of requests.</p>
+            <section class="intro">
+                <p class="lead">
+                    Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP.
+                </p>
+            </section>
 
-                    <p>This article covers architectural patterns, design principles, and implementation strategies I've used to build APIs that scale from thousands to millions of users.</p>
+            <section>
+                <p>Building scalable APIs is about more than just handling high traffic—it's about creating systems that can grow with your business while maintaining performance, reliability, and maintainability. Modern PHP provides excellent tools for building enterprise-grade APIs that can handle millions of requests.</p>
 
-                    <h2>API Architecture Principles</h2>
+                <p>This article covers architectural patterns, design principles, and implementation strategies I've used to build APIs that scale from thousands to millions of users.</p>
 
-                    <h3>Layered Architecture</h3>
+                <h2>API Architecture Principles</h2>
 
-                    <p>Separate concerns into distinct layers for better maintainability and testability:</p>
+                <h3>Layered Architecture</h3>
 
-                    <pre><code class="language-php">&lt;?php
+                <p>Separate concerns into distinct layers for better maintainability and testability:</p>
+
+                <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -174,11 +186,11 @@ final readonly class UserRepository
     }
 }</code></pre>
 
-                    <h3>Domain-Driven Design</h3>
+                <h3>Domain-Driven Design</h3>
 
-                    <p>Model your business domain explicitly:</p>
+                <p>Model your business domain explicitly:</p>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 declare(strict_types=1);
 
@@ -317,14 +329,16 @@ final readonly class UserDomainService
         };
     }
 }</code></pre>
+            </section>
 
-                    <h2>API Design Patterns</h2>
+            <section>
+                <h2>API Design Patterns</h2>
 
-                    <h3>CQRS (Command Query Responsibility Segregation)</h3>
+                <h3>CQRS (Command Query Responsibility Segregation)</h3>
 
-                    <p>Separate read and write operations for better scalability:</p>
+                <p>Separate read and write operations for better scalability:</p>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 // Command Handler - Write operations
 class CreateUserCommandHandler {
@@ -385,11 +399,11 @@ class UserReadModel {
     }
 }</code></pre>
 
-                    <h3>Event-Driven Architecture</h3>
+                <h3>Event-Driven Architecture</h3>
 
-                    <p>Decouple components using events:</p>
+                <p>Decouple components using events:</p>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 // Event System
 class EventDispatcher {
@@ -442,11 +456,14 @@ $eventDispatcher = new EventDispatcher();
 $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new SendWelcomeEmailListener($emailService));
 $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListener($userStatsService));</code></pre>
 
-                    <h2>Performance Optimization</h2>
+            </section>
 
-                    <h3>Database Connection Pooling</h3>
+            <section>
+                <h2>Performance Optimization</h2>
 
-                    <pre><code class="language-php">&lt;?php
+                <h3>Database Connection Pooling</h3>
+
+                <pre><code class="language-php">&lt;?php
 
 class DatabasePool {
     private array $connections = [];
@@ -497,9 +514,9 @@ class DatabasePool {
     }
 }</code></pre>
 
-                    <h3>Response Caching</h3>
+                <h3>Response Caching</h3>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 class ResponseCache {
     private Redis $redis;
@@ -547,12 +564,14 @@ class ResponseCache {
         return &#39;response:&#39; . md5(serialize($components));
     }
 }</code></pre>
+            </section>
 
-                    <h2>Rate Limiting and Throttling</h2>
+            <section>
+                <h2>Rate Limiting and Throttling</h2>
 
-                    <h3>Token Bucket Algorithm</h3>
+                <h3>Token Bucket Algorithm</h3>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 class TokenBucketRateLimiter {
     private Redis $redis;
@@ -605,9 +624,9 @@ class TokenBucketRateLimiter {
     }
 }</code></pre>
 
-                    <h3>Sliding Window Rate Limiter</h3>
+                <h3>Sliding Window Rate Limiter</h3>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 class SlidingWindowRateLimiter {
     private Redis $redis;
@@ -652,12 +671,14 @@ class SlidingWindowRateLimiter {
         return max(0, $this-&gt;limit - $currentCount);
     }
 }</code></pre>
+            </section>
 
-                    <h2>Error Handling and Resilience</h2>
+            <section>
+                <h2>Error Handling and Resilience</h2>
 
-                    <h3>Circuit Breaker Pattern</h3>
+                <h3>Circuit Breaker Pattern</h3>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 class CircuitBreaker {
     private Redis $redis;
@@ -740,12 +761,14 @@ class CircuitBreaker {
         return $openedAt &amp;&amp; (time() - $openedAt) &gt; $this-&gt;recoveryTimeout;
     }
 }</code></pre>
+            </section>
 
-                    <h2>API Security</h2>
+            <section>
+                <h2>API Security</h2>
 
-                    <h3>JWT Authentication</h3>
+                <h3>JWT Authentication</h3>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 class JWTManager {
     private string $secretKey;
@@ -809,12 +832,14 @@ class JWTManager {
         return base64_decode(strtr($data, &#39;-_&#39;, &#39;+/&#39;));
     }
 }</code></pre>
+            </section>
 
-                    <h2>API Documentation and Versioning</h2>
+            <section>
+                <h2>API Documentation and Versioning</h2>
 
-                    <h3>OpenAPI Documentation</h3>
+                <h3>OpenAPI Documentation</h3>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 class OpenAPIGenerator {
     private array $paths = [];
@@ -883,12 +908,14 @@ class OpenAPIGenerator {
         return null;
     }
 }</code></pre>
+            </section>
 
-                    <h2>Monitoring and Observability</h2>
+            <section>
+                <h2>Monitoring and Observability</h2>
 
-                    <h3>Metrics Collection</h3>
+                <h3>Metrics Collection</h3>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 class MetricsCollector {
     private Redis $redis;
@@ -964,12 +991,14 @@ class MetricsCollector {
         socket_close($socket);
     }
 }</code></pre>
+            </section>
 
-                    <h2>Testing Strategies</h2>
+            <section>
+                <h2>Testing Strategies</h2>
 
-                    <h3>API Testing</h3>
+                <h3>API Testing</h3>
 
-                    <pre><code class="language-php">&lt;?php
+                <pre><code class="language-php">&lt;?php
 
 class APITestCase extends TestCase {
     protected ApiClient $client;
@@ -1032,46 +1061,42 @@ class APITestCase extends TestCase {
         }
     }
 }</code></pre>
+            </section>
 
-                    <h2>Best Practices Summary</h2>
+            <section>
+                <h2>Best Practices Summary</h2>
 
-                    <ul>
-                        <li><strong>Layered architecture:</strong> Separate concerns into distinct layers</li>
-                        <li><strong>Domain modeling:</strong> Use domain-driven design principles</li>
-                        <li><strong>CQRS:</strong> Separate read and write operations</li>
-                        <li><strong>Event-driven:</strong> Use events for loose coupling</li>
-                        <li><strong>Caching:</strong> Cache at multiple levels</li>
-                        <li><strong>Rate limiting:</strong> Protect against abuse</li>
-                        <li><strong>Circuit breakers:</strong> Handle external service failures</li>
-                        <li><strong>Security:</strong> Implement proper authentication and authorization</li>
-                        <li><strong>Documentation:</strong> Maintain up-to-date API documentation</li>
-                        <li><strong>Monitoring:</strong> Collect metrics and logs</li>
-                        <li><strong>Testing:</strong> Comprehensive testing strategy</li>
-                    </ul>
+                <ul>
+                    <li><strong>Layered architecture:</strong> Separate concerns into distinct layers</li>
+                    <li><strong>Domain modeling:</strong> Use domain-driven design principles</li>
+                    <li><strong>CQRS:</strong> Separate read and write operations</li>
+                    <li><strong>Event-driven:</strong> Use events for loose coupling</li>
+                    <li><strong>Caching:</strong> Cache at multiple levels</li>
+                    <li><strong>Rate limiting:</strong> Protect against abuse</li>
+                    <li><strong>Circuit breakers:</strong> Handle external service failures</li>
+                    <li><strong>Security:</strong> Implement proper authentication and authorization</li>
+                    <li><strong>Documentation:</strong> Maintain up-to-date API documentation</li>
+                    <li><strong>Monitoring:</strong> Collect metrics and logs</li>
+                    <li><strong>Testing:</strong> Comprehensive testing strategy</li>
+                </ul>
 
-                    <p>Building scalable APIs requires careful planning and implementation of proven patterns. Start with a solid architectural foundation, implement proper caching and rate limiting, and continuously monitor and optimize performance. Remember that scalability is not just about handling more requests—it's about building systems that can evolve and grow with your business needs.</p>
-                </div>
-
-                <footer class="article-footer">
-                    <div class="article-nav">
-                        <a href="/articles.html" class="back-link">← Back to Articles</a>
-                    </div>
-                </footer>
-            </div>
+                <p>Building scalable APIs requires careful planning and implementation of proven patterns. Start with a solid architectural foundation, implement proper caching and rate limiting, and continuously monitor and optimize performance. Remember that scalability is not just about handling more requests—it's about building systems that can evolve and grow with your business needs.</p>
+            </section>
         </article>
     </main>
 
     <footer class="site-footer">
-        <div class="container">
-            <div class="footer-content">
-                <p>© 2025 Joseph. All rights reserved.</p>
-                <nav class="footer-nav">
-                </nav>
+        <div class="footer-content">
+            <p>&copy; 2025 Joseph. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="/about.html">About</a>
+                <a href="/services.html">Services</a>
+                <a href="/contact.html">Contact</a>
             </div>
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
-    <script src="../js/syntax-highlighter.js"></script>
+    <script src="/js/main.js" type="module"></script>
+    <script src="/js/syntax-highlighter.js" type="module"></script>
 
 </body></html>
