@@ -315,8 +315,6 @@
 
 .article-container code:hover {
     background: var(--color-bg-secondary);
-    transform: scale(1.05);
-    box-shadow: var(--shadow-subtle);
 }
 
 .article-container pre {
