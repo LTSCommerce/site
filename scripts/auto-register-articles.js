@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
 /**
- * Auto-register articles by scanning HTML files and extracting metadata
+ * Auto-register articles by scanning EJS template files and extracting metadata
  * 
  * This script:
- * 1. Scans private_html/articles/ for HTML files
- * 2. Extracts metadata from HTML head tags and comments
+ * 1. Scans private_html/articles/ for EJS files
+ * 2. Extracts metadata from EJS template parameters
  * 3. Auto-generates articles.js with article data
  * 4. Auto-updates vite.config.js with new article paths
  * 
- * Metadata extraction priority:
- * 1. HTML head tags (title, meta description, etc.)
- * 2. HTML comments for article-specific data (category, reading time, etc.)
+ * Metadata extraction:
+ * - Parses EJS include parameters (articleTitle, articleDescription, etc.)
+ * - Generates article data for the articles listing page
  */
 
 import fs from 'fs';
@@ -23,46 +23,36 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..');
 
 /**
- * Extract metadata from HTML file
+ * Extract metadata from EJS file
  */
-function extractArticleMetadata(htmlPath, fileName) {
-  const htmlContent = fs.readFileSync(htmlPath, 'utf-8');
-  const dom = new JSDOM(htmlContent);
-  const document = dom.window.document;
+function extractArticleMetadata(ejsPath, fileName) {
+  const ejsContent = fs.readFileSync(ejsPath, 'utf-8');
   
-  // Extract from HTML head tags
-  const title = document.querySelector('title')?.textContent?.replace(' | Joseph', '') || '';
-  const description = document.querySelector('meta[name="description"]')?.getAttribute('content') || '';
-  const keywords = document.querySelector('meta[name="keywords"]')?.getAttribute('content') || '';
+  // Extract metadata from the EJS template parameters
+  const includeMatch = ejsContent.match(/<%- include\([^,]+,\s*\{([\s\S]*?)\}[\s\S]*?%>/);
   
-  // Extract date from time element or meta tags
-  const timeElement = document.querySelector('time[datetime]');
-  const dateISO = timeElement?.getAttribute('datetime') || '';
-  
-  // Extract from HTML comments for article-specific data
-  const commentMatches = htmlContent.match(/<!--\s*ARTICLE_META:(.*?)-->/s);
-  let commentMeta = {};
-  
-  if (commentMatches) {
-    try {
-      // Parse YAML-like format in comments
-      const commentContent = commentMatches[1].trim();
-      const lines = commentContent.split('\n');
-      
-      lines.forEach(line => {
-        const [key, ...valueParts] = line.split(':');
-        if (key && valueParts.length > 0) {
-          const value = valueParts.join(':').trim();
-          commentMeta[key.trim()] = value;
-        }
-      });
-    } catch (e) {
-      console.warn(`Failed to parse comment metadata for ${fileName}:`, e.message);
-    }
+  if (!includeMatch) {
+    console.warn(`No article layout found in ${fileName}`);
+    return null;
   }
   
+  const paramsText = includeMatch[1];
+  
+  // Extract individual parameters
+  const titleMatch = paramsText.match(/articleTitle:\s*['"](.*?)['"]/s);
+  const descriptionMatch = paramsText.match(/articleDescription:\s*['"](.*?)['"]/s);
+  const dateMatch = paramsText.match(/articleDate:\s*['"](.*?)['"]/s);
+  const categoryMatch = paramsText.match(/articleCategory:\s*['"](.*?)['"]/s);
+  const readingTimeMatch = paramsText.match(/articleReadingTime:\s*['"](.*?)['"]/s);
+  
+  const title = titleMatch ? titleMatch[1] : '';
+  const description = descriptionMatch ? descriptionMatch[1] : '';
+  const dateISO = dateMatch ? dateMatch[1] : '';
+  const category = categoryMatch ? categoryMatch[1] : 'php';
+  const readingTime = readingTimeMatch ? readingTimeMatch[1] : '5';
+  
   // Generate slug from filename
-  const slug = fileName.replace('.html', '');
+  const slug = fileName.replace('.ejs', '');
   
   // Generate ID from slug (simple hash)
   const id = slug.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 1000 + 1;
@@ -71,11 +61,11 @@ function extractArticleMetadata(htmlPath, fileName) {
     id,
     title,
     excerpt: description,
-    category: commentMeta.category || 'php', // Default category
+    category,
     date: dateISO || new Date().toISOString().split('T')[0],
     slug,
-    readingTime: commentMeta.readingTime || '5', // Default reading time
-    tags: keywords ? keywords.split(',').map(t => t.trim()) : []
+    readingTime,
+    tags: []
   };
 }
 
@@ -91,7 +81,7 @@ function scanArticles() {
   }
   
   const files = fs.readdirSync(articlesDir)
-    .filter(file => file.endsWith('.html'))
+    .filter(file => file.endsWith('.ejs'))
     .sort(); // Ensure consistent ordering
   
   const articles = [];
@@ -101,8 +91,10 @@ function scanArticles() {
     
     try {
       const metadata = extractArticleMetadata(filePath, file);
-      articles.push(metadata);
-      console.log(`✓ Extracted metadata for: ${file}`);
+      if (metadata) {
+        articles.push(metadata);
+        console.log(`✓ Extracted metadata for: ${file}`);
+      }
     } catch (error) {
       console.error(`✗ Failed to extract metadata for ${file}:`, error.message);
     }

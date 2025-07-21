@@ -23,9 +23,17 @@ const articles = [
     "slug": "fedora-42-breakthrough-features"
   },
   {
+    "id": 513,
+    "title": "Dynamic Gradient Headings: A CSS and JavaScript Implementation",
+    "excerpt": "A straightforward approach to creating mouse-responsive gradient text effects using CSS custom properties and vanilla JavaScript",
+    "category": "php",
+    "date": "2025-01-21",
+    "slug": "dynamic-gradient-headings"
+  },
+  {
     "id": 459,
     "title": "Managing Legacy PHP: From Technical Debt to Modern Architecture",
-    "excerpt": "Practical strategies for transforming legacy PHP codebases into maintainable, modern systems without breaking production",
+    "excerpt": "Strategies for modernizing legacy PHP codebases and managing technical debt effectively",
     "category": "php",
     "date": "2025-01-15",
     "slug": "legacy-php-modernization"
@@ -33,7 +41,7 @@ const articles = [
   {
     "id": 690,
     "title": "Ansible Automation for PHP Infrastructure",
-    "excerpt": "Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications",
+    "excerpt": "Complete guide to automating PHP infrastructure deployment and management using Ansible",
     "category": "infrastructure",
     "date": "2025-01-10",
     "slug": "ansible-php-infrastructure"
@@ -41,7 +49,7 @@ const articles = [
   {
     "id": 656,
     "title": "Proxmox vs Cloud: Why Private Infrastructure Wins",
-    "excerpt": "Real-world comparison of Proxmox private cloud infrastructure versus public cloud solutions for PHP applications",
+    "excerpt": "Comparative analysis of Proxmox private cloud vs public cloud solutions for enterprise infrastructure",
     "category": "infrastructure",
     "date": "2025-01-05",
     "slug": "proxmox-vs-cloud"
@@ -49,7 +57,7 @@ const articles = [
   {
     "id": 5,
     "title": "High-Performance PHP: Optimization Strategies",
-    "excerpt": "Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios",
+    "excerpt": "Advanced PHP optimization techniques for high-performance applications and systems",
     "category": "php",
     "date": "2024-12-28",
     "slug": "high-performance-php"
@@ -65,7 +73,7 @@ const articles = [
   {
     "id": 671,
     "title": "Building Scalable Backend APIs with Modern PHP",
-    "excerpt": "Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP",
+    "excerpt": "Comprehensive guide to building scalable, maintainable PHP APIs using modern architecture patterns",
     "category": "php",
     "date": "2024-12-15",
     "slug": "scalable-php-apis"
@@ -73,7 +81,7 @@ const articles = [
   {
     "id": 675,
     "title": "AI-Enhanced PHP Development: Tools and Workflows",
-    "excerpt": "How to leverage AI tools like GitHub Copilot and OpenAI APIs to boost PHP development efficiency without compromising quality",
+    "excerpt": "Modern PHP development enhanced with AI tools and workflows for increased productivity and code quality",
     "category": "ai",
     "date": "2024-12-10",
     "slug": "ai-enhanced-php-development"
