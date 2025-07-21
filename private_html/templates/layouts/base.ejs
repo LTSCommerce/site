@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="<%= getAssetPath('/css/main.css') %>">
     <% if (typeof pageCss !== 'undefined') { %>
-    <link rel="stylesheet" href="/css/<%= pageCss %>.css">
+    <link rel="stylesheet" href="<%= getAssetPath('/css/' + pageCss + '.css') %>">
     <% } %>
     <script>
         // Immediate fade-in fallback
@@ -33,9 +33,9 @@
 
     <%- include('../partials/footer') %>
 
-    <script src="js/main.js" type="module"></script>
+    <script src="<%= getAssetPath('/js/main.js') %>" type="module"></script>
     <% if (typeof pageJs !== 'undefined') { %>
-    <script src="js/<%= pageJs %>.js" type="module"></script>
+    <script src="<%= getAssetPath('/js/' + pageJs + '.js') %>" type="module"></script>
     <% } %>
 </body>
 </html>
