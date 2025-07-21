@@ -29,8 +29,6 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        // Test EJS generated page
-        test: resolve(__dirname, 'private_html/test.html'),
         // HTML pages
         main: resolve(__dirname, 'private_html/index.html'),
         about: resolve(__dirname, 'private_html/about.html'),

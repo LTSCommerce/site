@@ -1,0 +1,24 @@
+<%- include('./base', {
+  pageTitle: articleTitle + ' | ' + site.title,
+  pageDescription: articleDescription,
+  currentPage: 'articles',
+  content: `
+    <link rel="stylesheet" href="/css/articles.css">
+    <link rel="stylesheet" href="/css/syntax-highlighting.css">
+    
+    <article class="article-container">
+        <header class="article-header">
+            <h1>${articleTitle}</h1>
+            <div class="article-meta">
+                <time datetime="${articleDate}">${formatDate(articleDate)}</time>
+                <span class="separator">•</span>
+                <span class="reading-time">${articleReadingTime || 5} min read</span>
+                <span class="separator">•</span>
+                <span class="article-category ${articleCategory || 'general'}">${(articleCategory || 'general').toUpperCase()}</span>
+            </div>
+        </header>
+
+        ${articleContent}
+    </article>
+  `
+}) %>

@@ -1,0 +1,23 @@
+<article class="article-card">
+    <div class="article-meta">
+        <time datetime="<%= article.date %>"><%= formatDate(article.date) %></time>
+        <span class="separator">•</span>
+        <span class="article-category <%= article.category || 'general' %>">
+            <%= (article.category || 'general').toUpperCase() %>
+        </span>
+        <% if (article.readingTime) { %>
+        <span class="separator">•</span>
+        <span class="reading-time"><%= article.readingTime %> min read</span>
+        <% } %>
+    </div>
+    
+    <h3 class="article-title">
+        <a href="<%= articleUrl(article.slug || article.id) %>"><%= article.title %></a>
+    </h3>
+    
+    <% if (article.description || article.excerpt) { %>
+    <p class="article-excerpt"><%= truncate(article.description || article.excerpt, 150) %></p>
+    <% } %>
+    
+    <a href="<%= articleUrl(article.slug || article.id) %>" class="read-more">Read More →</a>
+</article>
