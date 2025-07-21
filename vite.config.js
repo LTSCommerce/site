@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import copy from 'rollup-plugin-copy';
+// EJS templates are processed by scripts/process-ejs.js before build
 
 // Plugin to remove HTML comments during build
 function removeHtmlComments() {
@@ -19,12 +20,17 @@ function removeHtmlComments() {
 }
 
 export default defineConfig({
+  plugins: [
+    // EJS processing handled by scripts/process-ejs.js before build
+  ],
   root: 'private_html',
   build: {
     outDir: '../public_html',
     emptyOutDir: true,
     rollupOptions: {
       input: {
+        // Test EJS generated page
+        test: resolve(__dirname, 'private_html/test.html'),
         // HTML pages
         main: resolve(__dirname, 'private_html/index.html'),
         about: resolve(__dirname, 'private_html/about.html'),
@@ -97,5 +103,5 @@ export default defineConfig({
   },
   // Handle static assets properly
   publicDir: false, // We'll handle this through rollup options
-  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.gif', '**/*.svg', '**/*.webp']
+  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.gif', '**/*.svg', '**/*.webp', '**/*.ejs']
 });

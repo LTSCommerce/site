@@ -1,0 +1,10 @@
+{
+  "main": [
+    { "label": "Home", "path": "/", "key": "home" },
+    { "label": "Services", "path": "/services.html", "key": "services" },
+    { "label": "Articles", "path": "/articles.html", "key": "articles" },
+    { "label": "About", "path": "/about.html", "key": "about" },
+    { "label": "Author", "path": "/author.html", "key": "author" },
+    { "label": "Contact", "path": "/contact.html", "key": "contact" }
+  ]
+}
