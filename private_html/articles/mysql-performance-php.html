@@ -2,6 +2,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Database optimization strategies specifically tailored for bespoke PHP systems with complex queries">
+    <meta name="keywords" content="MySQL, PHP, database optimization, performance tuning, query optimization, indexing, InnoDB, prepared statements">
     <title>MySQL Performance Tuning for Complex PHP Applications | Joseph</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -11,6 +12,10 @@
     <link rel="stylesheet" href="/css/articles.css">
     <link rel="stylesheet" href="/css/syntax-highlighting.css">
 </head>
+<!-- ARTICLE_META:
+category: database
+readingTime: 12
+-->
 <body>
     <header class="site-header">
         <nav class="nav-container">
@@ -32,23 +37,26 @@
     </header>
 
     <main class="main-content">
-        <article class="article-content">
-            <div class="container">
-                <header class="article-header">
-                    <div class="article-meta">
-                        <span class="article-category database">Database</span>
-                        <time datetime="2024-12-20">December 20, 2024</time>
-                    </div>
-                    <h1>MySQL Performance Tuning for Complex PHP Applications</h1>
-                    <p class="article-lead">Database optimization strategies specifically tailored for bespoke PHP systems with complex queries.</p>
-                </header>
+        <article class="article-container">
+            <header class="article-header">
+                <h1>MySQL Performance Tuning for Complex PHP Applications</h1>
+                <div class="article-meta">
+                    <time datetime="2024-12-20">December 20, 2024</time>
+                    <span class="separator">•</span>
+                    <span class="reading-time">12 min read</span>
+                    <span class="separator">•</span>
+                    <span class="article-category database">Database</span>
+                </div>
+            </header>
 
-                <div class="article-body">
-                    <p>Database performance is often the biggest bottleneck in complex PHP applications. While application-level optimizations are important, database tuning can deliver 10x performance improvements. This article covers proven strategies I've used to optimize MySQL for high-complexity PHP systems.</p>
+            <section class="intro">
+                <p class="lead">Database optimization strategies specifically tailored for bespoke PHP systems with complex queries.</p>
+                <p>Database performance is often the biggest bottleneck in complex PHP applications. While application-level optimizations are important, database tuning can deliver 10x performance improvements. This article covers proven strategies I've used to optimize MySQL for high-complexity PHP systems.</p>
+                <p>From query optimization to server configuration, these techniques are essential for managing high-performance databases with complex business logic.</p>
+            </section>
 
-                    <p>From query optimization to server configuration, these techniques are essential for managing high-performance databases with complex business logic.</p>
-
-                    <h2>MySQL Configuration Optimization</h2>
+            <section class="content">
+                <h2>MySQL Configuration Optimization</h2>
 
                     <h3>Memory Configuration</h3>
 
@@ -933,15 +941,14 @@ CREATE TABLE user_sessions (
                         <li><strong>Regular maintenance:</strong> Optimize tables and update statistics</li>
                     </ul>
 
-                    <p>Database optimization is an ongoing process. Start with the biggest bottlenecks, measure the impact of changes, and continuously monitor performance. Remember that the best optimization strategy depends on your specific workload and data patterns.</p>
-                </div>
+                <p>Database optimization is an ongoing process. Start with the biggest bottlenecks, measure the impact of changes, and continuously monitor performance. Remember that the best optimization strategy depends on your specific workload and data patterns.</p>
+            </section>
 
-                <footer class="article-footer">
-                    <div class="article-nav">
-                        <a href="/articles.html" class="back-link">← Back to Articles</a>
-                    </div>
-                </footer>
-            </div>
+            <footer class="article-footer">
+                <div class="article-nav">
+                    <a href="/articles.html" class="back-link">← Back to Articles</a>
+                </div>
+            </footer>
         </article>
     </main>
 
@@ -955,7 +962,7 @@ CREATE TABLE user_sessions (
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
-    <script src="../js/syntax-highlighter.js"></script>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/syntax-highlighter.js"></script>
 
 </body></html>
