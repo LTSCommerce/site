@@ -15,7 +15,8 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 
 ### Technology Stack
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Build Pipeline**: Vite (ES modules, CSS processing, optimization)
+- **Templating**: EJS (Embedded JavaScript templates) for template-driven development
+- **Build Pipeline**: Custom EJS preprocessing → Vite (ES modules, CSS processing, optimization)
 - **Syntax Highlighting**: Prism.js (PHP, Bash, YAML, SQL, JSON, Nginx)
 - **Code Quality**: ESLint + Prettier + Lighthouse CI
 - **CI/CD**: GitHub Actions with automated deployment
@@ -24,14 +25,20 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 ### Site Structure
 ```
 ├── private_html/        # Source files (pre-build)
+│   ├── templates/       # EJS template system
+│   │   ├── layouts/     # Base layouts (base.ejs, page.ejs, article.ejs)
+│   │   ├── partials/    # Reusable components (navigation.ejs, footer.ejs)
+│   │   └── components/  # Smaller components (article-card.ejs)
+│   ├── pages/           # EJS page templates (*.ejs)
+│   ├── data/            # Template data (site.json, navigation.json)
 │   ├── css/             # Stylesheets  
 │   ├── js/              # JavaScript modules
 │   ├── images/          # Static assets
-│   ├── articles/        # Article pages
-│   └── *.html           # Main pages
+│   ├── articles/        # Article pages (static HTML)
+│   └── *.html           # Generated HTML from EJS templates
 ├── public_html/         # Built files (production)
-├── templates/           # Article templates
-├── scripts/             # Build utilities & screenshot tools
+├── templates/           # Legacy article templates
+├── scripts/             # Build utilities (process-ejs.js, screenshot.js)
 ├── var/                 # Temporary files (gitignored except .gitignore)
 └── .github/workflows/   # CI/CD configuration
 ```
@@ -42,8 +49,9 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 ```bash
 npm install              # Install dependencies
 npm run dev             # Start development server (port 3000)
-npm run build           # Build for production
+npm run build           # Build for production (EJS → HTML → optimized build)
 npm run preview         # Preview built site
+node scripts/process-ejs.js  # Process EJS templates manually (optional)
 ```
 
 ### Code Quality & Formatting
@@ -89,10 +97,13 @@ Screenshots are saved to `var/` directory which is gitignored. The screenshot sc
 2. **Auto-Format** - Prettier automatically formats all code and commits changes
 3. **Auto-Fix PHP** - PHP-CS-Fixer automatically fixes PHP code style issues
 4. **Quality Checks** - Linting and code style validation (deployment blocked if fails)
-5. **Build** - Vite processes and optimizes all assets
-6. **Deploy** - Built files copied to `public_html/` and committed
-7. **GitHub Pages** - Deployment triggered only when CI succeeds
-8. **Lighthouse** - Performance and SEO auditing (post-deployment)
+5. **Article Registration** - Auto-detects and registers new articles
+6. **Code Embedding** - Embeds syntax-highlighted code snippets
+7. **EJS Processing** - Converts EJS templates to static HTML
+8. **Build** - Vite processes and optimizes all assets
+9. **Deploy** - Built files copied to `public_html/` and committed
+10. **GitHub Pages** - Deployment triggered only when CI succeeds
+11. **Lighthouse** - Performance and SEO auditing (post-deployment)
 
 ## Content Management
 
@@ -175,6 +186,63 @@ git push origin main
 - Template-based article creation reduces errors
 - Consistent article structure and formatting
 - Comments automatically removed in production
+
+## EJS Template System
+
+### Overview
+The site uses a custom EJS (Embedded JavaScript) templating system for template-driven development, eliminating code duplication and enabling data-driven content.
+
+### Template Architecture
+- **Layouts**: Base HTML structure with template inheritance
+  - `base.ejs` - Core HTML document with navigation/footer
+  - `page.ejs` - Standard page layout with hero section
+  - `article.ejs` - Article-specific layout with metadata
+- **Partials**: Reusable components
+  - `navigation.ejs` - Site navigation with active states
+  - `footer.ejs` - Site footer with copyright/links  
+- **Components**: Smaller reusable elements
+  - `article-card.ejs` - Reusable article listing component
+
+### Template Data
+Global data available in all templates:
+```javascript
+{
+  site: {              // From private_html/data/site.json
+    title: "Site Title",
+    description: "...",
+    author: "Joseph",
+    tagline: "...",
+    social: { github, linkedin },
+    contact: { email }
+  },
+  navigation: {        // From private_html/data/navigation.json  
+    main: [{ label, path, key }, ...]
+  },
+  articles: [...],     // From auto-generated articles.js
+  
+  // Helper functions
+  currentYear: 2025,
+  formatDate: (date) => "21 July 2025",
+  isActive: (current, target) => boolean,
+  truncate: (text, length) => "...",
+  articleUrl: (slug) => "/articles/slug.html"
+}
+```
+
+### Creating New Pages
+1. Create EJS template in `private_html/pages/filename.ejs`
+2. Use template inheritance: `<%- include('../templates/layouts/base', { ... }) %>`
+3. Run `node scripts/process-ejs.js` to generate HTML
+4. Build process automatically includes EJS processing
+
+### Build Process
+```
+EJS Templates (*.ejs) 
+  ↓ scripts/process-ejs.js
+Static HTML (*.html)
+  ↓ Vite build
+Optimized Production Files
+```
 
 ## Configuration Files
 
