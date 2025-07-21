@@ -1,0 +1,42 @@
+<%- include('../templates/layouts/base', {
+  pageTitle: 'Articles - ' + site.title,
+  pageDescription: 'Technical articles on PHP development, infrastructure, and backend systems',
+  pageCss: 'articles',
+  pageJs: 'articles',
+  currentPage: 'articles',
+  content: `
+    <section class="page-hero">
+        <div class="container">
+            <h1 class="page-title">Technical Articles</h1>
+            <p class="page-subtitle">Insights and tutorials on PHP development and infrastructure</p>
+        </div>
+    </section>
+
+    <section class="articles-section">
+        <div class="container">
+            <div class="search-container">
+                <input type="text" id="articleSearch" class="search-input" placeholder="Search articles...">
+                <div class="search-filters">
+                    <button class="filter-btn active" data-category="all">All</button>
+                    <button class="filter-btn" data-category="php">PHP</button>
+                    <button class="filter-btn" data-category="infrastructure">Infrastructure</button>
+                    <button class="filter-btn" data-category="database">Database</button>
+                    <button class="filter-btn" data-category="ai">AI</button>
+                </div>
+            </div>
+
+            <div id="articlesGrid" class="articles-grid">
+                <!-- Articles will be dynamically loaded here -->
+            </div>
+
+            <div id="noResults" class="no-results" style="display: none;">
+                <p>No articles found matching your search.</p>
+            </div>
+
+            <div id="loadingIndicator" class="loading-indicator">
+                <p>Loading articles...</p>
+            </div>
+        </div>
+    </section>
+  `
+}) %>
