@@ -13,23 +13,6 @@
     position: relative;
 }
 
-/* Subtle reading guide line */
-.article-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 2rem;
-    width: 1px;
-    height: 100%;
-    background: linear-gradient(180deg, 
-        transparent 0%, 
-        rgba(0, 102, 204, 0.1) 20%, 
-        rgba(0, 102, 204, 0.1) 80%, 
-        transparent 100%
-    );
-    pointer-events: none;
-}
-
 .article-header {
     margin-bottom: var(--spacing-xl);
     text-align: center;
