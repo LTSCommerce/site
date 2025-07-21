@@ -603,6 +603,21 @@
     color: #f57c00;
 }
 
+.article-category.php {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.article-category.infrastructure {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+.article-category.database {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
 .article-title {
     font-size: 1.25rem;
     font-weight: 600;

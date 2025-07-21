@@ -7,6 +7,14 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 513,
+    "title": "Dynamic Gradient Headings: A CSS and JavaScript Implementation",
+    "excerpt": "A straightforward approach to creating mouse-responsive gradient text effects using CSS custom properties and vanilla JavaScript",
+    "category": "php",
+    "date": "2025-07-21",
+    "slug": "dynamic-gradient-headings"
+  },
+  {
     "id": 824,
     "title": "Building Better Claude Code Workflows with CC-Commands",
     "excerpt": "Discover how the CC-Commands repository solves the pain points of managing custom Claude Code commands across multiple projects with elegant automation and intelligent synchronization.",
@@ -21,14 +29,6 @@ const articles = [
     "category": "infrastructure",
     "date": "2025-07-18",
     "slug": "fedora-42-breakthrough-features"
-  },
-  {
-    "id": 513,
-    "title": "Dynamic Gradient Headings: A CSS and JavaScript Implementation",
-    "excerpt": "A straightforward approach to creating mouse-responsive gradient text effects using CSS custom properties and vanilla JavaScript",
-    "category": "php",
-    "date": "2025-01-21",
-    "slug": "dynamic-gradient-headings"
   },
   {
     "id": 459,
