@@ -10,15 +10,41 @@ const projectRoot = path.resolve(__dirname, '..');
 
 console.log('🔧 Processing EJS templates...\n');
 
+// Helper function to resolve asset paths from Vite manifest
+function getAssetPath(originalPath) {
+  if (!viteManifest || Object.keys(viteManifest).length === 0) {
+    return originalPath; // Fallback to original path if no manifest
+  }
+  
+  // Convert path to manifest key format
+  let searchKey = originalPath;
+  if (originalPath.startsWith('/css/')) {
+    searchKey = originalPath.replace('/css/', 'css/').replace('.css', '');
+  } else if (originalPath.startsWith('/js/')) {
+    searchKey = originalPath.replace('/js/', 'js/').replace('.js', '');
+  }
+  
+  // Look for the asset in the manifest
+  for (const [key, asset] of Object.entries(viteManifest)) {
+    if (key === searchKey || key.includes(searchKey)) {
+      return '/' + asset.file;
+    }
+  }
+  
+  return originalPath; // Fallback if not found
+}
+
 // Load global data
 let siteData = {};
 let navigationData = {};
 let articlesData = [];
+let viteManifest = {};
 
 try {
   const siteDataPath = path.join(projectRoot, 'private_html/data/site.json');
   const navDataPath = path.join(projectRoot, 'private_html/data/navigation.json');
   const articlesPath = path.join(projectRoot, 'private_html/js/articles.js');
+  const manifestPath = path.join(projectRoot, 'public_html/.vite/manifest.json');
 
   if (fs.existsSync(siteDataPath)) {
     siteData = JSON.parse(fs.readFileSync(siteDataPath, 'utf8'));
@@ -37,9 +63,14 @@ try {
     }
   }
 
+  if (fs.existsSync(manifestPath)) {
+    viteManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  }
+
   console.log('✓ Loaded site data');
   console.log('✓ Loaded navigation data');
   console.log(`✓ Loaded ${articlesData.length} articles`);
+  console.log('✓ Loaded Vite manifest');
 } catch (error) {
   console.warn('Warning: Could not load some data files:', error.message);
 }
@@ -54,6 +85,7 @@ const helpers = {
       day: 'numeric'
     });
   },
+  getAssetPath: getAssetPath,
   isActive: (currentPage, targetPage) => currentPage === targetPage,
   articleUrl: (slug) => `/articles/${slug}.html`,
   truncate: (text, length = 150) => {
