@@ -1,0 +1,19 @@
+{
+  "title": "Joseph - Bespoke PHP Developer",
+  "description": "Bespoke PHP developer specializing in high-complexity, large-scale systems and infrastructure",
+  "author": "Joseph",
+  "baseUrl": "https://josephlts.co.uk",
+  "tagline": "Large-scale, high-turnover, high-complexity backend systems. AI-enhanced development workflows. No bullshit, just results.",
+  "social": {
+    "github": "josephltshq",
+    "linkedin": "josephltshq"
+  },
+  "contact": {
+    "email": "hello@josephlts.co.uk"
+  },
+  "meta": {
+    "keywords": "php developer, backend systems, infrastructure, mysql, performance optimization, ai development",
+    "language": "en",
+    "charset": "UTF-8"
+  }
+}
