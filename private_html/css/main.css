@@ -14,6 +14,7 @@
     
     /* Golden Ratio Based Typography */
     --golden-ratio: 1.618;
+    --golden-line-height: calc(2 / var(--golden-ratio));
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --max-width: 1200px;
     
@@ -263,7 +264,7 @@ section h1 {
 .hero-title {
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 600;
-    line-height: calc(2 / var(--golden-ratio));
+    line-height: var(--golden-line-height);
     margin-bottom: var(--spacing-md);
     color: var(--color-text);
     background: linear-gradient(135deg, 
