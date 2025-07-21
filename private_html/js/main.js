@@ -1,3 +1,8 @@
+// Prevent FOUC with smooth fade-in
+document.addEventListener('DOMContentLoaded', function() {
+    document.body.classList.add('loaded');
+});
+
 // Elegant interactions and mathematical animations
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize elegant scroll animations
@@ -6,11 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize reading progress
     initializeReadingProgress();
     
-    // Initialize elegant cursor effects
-    initializeCursorEffects();
-    
-    // Initialize particle effects
-    initializeParticleEffects();
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
@@ -67,15 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
             header.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
         }
         
-        // Parallax effect for hero section
-        const hero = document.querySelector('.hero');
-        if (hero) {
-            const heroRect = hero.getBoundingClientRect();
-            if (heroRect.top < window.innerHeight && heroRect.bottom > 0) {
-                const parallaxOffset = currentScroll * 0.5;
-                hero.style.transform = `translateY(${parallaxOffset}px)`;
-            }
-        }
         
         lastScroll = currentScroll;
     }, 16); // 60fps
@@ -133,121 +124,7 @@ function initializeReadingProgress() {
     updateProgress();
 }
 
-// Elegant cursor effects
-function initializeCursorEffects() {
-    let mouseX = 0, mouseY = 0;
-    let cursorX = 0, cursorY = 0;
-    
-    // Create custom cursor
-    const cursor = document.createElement('div');
-    cursor.style.cssText = `
-        position: fixed;
-        width: 20px;
-        height: 20px;
-        background: radial-gradient(circle, rgba(0, 102, 204, 0.3) 0%, rgba(0, 102, 204, 0.1) 70%, transparent 100%);
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9999;
-        transition: transform 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
-        mix-blend-mode: multiply;
-    `;
-    document.body.appendChild(cursor);
-    
-    // Smooth cursor following
-    const updateCursor = () => {
-        cursorX += (mouseX - cursorX) * 0.1;
-        cursorY += (mouseY - cursorY) * 0.1;
-        cursor.style.left = cursorX - 10 + 'px';
-        cursor.style.top = cursorY - 10 + 'px';
-        requestAnimationFrame(updateCursor);
-    };
-    
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    });
-    
-    // Scale cursor on hover
-    document.querySelectorAll('a, button, .btn, .article-card').forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            cursor.style.transform = 'scale(1.5)';
-            cursor.style.background = 'radial-gradient(circle, rgba(0, 102, 204, 0.2) 0%, rgba(0, 102, 204, 0.05) 70%, transparent 100%)';
-        });
-        
-        el.addEventListener('mouseleave', () => {
-            cursor.style.transform = 'scale(1)';
-            cursor.style.background = 'radial-gradient(circle, rgba(0, 102, 204, 0.3) 0%, rgba(0, 102, 204, 0.1) 70%, transparent 100%)';
-        });
-    });
-    
-    requestAnimationFrame(updateCursor);
-}
 
-// Subtle particle effects
-function initializeParticleEffects() {
-    const hero = document.querySelector('.hero');
-    if (!hero) return;
-    
-    const canvas = document.createElement('canvas');
-    canvas.style.cssText = `
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        opacity: 0.6;
-    `;
-    hero.appendChild(canvas);
-    
-    const ctx = canvas.getContext('2d');
-    const particles = [];
-    
-    const resizeCanvas = () => {
-        canvas.width = hero.offsetWidth;
-        canvas.height = hero.offsetHeight;
-    };
-    
-    // Create particles
-    for (let i = 0; i < 50; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 2 + 1,
-            speedX: (Math.random() - 0.5) * 0.5,
-            speedY: (Math.random() - 0.5) * 0.5,
-            opacity: Math.random() * 0.5 + 0.1
-        });
-    }
-    
-    const animate = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        particles.forEach(particle => {
-            // Update position
-            particle.x += particle.speedX;
-            particle.y += particle.speedY;
-            
-            // Wrap around edges
-            if (particle.x > canvas.width) particle.x = 0;
-            if (particle.x < 0) particle.x = canvas.width;
-            if (particle.y > canvas.height) particle.y = 0;
-            if (particle.y < 0) particle.y = canvas.height;
-            
-            // Draw particle
-            ctx.beginPath();
-            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 102, 204, ${particle.opacity})`;
-            ctx.fill();
-        });
-        
-        requestAnimationFrame(animate);
-    };
-    
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    animate();
-}
 
 // Page router for single page navigation (if needed later)
 class Router {
