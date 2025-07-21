@@ -51,7 +51,7 @@
     font-weight: 700;
     line-height: var(--golden-line-height);
     margin-bottom: var(--spacing-md);
-    background: linear-gradient(135deg, 
+    background: linear-gradient(var(--gradient-angle), 
         var(--color-text) 0%, 
         var(--color-primary-dark) 100%
     );
@@ -170,6 +170,13 @@
     line-height: var(--golden-line-height);
     position: relative;
     padding-left: var(--spacing-md);
+    background: linear-gradient(var(--gradient-angle), 
+        var(--color-text) 0%, 
+        var(--color-primary-dark) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .article-container h2::before {

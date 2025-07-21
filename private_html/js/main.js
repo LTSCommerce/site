@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize reading progress
     initializeReadingProgress();
     
+    // Initialize dynamic gradients
+    initializeDynamicGradients();
+    
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
@@ -122,6 +125,31 @@ function initializeReadingProgress() {
     
     window.addEventListener('scroll', updateProgress);
     updateProgress();
+}
+
+// Dynamic gradient that follows mouse movement
+function initializeDynamicGradients() {
+    const dynamicGradientHandler = utils.throttle((e) => {
+        // Calculate angle based on mouse position
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const deltaX = e.clientX - centerX;
+        const deltaY = e.clientY - centerY;
+        
+        // Convert to angle (in degrees), add offset for nice starting angle
+        const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 135;
+        
+        // Update CSS custom property for gradient angle
+        document.documentElement.style.setProperty('--gradient-angle', `${angle}deg`);
+    }, 16); // 60fps
+    
+    // Add mouse move listener
+    document.addEventListener('mousemove', dynamicGradientHandler);
+    
+    // Reset to default angle when mouse leaves the window
+    document.addEventListener('mouseleave', () => {
+        document.documentElement.style.setProperty('--gradient-angle', '135deg');
+    });
 }
 
 

@@ -16,6 +16,9 @@
     --golden-ratio: 1.618;
     --golden-line-height: calc(2 / var(--golden-ratio));
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    
+    /* Dynamic Gradient Variables */
+    --gradient-angle: 135deg;
     --max-width: 1200px;
     
     /* Mathematical Spacing Scale (Fibonacci-inspired) */
@@ -92,6 +95,13 @@ h1 {
     word-wrap: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
+    background: linear-gradient(var(--gradient-angle), 
+        var(--color-text) 0%, 
+        var(--color-primary-dark) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 section h1 {
@@ -102,6 +112,23 @@ section h1 {
     word-wrap: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
+    background: linear-gradient(var(--gradient-angle), 
+        var(--color-text) 0%, 
+        var(--color-primary-dark) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    background: linear-gradient(var(--gradient-angle), 
+        var(--color-text) 0%, 
+        var(--color-primary-dark) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .container {
@@ -267,7 +294,7 @@ section h1 {
     line-height: var(--golden-line-height);
     margin-bottom: var(--spacing-md);
     color: var(--color-text);
-    background: linear-gradient(135deg, 
+    background: linear-gradient(var(--gradient-angle), 
         var(--color-text) 0%, 
         var(--color-primary-dark) 100%
     );
