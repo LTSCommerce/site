@@ -17,7 +17,7 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
 - **Templating**: EJS (Embedded JavaScript templates) for template-driven development
 - **Build Pipeline**: Custom EJS preprocessing → Vite (ES modules, CSS processing, optimization)
-- **Syntax Highlighting**: Prism.js (PHP, Bash, YAML, SQL, JSON, Nginx)
+- **Syntax Highlighting**: Highlight.js (CSS, JavaScript, PHP, Bash, YAML, SQL, JSON, Nginx)
 - **Code Quality**: ESLint + Prettier + Lighthouse CI
 - **CI/CD**: GitHub Actions with automated deployment
 - **Performance**: Optimized assets, lazy loading, performance monitoring
@@ -34,8 +34,7 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 │   ├── css/             # Stylesheets  
 │   ├── js/              # JavaScript modules
 │   ├── images/          # Static assets
-│   ├── articles/        # Article pages (static HTML)
-│   └── *.html           # Generated HTML from EJS templates
+│   └── articles/        # Article pages (EJS templates)
 ├── public_html/         # Built files (production)
 ├── templates/           # Legacy article templates
 ├── scripts/             # Build utilities (process-ejs.js, screenshot.js)
@@ -97,63 +96,69 @@ Screenshots are saved to `var/` directory which is gitignored. The screenshot sc
 2. **Auto-Format** - Prettier automatically formats all code and commits changes
 3. **Auto-Fix PHP** - PHP-CS-Fixer automatically fixes PHP code style issues
 4. **Quality Checks** - Linting and code style validation (deployment blocked if fails)
-5. **Article Registration** - Auto-detects and registers new articles
-6. **Code Embedding** - Embeds syntax-highlighted code snippets
-7. **EJS Processing** - Converts EJS templates to static HTML
-8. **Build** - Vite processes and optimizes all assets
-9. **Deploy** - Built files copied to `public_html/` and committed
-10. **GitHub Pages** - Deployment triggered only when CI succeeds
-11. **Lighthouse** - Performance and SEO auditing (post-deployment)
+5. **Article Registration** - Auto-detects and registers new EJS articles
+6. **Build** - Vite processes and optimizes all assets (CSS/JS with hashing)
+7. **EJS Processing** - Converts EJS templates to static HTML with proper asset paths
+8. **Deploy** - Built files deployed to `public_html/` and committed
+9. **GitHub Pages** - Deployment triggered only when CI succeeds
+10. **Lighthouse** - Performance and SEO auditing (post-deployment)
 
 ## Content Management
 
 ### Articles
 - **Location**: `private_html/articles/` (source), `public_html/articles/` (built)
-- **Format**: Static HTML with embedded metadata
-- **Syntax Highlighting**: Automatic language detection for code blocks
-- **Categories**: PHP, Infrastructure, Database, AI
+- **Format**: EJS templates with embedded metadata
+- **Syntax Highlighting**: Automatic language detection with Highlight.js for code blocks
+- **Categories**: PHP (purple), Infrastructure (green), Database (blue), AI (orange)
 - **SEO**: Proper meta tags, structured data, semantic HTML
-- **Comments**: HTML comments in source files are removed during build
+- **Template Processing**: EJS templates converted to static HTML during build
 
 ### Adding New Articles
 
-**FULLY AUTOMATED PROCESS**: Creating articles is now completely automated using metadata extraction:
+**MODERN EJS TEMPLATE SYSTEM**: Articles are now created using EJS templates with automated metadata extraction:
 
 #### Step 1: Create Article from Template
 ```bash
-# Copy the template to create a new article
-cp templates/article-template.html private_html/articles/your-article-slug.html
+# Create new EJS article template
+cp private_html/articles/dynamic-gradient-headings.ejs private_html/articles/your-article-slug.ejs
 ```
 
-#### Step 2: Edit Article Content
-Edit the new article file and replace all `{{PLACEHOLDER}}` values:
+#### Step 2: Edit Article Template
+Edit the new EJS file with article metadata and content:
 
-**HTML Head Metadata** (automatically extracted):
-- `<title>` - Article title (automatically extracted, removes " | Joseph")
-- `<meta name="description">` - SEO meta description (becomes excerpt)
-- `<meta name="keywords">` - Article tags (comma-separated)
-- `<time datetime="YYYY-MM-DD">` - Article date (ISO format)
-
-**HTML Comment Metadata** (for article-specific data only):
-```html
-<!-- ARTICLE_META:
-category: php|infrastructure|database|ai
-readingTime: 8
--->
+**EJS Template Structure:**
+```ejs
+<%- include('../templates/layouts/article', {
+    articleTitle: 'Your Article Title',
+    articleDescription: 'SEO meta description that becomes excerpt',
+    articleDate: '2025-07-21',
+    articleCategory: 'php|infrastructure|database|ai',
+    articleReadingTime: '6',
+    articleContent: `
+        <div class="intro">
+            <p class="lead">Lead paragraph...</p>
+        </div>
+        
+        <section>
+            <h2>Section Title</h2>
+            <p>Content...</p>
+            
+            <pre><code class="language-css">/* CSS code */</code></pre>
+            <pre><code class="language-javascript">// JavaScript code</code></pre>
+        </section>
+    `
+}) %>
 ```
 
-**Content Placeholders:**
-- `{{ARTICLE_TITLE}}` - Article title (used in multiple places)
-- `{{ARTICLE_DESCRIPTION}}` - SEO meta description
-- `{{ARTICLE_DATE_ISO}}` - Date in ISO format (YYYY-MM-DD)
-- `{{ARTICLE_DATE_FORMATTED}}` - Human-readable date (e.g., "July 18, 2025")
-- `{{ARTICLE_CATEGORY}}` - Category from comment metadata
-- `{{READING_TIME}}` - Reading time from comment metadata
-- `{{ARTICLE_LEAD}}` - Article introduction/lead paragraph
-- `{{SECTION_TITLE_*}}` - Section headings
-- `{{SECTION_CONTENT_*}}` - Section content
-- `{{CODE_EXAMPLE}}` - Code snippets
-- `{{LANGUAGE}}` - Programming language for syntax highlighting
+**Supported Languages for Syntax Highlighting:**
+- `language-css` - CSS stylesheets
+- `language-javascript` - JavaScript code
+- `language-php` - PHP code
+- `language-bash` - Shell/terminal commands
+- `language-sql` - Database queries
+- `language-yaml` - Configuration files
+- `language-json` - JSON data
+- `language-nginx` - Nginx configuration
 
 #### Step 3: Build and Deploy (Articles Auto-Register!)
 ```bash
@@ -168,24 +173,21 @@ git push origin main
 ```
 
 **✨ AUTOMATIC FEATURES:**
-- **No manual registration needed** - articles are automatically detected and registered
-- **Metadata extraction** - title, description, date extracted from HTML head tags
-- **Auto-generated articles.js** - data array created from scanned articles
+- **No manual registration needed** - articles are automatically detected and registered from EJS templates
+- **Metadata extraction** - title, description, date extracted from EJS template parameters
+- **Auto-generated articles.js** - data array created from scanned EJS articles
 - **Auto-updated vite.config.js** - build paths added automatically
 - **Smart ID generation** - unique IDs created from article slugs
 - **Consistent ordering** - articles sorted by date (newest first)
+- **Syntax highlighting** - Automatic code highlighting with Highlight.js included in all articles
 
-**Source vs Built Files:**
-- **Source**: `private_html/` contains original HTML with comments and placeholders
-- **Built**: `public_html/` contains optimized, comment-free production files
-- **Templates**: `templates/` contains reusable article templates
-
-**Benefits of New Structure:**
-- Clear separation between source and built files
-- HTML comments allowed in source for documentation
-- Template-based article creation reduces errors
-- Consistent article structure and formatting
-- Comments automatically removed in production
+**EJS Template Benefits:**
+- **Template inheritance** - Consistent layout and structure across all articles
+- **Data-driven content** - Structured metadata in template parameters
+- **Clean separation** - Content logic separate from presentation
+- **Automatic asset linking** - CSS and JS assets properly linked via Vite manifest
+- **SEO optimization** - Meta tags, structured data automatically generated
+- **Category styling** - Article categories automatically get appropriate colors
 
 ## EJS Template System
 
@@ -237,11 +239,22 @@ Global data available in all templates:
 
 ### Build Process
 ```
-EJS Templates (*.ejs) 
-  ↓ scripts/process-ejs.js
-Static HTML (*.html)
-  ↓ Vite build
-Optimized Production Files
+1. Article Registration (scripts/auto-register-articles.js)
+   ├── Scan private_html/articles/*.ejs
+   ├── Extract metadata from EJS templates
+   └── Generate articles.js with article data
+
+2. Vite Build (vite build)
+   ├── Process CSS/JS assets with hashing
+   ├── Generate manifest.json for asset paths
+   └── Output to public_html/assets/
+
+3. EJS Processing (scripts/process-ejs.js)
+   ├── Load Vite manifest for asset paths
+   ├── Process page templates (private_html/pages/*.ejs)
+   ├── Process article templates (private_html/articles/*.ejs)
+   ├── Apply template inheritance and data injection
+   └── Generate static HTML (public_html/*.html)
 ```
 
 ## Configuration Files
@@ -277,5 +290,21 @@ Optimized Production Files
 
 ---
 
-*Last Updated: 2025-07-17*
-*Version: 2.0 - Modern Build System*
+---
+
+*Last Updated: 2025-07-21*
+*Version: 3.0 - EJS Template System with Enhanced Article Management*
+
+## Recent Updates (v3.0)
+
+### Article System Enhancements
+- **EJS Templates**: Converted all articles from static HTML to EJS templates
+- **Syntax Highlighting**: Integrated Highlight.js for automatic code highlighting
+- **Category Colors**: Added visual category distinctions (PHP=purple, Infrastructure=green, Database=blue, AI=orange)
+- **Template Inheritance**: Consistent article layout through template system
+- **Dynamic Gradients**: Mouse-responsive gradient effects on headings
+
+### Build System Improvements
+- **Three-Stage Build**: Article registration → Vite asset processing → EJS template processing
+- **Asset Hashing**: Vite-managed asset hashing with manifest-driven path resolution
+- **Automated Deployment**: Full CI/CD pipeline with quality gates and auto-formatting
