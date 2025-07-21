@@ -1,0 +1,150 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'Dynamic Gradient Headings: A CSS and JavaScript Implementation',
+    articleDescription: 'A straightforward approach to creating mouse-responsive gradient text effects using CSS custom properties and vanilla JavaScript',
+    articleDate: '2025-01-21',
+    articleCategory: 'php',
+    articleReadingTime: '6',
+    articleContent: `
+<div class="intro">
+    <p class="lead">
+        Text gradients that respond to mouse movement can add a subtle interactive element to web interfaces. 
+        This implementation uses CSS custom properties and vanilla JavaScript to create headings that adjust 
+        their gradient direction based on cursor position.
+    </p>
+</div>
+
+<section>
+    <h2>The Basic Approach</h2>
+    <p>
+        The technique relies on a CSS custom property to control gradient direction, updated via JavaScript 
+        as the mouse moves. Rather than recalculating styles for each heading individually, we modify a 
+        single CSS variable that all gradients reference.
+    </p>
+</section>
+
+<section>
+    <h2>CSS Foundation</h2>
+    <p>
+        First, establish the gradient system with a custom property for the angle:
+    </p>
+    
+    <pre><code class="language-css">:root {
+    --gradient-angle: 135deg;
+}
+
+h1, h2 {
+    background: linear-gradient(var(--gradient-angle), 
+        var(--color-text) 0%, 
+        var(--color-primary-dark) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}</code></pre>
+
+    <p>
+        The initial 135-degree angle provides a pleasant diagonal gradient. All headings inherit this 
+        direction through the custom property, ensuring consistency.
+    </p>
+</section>
+
+<section>
+    <h2>JavaScript Implementation</h2>
+    <p>
+        The mouse tracking calculates angles relative to the viewport centre:
+    </p>
+
+    <pre><code class="language-javascript">function initializeDynamicGradients() {
+    const dynamicGradientHandler = utils.throttle((e) => {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const deltaX = e.clientX - centerX;
+        const deltaY = e.clientY - centerY;
+        
+        const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 135;
+        
+        document.documentElement.style.setProperty(
+            '--gradient-angle', 
+            \`\${angle}deg\`
+        );
+    }, 16);
+    
+    document.addEventListener('mousemove', dynamicGradientHandler);
+    
+    document.addEventListener('mouseleave', () => {
+        document.documentElement.style.setProperty('--gradient-angle', '135deg');
+    });
+}</code></pre>
+</section>
+
+<section>
+    <h2>Performance Considerations</h2>
+    <p>
+        Mouse events fire frequently, so throttling prevents unnecessary repaints. The 16ms throttle 
+        (roughly 60fps) provides smooth updates without overwhelming the browser.
+    </p>
+    
+    <p>
+        Using a single CSS custom property means the browser only needs to update one value, rather 
+        than recalculating styles for multiple elements.
+    </p>
+</section>
+
+<section>
+    <h2>Mathematical Details</h2>
+    <p>
+        The angle calculation uses <code>Math.atan2()</code> to determine the direction from viewport 
+        centre to cursor position. Adding 135 degrees provides a sensible baseline - without this offset, 
+        a cursor at the top-left would create a 225-degree angle, which feels backwards.
+    </p>
+    
+    <p>
+        The result is converted from radians to degrees since CSS gradients expect degree values.
+    </p>
+</section>
+
+<section>
+    <h2>Browser Compatibility</h2>
+    <p>
+        Background-clip text requires vendor prefixes for WebKit browsers. The implementation degrades 
+        gracefully - older browsers simply show regular text colour rather than gradients.
+    </p>
+    
+    <p>
+        CSS custom properties have excellent support in modern browsers. For legacy support, you could 
+        provide fallback colours, though the dynamic behaviour would be lost.
+    </p>
+</section>
+
+<section>
+    <h2>Practical Applications</h2>
+    <p>
+        This technique works well for:
+    </p>
+    
+    <ul>
+        <li>Portfolio sites where subtle interactivity enhances the experience</li>
+        <li>Landing pages that benefit from engaging visual elements</li>
+        <li>Brand sites where the gradient colours align with visual identity</li>
+    </ul>
+    
+    <p>
+        It's less suitable for content-heavy sites where the movement might distract from reading, 
+        or accessibility-critical applications where motion effects could cause issues for some users.
+    </p>
+</section>
+
+<section>
+    <h2>Implementation Notes</h2>
+    <p>
+        The mouse leave handler resets the angle to prevent gradients from "sticking" at odd angles 
+        when users navigate away with keyboard shortcuts or other non-mouse methods.
+    </p>
+    
+    <p>
+        For sites with many headings, this approach scales well since it avoids per-element calculations. 
+        The performance characteristics remain consistent regardless of heading count.
+    </p>
+</section>
+    `
+}) %>
