@@ -26,7 +26,7 @@ export default defineConfig({
   root: 'private_html',
   build: {
     outDir: '../public_html',
-    emptyOutDir: true,
+    emptyOutDir: true
     rollupOptions: {
       input: {
         // HTML pages
@@ -36,16 +36,7 @@ export default defineConfig({
         articles: resolve(__dirname, 'private_html/articles.html'),
         contact: resolve(__dirname, 'private_html/contact.html'),
         author: resolve(__dirname, 'private_html/author.html'),
-        // Article pages
-        'articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'private_html/articles/claude-code-custom-commands-cc-commands.html'),
-        'articles/fedora-42-breakthrough-features': resolve(__dirname, 'private_html/articles/fedora-42-breakthrough-features.html'),
-        'articles/legacy-php-modernization': resolve(__dirname, 'private_html/articles/legacy-php-modernization.html'),
-        'articles/ansible-php-infrastructure': resolve(__dirname, 'private_html/articles/ansible-php-infrastructure.html'),
-        'articles/proxmox-vs-cloud': resolve(__dirname, 'private_html/articles/proxmox-vs-cloud.html'),
-        'articles/high-performance-php': resolve(__dirname, 'private_html/articles/high-performance-php.html'),
-        'articles/mysql-performance-php': resolve(__dirname, 'private_html/articles/mysql-performance-php.html'),
-        'articles/scalable-php-apis': resolve(__dirname, 'private_html/articles/scalable-php-apis.html'),
-        'articles/ai-enhanced-php-development': resolve(__dirname, 'private_html/articles/ai-enhanced-php-development.html'),
+        // Article pages - these don't exist as separate files now with EJS templates
         // JavaScript entry points
         'js/main': resolve(__dirname, 'private_html/js/main.js'),
         'js/about': resolve(__dirname, 'private_html/js/about.js'),

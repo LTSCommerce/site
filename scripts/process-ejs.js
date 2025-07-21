@@ -90,7 +90,7 @@ async function processEjsFiles() {
       const relativePath = path.relative(path.join(projectRoot, 'private_html/pages'), fullPath);
       const outputPath = path.join(
         projectRoot, 
-        'public_html', 
+        'private_html', 
         relativePath.replace('.ejs', '.html')
       );
 
