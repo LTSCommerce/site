@@ -26,18 +26,10 @@ export default defineConfig({
   root: 'private_html',
   build: {
     outDir: '../public_html',
-    emptyOutDir: true
+    emptyOutDir: false, // Don't delete HTML files created by EJS
     rollupOptions: {
       input: {
-        // HTML pages
-        main: resolve(__dirname, 'private_html/index.html'),
-        about: resolve(__dirname, 'private_html/about.html'),
-        services: resolve(__dirname, 'private_html/services.html'),
-        articles: resolve(__dirname, 'private_html/articles.html'),
-        contact: resolve(__dirname, 'private_html/contact.html'),
-        author: resolve(__dirname, 'private_html/author.html'),
-        // Article pages - these don't exist as separate files now with EJS templates
-        // JavaScript entry points
+        // JavaScript entry points (no HTML - handled by EJS)
         'js/main': resolve(__dirname, 'private_html/js/main.js'),
         'js/about': resolve(__dirname, 'private_html/js/about.js'),
         'js/services': resolve(__dirname, 'private_html/js/services.js'),
