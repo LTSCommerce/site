@@ -31,7 +31,8 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 │   └── *.html           # Main pages
 ├── public_html/         # Built files (production)
 ├── templates/           # Article templates
-├── scripts/             # Build utilities
+├── scripts/             # Build utilities & screenshot tools
+├── var/                 # Temporary files (gitignored except .gitignore)
 └── .github/workflows/   # CI/CD configuration
 ```
 
@@ -64,6 +65,24 @@ npm run syntax-highlight # Process code syntax highlighting
 ```
 
 **Manual Deployment Override**: Use GitHub Actions UI or `gh workflow run "Deploy static content to Pages"`
+
+### Debugging & Screenshots
+
+Take screenshots of live pages for debugging layout issues:
+
+```bash
+# Take screenshot of specific page
+node scripts/screenshot.js
+# Modify the URL in the script as needed
+```
+
+Screenshots are saved to `var/` directory which is gitignored. The screenshot script uses Playwright to capture high-quality screenshots for debugging visual issues.
+
+**Script Configuration:**
+- Default viewport: 1920x1080 (desktop)
+- Waits for network idle before capturing
+- Configurable clip area for focusing on specific sections
+- Outputs PNG files to `var/` directory
 
 ### Deployment Process
 1. **Push to main branch** triggers GitHub Actions CI/CD pipeline
