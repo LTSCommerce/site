@@ -1,1108 +1,931 @@
-<!DOCTYPE html><html lang="en"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP">
-    <meta name="keywords" content="php, api, scalability, architecture, backend, microservices, cqrs, event-driven, performance, monitoring">
-    <title>Building Scalable Backend APIs with Modern PHP | Joseph</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- CSS assets will be processed by Vite build -->
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/articles.css">
-    <link rel="stylesheet" href="/css/syntax-highlighting.css">
-    <script></script>
-    <noscript>
-        <style>
-            body { opacity: 1 !important; }
-        </style>
-    </noscript>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP">
+<title>Building Scalable Backend APIs with Modern PHP - Bespoke PHP Developer - Bespoke PHP Developer | Joseph - Bespoke PHP Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/main.css">
+
+<script>
+// Immediate fade-in fallback
+document.addEventListener('DOMContentLoaded', function() {
+document.body.style.opacity = '1';
+});
+</script>
+<noscript>
+<style>
+body { opacity: 1 !important; }
+</style>
+</noscript>
 </head>
 <body style="opacity: 0;">
-    <!-- ARTICLE_META:
-    category: php
-    readingTime: 12
-    -->
-    <header class="site-header">
-        <nav class="nav-container">
-            <div class="nav-brand">
-                <a href="/" class="brand-link">Joseph</a>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="/" class="nav-link">Home</a></li>
-                <li><a href="/services.html" class="nav-link">Services</a></li>
-                <li><a href="/articles.html" class="nav-link">Articles</a></li>
-                <li><a href="/about.html" class="nav-link">About</a></li>
-                <li><a href="/author.html" class="nav-link">Author</a></li>
-                <li><a href="/contact.html" class="nav-link">Contact</a></li>
-            </ul>
-            <button class="nav-toggle" aria-label="Toggle navigation">
-                <span class="hamburger"></span>
-            </button>
-        </nav>
-    </header>
+<header class="site-header">
+<nav class="nav-container">
+<div class="nav-brand">
+<a href="/" class="brand-link">Joseph</a>
+</div>
+<ul class="nav-menu">
 
-    <main class="main-content">
-        <article class="article-container">
-            <header class="article-header">
-                <h1>Building Scalable Backend APIs with Modern PHP</h1>
-                <div class="article-meta">
-                    <time datetime="2024-12-15">December 15, 2024</time>
-                    <span class="separator">•</span>
-                    <span class="reading-time">12 min read</span>
-                    <span class="separator">•</span>
-                    <span class="category">php</span>
-                </div>
-            </header>
+<li>
+<a href="/"
+class="nav-link">
+Home
+</a>
+</li>
 
-            <section class="intro">
-                <p class="lead">
-                    Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP.
-                </p>
-            </section>
+<li>
+<a href="/services.html"
+class="nav-link">
+Services
+</a>
+</li>
 
-            <section>
-                <p>Building scalable APIs is about more than just handling high traffic—it's about creating systems that can grow with your business while maintaining performance, reliability, and maintainability. Modern PHP provides excellent tools for building enterprise-grade APIs that can handle millions of requests.</p>
+<li>
+<a href="/articles.html"
+class="nav-link active">
+Articles
+</a>
+</li>
 
-                <p>This article covers architectural patterns, design principles, and implementation strategies I've used to build APIs that scale from thousands to millions of users.</p>
+<li>
+<a href="/about.html"
+class="nav-link">
+About
+</a>
+</li>
 
-                <h2>API Architecture Principles</h2>
+<li>
+<a href="/author.html"
+class="nav-link">
+Author
+</a>
+</li>
 
-                <h3>Layered Architecture</h3>
+<li>
+<a href="/contact.html"
+class="nav-link">
+Contact
+</a>
+</li>
 
-                <p>Separate concerns into distinct layers for better maintainability and testability:</p>
+</ul>
+<button class="nav-toggle" aria-label="Toggle navigation">
+<span class="hamburger"></span>
+</button>
+</nav>
+</header>
+<main class="main-content">
 
-                <pre><code class="language-php">&lt;?php
-
+<link rel="stylesheet" href="/css/articles.css">
+<link rel="stylesheet" href="/css/syntax-highlighting.css">
+<article class="article-container">
+<header class="article-header">
+<h1>Building Scalable Backend APIs with Modern PHP - Bespoke PHP Developer - Bespoke PHP Developer</h1>
+<div class="article-meta">
+<time datetime="2024-12-15">15 December 2024</time>
+<span class="separator">•</span>
+<span class="reading-time">5 min read</span>
+<span class="separator">•</span>
+<span class="article-category general">GENERAL</span>
+</div>
+</header>
+<section class="intro">
+<p class="lead">
+Architectural patterns and best practices for creating robust, scalable backend systems using modern PHP.
+</p>
+</section>
+<section>
+<p>Building scalable APIs is about more than just handling high traffic—it's about creating systems that can grow with your business while maintaining performance, reliability, and maintainability. Modern PHP provides excellent tools for building enterprise-grade APIs that can handle millions of requests.</p>
+<p>This article covers architectural patterns, design principles, and implementation strategies I've used to build APIs that scale from thousands to millions of users.</p>
+<h2>API Architecture Principles</h2>
+<h3>Layered Architecture</h3>
+<p>Separate concerns into distinct layers for better maintainability and testability:</p>
+<pre><code class="language-php">&lt;?php
 declare(strict_types=1);
-
-namespace App\Http\Controllers;
-
-use App\Services\User\UserService;
-use App\Http\{Request, Response, JsonResponse};
-use App\Exceptions\{ValidationException, DuplicateEmailException};
-use App\ValueObjects\UserId;
-use Psr\Log\LoggerInterface;
-
+namespace AppHttpControllers;
+use AppServicesUserUserService;
+use AppHttp{Request, Response, JsonResponse};
+use AppExceptions{ValidationException, DuplicateEmailException};
+use AppValueObjectsUserId;
+use PsrLogLoggerInterface;
 // Controller Layer - HTTP concerns only
 final readonly class UserController
 {
-    public function __construct(
-        private UserService $userService,
-        private LoggerInterface $logger,
-    ) {}
-    
-    public function createUser(Request $request): Response
-    {
-        $userData = $request-&gt;getValidatedData();
-        
-        try {
-            $user = $this-&gt;userService-&gt;createUser($userData);
-            
-            return new JsonResponse([
-                &#39;id&#39; =&gt; $user-&gt;getId()-&gt;value,
-                &#39;email&#39; =&gt; $user-&gt;getEmail()-&gt;value,
-                &#39;name&#39; =&gt; $user-&gt;getName()-&gt;value,
-                &#39;created_at&#39; =&gt; $user-&gt;getCreatedAt()-&gt;format(&#39;c&#39;),
-            ], 201);
-        } catch (ValidationException $e) {
-            return new JsonResponse([
-                &#39;error&#39; =&gt; &#39;Validation failed&#39;,
-                &#39;violations&#39; =&gt; $e-&gt;getViolations(),
-            ], 400);
-        } catch (DuplicateEmailException $e) {
-            return new JsonResponse([
-                &#39;error&#39; =&gt; &#39;Email already exists&#39;,
-                &#39;code&#39; =&gt; &#39;DUPLICATE_EMAIL&#39;,
-            ], 409);
-        }
-    }
+public function __construct(
+private UserService $userService,
+private LoggerInterface $logger,
+) {}
+public function createUser(Request $request): Response
+{
+$userData = $request-&gt;getValidatedData();
+try {
+$user = $this-&gt;userService-&gt;createUser($userData);
+return new JsonResponse([
+&#39;id&#39; =&gt; $user-&gt;getId()-&gt;value,
+&#39;email&#39; =&gt; $user-&gt;getEmail()-&gt;value,
+&#39;name&#39; =&gt; $user-&gt;getName()-&gt;value,
+&#39;created_at&#39; =&gt; $user-&gt;getCreatedAt()-&gt;format(&#39;c&#39;),
+], 201);
+} catch (ValidationException $e) {
+return new JsonResponse([
+&#39;error&#39; =&gt; &#39;Validation failed&#39;,
+&#39;violations&#39; =&gt; $e-&gt;getViolations(),
+], 400);
+} catch (DuplicateEmailException $e) {
+return new JsonResponse([
+&#39;error&#39; =&gt; &#39;Email already exists&#39;,
+&#39;code&#39; =&gt; &#39;DUPLICATE_EMAIL&#39;,
+], 409);
 }
-
+}
+}
 // Service Layer - Business logic
 final readonly class UserService
 {
-    public function __construct(
-        private UserRepository $userRepository,
-        private EmailService $emailService,
-        private EventDispatcher $eventDispatcher,
-        private UserValidator $validator,
-        private PasswordHasher $passwordHasher,
-    ) {}
-    
-    public function createUser(array $userData): User
-    {
-        $this-&gt;validator-&gt;validate($userData);
-        
-        $user = User::create(
-            UserId::generate(),
-            EmailAddress::fromString($userData[&#39;email&#39;]),
-            UserName::fromString($userData[&#39;name&#39;]),
-            $this-&gt;passwordHasher-&gt;hash($userData[&#39;password&#39;])
-        );
-        
-        $this-&gt;userRepository-&gt;save($user);
-        
-        $this-&gt;emailService-&gt;sendWelcomeEmail($user);
-        
-        $this-&gt;eventDispatcher-&gt;dispatch(
-            new UserCreatedEvent($user-&gt;getId(), $user-&gt;getEmail())
-        );
-        
-        return $user;
-    }
+public function __construct(
+private UserRepository $userRepository,
+private EmailService $emailService,
+private EventDispatcher $eventDispatcher,
+private UserValidator $validator,
+private PasswordHasher $passwordHasher,
+) {}
+public function createUser(array $userData): User
+{
+$this-&gt;validator-&gt;validate($userData);
+$user = User::create(
+UserId::generate(),
+EmailAddress::fromString($userData[&#39;email&#39;]),
+UserName::fromString($userData[&#39;name&#39;]),
+$this-&gt;passwordHasher-&gt;hash($userData[&#39;password&#39;])
+);
+$this-&gt;userRepository-&gt;save($user);
+$this-&gt;emailService-&gt;sendWelcomeEmail($user);
+$this-&gt;eventDispatcher-&gt;dispatch(
+new UserCreatedEvent($user-&gt;getId(), $user-&gt;getEmail())
+);
+return $user;
 }
-
+}
 // Repository Layer - Data access
 final readonly class UserRepository
 {
-    public function __construct(
-        private PDO $connection,
-        private UserHydrator $hydrator,
-    ) {}
-    
-    public function save(User $user): void
-    {
-        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
-            INSERT INTO users (id, email, name, password_hash, created_at) 
-            VALUES (:id, :email, :name, :password_hash, :created_at)
-            SQL);
-        
-        $stmt-&gt;execute([
-            &#39;id&#39; =&gt; $user-&gt;getId()-&gt;value,
-            &#39;email&#39; =&gt; $user-&gt;getEmail()-&gt;value,
-            &#39;name&#39; =&gt; $user-&gt;getName()-&gt;value,
-            &#39;password_hash&#39; =&gt; $user-&gt;getPasswordHash()-&gt;value,
-            &#39;created_at&#39; =&gt; $user-&gt;getCreatedAt()-&gt;format(&#39;Y-m-d H:i:s&#39;)
-        ]);
-    }
-    
-    public function findById(UserId $id): ?User
-    {
-        $stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
-            SELECT id, email, name, password_hash, created_at
-            FROM users 
-            WHERE id = :id AND deleted_at IS NULL
-            SQL);
-        
-        $stmt-&gt;execute([&#39;id&#39; =&gt; $id-&gt;value]);
-        $userData = $stmt-&gt;fetch();
-        
-        return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
-    }
+public function __construct(
+private PDO $connection,
+private UserHydrator $hydrator,
+) {}
+public function save(User $user): void
+{
+$stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
+INSERT INTO users (id, email, name, password_hash, created_at)
+VALUES (:id, :email, :name, :password_hash, :created_at)
+SQL);
+$stmt-&gt;execute([
+&#39;id&#39; =&gt; $user-&gt;getId()-&gt;value,
+&#39;email&#39; =&gt; $user-&gt;getEmail()-&gt;value,
+&#39;name&#39; =&gt; $user-&gt;getName()-&gt;value,
+&#39;password_hash&#39; =&gt; $user-&gt;getPasswordHash()-&gt;value,
+&#39;created_at&#39; =&gt; $user-&gt;getCreatedAt()-&gt;format(&#39;Y-m-d H:i:s&#39;)
+]);
+}
+public function findById(UserId $id): ?User
+{
+$stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
+SELECT id, email, name, password_hash, created_at
+FROM users
+WHERE id = :id AND deleted_at IS NULL
+SQL);
+$stmt-&gt;execute([&#39;id&#39; =&gt; $id-&gt;value]);
+$userData = $stmt-&gt;fetch();
+return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
+}
 }</code></pre>
-
-                <h3>Domain-Driven Design</h3>
-
-                <p>Model your business domain explicitly:</p>
-
-                <pre><code class="language-php">&lt;?php
-
+<h3>Domain-Driven Design</h3>
+<p>Model your business domain explicitly:</p>
+<pre><code class="language-php">&lt;?php
 declare(strict_types=1);
-
-namespace App\Domain\User;
-
-use App\ValueObjects\{UserId, EmailAddress, UserName, PasswordHash};
-use App\Exceptions\{UserAlreadyDeactivatedException, InvalidStateTransitionException};
-use App\Domain\{AggregateRoot, DomainEvent};
+namespace AppDomainUser;
+use AppValueObjects{UserId, EmailAddress, UserName, PasswordHash};
+use AppExceptions{UserAlreadyDeactivatedException, InvalidStateTransitionException};
+use AppDomain{AggregateRoot, DomainEvent};
 use DateTimeImmutable;
-
 // Domain Entity
 final class User extends AggregateRoot
 {
-    private function __construct(
-        private readonly UserId $id,
-        private EmailAddress $email,
-        private readonly UserName $name,
-        private readonly PasswordHash $passwordHash,
-        private UserStatus $status,
-        private readonly DateTimeImmutable $createdAt,
-    ) {}
-    
-    public static function create(
-        UserId $id,
-        EmailAddress $email,
-        UserName $name,
-        PasswordHash $passwordHash
-    ): self {
-        $user = new self(
-            $id,
-            $email,
-            $name,
-            $passwordHash,
-            UserStatus::ACTIVE,
-            new DateTimeImmutable()
-        );
-        
-        $user-&gt;recordEvent(new UserCreatedEvent($id, $email));
-        
-        return $user;
-    }
-    
-    public function changeEmail(EmailAddress $newEmail): void
-    {
-        if ($this-&gt;email-&gt;equals($newEmail)) {
-            return;
-        }
-        
-        $previousEmail = $this-&gt;email;
-        $this-&gt;email = $newEmail;
-        
-        $this-&gt;recordEvent(new UserEmailChangedEvent(
-            $this-&gt;id,
-            $previousEmail,
-            $newEmail
-        ));
-    }
-    
-    public function deactivate(): void
-    {
-        if ($this-&gt;status === UserStatus::DEACTIVATED) {
-            throw new UserAlreadyDeactivatedException(
-                &quot;User {$this-&gt;id-&gt;value} is already deactivated&quot;
-            );
-        }
-        
-        $this-&gt;status = UserStatus::DEACTIVATED;
-        $this-&gt;recordEvent(new UserDeactivatedEvent($this-&gt;id));
-    }
-    
-    public function activate(): void
-    {
-        if ($this-&gt;status === UserStatus::SUSPENDED) {
-            throw new InvalidStateTransitionException(
-                &quot;Cannot activate suspended user {$this-&gt;id-&gt;value}&quot;
-            );
-        }
-        
-        $this-&gt;status = UserStatus::ACTIVE;
-        $this-&gt;recordEvent(new UserActivatedEvent($this-&gt;id));
-    }
-    
-    public function isActive(): bool
-    {
-        return $this-&gt;status === UserStatus::ACTIVE;
-    }
-    
-    public function getId(): UserId { return $this-&gt;id; }
-    public function getEmail(): EmailAddress { return $this-&gt;email; }
-    public function getName(): UserName { return $this-&gt;name; }
-    public function getPasswordHash(): PasswordHash { return $this-&gt;passwordHash; }
-    public function getStatus(): UserStatus { return $this-&gt;status; }
-    public function getCreatedAt(): DateTimeImmutable { return $this-&gt;createdAt; }
+private function __construct(
+private readonly UserId $id,
+private EmailAddress $email,
+private readonly UserName $name,
+private readonly PasswordHash $passwordHash,
+private UserStatus $status,
+private readonly DateTimeImmutable $createdAt,
+) {}
+public static function create(
+UserId $id,
+EmailAddress $email,
+UserName $name,
+PasswordHash $passwordHash
+): self {
+$user = new self(
+$id,
+$email,
+$name,
+$passwordHash,
+UserStatus::ACTIVE,
+new DateTimeImmutable()
+);
+$user-&gt;recordEvent(new UserCreatedEvent($id, $email));
+return $user;
 }
-
+public function changeEmail(EmailAddress $newEmail): void
+{
+if ($this-&gt;email-&gt;equals($newEmail)) {
+return;
+}
+$previousEmail = $this-&gt;email;
+$this-&gt;email = $newEmail;
+$this-&gt;recordEvent(new UserEmailChangedEvent(
+$this-&gt;id,
+$previousEmail,
+$newEmail
+));
+}
+public function deactivate(): void
+{
+if ($this-&gt;status === UserStatus::DEACTIVATED) {
+throw new UserAlreadyDeactivatedException(
+&quot;User {$this-&gt;id-&gt;value} is already deactivated&quot;
+);
+}
+$this-&gt;status = UserStatus::DEACTIVATED;
+$this-&gt;recordEvent(new UserDeactivatedEvent($this-&gt;id));
+}
+public function activate(): void
+{
+if ($this-&gt;status === UserStatus::SUSPENDED) {
+throw new InvalidStateTransitionException(
+&quot;Cannot activate suspended user {$this-&gt;id-&gt;value}&quot;
+);
+}
+$this-&gt;status = UserStatus::ACTIVE;
+$this-&gt;recordEvent(new UserActivatedEvent($this-&gt;id));
+}
+public function isActive(): bool
+{
+return $this-&gt;status === UserStatus::ACTIVE;
+}
+public function getId(): UserId { return $this-&gt;id; }
+public function getEmail(): EmailAddress { return $this-&gt;email; }
+public function getName(): UserName { return $this-&gt;name; }
+public function getPasswordHash(): PasswordHash { return $this-&gt;passwordHash; }
+public function getStatus(): UserStatus { return $this-&gt;status; }
+public function getCreatedAt(): DateTimeImmutable { return $this-&gt;createdAt; }
+}
 // Value Object
 enum UserStatus: string {
-    case ACTIVE = &#39;active&#39;;
-    case DEACTIVATED = &#39;deactivated&#39;;
-    case SUSPENDED = &#39;suspended&#39;;
-    
-    public function canTransitionTo(self $newStatus): bool
-    {
-        return match ([$this, $newStatus]) {
-            [self::ACTIVE, self::DEACTIVATED] =&gt; true,
-            [self::ACTIVE, self::SUSPENDED] =&gt; true,
-            [self::DEACTIVATED, self::ACTIVE] =&gt; true,
-            [self::SUSPENDED, self::DEACTIVATED] =&gt; true,
-            default =&gt; false,
-        };
-    }
+case ACTIVE = &#39;active&#39;;
+case DEACTIVATED = &#39;deactivated&#39;;
+case SUSPENDED = &#39;suspended&#39;;
+public function canTransitionTo(self $newStatus): bool
+{
+return match ([$this, $newStatus]) {
+[self::ACTIVE, self::DEACTIVATED] =&gt; true,
+[self::ACTIVE, self::SUSPENDED] =&gt; true,
+[self::DEACTIVATED, self::ACTIVE] =&gt; true,
+[self::SUSPENDED, self::DEACTIVATED] =&gt; true,
+default =&gt; false,
+};
 }
-
+}
 // Domain Service
 final readonly class UserDomainService
 {
-    public function canUserAccessResource(User $user, Resource $resource): bool
-    {
-        if (!$user-&gt;isActive()) {
-            return false;
-        }
-        
-        if ($resource-&gt;requiresPremium() &amp;&amp; !$user-&gt;isPremium()) {
-            return false;
-        }
-        
-        return $user-&gt;hasPermission($resource-&gt;getRequiredPermission());
-    }
-    
-    public function canUserPerformAction(User $user, Action $action): bool
-    {
-        return match ($user-&gt;getStatus()) {
-            UserStatus::ACTIVE =&gt; true,
-            UserStatus::SUSPENDED =&gt; $action-&gt;isAllowedForSuspendedUsers(),
-            UserStatus::DEACTIVATED =&gt; false,
-        };
-    }
+public function canUserAccessResource(User $user, Resource $resource): bool
+{
+if (!$user-&gt;isActive()) {
+return false;
+}
+if ($resource-&gt;requiresPremium() &amp;&amp; !$user-&gt;isPremium()) {
+return false;
+}
+return $user-&gt;hasPermission($resource-&gt;getRequiredPermission());
+}
+public function canUserPerformAction(User $user, Action $action): bool
+{
+return match ($user-&gt;getStatus()) {
+UserStatus::ACTIVE =&gt; true,
+UserStatus::SUSPENDED =&gt; $action-&gt;isAllowedForSuspendedUsers(),
+UserStatus::DEACTIVATED =&gt; false,
+};
+}
 }</code></pre>
-            </section>
-
-            <section>
-                <h2>API Design Patterns</h2>
-
-                <h3>CQRS (Command Query Responsibility Segregation)</h3>
-
-                <p>Separate read and write operations for better scalability:</p>
-
-                <pre><code class="language-php">&lt;?php
-
+</section>
+<section>
+<h2>API Design Patterns</h2>
+<h3>CQRS (Command Query Responsibility Segregation)</h3>
+<p>Separate read and write operations for better scalability:</p>
+<pre><code class="language-php">&lt;?php
 // Command Handler - Write operations
 class CreateUserCommandHandler {
-    private UserRepository $userRepository;
-    private EventStore $eventStore;
-    
-    public function handle(CreateUserCommand $command): void {
-        $user = new User($command-&gt;email, $command-&gt;name);
-        $user-&gt;setPassword(password_hash($command-&gt;password, PASSWORD_DEFAULT));
-        
-        // Save to write database
-        $this-&gt;userRepository-&gt;save($user);
-        
-        // Store event for read model updates
-        $event = new UserCreatedEvent($user-&gt;getId(), $user-&gt;getEmail(), $user-&gt;getName());
-        $this-&gt;eventStore-&gt;store($event);
-    }
+private UserRepository $userRepository;
+private EventStore $eventStore;
+public function handle(CreateUserCommand $command): void {
+$user = new User($command-&gt;email, $command-&gt;name);
+$user-&gt;setPassword(password_hash($command-&gt;password, PASSWORD_DEFAULT));
+// Save to write database
+$this-&gt;userRepository-&gt;save($user);
+// Store event for read model updates
+$event = new UserCreatedEvent($user-&gt;getId(), $user-&gt;getEmail(), $user-&gt;getName());
+$this-&gt;eventStore-&gt;store($event);
 }
-
+}
 // Query Handler - Read operations
 class GetUserQueryHandler {
-    private UserReadModel $userReadModel;
-    
-    public function handle(GetUserQuery $query): UserView {
-        // Read from optimized read model
-        return $this-&gt;userReadModel-&gt;getUserById($query-&gt;userId);
-    }
+private UserReadModel $userReadModel;
+public function handle(GetUserQuery $query): UserView {
+// Read from optimized read model
+return $this-&gt;userReadModel-&gt;getUserById($query-&gt;userId);
 }
-
+}
 // Read Model - Optimized for queries
 class UserReadModel {
-    private Redis $redis;
-    private PDO $readDb;
-    
-    public function getUserById(int $userId): UserView {
-        // Try cache first
-        $cached = $this-&gt;redis-&gt;get(&quot;user:$userId&quot;);
-        if ($cached) {
-            return unserialize($cached);
-        }
-        
-        // Read from database
-        $sql = &quot;SELECT u.*, p.name as profile_name, p.avatar_url 
-                FROM users u 
-                LEFT JOIN profiles p ON u.id = p.user_id 
-                WHERE u.id = :id&quot;;
-        
-        $stmt = $this-&gt;readDb-&gt;prepare($sql);
-        $stmt-&gt;execute([&#39;id&#39; =&gt; $userId]);
-        $userData = $stmt-&gt;fetch();
-        
-        $userView = new UserView($userData);
-        
-        // Cache for future requests
-        $this-&gt;redis-&gt;setex(&quot;user:$userId&quot;, 3600, serialize($userView));
-        
-        return $userView;
-    }
+private Redis $redis;
+private PDO $readDb;
+public function getUserById(int $userId): UserView {
+// Try cache first
+$cached = $this-&gt;redis-&gt;get(&quot;user:$userId&quot;);
+if ($cached) {
+return unserialize($cached);
+}
+// Read from database
+$sql = &quot;SELECT u.*, p.name as profile_name, p.avatar_url
+FROM users u
+LEFT JOIN profiles p ON u.id = p.user_id
+WHERE u.id = :id&quot;;
+$stmt = $this-&gt;readDb-&gt;prepare($sql);
+$stmt-&gt;execute([&#39;id&#39; =&gt; $userId]);
+$userData = $stmt-&gt;fetch();
+$userView = new UserView($userData);
+// Cache for future requests
+$this-&gt;redis-&gt;setex(&quot;user:$userId&quot;, 3600, serialize($userView));
+return $userView;
+}
 }</code></pre>
-
-                <h3>Event-Driven Architecture</h3>
-
-                <p>Decouple components using events:</p>
-
-                <pre><code class="language-php">&lt;?php
-
+<h3>Event-Driven Architecture</h3>
+<p>Decouple components using events:</p>
+<pre><code class="language-php">&lt;?php
 // Event System
 class EventDispatcher {
-    private array $listeners = [];
-    
-    public function subscribe(string $eventClass, callable $listener): void {
-        $this-&gt;listeners[$eventClass][] = $listener;
-    }
-    
-    public function dispatch(object $event): void {
-        $eventClass = get_class($event);
-        
-        if (isset($this-&gt;listeners[$eventClass])) {
-            foreach ($this-&gt;listeners[$eventClass] as $listener) {
-                $listener($event);
-            }
-        }
-    }
+private array $listeners = [];
+public function subscribe(string $eventClass, callable $listener): void {
+$this-&gt;listeners[$eventClass][] = $listener;
 }
-
+public function dispatch(object $event): void {
+$eventClass = get_class($event);
+if (isset($this-&gt;listeners[$eventClass])) {
+foreach ($this-&gt;listeners[$eventClass] as $listener) {
+$listener($event);
+}
+}
+}
+}
 // Event
 class UserCreatedEvent {
-    public function __construct(
-        public readonly int $userId,
-        public readonly string $email,
-        public readonly string $name,
-        public readonly DateTimeImmutable $occurredAt = new DateTimeImmutable()
-    ) {}
+public function __construct(
+public readonly int $userId,
+public readonly string $email,
+public readonly string $name,
+public readonly DateTimeImmutable $occurredAt = new DateTimeImmutable()
+) {}
 }
-
 // Event Listeners
 class SendWelcomeEmailListener {
-    private EmailService $emailService;
-    
-    public function __invoke(UserCreatedEvent $event): void {
-        $this-&gt;emailService-&gt;sendWelcomeEmail($event-&gt;email, $event-&gt;name);
-    }
+private EmailService $emailService;
+public function __invoke(UserCreatedEvent $event): void {
+$this-&gt;emailService-&gt;sendWelcomeEmail($event-&gt;email, $event-&gt;name);
 }
-
+}
 class UpdateUserStatsListener {
-    private UserStatsService $userStatsService;
-    
-    public function __invoke(UserCreatedEvent $event): void {
-        $this-&gt;userStatsService-&gt;incrementUserCount();
-    }
+private UserStatsService $userStatsService;
+public function __invoke(UserCreatedEvent $event): void {
+$this-&gt;userStatsService-&gt;incrementUserCount();
 }
-
+}
 // Event Registration
 $eventDispatcher = new EventDispatcher();
 $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new SendWelcomeEmailListener($emailService));
 $eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListener($userStatsService));</code></pre>
-
-            </section>
-
-            <section>
-                <h2>Performance Optimization</h2>
-
-                <h3>Database Connection Pooling</h3>
-
-                <pre><code class="language-php">&lt;?php
-
+</section>
+<section>
+<h2>Performance Optimization</h2>
+<h3>Database Connection Pooling</h3>
+<pre><code class="language-php">&lt;?php
 class DatabasePool {
-    private array $connections = [];
-    private array $config;
-    private int $maxConnections;
-    private int $currentConnections = 0;
-    
-    public function __construct(array $config, int $maxConnections = 20) {
-        $this-&gt;config = $config;
-        $this-&gt;maxConnections = $maxConnections;
-    }
-    
-    public function getConnection(): PDO {
-        // Return existing connection if available
-        if (!empty($this-&gt;connections)) {
-            return array_pop($this-&gt;connections);
-        }
-        
-        // Create new connection if under limit
-        if ($this-&gt;currentConnections &lt; $this-&gt;maxConnections) {
-            $connection = new PDO(
-                $this-&gt;config[&#39;dsn&#39;],
-                $this-&gt;config[&#39;username&#39;],
-                $this-&gt;config[&#39;password&#39;],
-                [
-                    PDO::ATTR_PERSISTENT =&gt; false,
-                    PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
-                ]
-            );
-            
-            $this-&gt;currentConnections++;
-            return $connection;
-        }
-        
-        // Wait for available connection
-        usleep(10000); // 10ms
-        return $this-&gt;getConnection();
-    }
-    
-    public function releaseConnection(PDO $connection): void {
-        // Reset connection state
-        $connection-&gt;rollBack();
-        $connection-&gt;exec(&#39;SET autocommit = 1&#39;);
-        
-        // Return to pool
-        $this-&gt;connections[] = $connection;
-    }
+private array $connections = [];
+private array $config;
+private int $maxConnections;
+private int $currentConnections = 0;
+public function __construct(array $config, int $maxConnections = 20) {
+$this-&gt;config = $config;
+$this-&gt;maxConnections = $maxConnections;
+}
+public function getConnection(): PDO {
+// Return existing connection if available
+if (!empty($this-&gt;connections)) {
+return array_pop($this-&gt;connections);
+}
+// Create new connection if under limit
+if ($this-&gt;currentConnections &lt; $this-&gt;maxConnections) {
+$connection = new PDO(
+$this-&gt;config[&#39;dsn&#39;],
+$this-&gt;config[&#39;username&#39;],
+$this-&gt;config[&#39;password&#39;],
+[
+PDO::ATTR_PERSISTENT =&gt; false,
+PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
+PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+]
+);
+$this-&gt;currentConnections++;
+return $connection;
+}
+// Wait for available connection
+usleep(10000); // 10ms
+return $this-&gt;getConnection();
+}
+public function releaseConnection(PDO $connection): void {
+// Reset connection state
+$connection-&gt;rollBack();
+$connection-&gt;exec(&#39;SET autocommit = 1&#39;);
+// Return to pool
+$this-&gt;connections[] = $connection;
+}
 }</code></pre>
-
-                <h3>Response Caching</h3>
-
-                <pre><code class="language-php">&lt;?php
-
+<h3>Response Caching</h3>
+<pre><code class="language-php">&lt;?php
 class ResponseCache {
-    private Redis $redis;
-    private int $defaultTtl = 3600;
-    
-    public function __construct(Redis $redis) {
-        $this-&gt;redis = $redis;
-    }
-    
-    public function get(Request $request): ?Response {
-        $key = $this-&gt;generateCacheKey($request);
-        $cached = $this-&gt;redis-&gt;get($key);
-        
-        if ($cached) {
-            $data = json_decode($cached, true);
-            return new Response($data[&#39;body&#39;], $data[&#39;status&#39;], $data[&#39;headers&#39;]);
-        }
-        
-        return null;
-    }
-    
-    public function set(Request $request, Response $response, int $ttl = null): void {
-        $key = $this-&gt;generateCacheKey($request);
-        $ttl = $ttl ?? $this-&gt;defaultTtl;
-        
-        $data = [
-            &#39;body&#39; =&gt; $response-&gt;getBody(),
-            &#39;status&#39; =&gt; $response-&gt;getStatusCode(),
-            &#39;headers&#39; =&gt; $response-&gt;getHeaders(),
-            &#39;cached_at&#39; =&gt; time()
-        ];
-        
-        $this-&gt;redis-&gt;setex($key, $ttl, json_encode($data));
-    }
-    
-    private function generateCacheKey(Request $request): string {
-        $components = [
-            $request-&gt;getMethod(),
-            $request-&gt;getUri(),
-            $request-&gt;getQueryParams(),
-            $request-&gt;getHeader(&#39;Accept&#39;),
-            $request-&gt;getHeader(&#39;Authorization&#39;) ? &#39;auth&#39; : &#39;public&#39;
-        ];
-        
-        return &#39;response:&#39; . md5(serialize($components));
-    }
+private Redis $redis;
+private int $defaultTtl = 3600;
+public function __construct(Redis $redis) {
+$this-&gt;redis = $redis;
+}
+public function get(Request $request): ?Response {
+$key = $this-&gt;generateCacheKey($request);
+$cached = $this-&gt;redis-&gt;get($key);
+if ($cached) {
+$data = json_decode($cached, true);
+return new Response($data[&#39;body&#39;], $data[&#39;status&#39;], $data[&#39;headers&#39;]);
+}
+return null;
+}
+public function set(Request $request, Response $response, int $ttl = null): void {
+$key = $this-&gt;generateCacheKey($request);
+$ttl = $ttl ?? $this-&gt;defaultTtl;
+$data = [
+&#39;body&#39; =&gt; $response-&gt;getBody(),
+&#39;status&#39; =&gt; $response-&gt;getStatusCode(),
+&#39;headers&#39; =&gt; $response-&gt;getHeaders(),
+&#39;cached_at&#39; =&gt; time()
+];
+$this-&gt;redis-&gt;setex($key, $ttl, json_encode($data));
+}
+private function generateCacheKey(Request $request): string {
+$components = [
+$request-&gt;getMethod(),
+$request-&gt;getUri(),
+$request-&gt;getQueryParams(),
+$request-&gt;getHeader(&#39;Accept&#39;),
+$request-&gt;getHeader(&#39;Authorization&#39;) ? &#39;auth&#39; : &#39;public&#39;
+];
+return &#39;response:&#39; . md5(serialize($components));
+}
 }</code></pre>
-            </section>
-
-            <section>
-                <h2>Rate Limiting and Throttling</h2>
-
-                <h3>Token Bucket Algorithm</h3>
-
-                <pre><code class="language-php">&lt;?php
-
+</section>
+<section>
+<h2>Rate Limiting and Throttling</h2>
+<h3>Token Bucket Algorithm</h3>
+<pre><code class="language-php">&lt;?php
 class TokenBucketRateLimiter {
-    private Redis $redis;
-    private int $capacity;
-    private int $refillRate;
-    private int $refillPeriod;
-    
-    public function __construct(Redis $redis, int $capacity = 100, int $refillRate = 10, int $refillPeriod = 60) {
-        $this-&gt;redis = $redis;
-        $this-&gt;capacity = $capacity;
-        $this-&gt;refillRate = $refillRate;
-        $this-&gt;refillPeriod = $refillPeriod;
-    }
-    
-    public function isAllowed(string $identifier): bool {
-        $key = &quot;rate_limit:$identifier&quot;;
-        $now = time();
-        
-        // Get current bucket state
-        $bucketData = $this-&gt;redis-&gt;hmget($key, [&#39;tokens&#39;, &#39;last_refill&#39;]);
-        $tokens = $bucketData[&#39;tokens&#39;] ?? $this-&gt;capacity;
-        $lastRefill = $bucketData[&#39;last_refill&#39;] ?? $now;
-        
-        // Calculate tokens to add
-        $timePassed = $now - $lastRefill;
-        $tokensToAdd = floor($timePassed / $this-&gt;refillPeriod) * $this-&gt;refillRate;
-        $tokens = min($this-&gt;capacity, $tokens + $tokensToAdd);
-        
-        // Check if request is allowed
-        if ($tokens &gt;= 1) {
-            $tokens--;
-            
-            // Update bucket state
-            $this-&gt;redis-&gt;hmset($key, [
-                &#39;tokens&#39; =&gt; $tokens,
-                &#39;last_refill&#39; =&gt; $now
-            ]);
-            $this-&gt;redis-&gt;expire($key, $this-&gt;refillPeriod * 2);
-            
-            return true;
-        }
-        
-        return false;
-    }
-    
-    public function getRemainingTokens(string $identifier): int {
-        $key = &quot;rate_limit:$identifier&quot;;
-        $bucketData = $this-&gt;redis-&gt;hmget($key, [&#39;tokens&#39;]);
-        return $bucketData[&#39;tokens&#39;] ?? $this-&gt;capacity;
-    }
+private Redis $redis;
+private int $capacity;
+private int $refillRate;
+private int $refillPeriod;
+public function __construct(Redis $redis, int $capacity = 100, int $refillRate = 10, int $refillPeriod = 60) {
+$this-&gt;redis = $redis;
+$this-&gt;capacity = $capacity;
+$this-&gt;refillRate = $refillRate;
+$this-&gt;refillPeriod = $refillPeriod;
+}
+public function isAllowed(string $identifier): bool {
+$key = &quot;rate_limit:$identifier&quot;;
+$now = time();
+// Get current bucket state
+$bucketData = $this-&gt;redis-&gt;hmget($key, [&#39;tokens&#39;, &#39;last_refill&#39;]);
+$tokens = $bucketData[&#39;tokens&#39;] ?? $this-&gt;capacity;
+$lastRefill = $bucketData[&#39;last_refill&#39;] ?? $now;
+// Calculate tokens to add
+$timePassed = $now - $lastRefill;
+$tokensToAdd = floor($timePassed / $this-&gt;refillPeriod) * $this-&gt;refillRate;
+$tokens = min($this-&gt;capacity, $tokens + $tokensToAdd);
+// Check if request is allowed
+if ($tokens &gt;= 1) {
+$tokens--;
+// Update bucket state
+$this-&gt;redis-&gt;hmset($key, [
+&#39;tokens&#39; =&gt; $tokens,
+&#39;last_refill&#39; =&gt; $now
+]);
+$this-&gt;redis-&gt;expire($key, $this-&gt;refillPeriod * 2);
+return true;
+}
+return false;
+}
+public function getRemainingTokens(string $identifier): int {
+$key = &quot;rate_limit:$identifier&quot;;
+$bucketData = $this-&gt;redis-&gt;hmget($key, [&#39;tokens&#39;]);
+return $bucketData[&#39;tokens&#39;] ?? $this-&gt;capacity;
+}
 }</code></pre>
-
-                <h3>Sliding Window Rate Limiter</h3>
-
-                <pre><code class="language-php">&lt;?php
-
+<h3>Sliding Window Rate Limiter</h3>
+<pre><code class="language-php">&lt;?php
 class SlidingWindowRateLimiter {
-    private Redis $redis;
-    private int $limit;
-    private int $windowSize;
-    
-    public function __construct(Redis $redis, int $limit = 1000, int $windowSize = 3600) {
-        $this-&gt;redis = $redis;
-        $this-&gt;limit = $limit;
-        $this-&gt;windowSize = $windowSize;
-    }
-    
-    public function isAllowed(string $identifier): bool {
-        $key = &quot;sliding_window:$identifier&quot;;
-        $now = time();
-        $windowStart = $now - $this-&gt;windowSize;
-        
-        // Remove old entries
-        $this-&gt;redis-&gt;zremrangebyscore($key, 0, $windowStart);
-        
-        // Count current requests
-        $currentCount = $this-&gt;redis-&gt;zcard($key);
-        
-        if ($currentCount &lt; $this-&gt;limit) {
-            // Add current request
-            $this-&gt;redis-&gt;zadd($key, $now, uniqid());
-            $this-&gt;redis-&gt;expire($key, $this-&gt;windowSize);
-            return true;
-        }
-        
-        return false;
-    }
-    
-    public function getRemainingRequests(string $identifier): int {
-        $key = &quot;sliding_window:$identifier&quot;;
-        $now = time();
-        $windowStart = $now - $this-&gt;windowSize;
-        
-        $this-&gt;redis-&gt;zremrangebyscore($key, 0, $windowStart);
-        $currentCount = $this-&gt;redis-&gt;zcard($key);
-        
-        return max(0, $this-&gt;limit - $currentCount);
-    }
+private Redis $redis;
+private int $limit;
+private int $windowSize;
+public function __construct(Redis $redis, int $limit = 1000, int $windowSize = 3600) {
+$this-&gt;redis = $redis;
+$this-&gt;limit = $limit;
+$this-&gt;windowSize = $windowSize;
+}
+public function isAllowed(string $identifier): bool {
+$key = &quot;sliding_window:$identifier&quot;;
+$now = time();
+$windowStart = $now - $this-&gt;windowSize;
+// Remove old entries
+$this-&gt;redis-&gt;zremrangebyscore($key, 0, $windowStart);
+// Count current requests
+$currentCount = $this-&gt;redis-&gt;zcard($key);
+if ($currentCount &lt; $this-&gt;limit) {
+// Add current request
+$this-&gt;redis-&gt;zadd($key, $now, uniqid());
+$this-&gt;redis-&gt;expire($key, $this-&gt;windowSize);
+return true;
+}
+return false;
+}
+public function getRemainingRequests(string $identifier): int {
+$key = &quot;sliding_window:$identifier&quot;;
+$now = time();
+$windowStart = $now - $this-&gt;windowSize;
+$this-&gt;redis-&gt;zremrangebyscore($key, 0, $windowStart);
+$currentCount = $this-&gt;redis-&gt;zcard($key);
+return max(0, $this-&gt;limit - $currentCount);
+}
 }</code></pre>
-            </section>
-
-            <section>
-                <h2>Error Handling and Resilience</h2>
-
-                <h3>Circuit Breaker Pattern</h3>
-
-                <pre><code class="language-php">&lt;?php
-
+</section>
+<section>
+<h2>Error Handling and Resilience</h2>
+<h3>Circuit Breaker Pattern</h3>
+<pre><code class="language-php">&lt;?php
 class CircuitBreaker {
-    private Redis $redis;
-    private int $failureThreshold;
-    private int $recoveryTimeout;
-    private int $monitoringPeriod;
-    
-    public function __construct(Redis $redis, int $failureThreshold = 5, int $recoveryTimeout = 300, int $monitoringPeriod = 60) {
-        $this-&gt;redis = $redis;
-        $this-&gt;failureThreshold = $failureThreshold;
-        $this-&gt;recoveryTimeout = $recoveryTimeout;
-        $this-&gt;monitoringPeriod = $monitoringPeriod;
-    }
-    
-    public function call(string $service, callable $operation) {
-        $state = $this-&gt;getState($service);
-        
-        switch ($state) {
-            case &#39;open&#39;:
-                if ($this-&gt;shouldAttemptReset($service)) {
-                    $this-&gt;setState($service, &#39;half-open&#39;);
-                    return $this-&gt;executeOperation($service, $operation);
-                }
-                throw new CircuitBreakerOpenException(&quot;Circuit breaker is open for $service&quot;);
-                
-            case &#39;half-open&#39;:
-                return $this-&gt;executeOperation($service, $operation);
-                
-            case &#39;closed&#39;:
-            default:
-                return $this-&gt;executeOperation($service, $operation);
-        }
-    }
-    
-    private function executeOperation(string $service, callable $operation) {
-        try {
-            $result = $operation();
-            $this-&gt;recordSuccess($service);
-            return $result;
-        } catch (Exception $e) {
-            $this-&gt;recordFailure($service);
-            throw $e;
-        }
-    }
-    
-    private function recordSuccess(string $service): void {
-        $key = &quot;circuit_breaker:$service&quot;;
-        $this-&gt;redis-&gt;hdel($key, &#39;failures&#39;);
-        $this-&gt;setState($service, &#39;closed&#39;);
-    }
-    
-    private function recordFailure(string $service): void {
-        $key = &quot;circuit_breaker:$service&quot;;
-        $failures = $this-&gt;redis-&gt;hincrby($key, &#39;failures&#39;, 1);
-        $this-&gt;redis-&gt;expire($key, $this-&gt;monitoringPeriod);
-        
-        if ($failures &gt;= $this-&gt;failureThreshold) {
-            $this-&gt;setState($service, &#39;open&#39;);
-        }
-    }
-    
-    private function getState(string $service): string {
-        $key = &quot;circuit_breaker:$service&quot;;
-        return $this-&gt;redis-&gt;hget($key, &#39;state&#39;) ?: &#39;closed&#39;;
-    }
-    
-    private function setState(string $service, string $state): void {
-        $key = &quot;circuit_breaker:$service&quot;;
-        $this-&gt;redis-&gt;hset($key, &#39;state&#39;, $state);
-        
-        if ($state === &#39;open&#39;) {
-            $this-&gt;redis-&gt;hset($key, &#39;opened_at&#39;, time());
-        }
-    }
-    
-    private function shouldAttemptReset(string $service): bool {
-        $key = &quot;circuit_breaker:$service&quot;;
-        $openedAt = $this-&gt;redis-&gt;hget($key, &#39;opened_at&#39;);
-        
-        return $openedAt &amp;&amp; (time() - $openedAt) &gt; $this-&gt;recoveryTimeout;
-    }
+private Redis $redis;
+private int $failureThreshold;
+private int $recoveryTimeout;
+private int $monitoringPeriod;
+public function __construct(Redis $redis, int $failureThreshold = 5, int $recoveryTimeout = 300, int $monitoringPeriod = 60) {
+$this-&gt;redis = $redis;
+$this-&gt;failureThreshold = $failureThreshold;
+$this-&gt;recoveryTimeout = $recoveryTimeout;
+$this-&gt;monitoringPeriod = $monitoringPeriod;
+}
+public function call(string $service, callable $operation) {
+$state = $this-&gt;getState($service);
+switch ($state) {
+case &#39;open&#39;:
+if ($this-&gt;shouldAttemptReset($service)) {
+$this-&gt;setState($service, &#39;half-open&#39;);
+return $this-&gt;executeOperation($service, $operation);
+}
+throw new CircuitBreakerOpenException(&quot;Circuit breaker is open for $service&quot;);
+case &#39;half-open&#39;:
+return $this-&gt;executeOperation($service, $operation);
+case &#39;closed&#39;:
+default:
+return $this-&gt;executeOperation($service, $operation);
+}
+}
+private function executeOperation(string $service, callable $operation) {
+try {
+$result = $operation();
+$this-&gt;recordSuccess($service);
+return $result;
+} catch (Exception $e) {
+$this-&gt;recordFailure($service);
+throw $e;
+}
+}
+private function recordSuccess(string $service): void {
+$key = &quot;circuit_breaker:$service&quot;;
+$this-&gt;redis-&gt;hdel($key, &#39;failures&#39;);
+$this-&gt;setState($service, &#39;closed&#39;);
+}
+private function recordFailure(string $service): void {
+$key = &quot;circuit_breaker:$service&quot;;
+$failures = $this-&gt;redis-&gt;hincrby($key, &#39;failures&#39;, 1);
+$this-&gt;redis-&gt;expire($key, $this-&gt;monitoringPeriod);
+if ($failures &gt;= $this-&gt;failureThreshold) {
+$this-&gt;setState($service, &#39;open&#39;);
+}
+}
+private function getState(string $service): string {
+$key = &quot;circuit_breaker:$service&quot;;
+return $this-&gt;redis-&gt;hget($key, &#39;state&#39;) ?: &#39;closed&#39;;
+}
+private function setState(string $service, string $state): void {
+$key = &quot;circuit_breaker:$service&quot;;
+$this-&gt;redis-&gt;hset($key, &#39;state&#39;, $state);
+if ($state === &#39;open&#39;) {
+$this-&gt;redis-&gt;hset($key, &#39;opened_at&#39;, time());
+}
+}
+private function shouldAttemptReset(string $service): bool {
+$key = &quot;circuit_breaker:$service&quot;;
+$openedAt = $this-&gt;redis-&gt;hget($key, &#39;opened_at&#39;);
+return $openedAt &amp;&amp; (time() - $openedAt) &gt; $this-&gt;recoveryTimeout;
+}
 }</code></pre>
-            </section>
-
-            <section>
-                <h2>API Security</h2>
-
-                <h3>JWT Authentication</h3>
-
-                <pre><code class="language-php">&lt;?php
-
+</section>
+<section>
+<h2>API Security</h2>
+<h3>JWT Authentication</h3>
+<pre><code class="language-php">&lt;?php
 class JWTManager {
-    private string $secretKey;
-    private string $algorithm = &#39;HS256&#39;;
-    private int $defaultTtl = 3600;
-    
-    public function __construct(string $secretKey) {
-        $this-&gt;secretKey = $secretKey;
-    }
-    
-    public function generateToken(array $payload, int $ttl = null): string {
-        $ttl = $ttl ?? $this-&gt;defaultTtl;
-        $now = time();
-        
-        $header = json_encode([&#39;typ&#39; =&gt; &#39;JWT&#39;, &#39;alg&#39; =&gt; $this-&gt;algorithm]);
-        $payload = json_encode(array_merge($payload, [
-            &#39;iat&#39; =&gt; $now,
-            &#39;exp&#39; =&gt; $now + $ttl
-        ]));
-        
-        $headerPayload = $this-&gt;base64UrlEncode($header) . &#39;.&#39; . $this-&gt;base64UrlEncode($payload);
-        $signature = $this-&gt;sign($headerPayload);
-        
-        return $headerPayload . &#39;.&#39; . $signature;
-    }
-    
-    public function validateToken(string $token): array {
-        $parts = explode(&#39;.&#39;, $token);
-        if (count($parts) !== 3) {
-            throw new InvalidTokenException(&#39;Invalid token format&#39;);
-        }
-        
-        [$header, $payload, $signature] = $parts;
-        
-        // Verify signature
-        $expectedSignature = $this-&gt;sign($header . &#39;.&#39; . $payload);
-        if (!hash_equals($signature, $expectedSignature)) {
-            throw new InvalidTokenException(&#39;Invalid signature&#39;);
-        }
-        
-        // Decode payload
-        $decodedPayload = json_decode($this-&gt;base64UrlDecode($payload), true);
-        
-        // Check expiration
-        if (isset($decodedPayload[&#39;exp&#39;]) &amp;&amp; $decodedPayload[&#39;exp&#39;] &lt; time()) {
-            throw new ExpiredTokenException(&#39;Token has expired&#39;);
-        }
-        
-        return $decodedPayload;
-    }
-    
-    private function sign(string $data): string {
-        return $this-&gt;base64UrlEncode(hash_hmac(&#39;sha256&#39;, $data, $this-&gt;secretKey, true));
-    }
-    
-    private function base64UrlEncode(string $data): string {
-        return rtrim(strtr(base64_encode($data), &#39;+/&#39;, &#39;-_&#39;), &#39;=&#39;);
-    }
-    
-    private function base64UrlDecode(string $data): string {
-        return base64_decode(strtr($data, &#39;-_&#39;, &#39;+/&#39;));
-    }
+private string $secretKey;
+private string $algorithm = &#39;HS256&#39;;
+private int $defaultTtl = 3600;
+public function __construct(string $secretKey) {
+$this-&gt;secretKey = $secretKey;
+}
+public function generateToken(array $payload, int $ttl = null): string {
+$ttl = $ttl ?? $this-&gt;defaultTtl;
+$now = time();
+$header = json_encode([&#39;typ&#39; =&gt; &#39;JWT&#39;, &#39;alg&#39; =&gt; $this-&gt;algorithm]);
+$payload = json_encode(array_merge($payload, [
+&#39;iat&#39; =&gt; $now,
+&#39;exp&#39; =&gt; $now + $ttl
+]));
+$headerPayload = $this-&gt;base64UrlEncode($header) . &#39;.&#39; . $this-&gt;base64UrlEncode($payload);
+$signature = $this-&gt;sign($headerPayload);
+return $headerPayload . &#39;.&#39; . $signature;
+}
+public function validateToken(string $token): array {
+$parts = explode(&#39;.&#39;, $token);
+if (count($parts) !== 3) {
+throw new InvalidTokenException(&#39;Invalid token format&#39;);
+}
+[$header, $payload, $signature] = $parts;
+// Verify signature
+$expectedSignature = $this-&gt;sign($header . &#39;.&#39; . $payload);
+if (!hash_equals($signature, $expectedSignature)) {
+throw new InvalidTokenException(&#39;Invalid signature&#39;);
+}
+// Decode payload
+$decodedPayload = json_decode($this-&gt;base64UrlDecode($payload), true);
+// Check expiration
+if (isset($decodedPayload[&#39;exp&#39;]) &amp;&amp; $decodedPayload[&#39;exp&#39;] &lt; time()) {
+throw new ExpiredTokenException(&#39;Token has expired&#39;);
+}
+return $decodedPayload;
+}
+private function sign(string $data): string {
+return $this-&gt;base64UrlEncode(hash_hmac(&#39;sha256&#39;, $data, $this-&gt;secretKey, true));
+}
+private function base64UrlEncode(string $data): string {
+return rtrim(strtr(base64_encode($data), &#39;+/&#39;, &#39;-_&#39;), &#39;=&#39;);
+}
+private function base64UrlDecode(string $data): string {
+return base64_decode(strtr($data, &#39;-_&#39;, &#39;+/&#39;));
+}
 }</code></pre>
-            </section>
-
-            <section>
-                <h2>API Documentation and Versioning</h2>
-
-                <h3>OpenAPI Documentation</h3>
-
-                <pre><code class="language-php">&lt;?php
-
+</section>
+<section>
+<h2>API Documentation and Versioning</h2>
+<h3>OpenAPI Documentation</h3>
+<pre><code class="language-php">&lt;?php
 class OpenAPIGenerator {
-    private array $paths = [];
-    private array $components = [];
-    
-    public function addEndpoint(string $path, string $method, array $definition): void {
-        $this-&gt;paths[$path][$method] = $definition;
-    }
-    
-    public function addComponent(string $name, array $schema): void {
-        $this-&gt;components[&#39;schemas&#39;][$name] = $schema;
-    }
-    
-    public function generate(): array {
-        return [
-            &#39;openapi&#39; =&gt; &#39;3.0.0&#39;,
-            &#39;info&#39; =&gt; [
-                &#39;title&#39; =&gt; &#39;API Documentation&#39;,
-                &#39;version&#39; =&gt; &#39;1.0.0&#39;,
-                &#39;description&#39; =&gt; &#39;Scalable PHP API&#39;
-            ],
-            &#39;servers&#39; =&gt; [
-                [&#39;url&#39; =&gt; &#39;https://api.example.com/v1&#39;]
-            ],
-            &#39;paths&#39; =&gt; $this-&gt;paths,
-            &#39;components&#39; =&gt; $this-&gt;components
-        ];
-    }
-    
-    public function generateFromAnnotations(): array {
-        $reflection = new ReflectionClass(UserController::class);
-        $methods = $reflection-&gt;getMethods(ReflectionMethod::IS_PUBLIC);
-        
-        foreach ($methods as $method) {
-            $docComment = $method-&gt;getDocComment();
-            if ($docComment) {
-                $this-&gt;parseDocComment($docComment, $method);
-            }
-        }
-        
-        return $this-&gt;generate();
-    }
-    
-    private function parseDocComment(string $docComment, ReflectionMethod $method): void {
-        // Parse PHPDoc annotations for OpenAPI spec
-        if (preg_match(&#39;/@Route\(&quot;([^&quot;]+)&quot;.*method=&quot;([^&quot;]+)&quot;\)/&#39;, $docComment, $matches)) {
-            $path = $matches[1];
-            $httpMethod = strtolower($matches[2]);
-            
-            // Extract other annotations
-            $summary = $this-&gt;extractAnnotation($docComment, &#39;summary&#39;);
-            $description = $this-&gt;extractAnnotation($docComment, &#39;description&#39;);
-            
-            $this-&gt;addEndpoint($path, $httpMethod, [
-                &#39;summary&#39; =&gt; $summary,
-                &#39;description&#39; =&gt; $description,
-                &#39;operationId&#39; =&gt; $method-&gt;getName()
-            ]);
-        }
-    }
-    
-    private function extractAnnotation(string $docComment, string $annotation): ?string {
-        if (preg_match(&quot;/@{$annotation}\s+(.+)/&quot;, $docComment, $matches)) {
-            return trim($matches[1]);
-        }
-        return null;
-    }
+private array $paths = [];
+private array $components = [];
+public function addEndpoint(string $path, string $method, array $definition): void {
+$this-&gt;paths[$path][$method] = $definition;
+}
+public function addComponent(string $name, array $schema): void {
+$this-&gt;components[&#39;schemas&#39;][$name] = $schema;
+}
+public function generate(): array {
+return [
+&#39;openapi&#39; =&gt; &#39;3.0.0&#39;,
+&#39;info&#39; =&gt; [
+&#39;title&#39; =&gt; &#39;API Documentation&#39;,
+&#39;version&#39; =&gt; &#39;1.0.0&#39;,
+&#39;description&#39; =&gt; &#39;Scalable PHP API&#39;
+],
+&#39;servers&#39; =&gt; [
+[&#39;url&#39; =&gt; &#39;https://api.example.com/v1&#39;]
+],
+&#39;paths&#39; =&gt; $this-&gt;paths,
+&#39;components&#39; =&gt; $this-&gt;components
+];
+}
+public function generateFromAnnotations(): array {
+$reflection = new ReflectionClass(UserController::class);
+$methods = $reflection-&gt;getMethods(ReflectionMethod::IS_PUBLIC);
+foreach ($methods as $method) {
+$docComment = $method-&gt;getDocComment();
+if ($docComment) {
+$this-&gt;parseDocComment($docComment, $method);
+}
+}
+return $this-&gt;generate();
+}
+private function parseDocComment(string $docComment, ReflectionMethod $method): void {
+// Parse PHPDoc annotations for OpenAPI spec
+if (preg_match(&#39;/@Route(&quot;([^&quot;]+)&quot;.*method=&quot;([^&quot;]+)&quot;)/&#39;, $docComment, $matches)) {
+$path = $matches[1];
+$httpMethod = strtolower($matches[2]);
+// Extract other annotations
+$summary = $this-&gt;extractAnnotation($docComment, &#39;summary&#39;);
+$description = $this-&gt;extractAnnotation($docComment, &#39;description&#39;);
+$this-&gt;addEndpoint($path, $httpMethod, [
+&#39;summary&#39; =&gt; $summary,
+&#39;description&#39; =&gt; $description,
+&#39;operationId&#39; =&gt; $method-&gt;getName()
+]);
+}
+}
+private function extractAnnotation(string $docComment, string $annotation): ?string {
+if (preg_match(&quot;/@{$annotation}s+(.+)/&quot;, $docComment, $matches)) {
+return trim($matches[1]);
+}
+return null;
+}
 }</code></pre>
-            </section>
-
-            <section>
-                <h2>Monitoring and Observability</h2>
-
-                <h3>Metrics Collection</h3>
-
-                <pre><code class="language-php">&lt;?php
-
+</section>
+<section>
+<h2>Monitoring and Observability</h2>
+<h3>Metrics Collection</h3>
+<pre><code class="language-php">&lt;?php
 class MetricsCollector {
-    private Redis $redis;
-    private array $metrics = [];
-    
-    public function __construct(Redis $redis) {
-        $this-&gt;redis = $redis;
-    }
-    
-    public function increment(string $metric, int $value = 1, array $tags = []): void {
-        $key = $this-&gt;buildKey($metric, $tags);
-        $this-&gt;redis-&gt;incrby($key, $value);
-        $this-&gt;redis-&gt;expire($key, 3600);
-    }
-    
-    public function gauge(string $metric, float $value, array $tags = []): void {
-        $key = $this-&gt;buildKey($metric, $tags);
-        $this-&gt;redis-&gt;set($key, $value);
-        $this-&gt;redis-&gt;expire($key, 3600);
-    }
-    
-    public function timing(string $metric, float $duration, array $tags = []): void {
-        $key = $this-&gt;buildKey($metric . &#39;.timing&#39;, $tags);
-        $this-&gt;redis-&gt;lpush($key, $duration);
-        $this-&gt;redis-&gt;ltrim($key, 0, 999); // Keep last 1000 measurements
-        $this-&gt;redis-&gt;expire($key, 3600);
-    }
-    
-    public function histogram(string $metric, float $value, array $tags = []): void {
-        $buckets = [0.1, 0.5, 1, 2.5, 5, 10];
-        
-        foreach ($buckets as $bucket) {
-            if ($value &lt;= $bucket) {
-                $key = $this-&gt;buildKey($metric . &#39;.bucket&#39;, array_merge($tags, [&#39;le&#39; =&gt; $bucket]));
-                $this-&gt;redis-&gt;incr($key);
-                $this-&gt;redis-&gt;expire($key, 3600);
-            }
-        }
-    }
-    
-    private function buildKey(string $metric, array $tags): string {
-        $tagString = &#39;&#39;;
-        if (!empty($tags)) {
-            ksort($tags);
-            $tagString = &#39;:&#39; . implode(&#39;:&#39;, array_map(
-                fn($k, $v) =&gt; &quot;$k=$v&quot;,
-                array_keys($tags),
-                array_values($tags)
-            ));
-        }
-        
-        return &quot;metrics:$metric$tagString&quot;;
-    }
-    
-    public function flush(): void {
-        // Send metrics to monitoring system
-        $keys = $this-&gt;redis-&gt;keys(&#39;metrics:*&#39;);
-        
-        foreach ($keys as $key) {
-            $value = $this-&gt;redis-&gt;get($key);
-            // Send to StatsD, Prometheus, etc.
-            $this-&gt;sendMetric($key, $value);
-        }
-    }
-    
-    private function sendMetric(string $key, $value): void {
-        // Implementation depends on monitoring system
-        // Example: StatsD
-        $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-        $metric = str_replace(&#39;metrics:&#39;, &#39;&#39;, $key);
-        $packet = &quot;$metric:$value|c&quot;;
-        socket_sendto($socket, $packet, strlen($packet), 0, &#39;127.0.0.1&#39;, 8125);
-        socket_close($socket);
-    }
+private Redis $redis;
+private array $metrics = [];
+public function __construct(Redis $redis) {
+$this-&gt;redis = $redis;
+}
+public function increment(string $metric, int $value = 1, array $tags = []): void {
+$key = $this-&gt;buildKey($metric, $tags);
+$this-&gt;redis-&gt;incrby($key, $value);
+$this-&gt;redis-&gt;expire($key, 3600);
+}
+public function gauge(string $metric, float $value, array $tags = []): void {
+$key = $this-&gt;buildKey($metric, $tags);
+$this-&gt;redis-&gt;set($key, $value);
+$this-&gt;redis-&gt;expire($key, 3600);
+}
+public function timing(string $metric, float $duration, array $tags = []): void {
+$key = $this-&gt;buildKey($metric . &#39;.timing&#39;, $tags);
+$this-&gt;redis-&gt;lpush($key, $duration);
+$this-&gt;redis-&gt;ltrim($key, 0, 999); // Keep last 1000 measurements
+$this-&gt;redis-&gt;expire($key, 3600);
+}
+public function histogram(string $metric, float $value, array $tags = []): void {
+$buckets = [0.1, 0.5, 1, 2.5, 5, 10];
+foreach ($buckets as $bucket) {
+if ($value &lt;= $bucket) {
+$key = $this-&gt;buildKey($metric . &#39;.bucket&#39;, array_merge($tags, [&#39;le&#39; =&gt; $bucket]));
+$this-&gt;redis-&gt;incr($key);
+$this-&gt;redis-&gt;expire($key, 3600);
+}
+}
+}
+private function buildKey(string $metric, array $tags): string {
+$tagString = &#39;&#39;;
+if (!empty($tags)) {
+ksort($tags);
+$tagString = &#39;:&#39; . implode(&#39;:&#39;, array_map(
+fn($k, $v) =&gt; &quot;$k=$v&quot;,
+array_keys($tags),
+array_values($tags)
+));
+}
+return &quot;metrics:$metric$tagString&quot;;
+}
+public function flush(): void {
+// Send metrics to monitoring system
+$keys = $this-&gt;redis-&gt;keys(&#39;metrics:*&#39;);
+foreach ($keys as $key) {
+$value = $this-&gt;redis-&gt;get($key);
+// Send to StatsD, Prometheus, etc.
+$this-&gt;sendMetric($key, $value);
+}
+}
+private function sendMetric(string $key, $value): void {
+// Implementation depends on monitoring system
+// Example: StatsD
+$socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+$metric = str_replace(&#39;metrics:&#39;, &#39;&#39;, $key);
+$packet = &quot;$metric:$value|c&quot;;
+socket_sendto($socket, $packet, strlen($packet), 0, &#39;127.0.0.1&#39;, 8125);
+socket_close($socket);
+}
 }</code></pre>
-            </section>
-
-            <section>
-                <h2>Testing Strategies</h2>
-
-                <h3>API Testing</h3>
-
-                <pre><code class="language-php">&lt;?php
-
+</section>
+<section>
+<h2>Testing Strategies</h2>
+<h3>API Testing</h3>
+<pre><code class="language-php">&lt;?php
 class APITestCase extends TestCase {
-    protected ApiClient $client;
-    protected DatabaseSeeder $seeder;
-    
-    protected function setUp(): void {
-        parent::setUp();
-        $this-&gt;client = new ApiClient(&#39;http://localhost:8000&#39;);
-        $this-&gt;seeder = new DatabaseSeeder();
-    }
-    
-    public function testCreateUser(): void {
-        $userData = [
-            &#39;name&#39; =&gt; &#39;John Doe&#39;,
-            &#39;email&#39; =&gt; &#39;john@example.com&#39;,
-            &#39;password&#39; =&gt; &#39;password123&#39;
-        ];
-        
-        $response = $this-&gt;client-&gt;post(&#39;/api/users&#39;, $userData);
-        
-        $this-&gt;assertEquals(201, $response-&gt;getStatusCode());
-        $this-&gt;assertJsonStructure($response-&gt;getBody(), [
-            &#39;id&#39;, &#39;name&#39;, &#39;email&#39;, &#39;created_at&#39;
-        ]);
-        
-        // Verify user was created in database
-        $this-&gt;assertDatabaseHas(&#39;users&#39;, [
-            &#39;email&#39; =&gt; &#39;john@example.com&#39;
-        ]);
-    }
-    
-    public function testRateLimiting(): void {
-        $this-&gt;seeder-&gt;createUser([&#39;email&#39; =&gt; &#39;test@example.com&#39;]);
-        
-        // Make requests up to limit
-        for ($i = 0; $i &lt; 100; $i++) {
-            $response = $this-&gt;client-&gt;get(&#39;/api/users/1&#39;);
-            $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
-        }
-        
-        // Next request should be rate limited
-        $response = $this-&gt;client-&gt;get(&#39;/api/users/1&#39;);
-        $this-&gt;assertEquals(429, $response-&gt;getStatusCode());
-    }
-    
-    public function testConcurrentRequests(): void {
-        $responses = [];
-        $promises = [];
-        
-        // Create 10 concurrent requests
-        for ($i = 0; $i &lt; 10; $i++) {
-            $promises[] = $this-&gt;client-&gt;getAsync(&#39;/api/users&#39;);
-        }
-        
-        $responses = Promise::all($promises)-&gt;wait();
-        
-        // All requests should succeed
-        foreach ($responses as $response) {
-            $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
-        }
-    }
+protected ApiClient $client;
+protected DatabaseSeeder $seeder;
+protected function setUp(): void {
+parent::setUp();
+$this-&gt;client = new ApiClient(&#39;http://localhost:8000&#39;);
+$this-&gt;seeder = new DatabaseSeeder();
+}
+public function testCreateUser(): void {
+$userData = [
+&#39;name&#39; =&gt; &#39;John Doe&#39;,
+&#39;email&#39; =&gt; &#39;john@example.com&#39;,
+&#39;password&#39; =&gt; &#39;password123&#39;
+];
+$response = $this-&gt;client-&gt;post(&#39;/api/users&#39;, $userData);
+$this-&gt;assertEquals(201, $response-&gt;getStatusCode());
+$this-&gt;assertJsonStructure($response-&gt;getBody(), [
+&#39;id&#39;, &#39;name&#39;, &#39;email&#39;, &#39;created_at&#39;
+]);
+// Verify user was created in database
+$this-&gt;assertDatabaseHas(&#39;users&#39;, [
+&#39;email&#39; =&gt; &#39;john@example.com&#39;
+]);
+}
+public function testRateLimiting(): void {
+$this-&gt;seeder-&gt;createUser([&#39;email&#39; =&gt; &#39;test@example.com&#39;]);
+// Make requests up to limit
+for ($i = 0; $i &lt; 100; $i++) {
+$response = $this-&gt;client-&gt;get(&#39;/api/users/1&#39;);
+$this-&gt;assertEquals(200, $response-&gt;getStatusCode());
+}
+// Next request should be rate limited
+$response = $this-&gt;client-&gt;get(&#39;/api/users/1&#39;);
+$this-&gt;assertEquals(429, $response-&gt;getStatusCode());
+}
+public function testConcurrentRequests(): void {
+$responses = [];
+$promises = [];
+// Create 10 concurrent requests
+for ($i = 0; $i &lt; 10; $i++) {
+$promises[] = $this-&gt;client-&gt;getAsync(&#39;/api/users&#39;);
+}
+$responses = Promise::all($promises)-&gt;wait();
+// All requests should succeed
+foreach ($responses as $response) {
+$this-&gt;assertEquals(200, $response-&gt;getStatusCode());
+}
+}
 }</code></pre>
-            </section>
+</section>
+<section>
+<h2>Best Practices Summary</h2>
+<ul>
+<li><strong>Layered architecture:</strong> Separate concerns into distinct layers</li>
+<li><strong>Domain modeling:</strong> Use domain-driven design principles</li>
+<li><strong>CQRS:</strong> Separate read and write operations</li>
+<li><strong>Event-driven:</strong> Use events for loose coupling</li>
+<li><strong>Caching:</strong> Cache at multiple levels</li>
+<li><strong>Rate limiting:</strong> Protect against abuse</li>
+<li><strong>Circuit breakers:</strong> Handle external service failures</li>
+<li><strong>Security:</strong> Implement proper authentication and authorization</li>
+<li><strong>Documentation:</strong> Maintain up-to-date API documentation</li>
+<li><strong>Monitoring:</strong> Collect metrics and logs</li>
+<li><strong>Testing:</strong> Comprehensive testing strategy</li>
+</ul>
+<p>Building scalable APIs requires careful planning and implementation of proven patterns. Start with a solid architectural foundation, implement proper caching and rate limiting, and continuously monitor and optimize performance. Remember that scalability is not just about handling more requests—it's about building systems that can evolve and grow with your business needs.</p>
+</section>
+</article>
 
-            <section>
-                <h2>Best Practices Summary</h2>
+</main>
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<p>&copy; 2025 Joseph. All rights reserved.</p>
+<p class="deployment-info">Last deployed: <span id="deployment-timestamp">{{ timestamp }}</span></p>
+<nav class="footer-nav">
+</nav>
+</div>
+</div>
+</footer>
+<script src="js/main.js" type="module"></script>
 
-                <ul>
-                    <li><strong>Layered architecture:</strong> Separate concerns into distinct layers</li>
-                    <li><strong>Domain modeling:</strong> Use domain-driven design principles</li>
-                    <li><strong>CQRS:</strong> Separate read and write operations</li>
-                    <li><strong>Event-driven:</strong> Use events for loose coupling</li>
-                    <li><strong>Caching:</strong> Cache at multiple levels</li>
-                    <li><strong>Rate limiting:</strong> Protect against abuse</li>
-                    <li><strong>Circuit breakers:</strong> Handle external service failures</li>
-                    <li><strong>Security:</strong> Implement proper authentication and authorization</li>
-                    <li><strong>Documentation:</strong> Maintain up-to-date API documentation</li>
-                    <li><strong>Monitoring:</strong> Collect metrics and logs</li>
-                    <li><strong>Testing:</strong> Comprehensive testing strategy</li>
-                </ul>
-
-                <p>Building scalable APIs requires careful planning and implementation of proven patterns. Start with a solid architectural foundation, implement proper caching and rate limiting, and continuously monitor and optimize performance. Remember that scalability is not just about handling more requests—it's about building systems that can evolve and grow with your business needs.</p>
-            </section>
-        </article>
-    </main>
-
-    <footer class="site-footer">
-        <div class="footer-content">
-            <p>&copy; 2025 Joseph. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="/about.html">About</a>
-                <a href="/services.html">Services</a>
-                <a href="/contact.html">Contact</a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="/js/main.js" type="module"></script>
-    <script src="/js/syntax-highlighter.js" type="module"></script>
-
-</body></html>
+</body>
+</html>

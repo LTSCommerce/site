@@ -263,7 +263,7 @@ section h1 {
 .hero-title {
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 600;
-    line-height: calc(1 / var(--golden-ratio));
+    line-height: calc(2 / var(--golden-ratio));
     margin-bottom: var(--spacing-md);
     color: var(--color-text);
     background: linear-gradient(135deg, 
@@ -362,6 +362,13 @@ section h1 {
 .btn-secondary:hover {
     background-color: var(--color-primary);
     color: white;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--shadow-elegant);
+}
+
+.btn-secondary:active {
+    transform: translateY(-1px) scale(1.01);
+    transition: var(--transition-quick);
 }
 
 /* Expertise Section with Geometric Patterns */

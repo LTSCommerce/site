@@ -12,7 +12,12 @@
 
 <link rel="stylesheet" href="/css/contact.css">
 
-<script></script>
+<script>
+// Immediate fade-in fallback
+document.addEventListener('DOMContentLoaded', function() {
+document.body.style.opacity = '1';
+});
+</script>
 <noscript>
 <style>
 body { opacity: 1 !important; }
@@ -183,9 +188,9 @@ Contact
 </div>
 </div>
 </footer>
-<script src="js/main.js"></script>
+<script src="js/main.js" type="module"></script>
 
-<script src="js/contact.js"></script>
+<script src="js/contact.js" type="module"></script>
 
 </body>
 </html>

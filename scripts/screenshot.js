@@ -1,4 +1,4 @@
-const { chromium } = require('playwright');
+import { chromium } from 'playwright';
 
 // Configuration
 const config = {

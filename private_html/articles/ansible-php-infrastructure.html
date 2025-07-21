@@ -1,105 +1,130 @@
-<!DOCTYPE html><html lang="en"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications">
-    <meta name="keywords" content="ansible, php, infrastructure, automation, devops, deployment, configuration management, server provisioning">
-    <title>Ansible Automation for PHP Infrastructure | Joseph</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- CSS assets will be processed by Vite build -->
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/articles.css">
-    <link rel="stylesheet" href="/css/syntax-highlighting.css">
-    <script></script>
-    <noscript>
-        <style>
-            body { opacity: 1 !important; }
-        </style>
-    </noscript>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications">
+<title>Ansible Automation for PHP Infrastructure - Bespoke PHP Developer - Bespoke PHP Developer | Joseph - Bespoke PHP Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/main.css">
+
+<script>
+// Immediate fade-in fallback
+document.addEventListener('DOMContentLoaded', function() {
+document.body.style.opacity = '1';
+});
+</script>
+<noscript>
+<style>
+body { opacity: 1 !important; }
+</style>
+</noscript>
 </head>
-<!-- ARTICLE_META:
-category: infrastructure
-readingTime: 11
--->
 <body style="opacity: 0;">
-    <header class="site-header">
-        <nav class="nav-container">
-            <div class="nav-brand">
-                <a href="/" class="brand-link">Joseph</a>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="/" class="nav-link">Home</a></li>
-                <li><a href="/services.html" class="nav-link">Services</a></li>
-                <li><a href="/articles.html" class="nav-link">Articles</a></li>
-                <li><a href="/about.html" class="nav-link">About</a></li>
-                <li><a href="/author.html" class="nav-link">Author</a></li>
-                <li><a href="/contact.html" class="nav-link">Contact</a></li>
-            </ul>
-            <button class="nav-toggle" aria-label="Toggle navigation">
-                <span class="hamburger"></span>
-            </button>
-        </nav>
-    </header>
+<header class="site-header">
+<nav class="nav-container">
+<div class="nav-brand">
+<a href="/" class="brand-link">Joseph</a>
+</div>
+<ul class="nav-menu">
 
-    <main class="main-content">
-        <article class="article-container">
-                <header class="article-header">
-                    <h1>Ansible Automation for PHP Infrastructure</h1>
-                    <div class="article-meta">
-                        <time datetime="2025-01-10">January 10, 2025</time>
-                        <span class="separator">•</span>
-                        <span class="reading-time">11 min read</span>
-                        <span class="separator">•</span>
-                        <span class="article-category infrastructure">Infrastructure</span>
-                    </div>
-                </header>
+<li>
+<a href="/"
+class="nav-link">
+Home
+</a>
+</li>
 
-                <section class="intro">
-                    <p class="lead">Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications.</p>
-                    <p>Manual server configuration is a recipe for disaster. Inconsistent environments, configuration drift, and human error create maintenance nightmares that slow down development and increase downtime. After years of managing PHP infrastructure, I've found Ansible to be the most effective tool for automating PHP application deployments.</p>
+<li>
+<a href="/services.html"
+class="nav-link">
+Services
+</a>
+</li>
 
-                    <p>This article covers proven Ansible strategies for PHP applications, from basic server provisioning to complex multi-environment deployments.</p>
-                </section>
+<li>
+<a href="/articles.html"
+class="nav-link active">
+Articles
+</a>
+</li>
 
-                <section>
+<li>
+<a href="/about.html"
+class="nav-link">
+About
+</a>
+</li>
 
-                    <h2>Why Ansible for PHP Infrastructure?</h2>
+<li>
+<a href="/author.html"
+class="nav-link">
+Author
+</a>
+</li>
 
-                    <h3>Simplicity and Readability</h3>
+<li>
+<a href="/contact.html"
+class="nav-link">
+Contact
+</a>
+</li>
 
-                    <p>Ansible playbooks are written in YAML, making them readable by both developers and operations teams:</p>
+</ul>
+<button class="nav-toggle" aria-label="Toggle navigation">
+<span class="hamburger"></span>
+</button>
+</nav>
+</header>
+<main class="main-content">
 
-                    <pre><code class="language-yaml">---
+<link rel="stylesheet" href="/css/articles.css">
+<link rel="stylesheet" href="/css/syntax-highlighting.css">
+<article class="article-container">
+<header class="article-header">
+<h1>Ansible Automation for PHP Infrastructure - Bespoke PHP Developer - Bespoke PHP Developer</h1>
+<div class="article-meta">
+<time datetime="2025-01-10">10 January 2025</time>
+<span class="separator">•</span>
+<span class="reading-time">5 min read</span>
+<span class="separator">•</span>
+<span class="article-category general">GENERAL</span>
+</div>
+</header>
+<section class="intro">
+<p class="lead">Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications.</p>
+<p>Manual server configuration is a recipe for disaster. Inconsistent environments, configuration drift, and human error create maintenance nightmares that slow down development and increase downtime. After years of managing PHP infrastructure, I've found Ansible to be the most effective tool for automating PHP application deployments.</p>
+<p>This article covers proven Ansible strategies for PHP applications, from basic server provisioning to complex multi-environment deployments.</p>
+</section>
+<section>
+<h2>Why Ansible for PHP Infrastructure?</h2>
+<h3>Simplicity and Readability</h3>
+<p>Ansible playbooks are written in YAML, making them readable by both developers and operations teams:</p>
+<pre><code class="language-yaml">---
 - name: Install and configure PHP application
-  hosts: webservers
-  become: yes
-  tasks:
-    - name: Install PHP packages
-      apt:
-        name:
-          - php8.2-fpm
-          - php8.2-mysql
-          - php8.2-curl
-          - php8.2-xml
-        state: present
-        update_cache: yes</code></pre>
-
-                    <h3>Agentless Architecture</h3>
-
-                    <p>No need to install agents on target servers. Ansible uses SSH, which is already available on all Linux servers.</p>
-
-                    <h3>Idempotency</h3>
-
-                    <p>Run playbooks multiple times safely. Ansible only makes changes when needed, ensuring consistent state.</p>
-                </section>
-
-                <section>
-                    <h2>Essential Ansible Structure for PHP Projects</h2>
-
-                    <h3>Directory Structure</h3>
-
-                    <pre><code class="language-text">ansible/
+hosts: webservers
+become: yes
+tasks:
+- name: Install PHP packages
+apt:
+name:
+- php8.2-fpm
+- php8.2-mysql
+- php8.2-curl
+- php8.2-xml
+state: present
+update_cache: yes</code></pre>
+<h3>Agentless Architecture</h3>
+<p>No need to install agents on target servers. Ansible uses SSH, which is already available on all Linux servers.</p>
+<h3>Idempotency</h3>
+<p>Run playbooks multiple times safely. Ansible only makes changes when needed, ensuring consistent state.</p>
+</section>
+<section>
+<h2>Essential Ansible Structure for PHP Projects</h2>
+<h3>Directory Structure</h3>
+<pre><code class="language-text">ansible/
 ├── inventories/
 │   ├── production/
 │   │   ├── hosts
@@ -123,483 +148,404 @@ readingTime: 11
 ├── templates/
 ├── files/
 └── ansible.cfg</code></pre>
-
-                    <h3>Inventory Configuration</h3>
-
-                    <p>Define your servers and groups:</p>
-
-                    <pre><code class="language-php"># inventories/production/hosts
+<h3>Inventory Configuration</h3>
+<p>Define your servers and groups:</p>
+<pre><code class="language-php"># inventories/production/hosts
 [webservers]
 web1.example.com ansible_host=192.168.1.10
 web2.example.com ansible_host=192.168.1.11
-
 [dbservers]
 db1.example.com ansible_host=192.168.1.20
-
 [loadbalancers]
 lb1.example.com ansible_host=192.168.1.30
-
 [production:children]
 webservers
 dbservers
 loadbalancers</code></pre>
-                </section>
-
-                <section>
-                    <h2>Core Ansible Roles for PHP Infrastructure</h2>
-
-                    <h3>Common Role</h3>
-
-                    <p>Base configuration for all servers:</p>
-
-                    <pre><code class="language-yaml"># roles/common/tasks/main.yml
+</section>
+<section>
+<h2>Core Ansible Roles for PHP Infrastructure</h2>
+<h3>Common Role</h3>
+<p>Base configuration for all servers:</p>
+<pre><code class="language-yaml"># roles/common/tasks/main.yml
 ---
 - name: Update package cache
-  apt:
-    update_cache: yes
-    cache_valid_time: 3600
-
+apt:
+update_cache: yes
+cache_valid_time: 3600
 - name: Install essential packages
-  apt:
-    name:
-      - curl
-      - wget
-      - unzip
-      - git
-      - htop
-      - fail2ban
-      - ufw
-    state: present
-
+apt:
+name:
+- curl
+- wget
+- unzip
+- git
+- htop
+- fail2ban
+- ufw
+state: present
 - name: Configure firewall
-  ufw:
-    rule: allow
-    port: "{{ item }}"
-    proto: tcp
-  loop:
-    - 22
-    - 80
-    - 443
-
+ufw:
+rule: allow
+port: "{{ item }}"
+proto: tcp
+loop:
+- 22
+- 80
+- 443
 - name: Enable firewall
-  ufw:
-    state: enabled
-    policy: deny
-
+ufw:
+state: enabled
+policy: deny
 - name: Configure SSH security
-  lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    backup: yes
-  loop:
-    - { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
-    - { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
-    - { regexp: '^#?PubkeyAuthentication', line: 'PubkeyAuthentication yes' }
-  notify: restart ssh</code></pre>
-
-                    <h3>PHP Role</h3>
-
-                    <p>PHP-FPM installation and configuration:</p>
-
-                    <pre><code class="language-yaml"># roles/php/tasks/main.yml
+lineinfile:
+path: /etc/ssh/sshd_config
+regexp: "{{ item.regexp }}"
+line: "{{ item.line }}"
+backup: yes
+loop:
+- { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
+- { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
+- { regexp: '^#?PubkeyAuthentication', line: 'PubkeyAuthentication yes' }
+notify: restart ssh</code></pre>
+<h3>PHP Role</h3>
+<p>PHP-FPM installation and configuration:</p>
+<pre><code class="language-yaml"># roles/php/tasks/main.yml
 ---
 - name: Add PHP repository
-  apt_repository:
-    repo: "ppa:ondrej/php"
-    state: present
-
+apt_repository:
+repo: "ppa:ondrej/php"
+state: present
 - name: Install PHP and extensions
-  apt:
-    name:
-      - php{{ php_version }}-fpm
-      - php{{ php_version }}-mysql
-      - php{{ php_version }}-curl
-      - php{{ php_version }}-xml
-      - php{{ php_version }}-json
-      - php{{ php_version }}-mbstring
-      - php{{ php_version }}-zip
-      - php{{ php_version }}-gd
-      - php{{ php_version }}-opcache
-      - php{{ php_version }}-redis
-    state: present
-
+apt:
+name:
+- php{{ php_version }}-fpm
+- php{{ php_version }}-mysql
+- php{{ php_version }}-curl
+- php{{ php_version }}-xml
+- php{{ php_version }}-json
+- php{{ php_version }}-mbstring
+- php{{ php_version }}-zip
+- php{{ php_version }}-gd
+- php{{ php_version }}-opcache
+- php{{ php_version }}-redis
+state: present
 - name: Configure PHP-FPM
-  template:
-    src: php-fpm.conf.j2
-    dest: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
-    backup: yes
-  notify: restart php-fpm
-
+template:
+src: php-fpm.conf.j2
+dest: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
+backup: yes
+notify: restart php-fpm
 - name: Configure PHP settings
-  template:
-    src: php.ini.j2
-    dest: /etc/php/{{ php_version }}/fpm/php.ini
-    backup: yes
-  notify: restart php-fpm
-
+template:
+src: php.ini.j2
+dest: /etc/php/{{ php_version }}/fpm/php.ini
+backup: yes
+notify: restart php-fpm
 - name: Install Composer
-  shell: |
-    curl -sS https://getcomposer.org/installer | php
-    mv composer.phar /usr/local/bin/composer
-    chmod +x /usr/local/bin/composer
-  args:
-    creates: /usr/local/bin/composer</code></pre>
-
-                    <h3>Nginx Role</h3>
-
-                    <p>Web server configuration:</p>
-
-                    <pre><code class="language-yaml"># roles/nginx/tasks/main.yml
+shell: |
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
+chmod +x /usr/local/bin/composer
+args:
+creates: /usr/local/bin/composer</code></pre>
+<h3>Nginx Role</h3>
+<p>Web server configuration:</p>
+<pre><code class="language-yaml"># roles/nginx/tasks/main.yml
 ---
 - name: Install Nginx
-  apt:
-    name: nginx
-    state: present
-
+apt:
+name: nginx
+state: present
 - name: Remove default Nginx site
-  file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
-  notify: restart nginx
-
+file:
+path: /etc/nginx/sites-enabled/default
+state: absent
+notify: restart nginx
 - name: Configure Nginx main config
-  template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/nginx.conf
-    backup: yes
-  notify: restart nginx
-
+template:
+src: nginx.conf.j2
+dest: /etc/nginx/nginx.conf
+backup: yes
+notify: restart nginx
 - name: Create application vhost
-  template:
-    src: vhost.conf.j2
-    dest: /etc/nginx/sites-available/{{ app_name }}
-  notify: restart nginx
-
+template:
+src: vhost.conf.j2
+dest: /etc/nginx/sites-available/{{ app_name }}
+notify: restart nginx
 - name: Enable application vhost
-  file:
-    src: /etc/nginx/sites-available/{{ app_name }}
-    dest: /etc/nginx/sites-enabled/{{ app_name }}
-    state: link
-  notify: restart nginx
-
+file:
+src: /etc/nginx/sites-available/{{ app_name }}
+dest: /etc/nginx/sites-enabled/{{ app_name }}
+state: link
+notify: restart nginx
 - name: Create SSL certificate directory
-  file:
-    path: /etc/nginx/ssl
-    state: directory
-    mode: '0755'
-
+file:
+path: /etc/nginx/ssl
+state: directory
+mode: '0755'
 - name: Generate SSL certificate
-  command: |
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 
-    -keyout /etc/nginx/ssl/{{ app_name }}.key 
-    -out /etc/nginx/ssl/{{ app_name }}.crt 
-    -subj "/C=US/ST=State/L=City/O=Organization/CN={{ app_domain }}"
-  args:
-    creates: /etc/nginx/ssl/{{ app_name }}.crt</code></pre>
-                </section>
-
-                <section>
-                    <h2>Application Deployment Playbook</h2>
-
-                    <h3>Zero-Downtime Deployment</h3>
-
-                    <pre><code class="language-yaml"># playbooks/deploy.yml
+command: |
+openssl req -x509 -nodes -days 365 -newkey rsa:2048
+-keyout /etc/nginx/ssl/{{ app_name }}.key
+-out /etc/nginx/ssl/{{ app_name }}.crt
+-subj "/C=US/ST=State/L=City/O=Organization/CN={{ app_domain }}"
+args:
+creates: /etc/nginx/ssl/{{ app_name }}.crt</code></pre>
+</section>
+<section>
+<h2>Application Deployment Playbook</h2>
+<h3>Zero-Downtime Deployment</h3>
+<pre><code class="language-yaml"># playbooks/deploy.yml
 ---
 - name: Deploy PHP application
-  hosts: webservers
-  become: yes
-  serial: "{{ deploy_serial | default(1) }}"
-  vars:
-    app_path: /var/www/{{ app_name }}
-    release_path: "{{ app_path }}/releases/{{ ansible_date_time.epoch }}"
-    current_path: "{{ app_path }}/current"
-    shared_path: "{{ app_path }}/shared"
-    
-  tasks:
-    - name: Create application directories
-      file:
-        path: "{{ item }}"
-        state: directory
-        owner: www-data
-        group: www-data
-        mode: '0755'
-      loop:
-        - "{{ app_path }}"
-        - "{{ app_path }}/releases"
-        - "{{ shared_path }}"
-        - "{{ shared_path }}/logs"
-        - "{{ shared_path }}/uploads"
-
-    - name: Clone application repository
-      git:
-        repo: "{{ app_repo }}"
-        dest: "{{ release_path }}"
-        version: "{{ app_version | default('main') }}"
-        force: yes
-      become_user: www-data
-
-    - name: Install Composer dependencies
-      composer:
-        command: install
-        working_dir: "{{ release_path }}"
-        optimize_autoloader: yes
-        no_dev: "{{ 'yes' if app_env == 'production' else 'no' }}"
-      become_user: www-data
-
-    - name: Create shared symlinks
-      file:
-        src: "{{ shared_path }}/{{ item }}"
-        dest: "{{ release_path }}/{{ item }}"
-        state: link
-        force: yes
-      loop:
-        - logs
-        - uploads
-      become_user: www-data
-
-    - name: Copy environment configuration
-      template:
-        src: .env.j2
-        dest: "{{ release_path }}/.env"
-        owner: www-data
-        group: www-data
-        mode: '0640'
-
-    - name: Run database migrations
-      shell: |
-        cd {{ release_path }}
-        php artisan migrate --force
-      become_user: www-data
-      when: run_migrations | default(false)
-
-    - name: Clear application cache
-      shell: |
-        cd {{ release_path }}
-        php artisan cache:clear
-        php artisan config:clear
-        php artisan route:clear
-        php artisan view:clear
-      become_user: www-data
-
-    - name: Update current symlink
-      file:
-        src: "{{ release_path }}"
-        dest: "{{ current_path }}"
-        state: link
-        force: yes
-      notify: restart php-fpm
-
-    - name: Set proper permissions
-      file:
-        path: "{{ current_path }}"
-        owner: www-data
-        group: www-data
-        recurse: yes
-
-    - name: Remove old releases
-      shell: |
-        cd {{ app_path }}/releases
-        ls -1dt */ | tail -n +{{ keep_releases | default(5) }} | xargs rm -rf
-      become_user: www-data</code></pre>
-                </section>
-
-                <section>
-                    <h2>Advanced Deployment Strategies</h2>
-
-                    <h3>Blue-Green Deployment</h3>
-
-                    <pre><code class="language-yaml"># playbooks/blue-green-deploy.yml
+hosts: webservers
+become: yes
+serial: "{{ deploy_serial | default(1) }}"
+vars:
+app_path: /var/www/{{ app_name }}
+release_path: "{{ app_path }}/releases/{{ ansible_date_time.epoch }}"
+current_path: "{{ app_path }}/current"
+shared_path: "{{ app_path }}/shared"
+tasks:
+- name: Create application directories
+file:
+path: "{{ item }}"
+state: directory
+owner: www-data
+group: www-data
+mode: '0755'
+loop:
+- "{{ app_path }}"
+- "{{ app_path }}/releases"
+- "{{ shared_path }}"
+- "{{ shared_path }}/logs"
+- "{{ shared_path }}/uploads"
+- name: Clone application repository
+git:
+repo: "{{ app_repo }}"
+dest: "{{ release_path }}"
+version: "{{ app_version | default('main') }}"
+force: yes
+become_user: www-data
+- name: Install Composer dependencies
+composer:
+command: install
+working_dir: "{{ release_path }}"
+optimize_autoloader: yes
+no_dev: "{{ 'yes' if app_env == 'production' else 'no' }}"
+become_user: www-data
+- name: Create shared symlinks
+file:
+src: "{{ shared_path }}/{{ item }}"
+dest: "{{ release_path }}/{{ item }}"
+state: link
+force: yes
+loop:
+- logs
+- uploads
+become_user: www-data
+- name: Copy environment configuration
+template:
+src: .env.j2
+dest: "{{ release_path }}/.env"
+owner: www-data
+group: www-data
+mode: '0640'
+- name: Run database migrations
+shell: |
+cd {{ release_path }}
+php artisan migrate --force
+become_user: www-data
+when: run_migrations | default(false)
+- name: Clear application cache
+shell: |
+cd {{ release_path }}
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+become_user: www-data
+- name: Update current symlink
+file:
+src: "{{ release_path }}"
+dest: "{{ current_path }}"
+state: link
+force: yes
+notify: restart php-fpm
+- name: Set proper permissions
+file:
+path: "{{ current_path }}"
+owner: www-data
+group: www-data
+recurse: yes
+- name: Remove old releases
+shell: |
+cd {{ app_path }}/releases
+ls -1dt */ | tail -n +{{ keep_releases | default(5) }} | xargs rm -rf
+become_user: www-data</code></pre>
+</section>
+<section>
+<h2>Advanced Deployment Strategies</h2>
+<h3>Blue-Green Deployment</h3>
+<pre><code class="language-yaml"># playbooks/blue-green-deploy.yml
 ---
 - name: Blue-Green deployment
-  hosts: webservers
-  become: yes
-  vars:
-    current_env: "{{ 'blue' if active_env == 'green' else 'green' }}"
-    
-  tasks:
-    - name: Determine current active environment
-      slurp:
-        src: /etc/nginx/sites-enabled/{{ app_name }}
-      register: current_config
-
-    - name: Set active environment
-      set_fact:
-        active_env: "{{ 'blue' if 'blue' in current_config.content | b64decode else 'green' }}"
-
-    - name: Deploy to inactive environment
-      include_tasks: deploy-to-env.yml
-      vars:
-        deploy_env: "{{ current_env }}"
-
-    - name: Health check new deployment
-      uri:
-        url: "http://{{ inventory_hostname }}:{{ deploy_env == 'blue' ? '8080' : '8081' }}/health"
-        method: GET
-        status_code: 200
-      retries: 10
-      delay: 5
-
-    - name: Switch traffic to new environment
-      template:
-        src: nginx-{{ current_env }}.conf.j2
-        dest: /etc/nginx/sites-enabled/{{ app_name }}
-      notify: restart nginx
-
-    - name: Stop old environment
-      systemd:
-        name: "{{ app_name }}-{{ active_env }}"
-        state: stopped</code></pre>
-
-                    <h3>Database Migration Handling</h3>
-
-                    <pre><code class="language-yaml"># roles/application/tasks/migrate.yml
+hosts: webservers
+become: yes
+vars:
+current_env: "{{ 'blue' if active_env == 'green' else 'green' }}"
+tasks:
+- name: Determine current active environment
+slurp:
+src: /etc/nginx/sites-enabled/{{ app_name }}
+register: current_config
+- name: Set active environment
+set_fact:
+active_env: "{{ 'blue' if 'blue' in current_config.content | b64decode else 'green' }}"
+- name: Deploy to inactive environment
+include_tasks: deploy-to-env.yml
+vars:
+deploy_env: "{{ current_env }}"
+- name: Health check new deployment
+uri:
+url: "http://{{ inventory_hostname }}:{{ deploy_env == 'blue' ? '8080' : '8081' }}/health"
+method: GET
+status_code: 200
+retries: 10
+delay: 5
+- name: Switch traffic to new environment
+template:
+src: nginx-{{ current_env }}.conf.j2
+dest: /etc/nginx/sites-enabled/{{ app_name }}
+notify: restart nginx
+- name: Stop old environment
+systemd:
+name: "{{ app_name }}-{{ active_env }}"
+state: stopped</code></pre>
+<h3>Database Migration Handling</h3>
+<pre><code class="language-yaml"># roles/application/tasks/migrate.yml
 ---
 - name: Check if migrations are needed
-  shell: |
-    cd {{ app_path }}/current
-    php artisan migrate:status | grep -c "N"
-  register: pending_migrations
-  failed_when: false
-  changed_when: false
-
+shell: |
+cd {{ app_path }}/current
+php artisan migrate:status | grep -c "N"
+register: pending_migrations
+failed_when: false
+changed_when: false
 - name: Create database backup before migration
-  mysql_db:
-    name: "{{ app_db_name }}"
-    state: dump
-    target: "/tmp/{{ app_db_name }}_{{ ansible_date_time.epoch }}.sql"
-  when: pending_migrations.stdout | int &gt; 0
-
+mysql_db:
+name: "{{ app_db_name }}"
+state: dump
+target: "/tmp/{{ app_db_name }}_{{ ansible_date_time.epoch }}.sql"
+when: pending_migrations.stdout | int &gt; 0
 - name: Run database migrations
-  shell: |
-    cd {{ app_path }}/current
-    php artisan migrate --force
-  when: pending_migrations.stdout | int &gt; 0
-
+shell: |
+cd {{ app_path }}/current
+php artisan migrate --force
+when: pending_migrations.stdout | int &gt; 0
 - name: Seed database if needed
-  shell: |
-    cd {{ app_path }}/current
-    php artisan db:seed --force
-  when: 
-    - pending_migrations.stdout | int &gt; 0
-    - app_env != 'production'</code></pre>
-                </section>
-
-                <section>
-                    <h2>Monitoring and Maintenance</h2>
-
-                    <h3>Log Rotation</h3>
-
-                    <pre><code class="language-yaml"># roles/application/tasks/logs.yml
+shell: |
+cd {{ app_path }}/current
+php artisan db:seed --force
+when:
+- pending_migrations.stdout | int &gt; 0
+- app_env != 'production'</code></pre>
+</section>
+<section>
+<h2>Monitoring and Maintenance</h2>
+<h3>Log Rotation</h3>
+<pre><code class="language-yaml"># roles/application/tasks/logs.yml
 ---
 - name: Configure log rotation
-  template:
-    src: logrotate.conf.j2
-    dest: /etc/logrotate.d/{{ app_name }}
-    mode: '0644'
-
+template:
+src: logrotate.conf.j2
+dest: /etc/logrotate.d/{{ app_name }}
+mode: '0644'
 # templates/logrotate.conf.j2
 {{ app_path }}/shared/logs/*.log {
-    daily
-    rotate 30
-    compress
-    delaycompress
-    missingok
-    notifempty
-    copytruncate
-    su www-data www-data
+daily
+rotate 30
+compress
+delaycompress
+missingok
+notifempty
+copytruncate
+su www-data www-data
 }</code></pre>
-
-                    <h3>Performance Monitoring</h3>
-
-                    <pre><code class="language-yaml"># roles/monitoring/tasks/main.yml
+<h3>Performance Monitoring</h3>
+<pre><code class="language-yaml"># roles/monitoring/tasks/main.yml
 ---
 - name: Install monitoring tools
-  apt:
-    name:
-      - htop
-      - iotop
-      - nethogs
-      - sysstat
-    state: present
-
+apt:
+name:
+- htop
+- iotop
+- nethogs
+- sysstat
+state: present
 - name: Configure PHP-FPM status page
-  lineinfile:
-    path: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
-    regexp: '^;?pm.status_path'
-    line: 'pm.status_path = /status'
-  notify: restart php-fpm
-
+lineinfile:
+path: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
+regexp: '^;?pm.status_path'
+line: 'pm.status_path = /status'
+notify: restart php-fpm
 - name: Configure Nginx status
-  blockinfile:
-    path: /etc/nginx/sites-available/{{ app_name }}
-    insertafter: "server_name"
-    block: |
-      location /nginx_status {
-          stub_status on;
-          access_log off;
-          allow 127.0.0.1;
-          deny all;
-      }
-  notify: restart nginx</code></pre>
-                </section>
-
-                <section>
-                    <h2>Security Hardening</h2>
-
-                    <h3>SSL/TLS Configuration</h3>
-
-                    <pre><code class="language-nginx"># roles/nginx/templates/vhost.conf.j2
-server {
-    listen 80;
-    server_name {{ app_domain }};
-    return 301 https://$server_name$request_uri;
+blockinfile:
+path: /etc/nginx/sites-available/{{ app_name }}
+insertafter: "server_name"
+block: |
+location /nginx_status {
+stub_status on;
+access_log off;
+allow 127.0.0.1;
+deny all;
 }
-
+notify: restart nginx</code></pre>
+</section>
+<section>
+<h2>Security Hardening</h2>
+<h3>SSL/TLS Configuration</h3>
+<pre><code class="language-nginx"># roles/nginx/templates/vhost.conf.j2
 server {
-    listen 443 ssl http2;
-    server_name {{ app_domain }};
-
-    ssl_certificate /etc/nginx/ssl/{{ app_name }}.crt;
-    ssl_certificate_key /etc/nginx/ssl/{{ app_name }}.key;
-    
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384;
-    ssl_prefer_server_ciphers off;
-    ssl_session_cache shared:SSL:10m;
-    ssl_session_timeout 10m;
-
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-    add_header X-Frame-Options DENY always;
-    add_header X-Content-Type-Options nosniff always;
-    add_header X-XSS-Protection "1; mode=block" always;
-
-    root {{ app_path }}/current/public;
-    index index.php;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php{{ php_version }}-fpm.sock;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
+listen 80;
+server_name {{ app_domain }};
+return 301 https://$server_name$request_uri;
+}
+server {
+listen 443 ssl http2;
+server_name {{ app_domain }};
+ssl_certificate /etc/nginx/ssl/{{ app_name }}.crt;
+ssl_certificate_key /etc/nginx/ssl/{{ app_name }}.key;
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384;
+ssl_prefer_server_ciphers off;
+ssl_session_cache shared:SSL:10m;
+ssl_session_timeout 10m;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+add_header X-Frame-Options DENY always;
+add_header X-Content-Type-Options nosniff always;
+add_header X-XSS-Protection "1; mode=block" always;
+root {{ app_path }}/current/public;
+index index.php;
+location / {
+try_files $uri $uri/ /index.php?$query_string;
+}
+location ~ .php$ {
+fastcgi_pass unix:/var/run/php/php{{ php_version }}-fpm.sock;
+fastcgi_index index.php;
+fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+include fastcgi_params;
+}
+location ~ /.(?!well-known).* {
+deny all;
+}
 }</code></pre>
-                </section>
-
-                <section>
-                    <h2>Environment-Specific Configuration</h2>
-
-                    <h3>Group Variables</h3>
-
-                    <pre><code class="language-yaml"># inventories/production/group_vars/all.yml
+</section>
+<section>
+<h2>Environment-Specific Configuration</h2>
+<h3>Group Variables</h3>
+<pre><code class="language-yaml"># inventories/production/group_vars/all.yml
 ---
 app_name: myapp
 app_domain: myapp.com
@@ -608,20 +554,16 @@ php_version: 8.2
 keep_releases: 5
 run_migrations: true
 deploy_serial: 1
-
 # Database configuration
 app_db_host: db1.example.com
 app_db_name: myapp_production
 app_db_user: myapp_user
-
 # Performance settings
 php_memory_limit: 512M
 php_max_execution_time: 300
 php_upload_max_filesize: 64M</code></pre>
-
-                    <h3>Staging Environment</h3>
-
-                    <pre><code class="language-yaml"># inventories/staging/group_vars/all.yml
+<h3>Staging Environment</h3>
+<pre><code class="language-yaml"># inventories/staging/group_vars/all.yml
 ---
 app_name: myapp
 app_domain: staging.myapp.com
@@ -630,134 +572,113 @@ php_version: 8.2
 keep_releases: 3
 run_migrations: true
 deploy_serial: 0
-
 # Different database
 app_db_host: staging-db.example.com
 app_db_name: myapp_staging
 app_db_user: myapp_staging_user
-
 # Debug settings
 php_display_errors: "On"
 php_log_errors: "On"
 app_debug: true</code></pre>
-                </section>
-
-                <section>
-                    <h2>Continuous Integration Integration</h2>
-
-                    <h3>GitLab CI Integration</h3>
-
-                    <pre><code class="language-php"># .gitlab-ci.yml
+</section>
+<section>
+<h2>Continuous Integration Integration</h2>
+<h3>GitLab CI Integration</h3>
+<pre><code class="language-php"># .gitlab-ci.yml
 stages:
-  - test
-  - deploy
-
+- test
+- deploy
 test:
-  stage: test
-  script:
-    - composer install
-    - php artisan test
-  only:
-    - branches
-
+stage: test
+script:
+- composer install
+- php artisan test
+only:
+- branches
 deploy_staging:
-  stage: deploy
-  script:
-    - ansible-playbook -i inventories/staging/hosts playbooks/deploy.yml
-  only:
-    - develop
-  environment:
-    name: staging
-    url: https://staging.myapp.com
-
+stage: deploy
+script:
+- ansible-playbook -i inventories/staging/hosts playbooks/deploy.yml
+only:
+- develop
+environment:
+name: staging
+url: https://staging.myapp.com
 deploy_production:
-  stage: deploy
-  script:
-    - ansible-playbook -i inventories/production/hosts playbooks/deploy.yml
-  only:
-    - main
-  environment:
-    name: production
-    url: https://myapp.com
-  when: manual</code></pre>
-                </section>
-
-                <section>
-                    <h2>Troubleshooting Common Issues</h2>
-
-                    <h3>Connection Problems</h3>
-
-                    <pre><code class="language-php"># Test connectivity
+stage: deploy
+script:
+- ansible-playbook -i inventories/production/hosts playbooks/deploy.yml
+only:
+- main
+environment:
+name: production
+url: https://myapp.com
+when: manual</code></pre>
+</section>
+<section>
+<h2>Troubleshooting Common Issues</h2>
+<h3>Connection Problems</h3>
+<pre><code class="language-php"># Test connectivity
 ansible all -m ping -i inventories/production/hosts
-
 # Check SSH configuration
 ansible all -m setup -i inventories/production/hosts | grep ansible_ssh
-
 # Debug playbook execution
 ansible-playbook -i inventories/production/hosts playbooks/deploy.yml -vvv</code></pre>
-
-                    <h3>Permission Issues</h3>
-
-                    <pre><code class="language-php"># Fix common permission problems
+<h3>Permission Issues</h3>
+<pre><code class="language-php"># Fix common permission problems
 - name: Fix application permissions
-  file:
-    path: "{{ item }}"
-    owner: www-data
-    group: www-data
-    mode: '0755'
-    recurse: yes
-  loop:
-    - "{{ app_path }}/current/storage"
-    - "{{ app_path }}/current/bootstrap/cache"
-    - "{{ shared_path }}/logs"</code></pre>
-                </section>
+file:
+path: "{{ item }}"
+owner: www-data
+group: www-data
+mode: '0755'
+recurse: yes
+loop:
+- "{{ app_path }}/current/storage"
+- "{{ app_path }}/current/bootstrap/cache"
+- "{{ shared_path }}/logs"</code></pre>
+</section>
+<section>
+<h2>Best Practices</h2>
+<ul>
+<li><strong>Use version control:</strong> Store all Ansible code in Git</li>
+<li><strong>Test in staging:</strong> Always test playbooks in staging first</li>
+<li><strong>Use handlers:</strong> Restart services only when needed</li>
+<li><strong>Encrypt secrets:</strong> Use Ansible Vault for sensitive data</li>
+<li><strong>Tag tasks:</strong> Use tags for selective execution</li>
+<li><strong>Monitor deployments:</strong> Implement health checks and rollback procedures</li>
+</ul>
+<h2>Conclusion</h2>
+<p>Ansible transforms PHP infrastructure management from a manual, error-prone process into a reliable, repeatable system. The investment in setting up proper automation pays dividends in reduced downtime, consistent environments, and faster deployments.</p>
+<p>Start with basic server provisioning, then gradually add more sophisticated deployment strategies like blue-green deployments and automated rollbacks. Your future self will thank you for the time invested in proper automation.</p>
+</section>
+<footer class="article-footer">
+<div class="article-tags">
+<span class="tags-label">Tags:</span>
+<span class="tag">Ansible</span>
+<span class="tag">PHP</span>
+<span class="tag">Infrastructure</span>
+<span class="tag">Automation</span>
+<span class="tag">DevOps</span>
+</div>
+<div class="article-nav">
+<a href="/articles.html" class="back-link">← Back to Articles</a>
+</div>
+</footer>
+</article>
 
-                <section>
-                    <h2>Best Practices</h2>
+</main>
+<footer class="site-footer">
+<div class="container">
+<div class="footer-content">
+<p>&copy; 2025 Joseph. All rights reserved.</p>
+<p class="deployment-info">Last deployed: <span id="deployment-timestamp">{{ timestamp }}</span></p>
+<nav class="footer-nav">
+</nav>
+</div>
+</div>
+</footer>
+<script src="js/main.js" type="module"></script>
 
-                    <ul>
-                        <li><strong>Use version control:</strong> Store all Ansible code in Git</li>
-                        <li><strong>Test in staging:</strong> Always test playbooks in staging first</li>
-                        <li><strong>Use handlers:</strong> Restart services only when needed</li>
-                        <li><strong>Encrypt secrets:</strong> Use Ansible Vault for sensitive data</li>
-                        <li><strong>Tag tasks:</strong> Use tags for selective execution</li>
-                        <li><strong>Monitor deployments:</strong> Implement health checks and rollback procedures</li>
-                    </ul>
-
-                    <h2>Conclusion</h2>
-
-                    <p>Ansible transforms PHP infrastructure management from a manual, error-prone process into a reliable, repeatable system. The investment in setting up proper automation pays dividends in reduced downtime, consistent environments, and faster deployments.</p>
-
-                    <p>Start with basic server provisioning, then gradually add more sophisticated deployment strategies like blue-green deployments and automated rollbacks. Your future self will thank you for the time invested in proper automation.</p>
-                </section>
-
-                <footer class="article-footer">
-                    <div class="article-tags">
-                        <span class="tags-label">Tags:</span>
-                        <span class="tag">Ansible</span>
-                        <span class="tag">PHP</span>
-                        <span class="tag">Infrastructure</span>
-                        <span class="tag">Automation</span>
-                        <span class="tag">DevOps</span>
-                    </div>
-                    <div class="article-nav">
-                        <a href="/articles.html" class="back-link">← Back to Articles</a>
-                    </div>
-                </footer>
-        </article>
-    </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-content">
-                <p>© 2025 Joseph. All rights reserved.</p>
-                <nav class="footer-nav">
-                </nav>
-            </div>
-        </div>
-    </footer>
-
-    <script type="module" src="../js/main.js"></script>
-    <script type="module" src="../js/syntax-highlighter.js"></script>
-
-</body></html>
+</body>
+</html>
