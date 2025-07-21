@@ -114,6 +114,9 @@ async function processEjsFiles() {
   // Find all EJS files in pages directory
   const ejsFiles = await glob('private_html/pages/**/*.ejs', { cwd: projectRoot });
   
+  // Also find article EJS files
+  const articleEjsFiles = await glob('private_html/articles/**/*.ejs', { cwd: projectRoot });
+  
   if (ejsFiles.length === 0) {
     console.log('No EJS files found to process');
   } else {
@@ -151,6 +154,45 @@ async function processEjsFiles() {
         
       } catch (error) {
         console.error(`✗ Error processing ${ejsFile}:`, error.message);
+        process.exit(1);
+      }
+    }
+  }
+  
+  // Process article EJS files
+  if (articleEjsFiles.length > 0) {
+    console.log(`\nProcessing ${articleEjsFiles.length} article templates...`);
+    
+    for (const articleFile of articleEjsFiles) {
+      const fullPath = path.join(projectRoot, articleFile);
+      const fileName = path.basename(articleFile, '.ejs');
+      const outputPath = path.join(projectRoot, 'public_html/articles', fileName + '.html');
+      
+      try {
+        console.log(`Processing article: ${articleFile} → ${path.relative(projectRoot, outputPath)}`);
+        
+        // Read and process the article template
+        const template = fs.readFileSync(fullPath, 'utf8');
+        
+        // Process with EJS
+        const html = ejs.render(template, templateData, {
+          filename: fullPath,
+          views: [path.join(projectRoot, 'private_html')],
+          rmWhitespace: true
+        });
+        
+        // Ensure output directory exists
+        const outputDir = path.dirname(outputPath);
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        // Write processed HTML
+        fs.writeFileSync(outputPath, html);
+        console.log(`✓ Generated: ${path.relative(projectRoot, outputPath)}`);
+        
+      } catch (error) {
+        console.error(`✗ Error processing article ${articleFile}:`, error.message);
         process.exit(1);
       }
     }
