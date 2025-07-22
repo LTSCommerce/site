@@ -8,7 +8,7 @@
 <div class="intro">
     <p class="lead">
         Building command-line interfaces that scale from simple scripts to enterprise-grade applications 
-        requires a solid foundation. Oclif, the Open CLI Framework from Salesforce, provides exactly that - 
+        requires a solid foundation. <a href="https://oclif.io/" target="_blank" rel="noopener">Oclif</a>, the Open CLI Framework from <a href="https://www.salesforce.com/" target="_blank" rel="noopener">Salesforce</a>, provides exactly that - 
         a battle-tested architecture powering CLIs used by millions of developers daily.
     </p>
 </div>
@@ -16,9 +16,9 @@
 <section>
     <h2>What is oclif?</h2>
     <p>
-        Oclif is an open-source framework for building command-line interfaces in Node.js and TypeScript. 
-        Originally developed by Heroku and now maintained by Salesforce, it powers both the Heroku and 
-        Salesforce CLIs, handling millions of developer interactions every day.
+        Oclif is an open-source framework for building command-line interfaces in <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> and <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>. 
+        Originally developed by <a href="https://www.heroku.com/" target="_blank" rel="noopener">Heroku</a> and now maintained by Salesforce, it powers both the <a href="https://devcenter.heroku.com/articles/heroku-cli" target="_blank" rel="noopener">Heroku CLI</a> and 
+        <a href="https://developer.salesforce.com/tools/salesforcecli" target="_blank" rel="noopener">Salesforce CLI</a>, handling millions of developer interactions every day.
     </p>
     
     <p>
@@ -46,7 +46,7 @@
     
     <h3>Command Structure</h3>
     <p>
-        Commands in oclif extend from a base Command class, providing a consistent API:
+        Commands in oclif extend from a base <a href="https://github.com/oclif/core/blob/main/src/command.ts" target="_blank" rel="noopener">Command class</a>, providing a consistent API:
     </p>
     
     <pre><code class="language-javascript">{{SNIPPET:oclif/hello-command.js}}</code></pre>
@@ -58,7 +58,7 @@
     
     <ul>
         <li>Share functionality across multiple CLIs</li>
-        <li>Distribute commands as npm packages</li>
+        <li>Distribute commands as <a href="https://www.npmjs.com/" target="_blank" rel="noopener">npm packages</a></li>
         <li>Allow users to extend your CLI with custom commands</li>
         <li>Lazy-load commands for optimal performance</li>
     </ul>
@@ -73,14 +73,14 @@
 <section>
     <h2>Spring 2024 Updates</h2>
     <p>
-        The framework continues active development with significant improvements in 2024:
+        The framework continues active development with significant improvements in 2024 (see <a href="https://github.com/oclif/core/releases" target="_blank" rel="noopener">release notes</a>):
     </p>
     
     <ul>
         <li><strong>Configurable command discovery</strong> - Control how commands are loaded at runtime</li>
         <li><strong>Preparse hooks</strong> - Manipulate arguments before parsing</li>
-        <li><strong>Performance tracking</strong> - Built-in Performance class for monitoring</li>
-        <li><strong>Enhanced flag types</strong> - New Flags.option for preset value lists</li>
+        <li><strong>Performance tracking</strong> - Built-in <a href="https://oclif.io/docs/performance" target="_blank" rel="noopener">Performance class</a> for monitoring</li>
+        <li><strong>Enhanced flag types</strong> - New <a href="https://oclif.io/docs/flags" target="_blank" rel="noopener">Flags.option</a> for preset value lists</li>
         <li><strong>Flag relationships</strong> - Define complex dependencies between flags</li>
     </ul>
 </section>
@@ -101,7 +101,7 @@
         <li><strong>Human-Readable Output</strong> - Design for clarity while supporting machine formats</li>
         <li><strong>Progressive Disclosure</strong> - Show essential info by default, details on request</li>
         <li><strong>Error Handling</strong> - Provide helpful error messages with recovery suggestions</li>
-        <li><strong>Testing</strong> - Use oclif's built-in testing utilities for comprehensive coverage</li>
+        <li><strong>Testing</strong> - Use oclif's built-in <a href="https://oclif.io/docs/testing" target="_blank" rel="noopener">testing utilities</a> for comprehensive coverage</li>
     </ol>
 
     <h3>TypeScript Configuration</h3>
@@ -139,7 +139,7 @@
 <section>
     <h2>Alternative CLI Frameworks</h2>
     
-    <h3>Commander.js</h3>
+    <h3><a href="https://github.com/tj/commander.js" target="_blank" rel="noopener">Commander.js</a></h3>
     <p>
         The lightweight choice for simple CLIs:
     </p>
@@ -150,7 +150,7 @@
         <li>Limited plugin support</li>
     </ul>
 
-    <h3>Yargs</h3>
+    <h3><a href="https://yargs.js.org/" target="_blank" rel="noopener">Yargs</a></h3>
     <p>
         Feature-rich with declarative syntax:
     </p>
@@ -161,7 +161,7 @@
         <li>Good middle ground option</li>
     </ul>
 
-    <h3>Gluegun</h3>
+    <h3><a href="https://github.com/infinitered/gluegun" target="_blank" rel="noopener">Gluegun</a></h3>
     <p>
         High-level abstraction with batteries included:
     </p>
@@ -172,12 +172,12 @@
         <li>More opinionated than oclif</li>
     </ul>
 
-    <h3>Cobra (Go)</h3>
+    <h3><a href="https://cobra.dev/" target="_blank" rel="noopener">Cobra</a> (Go)</h3>
     <p>
-        The standard for Go CLIs:
+        The standard for <a href="https://go.dev/" target="_blank" rel="noopener">Go</a> CLIs:
     </p>
     <ul>
-        <li>Powers Kubernetes, Docker, Hugo</li>
+        <li>Powers <a href="https://kubernetes.io/" target="_blank" rel="noopener">Kubernetes</a>, <a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a>, <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a></li>
         <li>Excellent performance</li>
         <li>Requires Go knowledge</li>
         <li>Best for system tools</li>
@@ -206,7 +206,7 @@
     <ul>
         <li>Simple scripts with few commands (use Commander)</li>
         <li>Quick prototypes (use Yargs)</li>
-        <li>Interactive wizards (use Gluegun or Ink)</li>
+        <li>Interactive wizards (use Gluegun or <a href="https://github.com/vadimdemedes/ink" target="_blank" rel="noopener">Ink</a>)</li>
         <li>System utilities (use Cobra with Go)</li>
     </ul>
 </section>
@@ -219,10 +219,10 @@
     </p>
     
     <ul>
-        <li><strong>Salesforce CLI</strong> - Enterprise development tools</li>
-        <li><strong>Heroku CLI</strong> - Cloud platform management</li>
-        <li><strong>Twilio CLI</strong> - Communication API tools</li>
-        <li><strong>Shopify CLI</strong> - E-commerce development</li>
+        <li><strong><a href="https://developer.salesforce.com/tools/salesforcecli" target="_blank" rel="noopener">Salesforce CLI</a></strong> - Enterprise development tools</li>
+        <li><strong><a href="https://devcenter.heroku.com/articles/heroku-cli" target="_blank" rel="noopener">Heroku CLI</a></strong> - Cloud platform management</li>
+        <li><strong><a href="https://www.twilio.com/docs/twilio-cli/quickstart" target="_blank" rel="noopener">Twilio CLI</a></strong> - Communication API tools</li>
+        <li><strong><a href="https://shopify.dev/docs/themes/tools/cli" target="_blank" rel="noopener">Shopify CLI</a></strong> - E-commerce development</li>
     </ul>
 
     <p>
