@@ -33,18 +33,7 @@
         Creating a new CLI with oclif takes just a few commands:
     </p>
     
-    <pre><code class="language-bash"># Generate a new CLI project
-npx oclif generate mynewcli
-
-# Navigate to the project
-cd mynewcli
-
-# Run your CLI
-./bin/run.js --version
-# mynewcli/0.0.0 darwin-x64 node-v18.0.0
-
-# View available commands
-./bin/run.js --help</code></pre>
+    <pre><code class="language-bash">{{SNIPPET:oclif/getting-started.sh}}</code></pre>
 
     <p>
         This generates a fully-functional CLI with TypeScript support, testing infrastructure, and a 
@@ -60,30 +49,7 @@ cd mynewcli
         Commands in oclif extend from a base Command class, providing a consistent API:
     </p>
     
-    <pre><code class="language-javascript">import { Command, Flags } from '@oclif/core'
-
-export default class Hello extends Command {
-  static description = 'Say hello to the world'
-  
-  static examples = [
-    '$ mynewcli hello world',
-    '$ mynewcli hello --name=jane'
-  ]
-  
-  static flags = {
-    name: Flags.string({
-      char: 'n',
-      description: 'name to say hello to',
-      required: false,
-      default: 'world'
-    })
-  }
-  
-  async run() {
-    const { flags } = await this.parse(Hello)
-    this.log(\`Hello \${flags.name}!\`)
-  }
-}</code></pre>
+    <pre><code class="language-javascript">{{SNIPPET:oclif/hello-command.js}}</code></pre>
 
     <h3>Plugin Architecture</h3>
     <p>
@@ -123,14 +89,7 @@ export default class Hello extends Command {
     <h2>Best Practices</h2>
     
     <h3>Project Structure</h3>
-    <pre><code class="language-bash">mynewcli/
-├── src/
-│   └── commands/       # Command implementations
-├── test/              # Test files
-├── bin/
-│   └── run.js         # CLI entry point
-├── package.json
-└── tsconfig.json      # TypeScript configuration</code></pre>
+    <pre><code class="language-bash">{{SNIPPET:oclif/project-structure.txt}}</code></pre>
 
     <h3>Design Principles</h3>
     <p>
@@ -150,16 +109,7 @@ export default class Hello extends Command {
         While oclif supports JavaScript, TypeScript provides better developer experience:
     </p>
     
-    <pre><code class="language-javascript">// Leverage TypeScript for type safety
-import { Command, Flags } from '@oclif/core'
-
-interface ParsedFlags {
-  name: string
-  force: boolean
-}
-
-// Strong typing throughout your commands
-const { flags } = await this.parse<ParsedFlags>(MyCommand)</code></pre>
+    <pre><code class="language-javascript">{{SNIPPET:oclif/typescript-example.ts}}</code></pre>
 </section>
 
 <section>
