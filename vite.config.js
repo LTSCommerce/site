@@ -48,6 +48,7 @@ export default defineConfig({
         'js/author': resolve(__dirname, 'private_html/js/author.js'),
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         // Article JavaScript entry points
+        'js/articles/oclif-cli-framework-guide': resolve(__dirname, 'private_html/js/articles/oclif-cli-framework-guide.js'),
         'js/articles/dynamic-gradient-headings': resolve(__dirname, 'private_html/js/articles/dynamic-gradient-headings.js'),
         'js/articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'private_html/js/articles/claude-code-custom-commands-cc-commands.js'),
         'js/articles/fedora-42-breakthrough-features': resolve(__dirname, 'private_html/js/articles/fedora-42-breakthrough-features.js'),

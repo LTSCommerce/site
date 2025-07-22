@@ -7,6 +7,14 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 473,
+    "title": "oclif: The Open CLI Framework - A Comprehensive Guide",
+    "excerpt": "An in-depth exploration of oclif, the enterprise-grade CLI framework from Salesforce. Learn best practices, pros and cons, and compare with alternatives.",
+    "category": "typescript",
+    "date": "2025-07-22",
+    "slug": "oclif-cli-framework-guide"
+  },
+  {
     "id": 513,
     "title": "Dynamic Gradient Headings: A CSS and JavaScript Implementation",
     "excerpt": "A straightforward approach to creating mouse-responsive gradient text effects using CSS custom properties and vanilla JavaScript",

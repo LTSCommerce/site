@@ -20,6 +20,8 @@ pre code {
     background-color: transparent;
     padding: 0;
     border-radius: 0;
+    white-space: pre;
+    display: block;
 }
 
 /* Prism.js theme */
