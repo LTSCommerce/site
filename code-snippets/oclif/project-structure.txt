@@ -1,0 +1,8 @@
+mynewcli/
+├── src/
+│   └── commands/       # Command implementations
+├── test/              # Test files
+├── bin/
+│   └── run.js         # CLI entry point
+├── package.json
+└── tsconfig.json      # TypeScript configuration

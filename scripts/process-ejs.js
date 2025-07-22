@@ -10,6 +10,26 @@ const projectRoot = path.resolve(__dirname, '..');
 
 console.log('🔧 Processing EJS templates...\n');
 
+// Function to inject code snippets
+function injectCodeSnippets(html) {
+  // Find all snippet placeholders
+  const snippetPattern = /{{SNIPPET:([^}]+)}}/g;
+  
+  return html.replace(snippetPattern, (match, snippetPath) => {
+    const fullPath = path.join(projectRoot, 'code-snippets', snippetPath);
+    
+    try {
+      // Read the snippet file
+      const snippetContent = fs.readFileSync(fullPath, 'utf8');
+      // Return the snippet content as-is to preserve formatting
+      return snippetContent;
+    } catch (error) {
+      console.warn(`⚠️  Could not find snippet: ${snippetPath}`);
+      return match; // Return placeholder if snippet not found
+    }
+  });
+}
+
 // Helper function to resolve asset paths from Vite manifest
 function getAssetPath(originalPath) {
   if (!viteManifest || Object.keys(viteManifest).length === 0) {
@@ -146,7 +166,7 @@ async function processEjsFiles() {
         const html = ejs.render(template, templateData, {
           filename: fullPath,
           views: [path.join(projectRoot, 'private_html/templates')],
-          rmWhitespace: true
+          rmWhitespace: false
         });
 
         // Ensure output directory exists
@@ -155,8 +175,11 @@ async function processEjsFiles() {
           fs.mkdirSync(outputDir, { recursive: true });
         }
 
+        // Inject code snippets
+        const finalHtml = injectCodeSnippets(html);
+        
         // Write processed HTML
-        fs.writeFileSync(outputPath, html);
+        fs.writeFileSync(outputPath, finalHtml);
         console.log(`✓ Generated: ${path.relative(projectRoot, outputPath)}`);
         
       } catch (error) {
@@ -185,7 +208,7 @@ async function processEjsFiles() {
         const html = ejs.render(template, templateData, {
           filename: fullPath,
           views: [path.join(projectRoot, 'private_html')],
-          rmWhitespace: true
+          rmWhitespace: false
         });
         
         // Ensure output directory exists
@@ -194,8 +217,11 @@ async function processEjsFiles() {
           fs.mkdirSync(outputDir, { recursive: true });
         }
         
+        // Inject code snippets
+        const finalHtml = injectCodeSnippets(html);
+        
         // Write processed HTML
-        fs.writeFileSync(outputPath, html);
+        fs.writeFileSync(outputPath, finalHtml);
         console.log(`✓ Generated: ${path.relative(projectRoot, outputPath)}`);
         
       } catch (error) {
