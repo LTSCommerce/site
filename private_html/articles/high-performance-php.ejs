@@ -7,14 +7,14 @@
   articleContent: `
 <section class="intro">
 <p class="lead">Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios.</p>
-<p>PHP has a reputation for being slow, but that's largely outdated. Modern PHP 8.2+ with proper optimization can handle thousands of requests per second. The key is knowing where to optimize and how to measure the impact of your changes.</p>
+<p><a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a> has a reputation for being slow, but that's largely outdated. Modern <a href="https://www.php.net/releases/8.2/en.php" target="_blank" rel="noopener">PHP 8.2+</a> with proper optimization can handle thousands of requests per second. The key is knowing where to optimize and how to measure the impact of your changes.</p>
 <p>Over the years, I've optimized PHP applications handling millions of requests daily. Here are the techniques that deliver real performance gains.</p>
 </section>
 <section>
 <h2>Performance Measurement Foundation</h2>
 <h3>Profiling Tools</h3>
 <p>You can't optimize what you don't measure. Essential profiling tools:</p>
-<pre><code class="language-text"># Install Xdebug for profiling
+<pre><code class="language-text"># Install <a href="https://xdebug.org/" target="_blank" rel="noopener">Xdebug</a> for profiling
 pecl install xdebug
 # php.ini configuration
 zend_extension=xdebug.so
@@ -22,7 +22,7 @@ xdebug.mode=profile
 xdebug.start_with_request=trigger
 xdebug.output_dir=&quot;/tmp/xdebug&quot;
 xdebug.profiler_output_name=&quot;cachegrind.out.%p&quot;</code></pre>
-<p>Use with tools like KCacheGrind or Webgrind to visualize performance bottlenecks.</p>
+<p>Use with tools like <a href="https://github.com/KDE/kcachegrind" target="_blank" rel="noopener">KCacheGrind</a> or <a href="https://github.com/jokkedk/webgrind" target="_blank" rel="noopener">Webgrind</a> to visualize performance bottlenecks.</p>
 <h3>Application Performance Monitoring</h3>
 <pre><code class="language-php">&lt;?php
 declare(strict_types=1);
