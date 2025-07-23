@@ -190,6 +190,25 @@ Available categories and their focus:
 - **ai** - AI tools, ML integration, automation
 - **typescript** - TypeScript, Node.js, modern JavaScript
 
+#### Adding a New Category
+
+1. **Use the category in your article**: Just set `articleCategory: 'newcategory'`
+2. **Add a color scheme** in `private_html/css/articles.css`:
+   ```css
+   .article-category.newcategory {
+       background-color: #color;
+       color: #textcolor;
+   }
+   ```
+3. **Add a label** in `private_html/pages/articles.ejs` categoryLabels object:
+   ```javascript
+   const categoryLabels = {
+       // ... existing labels
+       newcategory: 'New Category'
+   };
+   ```
+4. The filter button will appear automatically on the Articles page!
+
 ### 6. Quality Checklist
 
 Before publishing, verify:
