@@ -18,10 +18,19 @@
                 <input type="text" id="articleSearch" class="search-input" placeholder="Search articles...">
                 <div class="search-filters">
                     <button class="filter-btn active" data-category="all">All</button>
-                    <button class="filter-btn" data-category="php">PHP</button>
-                    <button class="filter-btn" data-category="infrastructure">Infrastructure</button>
-                    <button class="filter-btn" data-category="database">Database</button>
-                    <button class="filter-btn" data-category="ai">AI</button>
+                    <% 
+                    // Dynamically generate filter buttons from unique categories
+                    const uniqueCategories = [...new Set(articles.map(article => article.category))].sort();
+                    const categoryLabels = {
+                        php: 'PHP',
+                        infrastructure: 'Infrastructure',
+                        database: 'Database',
+                        ai: 'AI',
+                        typescript: 'TypeScript'
+                    };
+                    uniqueCategories.forEach(category => { %>
+                        <button class="filter-btn" data-category="<%= category %>"><%= categoryLabels[category] || category %></button>
+                    <% }); %>
                 </div>
             </div>
 

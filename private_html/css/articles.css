@@ -618,6 +618,11 @@
     color: #1976d2;
 }
 
+.article-category.typescript {
+    background-color: #e1f5fe;
+    color: #0277bd;
+}
+
 .article-title {
     font-size: 1.25rem;
     font-weight: 600;
