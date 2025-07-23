@@ -1,0 +1,447 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'PHP PER: The Evolution Beyond PSR-12 Coding Standards',
+    articleDescription: 'Understanding PHP Evolving Recommendations (PER), how to enforce them with QA tools, and why PER Coding Style is the future of PHP standards.',
+    articleDate: '2025-07-24',
+    articleCategory: 'php',
+    articleReadingTime: '12',
+    articleContent: `
+<div class="intro">
+    <p class="lead">
+        <a href="https://www.php-fig.org/per/" target="_blank" rel="noopener">PHP Evolving Recommendations (PER)</a> 
+        represent a fundamental shift in how the PHP community approaches standards. Unlike the static 
+        <a href="https://www.php-fig.org/psr/" target="_blank" rel="noopener">PSRs</a>, PERs are designed to evolve 
+        with the language, ensuring standards stay relevant as PHP continues its rapid modernization.
+    </p>
+</div>
+
+<section>
+    <h2>What is PHP PER?</h2>
+    <p>
+        A PHP Evolving Recommendation is a "meta document accompanied by one or more artifacts that are set to 
+        evolve over time with multiple releases." This evolutionary approach addresses a critical limitation of 
+        the PSR system: once accepted, PSRs are essentially frozen in time.
+    </p>
+    
+    <p>
+        Currently, there's only one active PER: the 
+        <a href="https://www.php-fig.org/per/coding-style/" target="_blank" rel="noopener">PER Coding Style 3.0</a>, 
+        which extends, expands, and ultimately replaces 
+        <a href="https://www.php-fig.org/psr/psr-12/" target="_blank" rel="noopener">PSR-12</a>. But the implications 
+        go far beyond just coding style.
+    </p>
+
+    <h3>The Problem with Static Standards</h3>
+    <p>
+        When PSR-12 was accepted in 2019, <a href="https://www.php.net/releases/7.3/" target="_blank" rel="noopener">PHP 7.3</a> 
+        was the latest version. Since then, we've seen:
+    </p>
+    <ul>
+        <li><strong>Union Types</strong> (<a href="https://www.php.net/releases/8.0/" target="_blank" rel="noopener">PHP 8.0</a>)</li>
+        <li><strong>Enumerations</strong> (<a href="https://www.php.net/releases/8.1/" target="_blank" rel="noopener">PHP 8.1</a>)</li>
+        <li><strong>Readonly Properties</strong> (<a href="https://www.php.net/releases/8.1/" target="_blank" rel="noopener">PHP 8.1</a>)</li>
+        <li><strong>Intersection Types</strong> (<a href="https://www.php.net/releases/8.1/" target="_blank" rel="noopener">PHP 8.1</a>)</li>
+        <li><strong>Property Hooks</strong> (upcoming in <a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener">PHP 8.4</a>)</li>
+    </ul>
+    
+    <p>
+        PSR-12 couldn't provide guidance for these features because they didn't exist. Enter PER: a living 
+        standard that can adapt as PHP evolves.
+    </p>
+</section>
+
+<section>
+    <h2>PER vs PSR: The Key Differences</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Aspect</th>
+                <th><a href="https://www.php-fig.org/psr/" target="_blank" rel="noopener">PSR (PHP Standard Recommendation)</a></th>
+                <th><a href="https://www.php-fig.org/per/" target="_blank" rel="noopener">PER (PHP Evolving Recommendation)</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Mutability</strong></td>
+                <td>Immutable once accepted</td>
+                <td>Designed to evolve with multiple releases</td>
+            </tr>
+            <tr>
+                <td><strong>Update Process</strong></td>
+                <td>Requires new PSR to supersede old one</td>
+                <td>Can be updated through defined workflow</td>
+            </tr>
+            <tr>
+                <td><strong>Scope</strong></td>
+                <td>Fixed at time of acceptance</td>
+                <td>Expands to cover new language features</td>
+            </tr>
+            <tr>
+                <td><strong>Leadership</strong></td>
+                <td>Working group disbanded after acceptance</td>
+                <td>Maintains active Editor and Sponsor</td>
+            </tr>
+            <tr>
+                <td><strong>Community Input</strong></td>
+                <td>Limited to initial draft period</td>
+                <td>Ongoing through evolution process</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>What's New in PER Coding Style 3.0?</h2>
+    
+    <h3>1. Modern Type Declarations</h3>
+    <p>
+        PER addresses the explosion of type system features in modern PHP:
+    </p>
+    
+    <pre><code class="language-php">// Union types (PHP 8.0+)
+public function process(int|string $value): void {}
+
+// Intersection types (PHP 8.1+)
+public function handle(Countable&Traversable $items): void {}
+
+// Complex compound types with proper formatting
+function complex(
+    array
+    |(ArrayAccess&Traversable)
+    |(Traversable&Countable) $input
+): ArrayAccess&Traversable {
+    // Implementation
+}
+</code></pre>
+
+    <h3>2. Attributes (Annotations)</h3>
+    <p>
+        <a href="https://www.php.net/manual/en/language.attributes.php" target="_blank" rel="noopener">PHP 8 Attributes</a> 
+        get comprehensive formatting rules:
+    </p>
+    
+    <pre><code class="language-php">// Single attribute
+#[Route('/api/users')]
+class UserController {}
+
+// Multiple attributes
+#[
+    Route('/api/users'),
+    Middleware('auth'),
+    Cache(ttl: 3600)
+]
+class UserController {}
+
+// Inline for simple cases
+class User {
+    #[Required] #[Email] 
+    public string $email;
+}
+</code></pre>
+
+    <h3>3. Enumerations</h3>
+    <p>
+        Clear guidelines for <a href="https://www.php.net/manual/en/language.enumerations.php" target="_blank" rel="noopener">PHP 8.1 enums</a>:
+    </p>
+    
+    <pre><code class="language-php">enum Status: string
+{
+    case Draft = 'draft';
+    case Published = 'published';
+    case Archived = 'archived';
+    
+    public function isActive(): bool
+    {
+        return $this === self::Published;
+    }
+}
+</code></pre>
+
+    <h3>4. Property Hooks (PHP 8.4+)</h3>
+    <p>
+        Forward-looking support for upcoming features:
+    </p>
+    
+    <pre><code class="language-php">class User
+{
+    public string $name {
+        get => $this->firstName . ' ' . $this->lastName;
+        set => [$this->firstName, $this->lastName] = explode(' ', $value, 2);
+    }
+}
+</code></pre>
+
+    <h3>5. Trailing Commas</h3>
+    <p>
+        Mandatory trailing commas in multi-line contexts:
+    </p>
+    
+    <pre><code class="language-php">// Required in multi-line arrays
+$config = [
+    'host' => 'localhost',
+    'port' => 3306,
+    'database' => 'app', // ← Required trailing comma
+];
+
+// Required in multi-line function calls
+$result = processSomething(
+    $firstArgument,
+    $secondArgument,
+    $thirdArgument, // ← Required trailing comma
+);
+</code></pre>
+</section>
+
+<section>
+    <h2>Enforcing PER with QA Tools</h2>
+    
+    <h3>PHP-CS-Fixer: The Gold Standard</h3>
+    <p>
+        <a href="https://github.com/PHP-CS-Fixer/PHP-CS-Fixer" target="_blank" rel="noopener">PHP-CS-Fixer</a> 
+        already includes PER support. The 
+        <a href="https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/blob/master/doc/ruleSets/Symfony.rst" target="_blank" rel="noopener">Symfony ruleset</a> 
+        incorporates PER Coding Style by default:
+    </p>
+    
+    <pre><code class="language-php">// .php-cs-fixer.php
+&lt;?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->in(__DIR__)
+    ->exclude('vendor');
+
+return (new PhpCsFixer\Config())
+    ->setRules([
+        '@Symfony' => true,  // Includes @PER-CS2.0
+        '@PER-CS' => true,   // Explicit PER compliance
+        'declare_strict_types' => true,
+        'void_return' => true,
+    ])
+    ->setFinder($finder)
+    ->setRiskyAllowed(true);
+</code></pre>
+
+    <p>
+        Run with:
+    </p>
+    <pre><code class="language-bash">vendor/bin/php-cs-fixer fix --dry-run --diff  # Check changes
+vendor/bin/php-cs-fixer fix                     # Apply fixes
+</code></pre>
+
+    <h3>PHPStan Integration</h3>
+    <p>
+        While <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> focuses on static analysis, 
+        you can enforce some PER conventions:
+    </p>
+    
+    <pre><code class="language-yaml"># phpstan.neon
+parameters:
+    level: 9
+    strictRules:
+        strictCalls: true
+        strictProperties: true
+    
+    # Enforce modern PHP features
+    phpVersion: 80300  # Minimum PHP 8.3
+    
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+</code></pre>
+
+    <h3>Composer Scripts</h3>
+    <p>
+        Integrate into your workflow:
+    </p>
+    
+    <pre><code class="language-json">{
+    "scripts": {
+        "check-style": "php-cs-fixer fix --dry-run --diff",
+        "fix-style": "php-cs-fixer fix",
+        "analyse": "phpstan analyse",
+        "qa": [
+            "@check-style",
+            "@analyse"
+        ]
+    }
+}
+</code></pre>
+
+    <h3>CI/CD Integration</h3>
+    <p>
+        <a href="https://docs.github.com/en/actions" target="_blank" rel="noopener">GitHub Actions</a> example:
+    </p>
+    
+    <pre><code class="language-yaml">name: Code Quality
+
+on: [push, pull_request]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: php-cs-fixer, phpstan
+      
+      - name: Check PER Compliance
+        run: php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php
+      
+      - name: Static Analysis
+        run: phpstan analyse
+</code></pre>
+</section>
+
+<section>
+    <h2>A Brief History of PHP Standards</h2>
+    
+    <h3>The PSR Era (2009-Present)</h3>
+    <ul>
+        <li><strong>2009</strong>: <a href="https://www.php-fig.org/" target="_blank" rel="noopener">PHP-FIG</a> formed</li>
+        <li><strong>2010</strong>: <a href="https://www.php-fig.org/psr/psr-0/" target="_blank" rel="noopener">PSR-0</a> (Autoloading) - The first PSR</li>
+        <li><strong>2012</strong>: <a href="https://www.php-fig.org/psr/psr-1/" target="_blank" rel="noopener">PSR-1</a> & <a href="https://www.php-fig.org/psr/psr-2/" target="_blank" rel="noopener">PSR-2</a> (Basic & Coding Style)</li>
+        <li><strong>2013</strong>: <a href="https://www.php-fig.org/psr/psr-4/" target="_blank" rel="noopener">PSR-4</a> (Improved Autoloading)</li>
+        <li><strong>2019</strong>: <a href="https://www.php-fig.org/psr/psr-12/" target="_blank" rel="noopener">PSR-12</a> (Extended Coding Style)</li>
+    </ul>
+
+    <h3>The Problem Emerges</h3>
+    <p>
+        As PHP accelerated its release cycle with <a href="https://wiki.php.net/rfc/releaseprocess" target="_blank" rel="noopener">annual major versions</a>, 
+        the static nature of PSRs became problematic. PSR-12 couldn't be updated for new syntax, leading to:
+    </p>
+    <ul>
+        <li>Fragmented community standards</li>
+        <li>Tool-specific interpretations</li>
+        <li>Inconsistent codebases</li>
+    </ul>
+
+    <h3>Enter PER (2022-2023)</h3>
+    <p>
+        PHP-FIG introduced the <a href="https://www.php-fig.org/bylaws/per-workflow/" target="_blank" rel="noopener">PER Workflow Bylaw</a>, 
+        creating a new category of living standards. PER Coding Style 2.0 was released in April 2023, 
+        followed by 3.0 in July 2023. Key innovations:
+    </p>
+    <ul>
+        <li><strong>Active Maintainership</strong>: Each PER has an Editor and Sponsor</li>
+        <li><strong>Version Control</strong>: PERs use semantic versioning</li>
+        <li><strong>Community Evolution</strong>: Regular updates based on language changes</li>
+    </ul>
+</section>
+
+<section>
+    <h2>The Future of PHP Standards</h2>
+    
+    <h3>Expected PER Evolution</h3>
+    <p>
+        As PHP continues to evolve, PER Coding Style will likely address:
+    </p>
+    <ul>
+        <li><strong>Pattern Matching</strong>: If <a href="https://wiki.php.net/rfc/pattern-matching" target="_blank" rel="noopener">PHP adds pattern matching</a></li>
+        <li><strong>Generics</strong>: Should <a href="https://github.com/PHPGenerics/php-generics-rfc" target="_blank" rel="noopener">generics finally arrive</a></li>
+        <li><strong>Async/Await</strong>: For potential <a href="https://github.com/amphp/amp" target="_blank" rel="noopener">async PHP features</a></li>
+        <li><strong>Package Visibility</strong>: New access modifiers</li>
+    </ul>
+
+    <h3>Potential New PERs</h3>
+    <p>
+        The community is discussing PERs for:
+    </p>
+    <ul>
+        <li><strong>Documentation Standards</strong>: Evolving <a href="https://docs.phpdoc.org/3.0/" target="_blank" rel="noopener">PHPDoc</a> alternatives</li>
+        <li><strong>Testing Conventions</strong>: Modern <a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a>/<a href="https://pestphp.com/" target="_blank" rel="noopener">Pest</a> practices</li>
+        <li><strong>API Design</strong>: RESTful and <a href="https://graphql.org/" target="_blank" rel="noopener">GraphQL</a> standards</li>
+        <li><strong>Security Practices</strong>: Evolving security recommendations</li>
+    </ul>
+
+    <h3>Tool Ecosystem Alignment</h3>
+    <p>
+        Major tools are aligning with PER:
+    </p>
+    <ul>
+        <li><a href="https://github.com/squizlabs/PHP_CodeSniffer" target="_blank" rel="noopener">PHP_CodeSniffer</a>: Adding PER rulesets</li>
+        <li><a href="https://psalm.dev/" target="_blank" rel="noopener">Psalm</a>: Considering PER-aware analysis</li>
+        <li>IDEs: <a href="https://www.jetbrains.com/phpstorm/" target="_blank" rel="noopener">PhpStorm</a> and <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VS Code</a> updating formatters</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Practical Migration Guide</h2>
+    
+    <h3>From PSR-12 to PER</h3>
+    <p>
+        Migrating is straightforward with proper tooling:
+    </p>
+    
+    <pre><code class="language-bash"># 1. Install/update PHP-CS-Fixer
+composer require --dev friendsofphp/php-cs-fixer
+
+# 2. Create configuration
+cat > .php-cs-fixer.php << 'EOF'
+&lt;?php
+return (new PhpCsFixer\\Config())
+    ->setRules([
+        '@PER-CS' => true,
+        // Your additional rules
+    ])
+    ->setFinder(
+        PhpCsFixer\\Finder::create()
+            ->in(__DIR__)
+            ->exclude('vendor')
+    );
+EOF
+
+# 3. Check what will change
+vendor/bin/php-cs-fixer fix --dry-run --diff
+
+# 4. Apply changes
+vendor/bin/php-cs-fixer fix
+
+# 5. Commit
+git add .
+git commit -m "Migrate from PSR-12 to PER Coding Style"
+</code></pre>
+
+    <h3>Common Migration Issues</h3>
+    <ul>
+        <li><strong>Trailing commas</strong>: Now required in multi-line contexts</li>
+        <li><strong>Type declarations</strong>: May need reformatting</li>
+        <li><strong>Attributes</strong>: New formatting rules apply</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Conclusion</h2>
+    <p>
+        PHP Evolving Recommendations represent a maturation of the PHP community's approach to standards. 
+        By acknowledging that languages evolve and standards must evolve with them, PER provides a 
+        sustainable path forward.
+    </p>
+    
+    <p>
+        For teams already using <a href="https://github.com/PHP-CS-Fixer/PHP-CS-Fixer" target="_blank" rel="noopener">PHP-CS-Fixer</a> 
+        with <a href="https://symfony.com/" target="_blank" rel="noopener">Symfony</a> rules, you're likely 
+        already PER-compliant. For others, the migration is painless with modern tooling.
+    </p>
+    
+    <p>
+        The key insight: PER isn't just about coding style—it's about creating living standards that 
+        grow with PHP. As PHP continues its renaissance with performance improvements, type safety, and 
+        modern features, PER ensures our standards keep pace.
+    </p>
+</section>
+
+<section>
+    <h2>Resources</h2>
+    <ul>
+        <li><a href="https://www.php-fig.org/per/coding-style/" target="_blank" rel="noopener">PER Coding Style 3.0 Specification</a></li>
+        <li><a href="https://github.com/PHP-CS-Fixer/PHP-CS-Fixer" target="_blank" rel="noopener">PHP-CS-Fixer Documentation</a></li>
+        <li><a href="https://www.php-fig.org/bylaws/per-workflow/" target="_blank" rel="noopener">PER Workflow Bylaw</a></li>
+        <li><a href="https://github.com/php-fig/per-coding-style" target="_blank" rel="noopener">PER Coding Style GitHub Repository</a></li>
+        <li><a href="https://blog.jetbrains.com/phpstorm/2024/01/per-coding-style/" target="_blank" rel="noopener">PhpStorm PER Support</a></li>
+    </ul>
+</section>
+    `
+}) %>
