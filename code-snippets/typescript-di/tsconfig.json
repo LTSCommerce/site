@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "experimentalDecorators": true,        // Required for decorators
+    "emitDecoratorMetadata": true,         // Required for reflect-metadata
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["reflect-metadata"],         // Include reflect-metadata types
+    "moduleResolution": "node"
+  }
+}

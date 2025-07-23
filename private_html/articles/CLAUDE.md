@@ -4,6 +4,34 @@
 
 This guide provides instructions for creating high-quality technical articles for the LTS Commerce site. All articles should demonstrate expertise, provide practical value, and be thoroughly researched with proper citations.
 
+## Critical Requirement: Real-Time Research
+
+**⚠️ WARNING**: Training data is ALWAYS outdated. You MUST research current information for every article.
+
+### Why This Matters
+
+1. **Technology moves fast** - What was true 6 months ago may be obsolete
+2. **Version confusion** - Readers need accurate, current version information
+3. **Security implications** - Outdated practices can be dangerous
+4. **Professional credibility** - Wrong version info destroys trust
+
+### Research Requirements
+
+Before writing ANY technical content:
+1. **Check current version** - Visit npm, GitHub releases, official docs
+2. **Verify features** - Confirm features exist in the current version
+3. **Read recent updates** - Check blog posts from the last 3-6 months
+4. **Examine breaking changes** - Review migration guides and changelogs
+5. **Test assumptions** - What you "know" may be wrong
+
+### Research Tools
+
+Use these tools for EVERY article:
+- `WebSearch` - Find current documentation and recent articles
+- `WebFetch` - Read official docs, GitHub pages, and release notes
+- Cross-reference multiple sources
+- Check publication dates on all sources
+
 ## Article Creation Process
 
 ### 1. Create Article Template
@@ -55,10 +83,42 @@ git push origin main # Triggers auto-deployment
 
 **MANDATORY**: All technical articles must include:
 
+- **Real-time research** - NEVER rely on training data. Always research current versions, features, and best practices
+- **Bleeding-edge accuracy** - Check GitHub releases, official docs, and recent blog posts for the latest information
+- **Version verification** - Confirm exact version numbers and release dates through official sources
 - **Extensive hyperlinks** to official documentation, tools, and resources mentioned
 - **Primary sources** - Link directly to official docs, not blog posts about them
 - **Verification** - All claims must be verifiable through linked sources
 - **Current information** - Check that linked resources are up-to-date
+
+**CRITICAL**: Training data is often months or years out of date. For example:
+- Framework versions change frequently (e.g., oclif v4 released June 2024)
+- Best practices evolve rapidly
+- Tool features are added monthly
+- Security recommendations change
+
+Always use WebSearch and WebFetch to verify:
+- Current version numbers
+- Latest features and updates
+- Recent breaking changes
+- Current best practices
+- Active community discussions
+
+### Research Process Example
+
+**BAD** (using training knowledge):
+```
+"The latest version includes new features like..."
+"This framework recently added support for..."
+"Version 3 is the current stable release..."
+```
+
+**GOOD** (after research):
+```
+"Version X.Y.Z (released [exact date from GitHub]) includes..."
+"According to npm, the current version published [days] ago is..."
+"The official documentation confirms these features in v[number]..."
+```
 
 Example of well-linked content:
 ```html
@@ -134,6 +194,10 @@ Available categories and their focus:
 
 Before publishing, verify:
 
+- [ ] **Current research completed** - All version numbers and features verified through official sources
+- [ ] **No training data used** - Everything fact-checked with real-time research
+- [ ] **Dates are current** - No references to "recently" or "latest" without specific dates
+- [ ] **Version numbers verified** - Exact versions confirmed via npm, GitHub, or official docs
 - [ ] All external tools/libraries are linked
 - [ ] Code snippets are stored separately and injected
 - [ ] Article provides practical, actionable value
@@ -202,6 +266,30 @@ Before publishing, verify:
 5. **Absolute statements** - Technology choices are rarely black and white
 6. **SEO keyword stuffing** - Write for humans first
 7. **Plagiarism** - All content must be original
+
+## Real-World Example: The Importance of Research
+
+### Example: Writing About Any Technical Tool
+
+**❌ WRONG (Using Training Data)**:
+```
+"[Framework] recently released version 3 with [feature]. The latest update 
+includes new features like [feature that might be outdated]..."
+```
+
+**✅ CORRECT (After Research)**:
+```
+"[Framework] version [X.Y.Z] (released [exact date]) is the current stable release. 
+Version [X], released in [month year], brought [specific feature] with [details]. 
+The latest updates include [feature] (v[X.Y.Z]) and [feature] (v[X.Y.Z])..."
+```
+
+The difference:
+- Training data had outdated version info
+- Might miss entire major version releases
+- Vague timeline ("recent" vs specific dates)
+- Missing current features and updates
+- No verifiable sources or links
 
 ## Final Notes
 
