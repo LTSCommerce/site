@@ -57,12 +57,14 @@ function getAssetPath(originalPath) {
 // Load global data
 let siteData = {};
 let navigationData = {};
+let categoriesData = {};
 let articlesData = [];
 let viteManifest = {};
 
 try {
   const siteDataPath = path.join(projectRoot, 'private_html/data/site.json');
   const navDataPath = path.join(projectRoot, 'private_html/data/navigation.json');
+  const categoriesPath = path.join(projectRoot, 'private_html/data/categories.json');
   const articlesPath = path.join(projectRoot, 'private_html/js/articles.js');
   const manifestPath = path.join(projectRoot, 'public_html/.vite/manifest.json');
 
@@ -72,6 +74,10 @@ try {
   
   if (fs.existsSync(navDataPath)) {
     navigationData = JSON.parse(fs.readFileSync(navDataPath, 'utf8'));
+  }
+  
+  if (fs.existsSync(categoriesPath)) {
+    categoriesData = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
   }
 
   // Load articles data from existing articles.js if available
@@ -89,6 +95,7 @@ try {
 
   console.log('✓ Loaded site data');
   console.log('✓ Loaded navigation data');
+  console.log('✓ Loaded categories data');
   console.log(`✓ Loaded ${articlesData.length} articles`);
   console.log('✓ Loaded Vite manifest');
 } catch (error) {
@@ -133,6 +140,7 @@ const helpers = {
 const templateData = {
   site: siteData,
   navigation: navigationData,
+  categories: categoriesData,
   articles: articlesData,
   ...helpers
 };

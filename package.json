@@ -5,8 +5,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node scripts/auto-register-articles.js && node scripts/process-ejs.js && vite",
-    "build": "node scripts/auto-register-articles.js && vite build && node scripts/process-ejs.js",
+    "dev": "node scripts/auto-register-articles.js && node scripts/generate-category-styles.js && node scripts/process-ejs.js && vite",
+    "build": "node scripts/auto-register-articles.js && node scripts/generate-category-styles.js && vite build && node scripts/process-ejs.js",
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

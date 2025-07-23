@@ -104,6 +104,39 @@ const articles = [
   }
 ];
 
+const categories = {
+  "php": {
+    "label": "PHP",
+    "description": "PHP development, frameworks, best practices",
+    "backgroundColor": "#f3e5f5",
+    "textColor": "#7b1fa2"
+  },
+  "infrastructure": {
+    "label": "Infrastructure",
+    "description": "DevOps, hosting, deployment, automation",
+    "backgroundColor": "#e8f5e9",
+    "textColor": "#388e3c"
+  },
+  "database": {
+    "label": "Database",
+    "description": "MySQL, PostgreSQL, optimization, architecture",
+    "backgroundColor": "#e3f2fd",
+    "textColor": "#1976d2"
+  },
+  "ai": {
+    "label": "AI",
+    "description": "AI tools, ML integration, automation",
+    "backgroundColor": "#fff3e0",
+    "textColor": "#f57c00"
+  },
+  "typescript": {
+    "label": "TypeScript",
+    "description": "TypeScript, Node.js, modern JavaScript",
+    "backgroundColor": "#e1f5fe",
+    "textColor": "#0277bd"
+  }
+};
+
 class ArticleManager {
   constructor() {
     this.articles = articles;
@@ -190,10 +223,12 @@ class ArticleManager {
       day: 'numeric'
     });
     
+    const categoryLabel = categories[article.category]?.label || article.category;
+    
     return `
       <article class="article-card" style="opacity: 0; transform: translateY(20px);">
         <div class="article-meta">
-          <span class="article-category ${article.category}">${article.category}</span>
+          <span class="article-category ${article.category}">${categoryLabel}</span>
           <time>${date}</time>
         </div>
         <a href="/articles/${article.slug}.html" class="article-title">${article.title}</a>
