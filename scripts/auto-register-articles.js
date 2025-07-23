@@ -22,6 +22,13 @@ import { JSDOM } from 'jsdom';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..');
 
+// Load valid categories
+let validCategories = {};
+const categoriesPath = path.join(projectRoot, 'private_html/data/categories.json');
+if (fs.existsSync(categoriesPath)) {
+  validCategories = JSON.parse(fs.readFileSync(categoriesPath, 'utf-8'));
+}
+
 /**
  * Extract metadata from EJS file
  */
@@ -50,6 +57,13 @@ function extractArticleMetadata(ejsPath, fileName) {
   const dateISO = dateMatch ? dateMatch[1] : '';
   const category = categoryMatch ? categoryMatch[1] : 'php';
   const readingTime = readingTimeMatch ? readingTimeMatch[1] : '5';
+  
+  // Validate category
+  if (Object.keys(validCategories).length > 0 && !validCategories[category]) {
+    console.error(`❌ Invalid category "${category}" in ${fileName}`);
+    console.error(`   Valid categories are: ${Object.keys(validCategories).join(', ')}`);
+    process.exit(1);
+  }
   
   // Generate slug from filename
   const slug = fileName.replace('.ejs', '');
@@ -119,6 +133,13 @@ function generateArticlesJS(articles) {
     slug: article.slug
   }));
   
+  // Load categories data
+  let categoriesData = {};
+  const categoriesPath = path.join(projectRoot, 'private_html/data/categories.json');
+  if (fs.existsSync(categoriesPath)) {
+    categoriesData = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
+  }
+
   return `// Import CSS for Vite processing
 import '../css/articles.css';
 
@@ -127,6 +148,8 @@ import '../css/articles.css';
 // To modify articles, edit the HTML files in private_html/articles/
 
 const articles = ${JSON.stringify(articlesData, null, 2)};
+
+const categories = ${JSON.stringify(categoriesData, null, 2)};
 
 class ArticleManager {
   constructor() {
@@ -214,10 +237,12 @@ class ArticleManager {
       day: 'numeric'
     });
     
+    const categoryLabel = categories[article.category]?.label || article.category;
+    
     return \`
       <article class="article-card" style="opacity: 0; transform: translateY(20px);">
         <div class="article-meta">
-          <span class="article-category \${article.category}">\${article.category}</span>
+          <span class="article-category \${article.category}">\${categoryLabel}</span>
           <time>\${date}</time>
         </div>
         <a href="/articles/\${article.slug}.html" class="article-title">\${article.title}</a>

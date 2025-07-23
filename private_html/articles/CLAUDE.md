@@ -192,22 +192,25 @@ Available categories and their focus:
 
 #### Adding a New Category
 
-1. **Use the category in your article**: Just set `articleCategory: 'newcategory'`
-2. **Add a color scheme** in `private_html/css/articles.css`:
-   ```css
-   .article-category.newcategory {
-       background-color: #color;
-       color: #textcolor;
+1. **Add category to `private_html/data/categories.json`**:
+   ```json
+   "newcategory": {
+     "label": "New Category",
+     "description": "Description of what this category covers",
+     "backgroundColor": "#hexcolor",
+     "textColor": "#hexcolor"
    }
    ```
-3. **Add a label** in `private_html/pages/articles.ejs` categoryLabels object:
-   ```javascript
-   const categoryLabels = {
-       // ... existing labels
-       newcategory: 'New Category'
-   };
-   ```
-4. The filter button will appear automatically on the Articles page!
+
+2. **Use the category in your article**: `articleCategory: 'newcategory'`
+
+3. **Build the site** - Category styles are auto-generated and filters appear automatically!
+
+The system will:
+- Validate categories during article registration
+- Generate CSS styles automatically
+- Create filter buttons dynamically
+- Display proper labels everywhere
 
 ### 6. Quality Checklist
 
