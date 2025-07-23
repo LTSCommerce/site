@@ -14,7 +14,7 @@
                 <span class="separator">•</span>
                 <span class="reading-time">${articleReadingTime || 5} min read</span>
                 <span class="separator">•</span>
-                <span class="article-category ${articleCategory || 'general'}">${(articleCategory || 'general').toUpperCase()}</span>
+                <span class="article-category ${articleCategory || 'general'}">${categories[articleCategory]?.label || (articleCategory || 'general')}</span>
             </div>
         </header>
 

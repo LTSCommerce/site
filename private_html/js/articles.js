@@ -8,7 +8,7 @@ import '../css/articles.css';
 const articles = [
   {
     "id": 233,
-    "title": "TypeScript Dependency Injection: A PHP Developer\\",
+    "title": "TypeScript Dependency Injection: A PHP Developer's Perspective",
     "excerpt": "Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardization.",
     "category": "typescript",
     "date": "2025-07-23",
@@ -155,10 +155,17 @@ class ArticleManager {
   setupEventListeners() {
     const searchInput = document.getElementById('articleSearch');
     if (searchInput) {
-      searchInput.addEventListener('input', window.appUtils.debounce(e => {
+      const handler = e => {
         this.searchTerm = e.target.value.toLowerCase();
         this.filterArticles();
-      }, 300));
+      };
+      
+      // Use debounce if available, otherwise use direct handler
+      if (window.appUtils && window.appUtils.debounce) {
+        searchInput.addEventListener('input', window.appUtils.debounce(handler, 300));
+      } else {
+        searchInput.addEventListener('input', handler);
+      }
     }
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -250,11 +257,19 @@ class ArticleManager {
 
 // Initialize when DOM is ready
 (function() {
+  let retryCount = 0;
+  const maxRetries = 100; // 5 seconds max wait
+  
   function init() {
     if (typeof window.appUtils !== 'undefined') {
       new ArticleManager();
-    } else {
+    } else if (retryCount < maxRetries) {
+      retryCount++;
       setTimeout(init, 50);
+    } else {
+      console.error('Failed to initialize ArticleManager: appUtils not found');
+      // Initialize without debounce as fallback
+      new ArticleManager();
     }
   }
 

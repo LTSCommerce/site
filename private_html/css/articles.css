@@ -582,7 +582,7 @@
     background-color: var(--color-bg-secondary);
     border-radius: 4px;
     font-size: 0.75rem;
-    text-transform: uppercase;
+    /* text-transform: uppercase; - Removed to show proper case labels */
     font-weight: 500;
 }
 
