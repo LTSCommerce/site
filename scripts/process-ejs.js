@@ -20,8 +20,10 @@ function injectCodeSnippets(html) {
     
     try {
       // Read the snippet file
-      const snippetContent = fs.readFileSync(fullPath, 'utf8');
-      // Return the snippet content as-is to preserve formatting
+      let snippetContent = fs.readFileSync(fullPath, 'utf8');
+      // Ensure snippet doesn't end with a newline (we'll add it in the template)
+      snippetContent = snippetContent.trimEnd();
+      // Return the snippet content
       return snippetContent;
     } catch (error) {
       console.warn(`⚠️  Could not find snippet: ${snippetPath}`);

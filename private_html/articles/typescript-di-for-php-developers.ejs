@@ -26,7 +26,8 @@
         implement an interface or extend a class to be considered compatible:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:typescript-di/nominal-typing.php}}</code></pre>
+    <pre><code class="language-php">{{SNIPPET:typescript-di/nominal-typing.php}}
+</code></pre>
 
     <h3>TypeScript: Structural Typing</h3>
     <p>
@@ -34,7 +35,8 @@
         and quacks like a duck, it's a duck:
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/structural-typing.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/structural-typing.ts}}
+</code></pre>
 
     <p>
         This fundamental difference cascades through everything, including how dependency injection works.
@@ -47,14 +49,16 @@
         In PHP, you might use <code>final</code> to prevent inheritance:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:typescript-di/final-class.php}}</code></pre>
+    <pre><code class="language-php">{{SNIPPET:typescript-di/final-class.php}}
+</code></pre>
 
     <p>
         TypeScript has <strong>no concept of final classes</strong>. This design choice, combined with structural typing, 
         means <em>everything</em> can be mocked or stubbed for testing:
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/mocking-example.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/mocking-example.ts}}
+</code></pre>
 
     <p>
         This is both liberating and dangerous. While it makes testing easier, it also means you can't enforce 
@@ -79,7 +83,8 @@
         <li>More ceremonial, closer to traditional DI containers</li>
     </ul>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/inversify-example.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/inversify-example.ts}}
+</code></pre>
 
     <h4><a href="https://github.com/microsoft/tsyringe" target="_blank" rel="noopener">TSyringe</a> (Microsoft)</h4>
     <ul>
@@ -89,7 +94,8 @@
         <li>Less configuration than InversifyJS</li>
     </ul>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/tsyringe-example.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/tsyringe-example.ts}}
+</code></pre>
 
     <h4>Manual DI / Pure Functions</h4>
     <p>
@@ -97,7 +103,8 @@
         or functional approaches:
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/manual-di.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/manual-di.ts}}
+</code></pre>
 </section>
 
 <section>
@@ -106,14 +113,16 @@
         In PHP, interfaces exist at runtime. You can type-hint against them:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:typescript-di/php-interface.php}}</code></pre>
+    <pre><code class="language-php">{{SNIPPET:typescript-di/php-interface.php}}
+</code></pre>
 
     <p>
         TypeScript interfaces <strong>don't exist at runtime</strong>—they're compile-time only. This creates 
         challenges for DI containers:
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/interface-problem.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/interface-problem.ts}}
+</code></pre>
 
     <p>
         This is why TypeScript DI libraries rely heavily on:
@@ -132,10 +141,12 @@
     </p>
 
     <h3>tsconfig.json Requirements</h3>
-    <pre><code class="language-json">{{SNIPPET:typescript-di/tsconfig.json}}</code></pre>
+    <pre><code class="language-json">{{SNIPPET:typescript-di/tsconfig.json}}
+</code></pre>
 
     <h3>Polyfill Setup</h3>
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/polyfill-setup.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/polyfill-setup.ts}}
+</code></pre>
 
     <p>
         Compare this to PHP where DI typically "just works" with minimal configuration.
@@ -150,14 +161,16 @@
         TypeScript's structural typing makes creating test doubles trivial:
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/testing-good.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/testing-good.ts}}
+</code></pre>
 
     <h3>The Bad: No Compile-Time Safety</h3>
     <p>
         Without final classes or sealed types, you can't prevent certain anti-patterns:
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/testing-bad.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/testing-bad.ts}}
+</code></pre>
 </section>
 
 <section>
@@ -198,21 +211,24 @@
         Don't immediately reach for a DI container. TypeScript's module system and manual DI might be sufficient:
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/start-simple.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/start-simple.ts}}
+</code></pre>
 
     <h4>2. Embrace Structural Typing</h4>
     <p>
         Stop thinking in terms of "implements" and start thinking in terms of "shape":
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/embrace-structural.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/embrace-structural.ts}}
+</code></pre>
 
     <h4>3. Use Injection Tokens Wisely</h4>
     <p>
         When you do use a DI container, prefer symbols over strings:
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-di/injection-tokens.ts}}</code></pre>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/injection-tokens.ts}}
+</code></pre>
 
     <h4>4. Don't Over-Engineer</h4>
     <p>
