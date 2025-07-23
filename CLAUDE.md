@@ -253,9 +253,34 @@ Global data available in all templates:
    ├── Load Vite manifest for asset paths
    ├── Process page templates (private_html/pages/*.ejs)
    ├── Process article templates (private_html/articles/*.ejs)
+   ├── Inject code snippets with HTML escaping
    ├── Apply template inheritance and data injection
    └── Generate static HTML (public_html/*.html)
 ```
+
+### Code Snippet Best Practices
+
+**CRITICAL**: When embedding code snippets:
+
+1. **Always put closing tags on new line**:
+   ```html
+   <!-- CORRECT -->
+   <pre><code class="language-php">{{SNIPPET:example.php}}
+   </code></pre>
+   
+   <!-- WRONG - will break if last line is a comment -->
+   <pre><code class="language-php">{{SNIPPET:example.php}}</code></pre>
+   ```
+
+2. **HTML entities are auto-escaped** during build:
+   - PHP tags `<?php` become `&lt;?php`
+   - Prevents browser interpretation issues
+   - All special characters properly escaped
+
+3. **Store snippets separately** in `code-snippets/` directory:
+   - Preserves formatting and indentation
+   - Easier to maintain and update
+   - Enables syntax checking in editors
 
 ## Configuration Files
 
