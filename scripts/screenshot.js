@@ -5,7 +5,7 @@ const config = {
   url: 'https://ltscommerce.dev/articles/ai-enhanced-php-development.html',
   viewport: { width: 1920, height: 1080 },
   outputPath: 'var/screenshot.png',
-  clip: { x: 0, y: 0, width: 1920, height: 600 }, // null for full page
+  clip: null, // null for full page
   waitForSelector: null, // Optional selector to wait for
   delay: 0 // Additional delay in ms after page load
 };
