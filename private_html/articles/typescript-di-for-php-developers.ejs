@@ -1,0 +1,293 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'TypeScript Dependency Injection: A PHP Developer\'s Perspective',
+    articleDescription: 'Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardization.',
+    articleDate: '2025-07-23',
+    articleCategory: 'typescript',
+    articleReadingTime: '15',
+    articleContent: `
+<div class="intro">
+    <p class="lead">
+        As a PHP developer, you're likely accustomed to mature DI containers like 
+        <a href="https://symfony.com/doc/current/service_container.html" target="_blank" rel="noopener">Symfony's Service Container</a> or 
+        <a href="https://php-di.org/" target="_blank" rel="noopener">PHP-DI</a>. TypeScript's approach to dependency injection 
+        is fundamentally different—not just in implementation, but in philosophy. Let's explore why.
+    </p>
+</div>
+
+<section>
+    <h2>The Fundamental Difference: Type Systems</h2>
+    <p>
+        Before diving into DI specifics, we need to understand the core difference between PHP and TypeScript's type systems:
+    </p>
+    
+    <h3>PHP: Nominal Typing</h3>
+    <p>
+        PHP uses <strong>nominal typing</strong>—types are based on explicit declarations. A class must explicitly 
+        implement an interface or extend a class to be considered compatible:
+    </p>
+    
+    <pre><code class="language-php">{{SNIPPET:typescript-di/nominal-typing.php}}</code></pre>
+
+    <h3>TypeScript: Structural Typing</h3>
+    <p>
+        TypeScript uses <strong>structural typing</strong> (also called "duck typing")—if it walks like a duck 
+        and quacks like a duck, it's a duck:
+    </p>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/structural-typing.ts}}</code></pre>
+
+    <p>
+        This fundamental difference cascades through everything, including how dependency injection works.
+    </p>
+</section>
+
+<section>
+    <h2>No Final Classes = Everything is Mockable</h2>
+    <p>
+        In PHP, you might use <code>final</code> to prevent inheritance:
+    </p>
+    
+    <pre><code class="language-php">{{SNIPPET:typescript-di/final-class.php}}</code></pre>
+
+    <p>
+        TypeScript has <strong>no concept of final classes</strong>. This design choice, combined with structural typing, 
+        means <em>everything</em> can be mocked or stubbed for testing:
+    </p>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/mocking-example.ts}}</code></pre>
+
+    <p>
+        This is both liberating and dangerous. While it makes testing easier, it also means you can't enforce 
+        certain architectural boundaries through the type system alone.
+    </p>
+</section>
+
+<section>
+    <h2>The Fragmented Landscape: No Standard DI</h2>
+    <p>
+        PHP has converged around PSR-11 Container Interface, with most frameworks implementing compatible containers. 
+        TypeScript? It's the Wild West.
+    </p>
+
+    <h3>Popular TypeScript DI Libraries (as of July 2025)</h3>
+    
+    <h4><a href="https://github.com/inversify/InversifyJS" target="_blank" rel="noopener">InversifyJS</a></h4>
+    <ul>
+        <li>The most mature option, inspired by .NET's Ninject</li>
+        <li>Heavy use of decorators and metadata</li>
+        <li>Requires <code>reflect-metadata</code> polyfill</li>
+        <li>More ceremonial, closer to traditional DI containers</li>
+    </ul>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/inversify-example.ts}}</code></pre>
+
+    <h4><a href="https://github.com/microsoft/tsyringe" target="_blank" rel="noopener">TSyringe</a> (Microsoft)</h4>
+    <ul>
+        <li>Lightweight, minimalist approach</li>
+        <li>Also decorator-based with <code>reflect-metadata</code></li>
+        <li>Supports circular dependencies</li>
+        <li>Less configuration than InversifyJS</li>
+    </ul>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/tsyringe-example.ts}}</code></pre>
+
+    <h4>Manual DI / Pure Functions</h4>
+    <p>
+        Many TypeScript developers skip DI containers entirely, preferring manual dependency injection 
+        or functional approaches:
+    </p>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/manual-di.ts}}</code></pre>
+</section>
+
+<section>
+    <h2>The Interface Problem</h2>
+    <p>
+        In PHP, interfaces exist at runtime. You can type-hint against them:
+    </p>
+    
+    <pre><code class="language-php">{{SNIPPET:typescript-di/php-interface.php}}</code></pre>
+
+    <p>
+        TypeScript interfaces <strong>don't exist at runtime</strong>—they're compile-time only. This creates 
+        challenges for DI containers:
+    </p>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/interface-problem.ts}}</code></pre>
+
+    <p>
+        This is why TypeScript DI libraries rely heavily on:
+    </p>
+    <ul>
+        <li><strong>Decorators</strong> - To add metadata at runtime</li>
+        <li><strong>Injection tokens</strong> - Symbols or strings to identify dependencies</li>
+        <li><strong>reflect-metadata</strong> - To preserve type information</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Configuration Complexity</h2>
+    <p>
+        Setting up DI in TypeScript requires more boilerplate than PHP. Here's what you need:
+    </p>
+
+    <h3>tsconfig.json Requirements</h3>
+    <pre><code class="language-json">{{SNIPPET:typescript-di/tsconfig.json}}</code></pre>
+
+    <h3>Polyfill Setup</h3>
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/polyfill-setup.ts}}</code></pre>
+
+    <p>
+        Compare this to PHP where DI typically "just works" with minimal configuration.
+    </p>
+</section>
+
+<section>
+    <h2>Testing: The Good and The Bad</h2>
+    
+    <h3>The Good: Ultimate Flexibility</h3>
+    <p>
+        TypeScript's structural typing makes creating test doubles trivial:
+    </p>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/testing-good.ts}}</code></pre>
+
+    <h3>The Bad: No Compile-Time Safety</h3>
+    <p>
+        Without final classes or sealed types, you can't prevent certain anti-patterns:
+    </p>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/testing-bad.ts}}</code></pre>
+</section>
+
+<section>
+    <h2>Architectural Implications</h2>
+
+    <h3>1. Boundaries are Conventions, Not Constraints</h3>
+    <p>
+        In PHP, you can enforce architectural boundaries through visibility modifiers and final classes. 
+        In TypeScript, these boundaries are more suggestions than rules.
+    </p>
+
+    <h3>2. Runtime Type Checking</h3>
+    <p>
+        Since TypeScript types disappear at runtime, you might need libraries like 
+        <a href="https://github.com/colinhacks/zod" target="_blank" rel="noopener">Zod</a> or 
+        <a href="https://github.com/ianstormtaylor/superstruct" target="_blank" rel="noopener">Superstruct</a> 
+        for runtime validation—something PHP handles natively.
+    </p>
+
+    <h3>3. Framework Lock-in</h3>
+    <p>
+        Each TypeScript framework tends to have its own DI approach:
+    </p>
+    <ul>
+        <li><strong>Angular</strong> - Built-in DI system</li>
+        <li><strong>NestJS</strong> - Modified Angular DI for backend</li>
+        <li><strong>Vanilla Node.js</strong> - Choose your own adventure</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Practical Recommendations</h2>
+
+    <h3>For PHP Developers Moving to TypeScript</h3>
+    
+    <h4>1. Start Simple</h4>
+    <p>
+        Don't immediately reach for a DI container. TypeScript's module system and manual DI might be sufficient:
+    </p>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/start-simple.ts}}</code></pre>
+
+    <h4>2. Embrace Structural Typing</h4>
+    <p>
+        Stop thinking in terms of "implements" and start thinking in terms of "shape":
+    </p>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/embrace-structural.ts}}</code></pre>
+
+    <h4>3. Use Injection Tokens Wisely</h4>
+    <p>
+        When you do use a DI container, prefer symbols over strings:
+    </p>
+    
+    <pre><code class="language-typescript">{{SNIPPET:typescript-di/injection-tokens.ts}}</code></pre>
+
+    <h4>4. Don't Over-Engineer</h4>
+    <p>
+        The JavaScript ecosystem values simplicity. A 500-line DI configuration might be normal in 
+        Symfony but is a code smell in TypeScript.
+    </p>
+</section>
+
+<section>
+    <h2>The Philosophical Divide</h2>
+    <p>
+        The differences in DI approaches reflect deeper philosophical differences:
+    </p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>PHP/Symfony Approach</th>
+                <th>TypeScript/Node.js Approach</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Configuration over code</td>
+                <td>Code over configuration</td>
+            </tr>
+            <tr>
+                <td>Explicit contracts</td>
+                <td>Implicit compatibility</td>
+            </tr>
+            <tr>
+                <td>Framework-provided solutions</td>
+                <td>Community-driven variety</td>
+            </tr>
+            <tr>
+                <td>Runtime type safety</td>
+                <td>Compile-time type checking</td>
+            </tr>
+            <tr>
+                <td>Standardization (PSR)</td>
+                <td>Innovation through competition</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>Conclusion</h2>
+    <p>
+        Coming from PHP, TypeScript's approach to dependency injection can feel chaotic and underdeveloped. 
+        There's no PSR-11 equivalent, no standard container interface, and the whole concept of "final" doesn't exist.
+    </p>
+    
+    <p>
+        But this isn't necessarily worse—it's different. TypeScript's structural typing and flexibility enable 
+        patterns that would be impossible in PHP. The lack of standardization has led to innovation, with each 
+        library exploring different approaches.
+    </p>
+    
+    <p>
+        The key is to embrace these differences rather than fight them. Start simple, leverage structural typing, 
+        and only add DI complexity when you genuinely need it. Remember: in TypeScript, the best dependency 
+        injection might be no dependency injection framework at all.
+    </p>
+</section>
+
+<section>
+    <h2>Further Reading</h2>
+    <ul>
+        <li><a href="https://www.typescriptlang.org/docs/handbook/type-compatibility.html" target="_blank" rel="noopener">TypeScript Type Compatibility</a> - Official docs on structural typing</li>
+        <li><a href="https://inversify.io/" target="_blank" rel="noopener">InversifyJS Documentation</a> - Most mature DI container</li>
+        <li><a href="https://github.com/microsoft/tsyringe" target="_blank" rel="noopener">TSyringe GitHub</a> - Microsoft's lightweight option</li>
+        <li><a href="https://www.michaelbromley.co.uk/blog/mocking-classes-with-typescript/" target="_blank" rel="noopener">Mocking Classes with TypeScript</a> - Deep dive into testing implications</li>
+        <li><a href="https://medium.com/@weidagang/having-fun-with-typescript-structural-typing-4b8607472112" target="_blank" rel="noopener">Having Fun with TypeScript: Structural Typing</a> - Practical examples</li>
+    </ul>
+</section>
+    `
+}) %>

@@ -7,6 +7,14 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 233,
+    "title": "TypeScript Dependency Injection: A PHP Developer\\",
+    "excerpt": "Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardization.",
+    "category": "typescript",
+    "date": "2025-07-23",
+    "slug": "typescript-di-for-php-developers"
+  },
+  {
     "id": 473,
     "title": "oclif: The Open CLI Framework - A Comprehensive Guide",
     "excerpt": "An in-depth exploration of oclif, the enterprise-grade CLI framework from Salesforce. Learn best practices, pros and cons, and compare with alternatives.",
