@@ -98,7 +98,13 @@ git push origin main # Triggers auto-deployment
 - **Real-time research** - NEVER rely on training data. Always research current versions, features, and best practices
 - **Bleeding-edge accuracy** - Check GitHub releases, official docs, and recent blog posts for the latest information
 - **Version verification** - Confirm exact version numbers and release dates through official sources
-- **Extensive hyperlinks** to official documentation, tools, and resources mentioned
+- **Extensive hyperlinks** - EVERY tool, library, framework, specification, or resource mentioned MUST be linked
+  - Link ALL technical terms on first mention (e.g., PSR-11, TypeScript, PHP, Node.js)
+  - Link ALL tools and libraries (e.g., Composer, npm, Jest, PHPUnit)
+  - Link ALL frameworks and platforms (e.g., Symfony, Laravel, Angular)
+  - Link ALL specifications and standards (e.g., PSR standards, RFCs)
+  - Link version numbers to release notes when mentioning specific versions
+  - Aim for 30-50+ links per article minimum
 - **Primary sources** - Link directly to official docs, not blog posts about them
 - **Verification** - All claims must be verifiable through linked sources
 - **Current information** - Check that linked resources are up-to-date
@@ -132,13 +138,37 @@ Always use WebSearch and WebFetch to verify:
 "The official documentation confirms these features in v[number]..."
 ```
 
-Example of well-linked content:
+Examples of well-linked content:
+
+**Basic linking**:
 ```html
 <p>
     <a href="https://oclif.io/" target="_blank" rel="noopener">Oclif</a> is an 
     open-source framework for building command-line interfaces in 
     <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> and 
     <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>.
+</p>
+```
+
+**Comprehensive linking**:
+```html
+<p>
+    PHP has converged around <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11 Container Interface</a>, 
+    with most frameworks implementing compatible containers. TypeScript? It's the Wild West.
+</p>
+
+<h4><a href="https://github.com/inversify/InversifyJS" target="_blank" rel="noopener">InversifyJS</a></h4>
+<ul>
+    <li>The most mature option, inspired by <a href="https://github.com/ninject/Ninject" target="_blank" rel="noopener">.NET's Ninject</a></li>
+    <li>Heavy use of <a href="https://www.typescriptlang.org/docs/handbook/decorators.html" target="_blank" rel="noopener">decorators</a> and metadata</li>
+    <li>Requires <a href="https://github.com/rbuckton/reflect-metadata" target="_blank" rel="noopener"><code>reflect-metadata</code></a> polyfill</li>
+</ul>
+```
+
+**Even inline code elements can be linked**:
+```html
+<p>
+    In PHP, you might use <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener"><code>final</code></a> to prevent inheritance
 </p>
 ```
 
@@ -232,7 +262,10 @@ Before publishing, verify:
 - [ ] **No training data used** - Everything fact-checked with real-time research
 - [ ] **Dates are current** - No references to "recently" or "latest" without specific dates
 - [ ] **Version numbers verified** - Exact versions confirmed via npm, GitHub, or official docs
+- [ ] **Extensive linking** - Article has 30-50+ links minimum
 - [ ] All external tools/libraries are linked
+- [ ] All technical terms linked on first mention
+- [ ] All frameworks, specifications, and standards linked
 - [ ] Code snippets are stored separately and injected
 - [ ] Article provides practical, actionable value
 - [ ] No fabricated examples or metrics

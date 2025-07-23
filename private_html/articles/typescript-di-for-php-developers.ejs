@@ -46,14 +46,14 @@
 <section>
     <h2>No Final Classes = Everything is Mockable</h2>
     <p>
-        In PHP, you might use <code>final</code> to prevent inheritance:
+        In PHP, you might use <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener"><code>final</code></a> to prevent inheritance:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:typescript-di/final-class.php}}
 </code></pre>
 
     <p>
-        TypeScript has <strong>no concept of final classes</strong>. This design choice, combined with structural typing, 
+        TypeScript has <strong>no concept of <a href="https://github.com/microsoft/TypeScript/issues/8306" target="_blank" rel="noopener">final classes</a></strong>. This design choice, combined with structural typing, 
         means <em>everything</em> can be mocked or stubbed for testing:
     </p>
     
@@ -62,24 +62,24 @@
 
     <p>
         This is both liberating and dangerous. While it makes testing easier, it also means you can't enforce 
-        certain architectural boundaries through the type system alone.
+        certain architectural boundaries through the <a href="https://www.typescriptlang.org/docs/handbook/2/types-from-types.html" target="_blank" rel="noopener">type system</a> alone.
     </p>
 </section>
 
 <section>
     <h2>The Fragmented Landscape: No Standard DI</h2>
     <p>
-        PHP has converged around PSR-11 Container Interface, with most frameworks implementing compatible containers. 
-        TypeScript? It's the Wild West.
+        PHP has converged around <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11 Container Interface</a>, 
+        with most frameworks implementing compatible containers. TypeScript? It's the Wild West.
     </p>
 
     <h3>Popular TypeScript DI Libraries (as of July 2025)</h3>
     
     <h4><a href="https://github.com/inversify/InversifyJS" target="_blank" rel="noopener">InversifyJS</a></h4>
     <ul>
-        <li>The most mature option, inspired by .NET's Ninject</li>
-        <li>Heavy use of decorators and metadata</li>
-        <li>Requires <code>reflect-metadata</code> polyfill</li>
+        <li>The most mature option, inspired by <a href="https://github.com/ninject/Ninject" target="_blank" rel="noopener">.NET's Ninject</a></li>
+        <li>Heavy use of <a href="https://www.typescriptlang.org/docs/handbook/decorators.html" target="_blank" rel="noopener">decorators</a> and metadata</li>
+        <li>Requires <a href="https://github.com/rbuckton/reflect-metadata" target="_blank" rel="noopener"><code>reflect-metadata</code></a> polyfill</li>
         <li>More ceremonial, closer to traditional DI containers</li>
     </ul>
     
@@ -89,7 +89,7 @@
     <h4><a href="https://github.com/microsoft/tsyringe" target="_blank" rel="noopener">TSyringe</a> (Microsoft)</h4>
     <ul>
         <li>Lightweight, minimalist approach</li>
-        <li>Also decorator-based with <code>reflect-metadata</code></li>
+        <li>Also decorator-based with <a href="https://github.com/rbuckton/reflect-metadata" target="_blank" rel="noopener"><code>reflect-metadata</code></a></li>
         <li>Supports circular dependencies</li>
         <li>Less configuration than InversifyJS</li>
     </ul>
@@ -110,7 +110,7 @@
 <section>
     <h2>The Interface Problem</h2>
     <p>
-        In PHP, interfaces exist at runtime. You can type-hint against them:
+        In PHP, <a href="https://www.php.net/manual/en/language.oop5.interfaces.php" target="_blank" rel="noopener">interfaces exist at runtime</a>. You can type-hint against them:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:typescript-di/php-interface.php}}
@@ -128,9 +128,9 @@
         This is why TypeScript DI libraries rely heavily on:
     </p>
     <ul>
-        <li><strong>Decorators</strong> - To add metadata at runtime</li>
-        <li><strong>Injection tokens</strong> - Symbols or strings to identify dependencies</li>
-        <li><strong>reflect-metadata</strong> - To preserve type information</li>
+        <li><strong><a href="https://www.typescriptlang.org/docs/handbook/decorators.html" target="_blank" rel="noopener">Decorators</a></strong> - To add metadata at runtime</li>
+        <li><strong>Injection tokens</strong> - <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol" target="_blank" rel="noopener">Symbols</a> or strings to identify dependencies</li>
+        <li><strong><a href="https://github.com/rbuckton/reflect-metadata" target="_blank" rel="noopener">reflect-metadata</a></strong> - To preserve type information</li>
     </ul>
 </section>
 
@@ -140,11 +140,20 @@
         Setting up DI in TypeScript requires more boilerplate than PHP. Here's what you need:
     </p>
 
-    <h3>tsconfig.json Requirements</h3>
+    <h3><a href="https://www.typescriptlang.org/tsconfig" target="_blank" rel="noopener">tsconfig.json</a> Requirements</h3>
     <pre><code class="language-json">{{SNIPPET:typescript-di/tsconfig.json}}
 </code></pre>
 
     <h3>Polyfill Setup</h3>
+    <p>
+        First, install the required packages using <a href="https://www.npmjs.com/" target="_blank" rel="noopener">npm</a> or 
+        <a href="https://yarnpkg.com/" target="_blank" rel="noopener">yarn</a>:
+    </p>
+    <pre><code class="language-bash">npm install reflect-metadata inversify
+# or
+yarn add reflect-metadata inversify</code></pre>
+    
+    <p>Then configure your entry point:</p>
     <pre><code class="language-typescript">{{SNIPPET:typescript-di/polyfill-setup.ts}}
 </code></pre>
 
@@ -158,7 +167,9 @@
     
     <h3>The Good: Ultimate Flexibility</h3>
     <p>
-        TypeScript's structural typing makes creating test doubles trivial:
+        TypeScript's structural typing makes creating test doubles trivial. With testing frameworks like 
+        <a href="https://jestjs.io/" target="_blank" rel="noopener">Jest</a>, <a href="https://mochajs.org/" target="_blank" rel="noopener">Mocha</a>, 
+        or <a href="https://vitest.dev/" target="_blank" rel="noopener">Vitest</a>, mocking becomes incredibly simple:
     </p>
     
     <pre><code class="language-typescript">{{SNIPPET:typescript-di/testing-good.ts}}
@@ -179,7 +190,7 @@
     <h3>1. Boundaries are Conventions, Not Constraints</h3>
     <p>
         In PHP, you can enforce architectural boundaries through visibility modifiers and final classes. 
-        In TypeScript, these boundaries are more suggestions than rules.
+        In TypeScript, these boundaries are more <a href="https://www.typescriptlang.org/docs/handbook/2/classes.html#member-visibility" target="_blank" rel="noopener">suggestions than rules</a>.
     </p>
 
     <h3>2. Runtime Type Checking</h3>
@@ -195,9 +206,9 @@
         Each TypeScript framework tends to have its own DI approach:
     </p>
     <ul>
-        <li><strong>Angular</strong> - Built-in DI system</li>
-        <li><strong>NestJS</strong> - Modified Angular DI for backend</li>
-        <li><strong>Vanilla Node.js</strong> - Choose your own adventure</li>
+        <li><strong><a href="https://angular.io/guide/dependency-injection" target="_blank" rel="noopener">Angular</a></strong> - Built-in DI system</li>
+        <li><strong><a href="https://docs.nestjs.com/fundamentals/injection-scopes" target="_blank" rel="noopener">NestJS</a></strong> - Modified Angular DI for backend</li>
+        <li><strong><a href="https://nodejs.org/" target="_blank" rel="noopener">Vanilla Node.js</a></strong> - Choose your own adventure</li>
     </ul>
 </section>
 
@@ -232,8 +243,8 @@
 
     <h4>4. Don't Over-Engineer</h4>
     <p>
-        The JavaScript ecosystem values simplicity. A 500-line DI configuration might be normal in 
-        Symfony but is a code smell in TypeScript.
+        The <a href="https://en.wikipedia.org/wiki/JavaScript" target="_blank" rel="noopener">JavaScript ecosystem</a> values simplicity. A 500-line DI configuration might be normal in 
+        <a href="https://symfony.com/" target="_blank" rel="noopener">Symfony</a> but is a <a href="https://martinfowler.com/bliki/CodeSmell.html" target="_blank" rel="noopener">code smell</a> in TypeScript.
     </p>
 </section>
 
@@ -246,8 +257,8 @@
     <table>
         <thead>
             <tr>
-                <th>PHP/Symfony Approach</th>
-                <th>TypeScript/Node.js Approach</th>
+                <th><a href="https://php.net/" target="_blank" rel="noopener">PHP</a>/<a href="https://symfony.com/" target="_blank" rel="noopener">Symfony</a> Approach</th>
+                <th><a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>/<a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> Approach</th>
             </tr>
         </thead>
         <tbody>
@@ -264,11 +275,11 @@
                 <td>Community-driven variety</td>
             </tr>
             <tr>
-                <td>Runtime type safety</td>
-                <td>Compile-time type checking</td>
+                <td><a href="https://www.php.net/manual/en/language.types.type-system.php" target="_blank" rel="noopener">Runtime type safety</a></td>
+                <td><a href="https://www.typescriptlang.org/docs/handbook/2/understanding-errors.html" target="_blank" rel="noopener">Compile-time type checking</a></td>
             </tr>
             <tr>
-                <td>Standardization (PSR)</td>
+                <td>Standardization (<a href="https://www.php-fig.org/" target="_blank" rel="noopener">PSR</a>)</td>
                 <td>Innovation through competition</td>
             </tr>
         </tbody>
@@ -279,7 +290,7 @@
     <h2>Conclusion</h2>
     <p>
         Coming from PHP, TypeScript's approach to dependency injection can feel chaotic and underdeveloped. 
-        There's no PSR-11 equivalent, no standard container interface, and the whole concept of "final" doesn't exist.
+        There's no <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11</a> equivalent, no standard container interface, and the whole concept of "final" doesn't exist.
     </p>
     
     <p>
