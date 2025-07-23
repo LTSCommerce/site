@@ -18,7 +18,8 @@
     <p>
         Oclif is an open-source framework for building command-line interfaces in <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> and <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>. 
         Originally developed by <a href="https://www.heroku.com/" target="_blank" rel="noopener">Heroku</a> and now maintained by Salesforce, it powers both the <a href="https://devcenter.heroku.com/articles/heroku-cli" target="_blank" rel="noopener">Heroku CLI</a> and 
-        <a href="https://developer.salesforce.com/tools/salesforcecli" target="_blank" rel="noopener">Salesforce CLI</a>, handling millions of developer interactions every day.
+        <a href="https://developer.salesforce.com/tools/salesforcecli" target="_blank" rel="noopener">Salesforce CLI</a>, handling millions of developer interactions every day. 
+        The framework has reached version 4.5 as of Summer 2025, with mature ESM support and enhanced developer experience.
     </p>
     
     <p>
@@ -46,10 +47,15 @@
     
     <h3>Command Structure</h3>
     <p>
-        Commands in oclif extend from a base <a href="https://github.com/oclif/core/blob/main/src/command.ts" target="_blank" rel="noopener">Command class</a>, providing a consistent API:
+        Commands in oclif extend from a base <a href="https://github.com/oclif/core/blob/main/src/command.ts" target="_blank" rel="noopener">Command class</a>, providing a consistent API. 
+        With v4's full ESM support, you can use either CommonJS or ESM syntax:
     </p>
     
+    <h4>CommonJS (Traditional)</h4>
     <pre><code class="language-javascript">{{SNIPPET:oclif/hello-command.js}}</code></pre>
+
+    <h4>ESM (Modern - v4+)</h4>
+    <pre><code class="language-javascript">{{SNIPPET:oclif/hello-command-esm.js}}</code></pre>
 
     <h3>Plugin Architecture</h3>
     <p>
@@ -71,17 +77,44 @@
 </section>
 
 <section>
-    <h2>Spring 2024 Updates</h2>
+    <h2>oclif v4: Current State (Summer 2025)</h2>
     <p>
-        The framework continues active development with significant improvements in 2024 (see <a href="https://github.com/oclif/core/releases" target="_blank" rel="noopener">release notes</a>):
+        With the release of <a href="https://github.com/oclif/core/releases/tag/v4.0.0" target="_blank" rel="noopener">@oclif/core v4</a> in June 2024, 
+        oclif has matured significantly. The latest version (4.5.1 as of July 2025) brings enhanced stability and developer experience improvements.
     </p>
     
+    <h3>Major v4 Features</h3>
     <ul>
+        <li><strong>Full ESM Support</strong> - Complete interoperability between CommonJS and ESM plugins</li>
         <li><strong>Configurable command discovery</strong> - Control how commands are loaded at runtime</li>
         <li><strong>Preparse hooks</strong> - Manipulate arguments before parsing</li>
         <li><strong>Performance tracking</strong> - Built-in <a href="https://oclif.io/docs/performance" target="_blank" rel="noopener">Performance class</a> for monitoring</li>
         <li><strong>Enhanced flag types</strong> - New <a href="https://oclif.io/docs/flags" target="_blank" rel="noopener">Flags.option</a> for preset value lists</li>
         <li><strong>Flag relationships</strong> - Define complex dependencies between flags</li>
+        <li><strong>Runtime support</strong> - Now supports <a href="https://bun.sh/" target="_blank" rel="noopener">Bun</a> and <a href="https://github.com/esbuild-kit/tsx" target="_blank" rel="noopener">tsx</a> runtimes</li>
+        <li><strong>Hidden aliases</strong> - Commands can now have undocumented aliases</li>
+    </ul>
+
+    <h3>Recent Updates (2025)</h3>
+    <p>
+        The framework maintains active development with regular releases:
+    </p>
+    <ul>
+        <li><strong>v4.5.1</strong> (July 2025) - Error handling improvements</li>
+        <li><strong>v4.5.0</strong> (July 2025) - Enhanced hook options with error and Command context</li>
+        <li><strong>v4.4.0</strong> (June 2025) - Added tar flags configuration</li>
+    </ul>
+
+    <h3>Migration to v4</h3>
+    <p>
+        Migrating from v3 to v4 is generally straightforward. The oclif team has focused on maintaining backwards compatibility while adding new features. 
+        Key considerations:
+    </p>
+    <ul>
+        <li>ESM plugins now have first-class support alongside CommonJS</li>
+        <li>New runtime environments (Bun, tsx) are automatically detected</li>
+        <li>Most v3 code works without modification in v4</li>
+        <li>Check the <a href="https://github.com/oclif/core#migration-guides" target="_blank" rel="noopener">migration guides</a> for specific breaking changes</li>
     </ul>
 </section>
 
@@ -123,7 +156,9 @@
         <li><strong>Auto-documentation</strong> - Help text generated from command definitions</li>
         <li><strong>Testing utilities</strong> - Built-in helpers for unit and integration tests</li>
         <li><strong>Cross-platform</strong> - Works on Windows, macOS, and Linux</li>
-        <li><strong>Active maintenance</strong> - Regular updates and community support</li>
+        <li><strong>Active maintenance</strong> - Regular updates and renewed community focus</li>
+        <li><strong>Improved documentation</strong> - Revitalized docs at <a href="https://oclif.io/" target="_blank" rel="noopener">oclif.io</a></li>
+        <li><strong>Community engagement</strong> - Active <a href="https://github.com/oclif/core/discussions" target="_blank" rel="noopener">GitHub Discussions</a></li>
     </ul>
 
     <h3>Disadvantages</h3>
