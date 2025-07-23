@@ -21,9 +21,18 @@ function injectCodeSnippets(html) {
     try {
       // Read the snippet file
       let snippetContent = fs.readFileSync(fullPath, 'utf8');
+      
+      // Escape HTML entities to prevent browser interpretation
+      snippetContent = snippetContent
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+      
       // Ensure snippet doesn't end with a newline (we'll add it in the template)
       snippetContent = snippetContent.trimEnd();
-      // Return the snippet content
+      // Return the escaped snippet content
       return snippetContent;
     } catch (error) {
       console.warn(`⚠️  Could not find snippet: ${snippetPath}`);

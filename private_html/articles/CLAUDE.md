@@ -62,11 +62,23 @@ For proper code formatting that preserves indentation:
 
 1. Create code snippet files in `code-snippets/article-name/`
 2. Use placeholder tags in the article: `{{SNIPPET:article-name/filename.ext}}`
+3. **IMPORTANT**: Always put closing `</code></pre>` tags on a new line
 
 Example:
 ```html
-<pre><code class="language-javascript">{{SNIPPET:oclif/hello-command.js}}</code></pre>
+<pre><code class="language-javascript">{{SNIPPET:oclif/hello-command.js}}
+</code></pre>
 ```
+
+**Critical**: The closing tags MUST be on a new line. If they're on the same line as the last line of code (especially comments), they'll be treated as part of the code.
+
+**HTML Escaping**: The build process automatically escapes HTML entities in code snippets:
+- `<` becomes `&lt;`
+- `>` becomes `&gt;`
+- `&` becomes `&amp;`
+- Quotes are escaped properly
+
+This prevents issues with PHP opening tags (`<?php`) and other HTML-like content in code examples.
 
 ### 4. Build and Deploy
 
