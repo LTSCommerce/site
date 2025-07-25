@@ -1,0 +1,14 @@
+includes:
+    - vendor/lts/php-qa-ci/configDefaults/generic/phpstan.neon
+
+parameters:
+    level: 9
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - tests/fixtures
+    ignoreErrors:
+        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\)#'
+    reportUnmatchedIgnoredErrors: false
+    checkMissingIterableValueType: false
