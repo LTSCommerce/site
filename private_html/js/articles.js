@@ -7,6 +7,22 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 999,
+    "title": "PHP-QA-CI: A Comprehensive Quality Assurance Pipeline in a Single Dependency",
+    "excerpt": "Discover how LTS PHP-QA-CI provides a complete, production-ready QA pipeline with 12+ integrated tools through a single Composer dependency. Learn configuration, customization, and CI/CD integration strategies.",
+    "category": "php",
+    "date": "2025-07-25",
+    "slug": "php-qa-ci-comprehensive-quality-pipeline"
+  },
+  {
+    "id": 22,
+    "title": "PHP PER: The Evolution Beyond PSR-12 Coding Standards",
+    "excerpt": "Understanding PHP Evolving Recommendations (PER), how to enforce them with QA tools, and why PER Coding Style is the future of PHP standards.",
+    "category": "php",
+    "date": "2025-07-24",
+    "slug": "php-per-coding-style-evolution"
+  },
+  {
     "id": 233,
     "title": "TypeScript Dependency Injection: A PHP Developer's Perspective",
     "excerpt": "Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardization.",

@@ -1,0 +1,292 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'PHP-QA-CI: A Comprehensive Quality Assurance Pipeline in a Single Dependency',
+    articleDescription: 'Discover how LTS PHP-QA-CI provides a complete, production-ready QA pipeline with 12+ integrated tools through a single Composer dependency. Learn configuration, customization, and CI/CD integration strategies.',
+    articleDate: '2025-07-25',
+    articleCategory: 'php',
+    articleReadingTime: '15',
+    articleContent: `
+        <div class="intro">
+            <p class="lead">In the PHP ecosystem, setting up a comprehensive quality assurance pipeline typically involves installing and configuring a dozen different tools, each with their own configuration files, command-line interfaces, and quirks. What if you could get a battle-tested, production-ready QA pipeline with a single Composer dependency?</p>
+        </div>
+        
+        <section>
+            <h2>The Problem with Traditional QA Setup</h2>
+            <p>Setting up quality assurance tools for a PHP project traditionally involves a time-consuming process:</p>
+            <ul>
+                <li>Installing multiple dev dependencies individually</li>
+                <li>Creating configuration files for each tool</li>
+                <li>Writing scripts to run tools in the correct order</li>
+                <li>Ensuring consistency across different projects</li>
+                <li>Maintaining and updating configurations as tools evolve</li>
+                <li>Training team members on different tool interfaces</li>
+            </ul>
+            <p>This fragmented approach leads to inconsistency across projects, maintenance overhead, and often results in teams skipping important QA steps due to complexity.</p>
+        </section>
+
+        <section>
+            <h2>Enter PHP-QA-CI</h2>
+            <p><a href="https://github.com/LongTermSupport/php-qa-ci" target="_blank">PHP-QA-CI</a> is our first-party quality assurance and continuous integration pipeline that solves these problems elegantly. Built by <a href="https://github.com/LongTermSupport" target="_blank">Long Term Support LTD</a>, it provides a complete QA pipeline through a single Composer dependency.</p>
+            
+            <p>The key innovation is simple yet powerful: instead of manually orchestrating multiple tools, PHP-QA-CI provides:</p>
+            <ul>
+                <li>Pre-configured, sensible defaults for all integrated tools</li>
+                <li>Logical execution order that fails fast on errors</li>
+                <li>Consistent interface across all projects</li>
+                <li>Easy customization when needed</li>
+                <li>Version-specific branches for different PHP versions</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>The Complete Tool Suite</h2>
+            <p>Installing PHP-QA-CI gives you immediate access to a comprehensive suite of quality assurance tools, organized into four logical categories:</p>
+
+            <p>The tools are executed in a logical order, from fastest to slowest, to provide quick feedback:</p>
+
+            <h3>1. Validation and Checks</h3>
+            <ul>
+                <li><strong>PSR-4 Validation</strong> - Checks code namespaces for PSR-4 standard compliance (built-in script)</li>
+                <li><strong>Composer Check for Issues</strong> - Runs composer diagnose and dumps autoloader</li>
+                <li><strong>Strict Types Enforcing</strong> - Checks and can fix files without strict types defined</li>
+            </ul>
+
+            <h3>2. Linting</h3>
+            <ul>
+                <li><strong>PHP Parallel Lint</strong> - Very fast PHP syntax error checking</li>
+            </ul>
+
+            <h3>3. Static Analysis</h3>
+            <ul>
+                <li><strong><a href="https://phpstan.org/" target="_blank">PHPStan</a></strong> - Performs static code analysis</li>
+            </ul>
+
+            <h3>4. Testing</h3>
+            <ul>
+                <li><strong><a href="https://phpunit.de/" target="_blank">PHPUnit</a></strong> - Runs unit tests</li>
+                <li><strong><a href="https://infection.github.io/" target="_blank">Infection</a></strong> - Mutation testing tool that deliberately mutates your code to test test quality</li>
+            </ul>
+
+            <h3>5. Documentation</h3>
+            <ul>
+                <li><strong>Markdown Links Checker</strong> - Validates links in README.md and docs/*.md files (built-in script)</li>
+            </ul>
+
+            <h3>6. Final Checks</h3>
+            <ul>
+                <li><strong>Uncommitted Changes Check</strong> - Verifies no pending code changes before further processing</li>
+            </ul>
+
+            <h3>7. Code Formatting</h3>
+            <ul>
+                <li><strong>Beautifier and Fixer</strong> - Automatically reformats PHP code and applies coding standards</li>
+                <li><strong>PHP Code Sniffer</strong> - Checks remaining coding standards issues</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Installation and Basic Usage</h2>
+            <p>Getting started with PHP-QA-CI requires just a single Composer command:</p>
+
+            <pre><code class="language-json">{{SNIPPET:php-qa-ci-composer-json.json}}
+</code></pre>
+
+            <p>Install the package (using the PHP 8.4 branch):</p>
+            <pre><code class="language-bash">composer require --dev lts/php-qa-ci:dev-php8.4</code></pre>
+
+            <p>That's it! You now have access to the complete QA pipeline:</p>
+
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-basic-usage.bash}}
+</code></pre>
+
+            <p>The pipeline runs tools in a logical order designed to "fail as quickly as possible," saving time by catching basic issues before running more time-consuming analyses.</p>
+        </section>
+
+        <section>
+            <h2>PHP Version Support</h2>
+            <p>PHP-QA-CI maintains separate branches for different PHP versions, ensuring compatibility and leveraging version-specific features:</p>
+
+            <ul>
+                <li><code>master</code> - Stable release branch</li>
+                <li><code>php8.3</code> - PHP 8.3 specific configurations</li>
+                <li><code>php8.4</code> - PHP 8.4 support (current recommended branch as of 2025)</li>
+            </ul>
+
+            <p>This branching strategy allows the tool to provide optimal configurations for each PHP version while maintaining backward compatibility where needed.</p>
+        </section>
+
+        <section>
+            <h2>Configuration and Customization</h2>
+            <p>While PHP-QA-CI works out of the box with sensible defaults, it's designed for easy customization. The tool looks for custom configurations in your project's <code>qaConfig</code> directory, falling back to defaults when custom configs aren't found.</p>
+
+            <h3>Creating Custom Configurations</h3>
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-custom-config.bash}}
+</code></pre>
+
+            <h3>PHPStan Custom Configuration Example</h3>
+            <p>Here's how to extend the default PHPStan configuration for your project:</p>
+            <pre><code class="language-yaml">{{SNIPPET:php-qa-ci-phpstan-custom.neon}}
+</code></pre>
+
+            <h3>PHP CS Fixer Custom Configuration</h3>
+            <p>Customize coding standards while maintaining the base configuration:</p>
+            <pre><code class="language-php">{{SNIPPET:php-qa-ci-php-cs-fixer-custom.php}}
+</code></pre>
+        </section>
+
+        <section>
+            <h2>Symfony Project Integration</h2>
+            <p>PHP-QA-CI includes special considerations for Symfony projects. When installing in a Symfony project, you have two options:</p>
+
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-symfony-setup.bash}}
+</code></pre>
+
+            <p>The PHP-QA-CI defaults are generally more extensive than Symfony's defaults, including additional static analysis rules and stricter coding standards.</p>
+        </section>
+
+        <section>
+            <h2>Advanced Features</h2>
+            
+            <h3>Hooks System</h3>
+            <p>PHP-QA-CI supports pre and post execution hooks, allowing you to integrate custom logic into the pipeline:</p>
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-hooks.bash}}
+</code></pre>
+
+            <h3>Mutation Testing with Infection</h3>
+            <p>One of the most powerful features is the integrated mutation testing via Infection. This helps assess the quality of your test suite by introducing small changes (mutations) to your code and checking if tests catch them:</p>
+            <pre><code class="language-json">{{SNIPPET:php-qa-ci-infection-config.json}}
+</code></pre>
+
+            <h3>Performance Optimization</h3>
+            <p>The pipeline is optimized for performance through several strategies:</p>
+            <ul>
+                <li>Fail-fast approach: Basic checks run first</li>
+                <li>Parallel execution where possible</li>
+                <li>Intelligent caching of results</li>
+                <li>Option to run quick tests only during development</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>CI/CD Integration</h2>
+            <p>PHP-QA-CI is designed to work seamlessly in continuous integration environments. Here's an example GitHub Actions workflow:</p>
+
+            <pre><code class="language-yaml">{{SNIPPET:php-qa-ci-ci-pipeline.yaml}}
+</code></pre>
+
+            <p>The pipeline works equally well with other CI systems like GitLab CI, Jenkins, or Bitbucket Pipelines. The consistent interface means your local development experience matches your CI environment exactly.</p>
+        </section>
+
+        <section>
+            <h2>Real-World Benefits</h2>
+            
+            <h3>Consistency Across Projects</h3>
+            <p>With PHP-QA-CI, all your projects use the same QA pipeline, making it easy for developers to move between projects without learning new tools or configurations.</p>
+
+            <h3>Time Savings</h3>
+            <p>Setting up a comprehensive QA pipeline manually can take hours or days. With PHP-QA-CI, you're up and running in minutes with a battle-tested configuration.</p>
+
+            <h3>Maintenance Reduction</h3>
+            <p>Instead of maintaining configurations for a dozen tools across multiple projects, you maintain a single dependency. Updates to tool configurations are handled centrally.</p>
+
+            <h3>Best Practices by Default</h3>
+            <p>The default configurations encode years of PHP development best practices, ensuring your code meets high quality standards without extensive research.</p>
+        </section>
+
+        <section>
+            <h2>Comparison with Manual Setup</h2>
+            <p>Consider what manual setup of these tools would require:</p>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Manual Setup</th>
+                        <th>PHP-QA-CI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Initial Setup Time</td>
+                        <td>2-4 hours</td>
+                        <td>5 minutes</td>
+                    </tr>
+                    <tr>
+                        <td>Configuration Files</td>
+                        <td>10-15 files</td>
+                        <td>0 (uses defaults)</td>
+                    </tr>
+                    <tr>
+                        <td>Composer Dependencies</td>
+                        <td>12+ packages</td>
+                        <td>1 package</td>
+                    </tr>
+                    <tr>
+                        <td>Execution Scripts</td>
+                        <td>Custom required</td>
+                        <td>Single qa command</td>
+                    </tr>
+                    <tr>
+                        <td>Cross-project Consistency</td>
+                        <td>Manual synchronization</td>
+                        <td>Automatic</td>
+                    </tr>
+                    <tr>
+                        <td>Tool Updates</td>
+                        <td>Individual updates</td>
+                        <td>Single update</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Troubleshooting Common Issues</h2>
+            
+            <h3>Permission Issues</h3>
+            <p>If you encounter permission issues with the qa script:</p>
+            <pre><code class="language-bash">chmod +x vendor/lts/php-qa-ci/bin/qa
+# Or use composer's bin directory
+chmod +x bin/qa</code></pre>
+
+            <h3>Memory Limits</h3>
+            <p>Some tools like PHPStan may require increased memory limits:</p>
+            <pre><code class="language-bash">export PHP_QA_CI_PHP_EXECUTABLE="php -d memory_limit=512M"
+./bin/qa</code></pre>
+
+            <h3>Tool-Specific Issues</h3>
+            <p>Individual tools can be run in isolation for debugging:</p>
+            <pre><code class="language-bash"># Run only PHPStan
+./bin/qa phpstan
+
+# Run with verbose output
+./bin/qa --verbose</code></pre>
+        </section>
+
+        <section>
+            <h2>Future Development</h2>
+            <p>PHP-QA-CI continues to evolve with the PHP ecosystem. Current development focuses on:</p>
+            <ul>
+                <li>Support for newer PHP versions as they're released</li>
+                <li>Integration of emerging QA tools</li>
+                <li>Performance optimizations for large codebases</li>
+                <li>Enhanced reporting and metrics</li>
+                <li>Better IDE integration support</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Conclusion</h2>
+            <p>PHP-QA-CI represents a paradigm shift in PHP quality assurance setup. By providing a complete, pre-configured pipeline through a single dependency, it removes the barriers to implementing comprehensive quality checks in PHP projects.</p>
+
+            <p>Whether you're starting a new project or looking to improve quality assurance in an existing codebase, PHP-QA-CI offers immediate value with minimal setup effort. The combination of sensible defaults, easy customization, and comprehensive tool coverage makes it an essential addition to any serious PHP development workflow.</p>
+
+            <p>The tool embodies the philosophy of the <a href="https://www.php.net/manual/en/intro-whatis.php" target="_blank">PHP language itself</a>: pragmatic, powerful, and focused on developer productivity. By abstracting away the complexity of QA pipeline configuration, PHP-QA-CI lets developers focus on what matters most - writing quality code.</p>
+
+            <div class="cta-section">
+                <h3>Get Started Today</h3>
+                <p>Ready to streamline your PHP quality assurance workflow? Visit the <a href="https://github.com/LongTermSupport/php-qa-ci" target="_blank">PHP-QA-CI GitHub repository</a> or install it directly via Composer:</p>
+                <pre><code class="language-bash">composer require --dev lts/php-qa-ci:dev-master@dev</code></pre>
+            </div>
+        </section>
+    `
+}) %>
