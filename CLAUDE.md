@@ -309,6 +309,104 @@ Global data available in all templates:
 - **Accessibility**: WCAG 2.1 compliant markup and navigation
 - **SEO Optimization**: Structured data, meta tags, semantic HTML
 
+## Documentation Standards
+
+### Code Examples in Documentation
+
+#### When to Link vs When to Show Code
+
+**Link to actual code when:**
+- Referencing complete interface definitions (use `See [path/to/file.ts](../path/to/file.ts)`)
+- Showing real implementation patterns that exist in the codebase
+- Pointing to complex examples that would clutter documentation
+- Referencing configuration files or complete class definitions
+
+**Use dummy examples when:**
+- Illustrating concepts or patterns generically
+- Showing before/after transformations
+- Demonstrating anti-patterns to avoid
+- Teaching implementation approaches
+
+#### Interface and Type Definitions
+
+**NEVER replicate actual interfaces in documentation.** Always link to the source file:
+
+```typescript
+// ❌ WRONG - Replicating actual interface
+export interface ILLMDataDTO {
+  toLLMData(): Record<string, string>
+  // ... other methods
+}
+
+// ✅ CORRECT - Link to actual interface
+// See [src/core/interfaces/ILLMDataDTO.ts](../src/core/interfaces/ILLMDataDTO.ts) for the complete interface.
+```
+
+#### Dummy Code Naming Conventions
+
+All dummy examples must use clear naming conventions:
+
+**Dummy Services:** `MyService`, `ExampleService`, `SampleDataService`
+**Dummy DTOs:** `MyDataDTO`, `ExampleDTO`, `SampleDTO`
+**Dummy Interfaces:** `IMyService`, `IExampleApi`
+**Dummy Types:** `TMyConfig`, `TExampleResponse`
+**Dummy Variables:** `exampleData`, `sampleResponse`, `mockApiResult`
+**Dummy Constants:** `EXAMPLE_FIELD`, `SAMPLE_KEY`, `DUMMY_VALUE`
+
+#### Magic String Prevention
+
+**Never use actual production keys/constants in examples:**
+
+```typescript
+// ❌ WRONG - Using actual production constants
+result.addData('PROJECT_COUNT', '5')  // PROJECT_COUNT might be real
+
+// ✅ CORRECT - Clearly dummy examples
+result.addData('EXAMPLE_FIELD', 'sample-value')
+result.addData(ExampleKeys.SAMPLE_FIELD, 'dummy-data')
+```
+
+#### Code Synchronization Rules
+
+**For code snippets that reference real files:**
+1. Always include a comment indicating the source file
+2. Use `// Snippet from [filename]` to indicate partial code
+3. Keep snippets under 20 lines - link to full file for complete examples
+4. Update snippets when referenced files change significantly
+
+**For complete dummy examples:**
+1. Make them self-contained and runnable conceptually
+2. Use consistent dummy naming throughout the same document
+3. Ensure examples follow current coding standards and patterns
+
+### Documentation Maintenance
+
+#### Cross-Reference Integrity
+
+All documentation must maintain mutual coherence:
+
+**Link Verification:** All relative links must point to existing files
+**Consistency Checking:** Ensure terminology and patterns match across all docs
+**Version Alignment:** Keep examples aligned with current implementation patterns
+
+#### Contradiction Detection
+
+Before publishing documentation changes:
+
+1. **Scan for conflicting information** across all docs
+2. **Identify authoritative sources** for disputed information
+3. **Resolve contradictions** by updating outdated information
+4. **Add cross-references** to prevent future inconsistencies
+
+#### Content Hierarchy
+
+Documentation should follow clear information prioritization:
+
+1. **Core concepts first** - fundamental principles and architecture
+2. **Common use cases** - 80% of developer needs
+3. **Edge cases and advanced topics** - specialized scenarios
+4. **Troubleshooting** - problem resolution patterns
+
 ## Content Policy
 
 **No Bullshit Rule**: All content must be factual and verifiable. No fabricated client case studies, made-up performance metrics, or fictional project examples. Use generic examples or theoretical scenarios instead of claiming specific real-world implementations that didn't happen.
