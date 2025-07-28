@@ -7,6 +7,14 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 7,
+    "title": "PHP Magic Constants for Maintainable Logging Systems",
+    "excerpt": "Master PHP magic constants (__FILE__, __METHOD__, __CLASS__, etc.) to build contextual logging systems with Monolog and PSR-3 that automatically track execution flow and debugging information.",
+    "category": "php",
+    "date": "2025-07-28",
+    "slug": "php-magic-constants-maintainable-logging"
+  },
+  {
     "id": 999,
     "title": "PHP-QA-CI: A Comprehensive Quality Assurance Pipeline in a Single Dependency",
     "excerpt": "Discover how LTS PHP-QA-CI provides a complete, production-ready QA pipeline with 12+ integrated tools through a single Composer dependency. Learn configuration, customization, and CI/CD integration strategies.",
