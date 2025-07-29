@@ -56,6 +56,7 @@ export default defineConfig({
         'js/articles/dynamic-gradient-headings': resolve(__dirname, 'private_html/js/articles/dynamic-gradient-headings.js'),
         'js/articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'private_html/js/articles/claude-code-custom-commands-cc-commands.js'),
         'js/articles/fedora-42-breakthrough-features': resolve(__dirname, 'private_html/js/articles/fedora-42-breakthrough-features.js'),
+        'js/articles/ansible-fact-caching-problems': resolve(__dirname, 'private_html/js/articles/ansible-fact-caching-problems.js'),
         'js/articles/legacy-php-modernization': resolve(__dirname, 'private_html/js/articles/legacy-php-modernization.js'),
         'js/articles/ansible-php-infrastructure': resolve(__dirname, 'private_html/js/articles/ansible-php-infrastructure.js'),
         'js/articles/proxmox-vs-cloud': resolve(__dirname, 'private_html/js/articles/proxmox-vs-cloud.js'),

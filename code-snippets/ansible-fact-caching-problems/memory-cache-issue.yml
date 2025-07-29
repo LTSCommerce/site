@@ -1,0 +1,30 @@
+# Example demonstrating the --limit problem with memory caching
+# This playbook will fail when run with --limit if dependent facts are needed
+
+---
+- name: Deploy application servers
+  hosts: app_servers
+  gather_facts: yes
+  tasks:
+    - name: Configure application
+      template:
+        src: app.conf.j2
+        dest: /etc/app/app.conf
+      vars:
+        # This will fail with --limit if db_servers facts aren't cached
+        db_primary_ip: "{{ hostvars[groups['db_servers'][0]]['ansible_default_ipv4']['address'] }}"
+        
+- name: Update load balancer
+  hosts: lb_servers
+  gather_facts: yes
+  tasks:
+    - name: Update backend pool
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      vars:
+        # This will fail with --limit app01 because other app servers aren't gathered
+        backend_servers: |
+          {% for host in groups['app_servers'] %}
+          server {{ hostvars[host]['ansible_default_ipv4']['address'] }}:8080;
+          {% endfor %}

@@ -71,6 +71,14 @@ const articles = [
     "slug": "fedora-42-breakthrough-features"
   },
   {
+    "id": 869,
+    "title": "Ansible Fact Caching: The --limit Problem and Environment Separation Pain Points",
+    "excerpt": "Deep dive into Ansible fact caching limitations with --limit operations and the lack of dynamic cache location configuration for multi-environment deployments.",
+    "category": "infrastructure",
+    "date": "2025-01-29",
+    "slug": "ansible-fact-caching-problems"
+  },
+  {
     "id": 459,
     "title": "Managing Legacy PHP: From Technical Debt to Modern Architecture",
     "excerpt": "Strategies for modernizing legacy PHP codebases and managing technical debt effectively",
