@@ -37,9 +37,19 @@ Use these tools for EVERY article:
 ### 1. Create Article Template
 
 ```bash
-# Copy from an existing article as a starting point
-cp private_html/articles/oclif-cli-framework-guide.ejs private_html/articles/your-article-slug.ejs
+# Copy from the template article (recommended)
+cp private_html/articles/_TEMPLATE-ARTICLE.ejs private_html/articles/your-article-slug.ejs
+
+# OR copy from an existing article as reference
+cp private_html/articles/php-magic-constants-maintainable-logging.ejs private_html/articles/your-article-slug.ejs
 ```
+
+The `_TEMPLATE-ARTICLE.ejs` includes:
+- Complete structure with comments explaining each section
+- Code snippet examples with proper directory path usage
+- Extensive linking examples
+- Pre-flight checklist for quality assurance
+- Step-by-step instructions in comments
 
 ### 2. Article Structure
 
@@ -60,17 +70,38 @@ cp private_html/articles/oclif-cli-framework-guide.ejs private_html/articles/you
 
 For proper code formatting that preserves indentation:
 
-1. Create code snippet files in `code-snippets/article-name/`
-2. Use placeholder tags in the article: `{{SNIPPET:article-name/filename.ext}}`
-3. **IMPORTANT**: Always put closing `</code></pre>` tags on a new line
+1. **Create directory structure**: `code-snippets/article-slug-name/`
+2. **Store snippets separately**: Place each code snippet in its own file within the article directory
+3. **Use full paths**: Reference snippets with the complete directory path: `{{SNIPPET:article-slug-name/filename.ext}}`
+4. **IMPORTANT**: Always put closing `</code></pre>` tags on a new line
 
-Example:
+**Directory Structure Example**:
+```
+code-snippets/
+├── php-magic-constants-logging/
+│   ├── basic-magic-constants.php
+│   ├── enhanced-logger.php
+│   └── composer.json
+└── oclif/
+    ├── hello-command.js
+    └── typescript-example.ts
+```
+
+**Article Template Usage**:
 ```html
-<pre><code class="language-javascript">{{SNIPPET:oclif/hello-command.js}}
+<!-- ✅ CORRECT: Full directory path -->
+<pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/basic-magic-constants.php}}
+</code></pre>
+
+<!-- ❌ WRONG: Missing directory path -->
+<pre><code class="language-php">{{SNIPPET:basic-magic-constants.php}}
 </code></pre>
 ```
 
-**Critical**: The closing tags MUST be on a new line. If they're on the same line as the last line of code (especially comments), they'll be treated as part of the code.
+**Critical Rules**:
+- **Closing tags MUST be on a new line**: If they're on the same line as the last line of code (especially comments), they'll be treated as part of the code
+- **Use full directory paths**: Always include the article directory name in snippet references
+- **Match directory names**: Code snippet directory should match article slug (kebab-case)
 
 **HTML Escaping**: The build process automatically escapes HTML entities in code snippets:
 - `<` becomes `&lt;`

@@ -1,0 +1,137 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'Your Article Title Here',
+    articleDescription: 'SEO-friendly description (150-160 chars) that becomes the excerpt',
+    articleDate: 'YYYY-MM-DD', // Today's date
+    articleCategory: 'php', // php|infrastructure|database|ai|typescript
+    articleReadingTime: '8', // Estimated reading time in minutes
+    articleContent: `
+        <!-- ARTICLE TEMPLATE GUIDE
+        
+        This is a template for creating new articles. Follow these guidelines:
+        
+        1. RESEARCH FIRST: Never rely on training data. Always research current versions and features
+        2. EXTENSIVE LINKING: Link every technical term, tool, framework, and specification
+        3. CODE SNIPPETS: Store separately and reference with full directory paths
+        4. STRUCTURE: Use intro section, main sections, and proper HTML5 semantics
+        
+        -->
+
+        <!-- INTRO SECTION: Lead paragraph to hook the reader -->
+        <div class="intro">
+            <p class="lead">
+                Your compelling introduction paragraph goes here. Explain the problem being solved
+                and why this article matters. Link to relevant <a href="https://example.com" target="_blank" rel="noopener">external resources</a> 
+                that provide context.
+            </p>
+        </div>
+
+        <!-- MAIN CONTENT SECTIONS -->
+        <section>
+            <h2>Your First Main Section</h2>
+            <p>
+                Content paragraph with proper linking. Every technical term should be linked on first mention.
+                For example, <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a> and 
+                <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>.
+            </p>
+            
+            <h3>Subsection Example</h3>
+            <p>Subsection content goes here.</p>
+            
+            <!-- CODE SNIPPET EXAMPLE 
+            
+            CRITICAL: Code snippets must use full directory paths!
+            
+            Directory structure should be:
+            code-snippets/your-article-slug/
+            ├── example-code.php
+            ├── config-example.json
+            └── other-snippet.js
+            
+            Then reference them with the full path:
+            -->
+            <pre><code class="language-php">{{SNIPPET:your-article-slug/example-code.php}}
+</code></pre>
+            
+            <!-- NOTE: Closing </code></pre> tags MUST be on a new line! -->
+            
+            <p>Explanation of the code snippet above.</p>
+        </section>
+
+        <section>
+            <h2>Another Main Section</h2>
+            <p>More content with extensive linking to official documentation.</p>
+            
+            <!-- TABLE EXAMPLE (if needed) -->
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Description</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>feature1</code></td>
+                            <td>Description here</td>
+                            <td>When to use it</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- BEST PRACTICES SECTION -->
+        <section>
+            <h2>Best Practices</h2>
+            <ul>
+                <li><strong>Practice 1</strong>: Explanation with reasoning</li>
+                <li><strong>Practice 2</strong>: Another recommendation</li>
+                <li><strong>Practice 3</strong>: Link to <a href="https://example.com/docs" target="_blank" rel="noopener">official documentation</a></li>
+            </ul>
+        </section>
+
+        <!-- CONCLUSION SECTION -->
+        <section>
+            <h2>Conclusion</h2>
+            <p>
+                Summarize key takeaways and provide actionable next steps. Link to additional resources
+                for further learning.
+            </p>
+            
+            <h3>Additional Resources</h3>
+            <ul>
+                <li><a href="https://official-docs.example.com" target="_blank" rel="noopener">Official Documentation</a></li>
+                <li><a href="https://github.com/example/repo" target="_blank" rel="noopener">GitHub Repository</a></li>
+                <li><a href="https://community.example.com" target="_blank" rel="noopener">Community Forum</a></li>
+            </ul>
+        </section>
+    `
+}) %>
+
+<!-- 
+TEMPLATE CHECKLIST:
+
+Before publishing, verify:
+□ Real-time research completed - no training data used
+□ All version numbers verified through official sources  
+□ 30-50+ links minimum throughout the article
+□ All technical terms linked on first mention
+□ Code snippets stored in code-snippets/article-slug/ directory
+□ Snippet references use full directory paths
+□ Closing </code></pre> tags on new lines
+□ Article provides practical, actionable value
+□ No fabricated examples or metrics
+□ Balanced pros/cons assessment
+□ Grammar and spelling correct
+□ Reading time estimate accurate
+
+AFTER CREATING ARTICLE:
+1. Copy this template: cp _TEMPLATE-ARTICLE.ejs your-article-slug.ejs
+2. Create snippet directory: mkdir code-snippets/your-article-slug/
+3. Add code snippet files to the directory
+4. Update snippet references in article
+5. Test build: npm run build
+6. Commit and push: git add . && git commit -m "Add article" && git push
+-->

@@ -18,7 +18,7 @@
 <section>
     <h2>Understanding PHP Magic Constants</h2>
     <p>
-        PHP provides eight magic constants that automatically resolve to contextual values at compile time. 
+        <a href="https://www.php.net/manual/en/language.constants.predefined.php" target="_blank" rel="noopener">PHP</a> provides eight magic constants that automatically resolve to contextual values at compile time. 
         Unlike regular constants, these values change based on their location in the code, making them 
         invaluable for debugging and logging systems.
     </p>
@@ -92,12 +92,12 @@
         <a href="https://github.com/Seldaek/monolog">Monolog 3.x</a> provides the de facto logging 
         implementation for PHP applications, fully implementing the 
         <a href="https://www.php-fig.org/psr/psr-3/">PSR-3 Logger Interface</a>. The latest version 
-        requires PHP 8.1+ and offers enhanced performance and type safety.
+        requires <a href="https://www.php.net/releases/8.1/en.php" target="_blank" rel="noopener">PHP 8.1+</a> and offers enhanced performance and type safety.
     </p>
     
     <h3>Modern Installation and Setup</h3>
     <p>
-        Install Monolog 3.x with proper version constraints:
+        Install <a href="https://github.com/Seldaek/monolog" target="_blank" rel="noopener">Monolog</a> 3.x with proper version constraints using <a href="https://getcomposer.org/" target="_blank" rel="noopener">Composer</a>:
     </p>
     
     <pre><code class="language-json">{{SNIPPET:php-magic-constants-logging/composer.json}}
@@ -114,7 +114,7 @@
 <section>
     <h2>Automatic Context with Logging Traits</h2>
     <p>
-        Traits provide reusable logging functionality that automatically injects magic constants 
+        <a href="https://www.php.net/manual/en/language.oop5.traits.php" target="_blank" rel="noopener">Traits</a> provide reusable logging functionality that automatically injects magic constants 
         into log context. This approach eliminates manual context building while maintaining 
         consistency across application components.
     </p>
@@ -135,7 +135,7 @@
 <section>
     <h2>Advanced Context Processing</h2>
     <p>
-        Custom Monolog processors enhance log records with magic constants and runtime information. 
+        Custom <a href="https://github.com/Seldaek/monolog/blob/main/doc/02-handlers-formatters-processors.md#processors" target="_blank" rel="noopener">Monolog processors</a> enhance log records with magic constants and runtime information. 
         The <code>DebugContextProcessor</code> demonstrates sophisticated context enrichment:
     </p>
     
@@ -145,9 +145,9 @@
     <h3>Processor Benefits</h3>
     <ul>
         <li><strong>Automatic Context</strong>: Magic constants added without manual intervention</li>
-        <li><strong>Stack Trace Analysis</strong>: Intelligent frame selection ignoring logging infrastructure</li>
-        <li><strong>Runtime Metrics</strong>: Memory usage and performance data included</li>
-        <li><strong>Environment Context</strong>: PHP version, SAPI, and system information</li>
+        <li><strong><a href="https://www.php.net/manual/en/function.debug-backtrace.php" target="_blank" rel="noopener">Stack Trace Analysis</a></strong>: Intelligent frame selection ignoring logging infrastructure</li>
+        <li><strong>Runtime Metrics</strong>: <a href="https://www.php.net/manual/en/function.memory-get-usage.php" target="_blank" rel="noopener">Memory usage</a> and performance data included</li>
+        <li><strong>Environment Context</strong>: PHP version, <a href="https://www.php.net/manual/en/function.php-sapi-name.php" target="_blank" rel="noopener">SAPI</a>, and system information</li>
     </ul>
 </section>
 
@@ -155,7 +155,7 @@
     <h2>Performance-Aware Logging</h2>
     <p>
         Performance logging leverages magic constants for method timing and resource monitoring. 
-        The performance logger provides millisecond-precision timing with automatic context:
+        The performance logger provides <a href="https://www.php.net/manual/en/function.hrtime.php" target="_blank" rel="noopener">millisecond-precision timing</a> with automatic context:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/performance-logger.php}}
@@ -208,7 +208,7 @@
     </p>
     
     <ul>
-        <li><strong>Structured JSON</strong>: Machine-readable logs for analysis tools</li>
+        <li><strong>Structured <a href="https://www.json.org/" target="_blank" rel="noopener">JSON</a></strong>: Machine-readable logs for analysis tools</li>
         <li><strong>Log Level Management</strong>: Environment-appropriate verbosity levels</li>
         <li><strong>Context Minimization</strong>: Essential information without overwhelming detail</li>
         <li><strong>Performance Monitoring</strong>: Resource usage tracking without overhead</li>
@@ -254,10 +254,10 @@ $sanitizedContext = array_map(function($value, $key) {
     
     <h3>Testing Approaches</h3>
     <ul>
-        <li><strong>Mock Logger Testing</strong>: Verify log messages and context without file operations</li>
-        <li><strong>Context Validation</strong>: Assert magic constants provide expected values</li>
-        <li><strong>Performance Testing</strong>: Measure logging overhead in high-throughput scenarios</li>
-        <li><strong>Integration Testing</strong>: Validate end-to-end logging pipeline functionality</li>
+        <li><strong>Mock Logger Testing</strong>: Verify log messages and context without file operations using <a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a></li>
+        <li><strong>Context Validation</strong>: Assert magic constants provide expected values using <a href="https://phpunit.de/manual/current/en/appendixes.assertions.html" target="_blank" rel="noopener">PHPUnit assertions</a></li>
+        <li><strong>Performance Testing</strong>: Measure logging overhead in high-throughput scenarios using <a href="https://github.com/phpbench/phpbench" target="_blank" rel="noopener">PHPBench</a></li>
+        <li><strong>Integration Testing</strong>: Validate end-to-end logging pipeline functionality with <a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a></li>
     </ul>
     
     <h3>Development Environment Configuration</h3>
@@ -274,7 +274,7 @@ $logger->pushProcessor(new DebugContextProcessor(true, 0)); // Include full stac
 <section>
     <h2>Performance Considerations</h2>
     <p>
-        Magic constants are resolved at compile time, making them performant for logging. However, 
+        <a href="https://www.php.net/manual/en/language.constants.predefined.php" target="_blank" rel="noopener">Magic constants</a> are resolved at compile time, making them performant for logging. However, 
         context building and log processing can impact performance in high-throughput applications:
     </p>
     
@@ -282,7 +282,7 @@ $logger->pushProcessor(new DebugContextProcessor(true, 0)); // Include full stac
     <ul>
         <li><strong>Log Level Filtering</strong>: Disable debug logging in production</li>
         <li><strong>Lazy Context Building</strong>: Build expensive context only when needed</li>
-        <li><strong>Asynchronous Logging</strong>: Queue log entries for background processing</li>
+        <li><strong>Asynchronous Logging</strong>: Queue log entries for background processing using <a href="https://github.com/bernardphp/bernard" target="_blank" rel="noopener">message queues</a></li>
         <li><strong>Selective Processing</strong>: Apply expensive processors only to specific channels</li>
     </ul>
     
@@ -307,10 +307,10 @@ unset($context); // Explicit cleanup
     
     <h3>Framework Integration</h3>
     <ul>
-        <li><strong>Symfony</strong>: Monolog integration with kernel events and service container</li>
-        <li><strong>Laravel</strong>: Built-in Monolog support with channel-based configuration</li>
-        <li><strong>PSR-11 Containers</strong>: Dependency injection for logger factory and services</li>
-        <li><strong>PSR-15 Middleware</strong>: Request/response logging with automatic context</li>
+        <li><strong><a href="https://symfony.com/" target="_blank" rel="noopener">Symfony</a></strong>: <a href="https://symfony.com/doc/current/logging.html" target="_blank" rel="noopener">Monolog integration</a> with kernel events and service container</li>
+        <li><strong><a href="https://laravel.com/" target="_blank" rel="noopener">Laravel</a></strong>: <a href="https://laravel.com/docs/logging" target="_blank" rel="noopener">Built-in Monolog support</a> with channel-based configuration</li>
+        <li><strong><a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11 Containers</a></strong>: Dependency injection for logger factory and services</li>
+        <li><strong><a href="https://www.php-fig.org/psr/psr-15/" target="_blank" rel="noopener">PSR-15 Middleware</a></strong>: Request/response logging with automatic context</li>
     </ul>
     
     <h3>Monitoring and Observability</h3>
@@ -319,10 +319,10 @@ unset($context); // Explicit cleanup
     </p>
     
     <ul>
-        <li><strong>ELK Stack</strong>: Elasticsearch indexing of structured JSON logs</li>
-        <li><strong>Grafana</strong>: Visualization of performance metrics from logs</li>
-        <li><strong>Sentry</strong>: Error tracking with rich context from magic constants</li>
-        <li><strong>DataDog</strong>: Application performance monitoring with log correlation</li>
+        <li><strong><a href="https://www.elastic.co/elastic-stack" target="_blank" rel="noopener">ELK Stack</a></strong>: <a href="https://www.elastic.co/elasticsearch/" target="_blank" rel="noopener">Elasticsearch</a> indexing of structured JSON logs</li>
+        <li><strong><a href="https://grafana.com/" target="_blank" rel="noopener">Grafana</a></strong>: Visualization of performance metrics from logs</li>
+        <li><strong><a href="https://sentry.io/" target="_blank" rel="noopener">Sentry</a></strong>: Error tracking with rich context from magic constants</li>
+        <li><strong><a href="https://www.datadoghq.com/" target="_blank" rel="noopener">DataDog</a></strong>: Application performance monitoring with log correlation</li>
     </ul>
 </section>
 
@@ -335,9 +335,9 @@ unset($context); // Explicit cleanup
     
     <h3>Emerging Patterns</h3>
     <ul>
-        <li><strong>OpenTelemetry</strong>: Distributed tracing with magic constants context</li>
+        <li><strong><a href="https://opentelemetry.io/" target="_blank" rel="noopener">OpenTelemetry</a></strong>: Distributed tracing with magic constants context</li>
         <li><strong>Structured Logging Standards</strong>: Consistent JSON schemas across services</li>
-        <li><strong>AI-Powered Log Analysis</strong>: Machine learning on rich context data</li>
+        <li><strong>AI-Powered Log Analysis</strong>: <a href="https://www.elastic.co/guide/en/machine-learning/current/ml-overview.html" target="_blank" rel="noopener">Machine learning</a> on rich context data</li>
         <li><strong>Real-Time Log Streaming</strong>: Event-driven logging architectures</li>
     </ul>
     
@@ -362,7 +362,7 @@ unset($context); // Explicit cleanup
     
     <h3>Setup Phase</h3>
     <ul>
-        <li>Install Monolog 3.x with proper version constraints</li>
+        <li>Install <a href="https://packagist.org/packages/monolog/monolog" target="_blank" rel="noopener">Monolog 3.x</a> with proper version constraints</li>
         <li>Configure logger factory with environment-specific handlers</li>
         <li>Implement custom processors for magic constants integration</li>
         <li>Set up log rotation and retention policies</li>
@@ -389,7 +389,7 @@ unset($context); // Explicit cleanup
     <h2>Conclusion</h2>
     <p>
         PHP magic constants transform logging from manual instrumentation to automatic context 
-        enrichment. Combined with Monolog's processing capabilities and PSR-3 standards, they 
+        enrichment. Combined with <a href="https://github.com/Seldaek/monolog" target="_blank" rel="noopener">Monolog's</a> processing capabilities and <a href="https://www.php-fig.org/psr/psr-3/" target="_blank" rel="noopener">PSR-3</a> standards, they 
         create maintainable logging architectures that scale with application complexity.
     </p>
     
@@ -401,7 +401,7 @@ unset($context); // Explicit cleanup
     </p>
     
     <p>
-        As PHP applications become more distributed and complex, automatic context generation through 
+        As <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a> applications become more distributed and complex, automatic context generation through 
         magic constants becomes essential for effective debugging and monitoring. The patterns and 
         implementations shown here provide a solid foundation for production-ready logging systems 
         that support both development productivity and operational visibility.

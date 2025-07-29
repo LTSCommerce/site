@@ -48,6 +48,7 @@ export default defineConfig({
         'js/author': resolve(__dirname, 'private_html/js/author.js'),
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         // Article JavaScript entry points
+        'js/articles/_TEMPLATE-ARTICLE': resolve(__dirname, 'private_html/js/articles/_TEMPLATE-ARTICLE.js'),
         'js/articles/php-magic-constants-maintainable-logging': resolve(__dirname, 'private_html/js/articles/php-magic-constants-maintainable-logging.js'),
         'js/articles/php-qa-ci-comprehensive-quality-pipeline': resolve(__dirname, 'private_html/js/articles/php-qa-ci-comprehensive-quality-pipeline.js'),
         'js/articles/php-per-coding-style-evolution': resolve(__dirname, 'private_html/js/articles/php-per-coding-style-evolution.js'),
