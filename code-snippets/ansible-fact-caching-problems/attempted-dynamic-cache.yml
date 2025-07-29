@@ -1,0 +1,25 @@
+---
+# This DOESN'T WORK - you cannot dynamically set fact cache location
+# Demonstrating what many people try but fails
+
+- name: Attempt to set dynamic cache path
+  hosts: localhost
+  gather_facts: no
+  vars:
+    environment: "{{ lookup('env', 'ENVIRONMENT') | default('development') }}"
+    cache_path: "/tmp/ansible-facts-{{ environment }}"
+  tasks:
+    # This has no effect - fact_caching_connection is read only at startup
+    - name: Try to set cache path dynamically
+      set_fact:
+        fact_caching_connection: "{{ cache_path }}"
+      failed_when: false  # This won't work but won't fail the playbook
+      
+    - name: Show the harsh reality
+      debug:
+        msg: |
+          REALITY CHECK:
+          - fact_caching_connection cannot be changed at runtime
+          - It's read from ansible.cfg at startup only
+          - Environment variables won't help here either
+          - You're stuck with separate config files

@@ -1,0 +1,15 @@
+---
+# Dedicated playbook for pre-populating fact cache
+# Run this before using --limit to ensure all facts are cached
+
+- name: Gather facts for all hosts
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Display gathered fact count
+      debug:
+        msg: "Gathered {{ ansible_facts | length }} facts for {{ inventory_hostname }}"
+        
+    - name: Show cache status
+      debug:
+        msg: "Facts cached for later --limit operations"
