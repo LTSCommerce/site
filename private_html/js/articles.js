@@ -7,14 +7,6 @@ import '../css/articles.css';
 
 const articles = [
   {
-    "id": 261,
-    "title": "Your Article Title Here",
-    "excerpt": "SEO-friendly description (150-160 chars) that becomes the excerpt",
-    "category": "php",
-    "date": "YYYY-MM-DD",
-    "slug": "_TEMPLATE-ARTICLE"
-  },
-  {
     "id": 7,
     "title": "PHP Magic Constants for Maintainable Logging Systems",
     "excerpt": "Master PHP magic constants (__FILE__, __METHOD__, __CLASS__, etc.) to build contextual logging systems with Monolog and PSR-3 that automatically track execution flow and debugging information.",

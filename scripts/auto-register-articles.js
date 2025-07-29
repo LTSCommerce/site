@@ -97,7 +97,7 @@ function scanArticles() {
   }
   
   const files = fs.readdirSync(articlesDir)
-    .filter(file => file.endsWith('.ejs'))
+    .filter(file => file.endsWith('.ejs') && !file.startsWith('_'))
     .sort(); // Ensure consistent ordering
   
   const articles = [];
