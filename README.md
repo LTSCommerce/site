@@ -1,6 +1,6 @@
 # LTS Commerce Portfolio
 
-Professional freelance PHP engineer portfolio website showcasing expertise in modern PHP development, infrastructure automation, and high-performance web applications with hybrid pagination.
+Professional freelance PHP engineer portfolio website showcasing expertise in modern PHP development, infrastructure automation, and high-performance web applications with hybrid pagination system.
 
 ## 🚀 Live Site
 
