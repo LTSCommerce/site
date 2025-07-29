@@ -163,8 +163,17 @@ class ArticleManager {
   }
 
   init() {
+    // Check if we're on a static paginated page - if so, don't render
+    const grid = document.getElementById('articlesGrid');
+    const isStaticPage = grid && grid.classList.contains('static-page');
+    
     this.setupEventListeners();
-    this.renderArticles();
+    
+    // Only render articles if NOT on a static page
+    if (!isStaticPage) {
+      this.renderArticles();
+    }
+    
     this.hideLoadingIndicator();
   }
 
