@@ -51,45 +51,64 @@ final class PaymentService
     }
 }
 
-// Test demonstrating proper intersection type mocking
+// Test demonstrating proper intersection type mocking with typed properties
 class PaymentServiceTest extends TestCase
 {
-    public function testProcessSecurePaymentSuccess(): void
+    private PaymentProcessorInterface&LoggableInterface&MockObject $paymentGateway;
+    private ValidatableInterface&LoggableInterface&MockObject $validator;
+    private PaymentService $paymentService;
+
+    protected function setUp(): void
     {
+        parent::setUp();
+        
         // Create intersection type mocks using PHPUnit 11's createMock()
-        /** @var (PaymentProcessorInterface&LoggableInterface)&MockObject $paymentGateway */
-        $paymentGateway = $this->createStubForIntersectionOfInterfaces([
+        $this->paymentGateway = $this->createStubForIntersectionOfInterfaces([
             PaymentProcessorInterface::class,
             LoggableInterface::class
         ]);
 
-        /** @var (ValidatableInterface&LoggableInterface)&MockObject $validator */
-        $validator = $this->createStubForIntersectionOfInterfaces([
+        $this->validator = $this->createStubForIntersectionOfInterfaces([
             ValidatableInterface::class,
             LoggableInterface::class
         ]);
 
-        // Configure the mock behaviors
-        $validator->method('validate')->willReturn([]); // No validation errors
-        $validator->method('log')->willReturn(null);
+        // Create service with properly typed intersection dependencies
+        $this->paymentService = new PaymentService($this->paymentGateway, $this->validator);
+    }
 
-        $paymentGateway->method('processPayment')->willReturn([
+    public function testProcessSecurePaymentSuccess(): void
+    {
+        // Configure the mock behaviors
+        $this->validator->method('validate')->willReturn([]); // No validation errors
+        $this->validator->expects($this->once())
+            ->method('log')
+            ->with('error', 'Payment validation failed', $this->anything());
+
+        $expectedResult = [
             'success' => true,
             'transaction_id' => 'txn_123',
             'amount' => 100.00
-        ]);
-        $paymentGateway->method('log')->willReturn(null);
+        ];
 
-        // Create service with properly typed intersection dependencies
-        $paymentService = new PaymentService($paymentGateway, $validator);
+        $this->paymentGateway->method('processPayment')->willReturn($expectedResult);
+        
+        // Expect proper logging calls
+        $this->paymentGateway->expects($this->exactly(2))
+            ->method('log')
+            ->withConsecutive(
+                ['info', 'Processing payment', ['amount' => 100.00]],
+                ['info', 'Payment processed successfully', $expectedResult]
+            );
 
         // Test the actual business logic
-        $result = $paymentService->processSecurePayment([
+        $result = $this->paymentService->processSecurePayment([
             'amount' => 100.00,
             'card_number' => '4111111111111111',
             'expiry' => '12/25'
         ]);
 
+        // Assertions
         $this->assertTrue($result['success']);
         $this->assertEquals('txn_123', $result['transaction_id']);
         $this->assertEquals(100.00, $result['amount']);
@@ -97,34 +116,67 @@ class PaymentServiceTest extends TestCase
 
     public function testProcessSecurePaymentValidationFailure(): void
     {
-        /** @var (PaymentProcessorInterface&LoggableInterface)&MockObject $paymentGateway */
-        $paymentGateway = $this->createStubForIntersectionOfInterfaces([
-            PaymentProcessorInterface::class,
-            LoggableInterface::class
-        ]);
-
-        /** @var (ValidatableInterface&LoggableInterface)&MockObject $validator */
-        $validator = $this->createStubForIntersectionOfInterfaces([
-            ValidatableInterface::class,
-            LoggableInterface::class
-        ]);
-
         // Configure validation to fail
-        $validator->method('validate')->willReturn([
+        $validationErrors = [
             'card_number' => 'Invalid card number',
             'expiry' => 'Card expired'
-        ]);
+        ];
+        
+        $this->validator->method('validate')->willReturn($validationErrors);
+        
+        // Expect error logging for validation failure
+        $this->validator->expects($this->once())
+            ->method('log')
+            ->with('error', 'Payment validation failed', $validationErrors);
 
-        $paymentService = new PaymentService($paymentGateway, $validator);
+        // Payment gateway should never be called when validation fails
+        $this->paymentGateway->expects($this->never())->method('processPayment');
+        $this->paymentGateway->expects($this->never())->method('log');
 
+        // Expect the exception
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('Invalid payment data');
 
-        $paymentService->processSecurePayment([
+        $this->paymentService->processSecurePayment([
             'amount' => 100.00,
             'card_number' => 'invalid',
             'expiry' => '01/20'
         ]);
+    }
+
+    public function testProcessSecurePaymentGatewayFailure(): void
+    {
+        // Setup successful validation
+        $this->validator->method('validate')->willReturn([]);
+        
+        // Setup payment gateway to fail
+        $failureResult = [
+            'success' => false,
+            'error' => 'Insufficient funds',
+            'code' => 'INSUFFICIENT_FUNDS'
+        ];
+        
+        $this->paymentGateway->method('processPayment')->willReturn($failureResult);
+        
+        // Expect proper logging sequence
+        $this->paymentGateway->expects($this->exactly(2))
+            ->method('log')
+            ->withConsecutive(
+                ['info', 'Processing payment', ['amount' => 50.00]],
+                ['error', 'Payment processing failed', $failureResult]
+            );
+
+        // Test payment processing
+        $result = $this->paymentService->processSecurePayment([
+            'amount' => 50.00,
+            'card_number' => '4111111111111111',
+            'expiry' => '12/25'
+        ]);
+
+        // Verify failure is properly handled
+        $this->assertFalse($result['success']);
+        $this->assertEquals('Insufficient funds', $result['error']);
+        $this->assertEquals('INSUFFICIENT_FUNDS', $result['code']);
     }
 }
 
