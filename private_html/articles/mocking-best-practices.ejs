@@ -157,6 +157,16 @@
         <li><strong>Better testing:</strong> Use <code>expects()</code>, <code>withConsecutive()</code>, and <code>never()</code> for comprehensive behavior verification</li>
         <li><strong>Interface-first design:</strong> Custom interfaces that extend base functionality are cleaner than complex intersections</li>
     </ul>
+
+    <p>
+        <strong>Related documentation:</strong>
+    </p>
+    <ul>
+        <li><a href="https://docs.phpunit.de/en/11.0/test-doubles.html" target="_blank" rel="noopener">PHPUnit 11 Test Doubles Documentation</a> - Official guide to mocking and intersection types</li>
+        <li><a href="https://phpunit.de/announcements/phpunit-12.html" target="_blank" rel="noopener">PHPUnit 12 Release Notes</a> - Latest PHPUnit features and deprecations</li>
+        <li><a href="https://php.watch/versions/8.1/intersection-types" target="_blank" rel="noopener">PHP 8.1 Intersection Types</a> - Comprehensive guide to PHP intersection types</li>
+        <li><a href="https://phpstan.org/blog/union-types-vs-intersection-types" target="_blank" rel="noopener">PHPStan: Union vs Intersection Types</a> - Advanced typing patterns for PHP</li>
+    </ul>
 </section>
 
 <section>
@@ -195,9 +205,20 @@
     </p>
     <ul>
         <li><strong><code>Mock&lt;any&gt; &amp; IInterface</code>:</strong> Combines Vitest mock functionality with interface typing</li>
-        <li><strong><code>Partial&lt;IInterface&gt; as IInterface</code>:</strong> Allows partial implementation of interface methods</li>
-        <li><strong><code>satisfies IInterface</code>:</strong> Modern TypeScript approach for better type inference</li>
+        <li><strong><code>vi.Mocked&lt;IInterface&gt;</code>:</strong> Modern Vitest utility type (recommended)</li>
+        <li><strong><code>satisfies IInterface</code>:</strong> TypeScript 4.9+ keyword for type validation without changing inference</li>
         <li><strong>Interface naming:</strong> TypeScript uses <code>I</code> prefix convention (Microsoft style)</li>
+    </ul>
+
+    <p>
+        <strong>Related documentation:</strong>
+    </p>
+    <ul>
+        <li><a href="https://vitest.dev/guide/mocking" target="_blank" rel="noopener">Vitest Mocking Guide</a> - Official documentation for mocking in Vitest</li>
+        <li><a href="https://vitest.dev/api/vi" target="_blank" rel="noopener">Vitest Vi API Reference</a> - Complete vi.mocked() and testing utilities</li>
+        <li><a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html" target="_blank" rel="noopener">TypeScript 4.9 Release Notes</a> - Official satisfies keyword documentation</li>
+        <li><a href="https://frontendmasters.com/blog/satisfies-in-typescript/" target="_blank" rel="noopener">Frontend Masters: Satisfies in TypeScript</a> - Practical guide to the satisfies operator</li>
+        <li><a href="https://www.totaltypescript.com/clarifying-the-satisfies-operator" target="_blank" rel="noopener">Total TypeScript: Satisfies Operator</a> - Advanced patterns and best practices</li>
     </ul>
 </section>
 
