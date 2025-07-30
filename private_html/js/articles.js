@@ -299,19 +299,16 @@ class ArticleManager {
     const categoryLabel = categories[article.category]?.label || article.category;
     
     return `
-      <article class="article-card" style="opacity: 0; transform: translateY(20px);" data-category="${article.category}">
+      <article class="article-card" style="opacity: 0; transform: translateY(20px);">
         <div class="article-meta">
-          <span class="article-category article-category-${article.category}">${categoryLabel}</span>
-          <time class="article-date" datetime="${article.date}">${date}</time>
+          <span class="article-category ${article.category}">${categoryLabel}</span>
+          <time>${date}</time>
         </div>
-        <h2 class="article-title">
-          <a href="/articles/${article.slug}.html">${article.title}</a>
-        </h2>
+        <a href="/articles/${article.slug}.html" class="article-title">${article.title}</a>
         <p class="article-excerpt">${article.excerpt}</p>
-        <div class="article-footer">
-          <a href="/articles/${article.slug}.html" class="read-more">Read Article</a>
-          <span class="reading-time">~${article.readingTime || '5'} min read</span>
-        </div>
+        <a href="/articles/${article.slug}.html" class="article-read-more">
+          Read more →
+        </a>
       </article>
     `;
   }

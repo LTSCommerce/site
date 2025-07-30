@@ -128,7 +128,7 @@
 </code></pre>
 
     <h3>The Right Way: Minimal Mocking</h3>
-    <pre><code class="language-php">{{SNIPPET:mocking-best-practices/phpunit-minimal-mocking-good.php}}
+    <pre><code class="language-php">{{SNIPPET:mocking-best-practices/interface-first-design.php}}
 </code></pre>
 
     <p>
@@ -136,6 +136,27 @@
         mocked by default. Use the <a href="https://github.com/dg/bypass-finals" target="_blank" rel="noopener">dg/bypass-finals</a> 
         library when you genuinely need to mock final classes, but question whether you really need to.
     </p>
+</section>
+
+<section>
+    <h2>PHP 8.4 Intersection Types for Mock Objects</h2>
+    <p>
+        PHP 8.4's intersection types provide powerful mock typing capabilities. However, creating custom interfaces 
+        that extend base functionality is often cleaner than complex intersection types:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:mocking-best-practices/php84-intersection-types-mocks.php}}
+</code></pre>
+
+    <p>
+        <strong>Key benefits of proper mock typing:</strong>
+    </p>
+    <ul>
+        <li><strong>Type safety:</strong> Full IDE support and static analysis for both interface methods and PHPUnit mock methods</li>
+        <li><strong>Clean setup:</strong> Centralized mock creation in <code>setUp()</code> with typed class properties</li>
+        <li><strong>Better testing:</strong> Use <code>expects()</code>, <code>withConsecutive()</code>, and <code>never()</code> for comprehensive behavior verification</li>
+        <li><strong>Interface-first design:</strong> Custom interfaces that extend base functionality are cleaner than complex intersections</li>
+    </ul>
 </section>
 
 <section>
@@ -156,6 +177,27 @@
         <li>Use <code>vi.mock()</code> for complete module replacement</li>
         <li>Use <code>vi.spyOn()</code> for temporary method overrides</li>
         <li>Leverage TypeScript types with <code>vi.mocked()</code> for better IDE support</li>
+    </ul>
+</section>
+
+<section>
+    <h2>TypeScript Intersection Types for Mocks</h2>
+    <p>
+        TypeScript's intersection types are particularly powerful for mock objects, combining mock functionality 
+        with interface typing for full type safety:
+    </p>
+
+    <pre><code class="language-typescript">{{SNIPPET:mocking-best-practices/typescript-intersection-types-mocks.ts}}
+</code></pre>
+
+    <p>
+        <strong>TypeScript intersection type approaches:</strong>
+    </p>
+    <ul>
+        <li><strong><code>Mock&lt;any&gt; &amp; IInterface</code>:</strong> Combines Vitest mock functionality with interface typing</li>
+        <li><strong><code>Partial&lt;IInterface&gt; as IInterface</code>:</strong> Allows partial implementation of interface methods</li>
+        <li><strong><code>satisfies IInterface</code>:</strong> Modern TypeScript approach for better type inference</li>
+        <li><strong>Interface naming:</strong> TypeScript uses <code>I</code> prefix convention (Microsoft style)</li>
     </ul>
 </section>
 
