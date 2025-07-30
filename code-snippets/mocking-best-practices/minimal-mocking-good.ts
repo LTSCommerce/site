@@ -1,10 +1,10 @@
 // GOOD: Minimal mocking focused on external dependencies and side effects
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OrderService } from '../services/OrderService';
-import { PaymentGateway } from '../services/PaymentGateway';
-import { EmailService } from '../services/EmailService';
-import { InventoryService } from '../services/InventoryService';
-import { AuditLogger } from '../services/AuditLogger';
+import { IPaymentGateway } from '../interfaces/IPaymentGateway';
+import { IEmailService } from '../interfaces/IEmailService';
+import { IInventoryService } from '../interfaces/IInventoryService';
+import { IAuditLogger } from '../interfaces/IAuditLogger';
 
 describe('OrderService - Minimal Mocking (GOOD)', () => {
   let orderService: OrderService;
@@ -20,25 +20,25 @@ describe('OrderService - Minimal Mocking (GOOD)', () => {
       validateCard: vi.fn().mockReturnValue(true),
       calculateFees: vi.fn().mockReturnValue(2.50),
       // formatAmount: NOT MOCKED - it's a pure function
-    } as Partial<PaymentGateway> as PaymentGateway;
+    } as Partial<IPaymentGateway> as IPaymentGateway;
 
     const mockEmailService = {
       sendEmail: vi.fn().mockResolvedValue(true), // External service - mock it
       // formatTemplate: NOT MOCKED - it's internal logic we want to test
       // validateEmail: NOT MOCKED - it's a pure function
-    } as Partial<EmailService> as EmailService;
+    } as Partial<IEmailService> as IEmailService;
 
     const mockInventoryService = {
       checkStock: vi.fn().mockResolvedValue(true),     // External system - mock it
       reserveItems: vi.fn().mockResolvedValue({ success: true }), // Side effect - mock it
       // calculatePrice: NOT MOCKED - business logic we want to test
       // applyDiscount: NOT MOCKED - business logic we want to test
-    } as Partial<InventoryService> as InventoryService;
+    } as Partial<IInventoryService> as IInventoryService;
 
     const mockAuditLogger = {
       log: vi.fn(), // External logging - mock the side effect only
       // formatMessage: NOT MOCKED - formatting logic we want to test
-    } as Partial<AuditLogger> as AuditLogger;
+    } as Partial<IAuditLogger> as IAuditLogger;
 
     orderService = new OrderService(
       mockPaymentGateway,
@@ -80,7 +80,7 @@ describe('OrderService - Minimal Mocking (GOOD)', () => {
       processPayment: vi.fn().mockRejectedValue(new Error('Payment failed')),
       validateCard: vi.fn().mockReturnValue(true),
       calculateFees: vi.fn().mockReturnValue(2.50),
-    } as Partial<PaymentGateway> as PaymentGateway;
+    } as Partial<IPaymentGateway> as IPaymentGateway;
 
     // Use real implementations for everything else
     const realEmailService = new EmailService();
