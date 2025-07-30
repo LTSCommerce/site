@@ -20,8 +20,30 @@ interface ValidatableInterface
     public function validate(array $data): array;
 }
 
-// Service that requires multiple capabilities using intersection types
+// BETTER: Custom interfaces that extend base functionality
+interface LoggingPaymentProcessorInterface extends PaymentProcessorInterface, LoggableInterface
+{
+    // Combines payment processing with logging capability
+}
+
+interface LoggingValidatorInterface extends ValidatableInterface, LoggableInterface
+{
+    // Combines validation with logging capability
+}
+
+// Service using cleaner custom interfaces (RECOMMENDED)
 final class PaymentService 
+{
+    public function __construct(
+        private LoggingPaymentProcessorInterface $paymentGateway,
+        private LoggingValidatorInterface $validator
+    ) {}
+
+    // Same implementation as before...
+}
+
+// Alternative: Using intersection types (when you can't modify interfaces)
+final class PaymentServiceWithIntersectionTypes 
 {
     public function __construct(
         private PaymentProcessorInterface&LoggableInterface $paymentGateway,
@@ -51,29 +73,22 @@ final class PaymentService
     }
 }
 
-// Test demonstrating proper intersection type mocking with typed properties
+// Test demonstrating CLEAN approach with custom interfaces (RECOMMENDED)
 class PaymentServiceTest extends TestCase
 {
-    private PaymentProcessorInterface&LoggableInterface&MockObject $paymentGateway;
-    private ValidatableInterface&LoggableInterface&MockObject $validator;
+    private LoggingPaymentProcessorInterface&MockObject $paymentGateway;
+    private LoggingValidatorInterface&MockObject $validator;
     private PaymentService $paymentService;
 
     protected function setUp(): void
     {
         parent::setUp();
         
-        // Create intersection type mocks using PHPUnit 11's createMock()
-        $this->paymentGateway = $this->createStubForIntersectionOfInterfaces([
-            PaymentProcessorInterface::class,
-            LoggableInterface::class
-        ]);
+        // Much cleaner - single interface mocks
+        $this->paymentGateway = $this->createMock(LoggingPaymentProcessorInterface::class);
+        $this->validator = $this->createMock(LoggingValidatorInterface::class);
 
-        $this->validator = $this->createStubForIntersectionOfInterfaces([
-            ValidatableInterface::class,
-            LoggableInterface::class
-        ]);
-
-        // Create service with properly typed intersection dependencies
+        // Create service with clean interface dependencies
         $this->paymentService = new PaymentService($this->paymentGateway, $this->validator);
     }
 
@@ -177,6 +192,56 @@ class PaymentServiceTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertEquals('Insufficient funds', $result['error']);
         $this->assertEquals('INSUFFICIENT_FUNDS', $result['code']);
+    }
+}
+
+// Alternative test showing intersection types (when you can't modify interfaces)
+class PaymentServiceWithIntersectionTypesTest extends TestCase
+{
+    private PaymentProcessorInterface&LoggableInterface&MockObject $paymentGateway;
+    private ValidatableInterface&LoggableInterface&MockObject $validator;
+    private PaymentServiceWithIntersectionTypes $paymentService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        // Intersection type mocs - more complex but sometimes necessary
+        $this->paymentGateway = $this->createStubForIntersectionOfInterfaces([
+            PaymentProcessorInterface::class,
+            LoggableInterface::class
+        ]);
+
+        $this->validator = $this->createStubForIntersectionOfInterfaces([
+            ValidatableInterface::class,
+            LoggableInterface::class
+        ]);
+
+        $this->paymentService = new PaymentServiceWithIntersectionTypes(
+            $this->paymentGateway, 
+            $this->validator
+        );
+    }
+
+    public function testIntersectionTypesWork(): void
+    {
+        // Same test logic as before, demonstrating intersection types work
+        // but are more complex than custom interfaces
+        
+        $this->validator->method('validate')->willReturn([]);
+        $this->paymentGateway->method('processPayment')->willReturn([
+            'success' => true,
+            'transaction_id' => 'txn_456'
+        ]);
+
+        $result = $this->paymentService->processSecurePayment([
+            'amount' => 75.00,
+            'card_number' => '4111111111111111',
+            'expiry' => '12/25'
+        ]);
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('txn_456', $result['transaction_id']);
     }
 }
 
