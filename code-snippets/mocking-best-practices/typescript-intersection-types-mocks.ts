@@ -164,25 +164,22 @@ describe('UserRegistrationService - TypeScript Intersection Types', () => {
   });
 });
 
-// Alternative approach: Using Vitest's vi.mocked() utility
-describe('UserRegistrationService - Alternative Mock Typing', () => {
-  it('should work with vi.mocked utility', async () => {
-    // Create mocks using vi.mocked for better type inference
-    const userRepository = {
-      findById: vi.fn(),
-      save: vi.fn(),
-      findByEmail: vi.fn().mockResolvedValue(null),
-    } satisfies IUserRepository;
+// MODERN APPROACH: Using vi.Mocked<T> utility (RECOMMENDED)
+describe('UserRegistrationService - Modern vi.Mocked<T>', () => {
+  it('should work with vi.Mocked<T> utility', async () => {
+    // BEST: Modern Vitest approach with vi.Mocked<T>
+    const userRepository = {} as vi.Mocked<IUserRepository>;
+    userRepository.findById = vi.fn();
+    userRepository.save = vi.fn();
+    userRepository.findByEmail = vi.fn().mockResolvedValue(null);
 
-    const emailService = {
-      send: vi.fn(),
-      sendTemplate: vi.fn().mockResolvedValue(true),
-    } satisfies IEmailService;
+    const emailService = {} as vi.Mocked<IEmailService>;
+    emailService.send = vi.fn();
+    emailService.sendTemplate = vi.fn().mockResolvedValue(true);
 
-    const passwordHasher = {
-      hash: vi.fn().mockResolvedValue('hashed_password_456'),
-      verify: vi.fn(),
-    } satisfies IPasswordHasher;
+    const passwordHasher = {} as vi.Mocked<IPasswordHasher>;
+    passwordHasher.hash = vi.fn().mockResolvedValue('hashed_password_456');
+    passwordHasher.verify = vi.fn();
 
     const service = new UserRegistrationService(
       userRepository,
@@ -198,6 +195,43 @@ describe('UserRegistrationService - Alternative Mock Typing', () => {
     // Type-safe mock assertions
     expect(userRepository.findByEmail).toHaveBeenCalledWith('test2@example.com');
     expect(passwordHasher.hash).toHaveBeenCalledWith('secret123');
+  });
+});
+
+// ALTERNATIVE: satisfies approach for inline mock creation
+describe('UserRegistrationService - satisfies approach', () => {
+  it('should work with satisfies keyword', async () => {
+    // GOOD: satisfies ensures type compliance without losing inference
+    const userRepository = {
+      findById: vi.fn(),
+      save: vi.fn(),
+      findByEmail: vi.fn().mockResolvedValue(null),
+    } satisfies IUserRepository;
+
+    const emailService = {
+      send: vi.fn(),
+      sendTemplate: vi.fn().mockResolvedValue(true),
+    } satisfies IEmailService;
+
+    const passwordHasher = {
+      hash: vi.fn().mockResolvedValue('hashed_password_789'),
+      verify: vi.fn(),
+    } satisfies IPasswordHasher;
+
+    const service = new UserRegistrationService(
+      userRepository,
+      emailService,
+      passwordHasher
+    );
+
+    const user = await service.registerUser('test3@example.com', 'secret789');
+
+    expect(user.email).toBe('test3@example.com');
+    expect(user.passwordHash).toBe('hashed_password_789');
+    
+    // Type-safe mock assertions
+    expect(userRepository.findByEmail).toHaveBeenCalledWith('test3@example.com');
+    expect(passwordHasher.hash).toHaveBeenCalledWith('secret789');
   });
 });
 
