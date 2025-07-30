@@ -12,7 +12,8 @@ const articles = [
     "excerpt": "Learn when to mock and when not to mock in unit tests. Discover why over-mocking creates brittle, unmaintainable tests and how to write better tests with minimal mocking using TypeScript, Vitest, and PHPUnit.",
     "category": "php",
     "date": "2025-07-30",
-    "slug": "mocking-best-practices"
+    "slug": "mocking-best-practices",
+    "readingTime": "10"
   },
   {
     "id": 7,
@@ -20,7 +21,8 @@ const articles = [
     "excerpt": "Master PHP magic constants (__FILE__, __METHOD__, __CLASS__, etc.) to build contextual logging systems with Monolog and PSR-3 that automatically track execution flow and debugging information.",
     "category": "php",
     "date": "2025-07-28",
-    "slug": "php-magic-constants-maintainable-logging"
+    "slug": "php-magic-constants-maintainable-logging",
+    "readingTime": "12"
   },
   {
     "id": 999,
@@ -28,7 +30,8 @@ const articles = [
     "excerpt": "Discover how LTS PHP-QA-CI provides a complete, production-ready QA pipeline with 12+ integrated tools through a single Composer dependency. Learn configuration, customization, and CI/CD integration strategies.",
     "category": "php",
     "date": "2025-07-25",
-    "slug": "php-qa-ci-comprehensive-quality-pipeline"
+    "slug": "php-qa-ci-comprehensive-quality-pipeline",
+    "readingTime": "15"
   },
   {
     "id": 22,
@@ -36,7 +39,8 @@ const articles = [
     "excerpt": "Understanding PHP Evolving Recommendations (PER), how to enforce them with QA tools, and why PER Coding Style is the future of PHP standards.",
     "category": "php",
     "date": "2025-07-24",
-    "slug": "php-per-coding-style-evolution"
+    "slug": "php-per-coding-style-evolution",
+    "readingTime": "12"
   },
   {
     "id": 233,
@@ -44,7 +48,8 @@ const articles = [
     "excerpt": "Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardization.",
     "category": "typescript",
     "date": "2025-07-23",
-    "slug": "typescript-di-for-php-developers"
+    "slug": "typescript-di-for-php-developers",
+    "readingTime": "15"
   },
   {
     "id": 473,
@@ -52,7 +57,8 @@ const articles = [
     "excerpt": "An in-depth exploration of oclif, the enterprise-grade CLI framework from Salesforce. Learn best practices, pros and cons, and compare with alternatives.",
     "category": "typescript",
     "date": "2025-07-22",
-    "slug": "oclif-cli-framework-guide"
+    "slug": "oclif-cli-framework-guide",
+    "readingTime": "12"
   },
   {
     "id": 513,
@@ -60,7 +66,8 @@ const articles = [
     "excerpt": "A straightforward approach to creating mouse-responsive gradient text effects using CSS custom properties and vanilla JavaScript",
     "category": "php",
     "date": "2025-07-21",
-    "slug": "dynamic-gradient-headings"
+    "slug": "dynamic-gradient-headings",
+    "readingTime": "6"
   },
   {
     "id": 824,
@@ -68,7 +75,8 @@ const articles = [
     "excerpt": "Discover how the CC-Commands repository solves the pain points of managing custom Claude Code commands across multiple projects with elegant automation and intelligent synchronization.",
     "category": "ai",
     "date": "2025-07-18",
-    "slug": "claude-code-custom-commands-cc-commands"
+    "slug": "claude-code-custom-commands-cc-commands",
+    "readingTime": "5"
   },
   {
     "id": 12,
@@ -76,7 +84,8 @@ const articles = [
     "excerpt": "Discover the groundbreaking features of Fedora 42, including KDE Plasma promotion to full edition status, the revolutionary COSMIC desktop environment, and the modernized Anaconda WebUI installer that transforms Linux computing.",
     "category": "infrastructure",
     "date": "2025-07-18",
-    "slug": "fedora-42-breakthrough-features"
+    "slug": "fedora-42-breakthrough-features",
+    "readingTime": "5"
   },
   {
     "id": 869,
@@ -84,7 +93,8 @@ const articles = [
     "excerpt": "Deep dive into Ansible fact caching limitations with --limit operations and the lack of dynamic cache location configuration for multi-environment deployments.",
     "category": "infrastructure",
     "date": "2025-01-29",
-    "slug": "ansible-fact-caching-problems"
+    "slug": "ansible-fact-caching-problems",
+    "readingTime": "10"
   },
   {
     "id": 459,
@@ -92,7 +102,8 @@ const articles = [
     "excerpt": "Strategies for modernizing legacy PHP codebases and managing technical debt effectively",
     "category": "php",
     "date": "2025-01-15",
-    "slug": "legacy-php-modernization"
+    "slug": "legacy-php-modernization",
+    "readingTime": "5"
   },
   {
     "id": 690,
@@ -100,7 +111,8 @@ const articles = [
     "excerpt": "Complete guide to automating PHP infrastructure deployment and management using Ansible",
     "category": "infrastructure",
     "date": "2025-01-10",
-    "slug": "ansible-php-infrastructure"
+    "slug": "ansible-php-infrastructure",
+    "readingTime": "5"
   },
   {
     "id": 656,
@@ -108,7 +120,8 @@ const articles = [
     "excerpt": "Comparative analysis of Proxmox private cloud vs public cloud solutions for enterprise infrastructure",
     "category": "infrastructure",
     "date": "2025-01-05",
-    "slug": "proxmox-vs-cloud"
+    "slug": "proxmox-vs-cloud",
+    "readingTime": "5"
   },
   {
     "id": 5,
@@ -116,7 +129,8 @@ const articles = [
     "excerpt": "Advanced PHP optimization techniques for high-performance applications and systems",
     "category": "php",
     "date": "2024-12-28",
-    "slug": "high-performance-php"
+    "slug": "high-performance-php",
+    "readingTime": "5"
   },
   {
     "id": 155,
@@ -124,7 +138,8 @@ const articles = [
     "excerpt": "Database optimization strategies specifically tailored for bespoke PHP systems with complex queries",
     "category": "database",
     "date": "2024-12-20",
-    "slug": "mysql-performance-php"
+    "slug": "mysql-performance-php",
+    "readingTime": "5"
   },
   {
     "id": 671,
@@ -132,7 +147,8 @@ const articles = [
     "excerpt": "Comprehensive guide to building scalable, maintainable PHP APIs using modern architecture patterns",
     "category": "php",
     "date": "2024-12-15",
-    "slug": "scalable-php-apis"
+    "slug": "scalable-php-apis",
+    "readingTime": "5"
   },
   {
     "id": 675,
@@ -140,7 +156,8 @@ const articles = [
     "excerpt": "Modern PHP development enhanced with AI tools and workflows for increased productivity and code quality",
     "category": "ai",
     "date": "2024-12-10",
-    "slug": "ai-enhanced-php-development"
+    "slug": "ai-enhanced-php-development",
+    "readingTime": "5"
   }
 ];
 
@@ -282,16 +299,19 @@ class ArticleManager {
     const categoryLabel = categories[article.category]?.label || article.category;
     
     return `
-      <article class="article-card" style="opacity: 0; transform: translateY(20px);">
+      <article class="article-card" style="opacity: 0; transform: translateY(20px);" data-category="${article.category}">
         <div class="article-meta">
-          <span class="article-category ${article.category}">${categoryLabel}</span>
-          <time>${date}</time>
+          <span class="article-category article-category-${article.category}">${categoryLabel}</span>
+          <time class="article-date" datetime="${article.date}">${date}</time>
         </div>
-        <a href="/articles/${article.slug}.html" class="article-title">${article.title}</a>
+        <h2 class="article-title">
+          <a href="/articles/${article.slug}.html">${article.title}</a>
+        </h2>
         <p class="article-excerpt">${article.excerpt}</p>
-        <a href="/articles/${article.slug}.html" class="article-read-more">
-          Read more →
-        </a>
+        <div class="article-footer">
+          <a href="/articles/${article.slug}.html" class="read-more">Read Article</a>
+          <span class="reading-time">~${article.readingTime || '5'} min read</span>
+        </div>
       </article>
     `;
   }

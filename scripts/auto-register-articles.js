@@ -132,7 +132,8 @@ function generateArticlesJS(articles) {
     excerpt: article.excerpt,
     category: article.category,
     date: article.date,
-    slug: article.slug
+    slug: article.slug,
+    readingTime: article.readingTime
   }));
   
   // Load categories data
