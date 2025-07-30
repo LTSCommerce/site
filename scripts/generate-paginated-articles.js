@@ -23,7 +23,7 @@ const projectRoot = path.join(__dirname, '..');
 console.log('🔧 Generating paginated article pages...\n');
 
 // Configuration
-const ARTICLES_PER_PAGE = 10;
+const ARTICLES_PER_PAGE = 9;
 
 // Load necessary data
 function loadTemplateData() {
