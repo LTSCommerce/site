@@ -7,6 +7,14 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 223,
+    "title": "Mocking in Tests: Like Hot Sauce - A Little Goes a Long Way",
+    "excerpt": "Learn when to mock and when not to mock in unit tests. Discover why over-mocking creates brittle, unmaintainable tests and how to write better tests with minimal mocking using TypeScript, Vitest, and PHPUnit.",
+    "category": "php",
+    "date": "2025-07-30",
+    "slug": "mocking-best-practices"
+  },
+  {
     "id": 7,
     "title": "PHP Magic Constants for Maintainable Logging Systems",
     "excerpt": "Master PHP magic constants (__FILE__, __METHOD__, __CLASS__, etc.) to build contextual logging systems with Monolog and PSR-3 that automatically track execution flow and debugging information.",

@@ -1,0 +1,326 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'Mocking in Tests: Like Hot Sauce - A Little Goes a Long Way',
+    articleDescription: 'Learn when to mock and when not to mock in unit tests. Discover why over-mocking creates brittle, unmaintainable tests and how to write better tests with minimal mocking using TypeScript, Vitest, and PHPUnit.',
+    articleDate: '2025-07-30',
+    articleCategory: 'php',
+    articleReadingTime: '10',
+    articleContent: `
+<div class="intro">
+    <p class="lead">
+        Mocking in unit tests is like hot sauce - a little bit enhances the flavor, but too much ruins the meal. 
+        Yet many developers drown their tests in mocks, creating brittle, unreadable test suites that break with 
+        every refactor. Let's explore when to mock, when not to mock, and how to write maintainable tests that 
+        actually test what matters.
+    </p>
+</div>
+
+<section>
+    <h2>The Hot Sauce Analogy</h2>
+    <p>
+        When you're cooking a great meal, you don't dump hot sauce on everything. A few drops on the right spots 
+        enhance the flavors you've carefully built. Use too much, and you can't taste anything else. The same 
+        principle applies to mocking in tests.
+    </p>
+    <p>
+        Mocks should isolate your code from external dependencies - databases, APIs, file systems. They shouldn't 
+        replace the very business logic you're trying to test. When your test setup has more mock configurations 
+        than actual test logic, something's wrong.
+    </p>
+</section>
+
+<section>
+    <h2>What Mocking Is (And Isn't)</h2>
+    <p>
+        <strong>Mocking is:</strong> Creating fake implementations of dependencies to isolate the code under test 
+        from external systems and side effects. It helps make tests fast, deterministic, and focused.
+    </p>
+    <p>
+        <strong>Mocking isn't:</strong> A way to avoid testing your actual business logic. It's not a substitute 
+        for proper dependency injection or good architecture. And it's definitely not something you should do 
+        to every single dependency.
+    </p>
+    
+    <h3>When to Mock</h3>
+    <ul>
+        <li><strong>External systems:</strong> Databases, HTTP APIs, file systems, third-party services</li>
+        <li><strong>Side effects:</strong> Logging, email sending, event publishing, notifications</li>
+        <li><strong>Non-deterministic operations:</strong> Random number generation, current timestamps</li>
+        <li><strong>Slow or expensive operations:</strong> Complex calculations, image processing</li>
+    </ul>
+
+    <h3>When NOT to Mock</h3>
+    <ul>
+        <li><strong>Business logic:</strong> The core functionality you're trying to test</li>
+        <li><strong>Pure functions:</strong> Calculations, validations, transformations</li>
+        <li><strong>Value objects:</strong> Simple data structures and DTOs</li>
+        <li><strong>Internal collaborators:</strong> Objects that are part of the same bounded context</li>
+    </ul>
+</section>
+
+<section>
+    <h2>The Problems with Over-Mocking</h2>
+    
+    <h3>1. Brittle Tests</h3>
+    <p>
+        When you mock everything, your tests become coupled to implementation details rather than behavior. 
+        Change how a method is called internally, and tests break even though the external behavior is identical.
+    </p>
+
+    <h3>2. Unclear Intent</h3>
+    <p>
+        Tests should clearly communicate what the code does. When most of your test is mock setup, it's hard 
+        to understand what behavior is actually being verified.
+    </p>
+
+    <h3>3. False Confidence</h3>
+    <p>
+        Over-mocked tests can pass while the real system fails. You're testing your mocks, not your actual code.
+    </p>
+
+    <h3>4. Maintenance Nightmare</h3>
+    <p>
+        Every refactor requires updating dozens of mock expectations. Tests that should help you refactor 
+        safely become obstacles to change.
+    </p>
+</section>
+
+<section>
+    <h2>Over-Mocking Example: The Horror Show</h2>
+    <p>
+        Here's an example of a test that's gone completely overboard with mocking. Notice how the test setup 
+        is longer than the actual test, and how it's testing implementation details rather than behavior:
+    </p>
+
+    <pre><code class="language-typescript">{{SNIPPET:mocking-best-practices/over-mocking-bad.ts}}
+</code></pre>
+
+    <p>
+        This test is a maintenance nightmare. It's brittle, unclear, and provides false confidence. The mock 
+        setup is so complex that it's hard to understand what the code actually does.
+    </p>
+</section>
+
+<section>
+    <h2>Minimal Mocking: The Right Way</h2>
+    <p>
+        Here's the same test rewritten with minimal mocking. Notice how we only mock external dependencies 
+        and side effects, while using real implementations for business logic:
+    </p>
+
+    <pre><code class="language-typescript">{{SNIPPET:mocking-best-practices/minimal-mocking-good.ts}}
+</code></pre>
+
+    <p>
+        This version is clearer, more maintainable, and actually tests the business logic. The mocks serve 
+        their purpose - isolating external dependencies - without obscuring the intent.
+    </p>
+</section>
+
+<section>
+    <h2>PHPUnit: The Same Principles Apply</h2>
+    <p>
+        The over-mocking problem isn't unique to JavaScript. Here's how it manifests in PHP with PHPUnit, 
+        and how to fix it:
+    </p>
+
+    <h3>The Wrong Way: Everything Mocked</h3>
+    <pre><code class="language-php">{{SNIPPET:mocking-best-practices/phpunit-over-mocking-bad.php}}
+</code></pre>
+
+    <h3>The Right Way: Minimal Mocking</h3>
+    <pre><code class="language-php">{{SNIPPET:mocking-best-practices/phpunit-minimal-mocking-good.php}}
+</code></pre>
+
+    <p>
+        In PHP 8.4 and modern development, you'll often encounter <code>final</code> classes that can't be 
+        mocked by default. Use the <a href="https://github.com/dg/bypass-finals" target="_blank" rel="noopener">dg/bypass-finals</a> 
+        library when you genuinely need to mock final classes, but question whether you really need to.
+    </p>
+</section>
+
+<section>
+    <h2>Vitest Setup and Best Practices</h2>
+    <p>
+        With <a href="https://vitest.dev/guide/mocking" target="_blank" rel="noopener">Vitest</a>, proper mock cleanup and setup 
+        patterns help maintain test reliability:
+    </p>
+
+    <pre><code class="language-typescript">{{SNIPPET:mocking-best-practices/vitest-setup.ts}}
+</code></pre>
+
+    <p>
+        <strong>Key Vitest principles:</strong>
+    </p>
+    <ul>
+        <li>Use <code>vi.clearAllMocks()</code> in <code>beforeEach</code> to prevent test pollution</li>
+        <li>Use <code>vi.mock()</code> for complete module replacement</li>
+        <li>Use <code>vi.spyOn()</code> for temporary method overrides</li>
+        <li>Leverage TypeScript types with <code>vi.mocked()</code> for better IDE support</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Better Alternatives to Mocking</h2>
+    <p>
+        Sometimes the best mock is no mock at all. Here are architectural patterns that reduce the need for mocking:
+    </p>
+
+    <pre><code class="language-typescript">{{SNIPPET:mocking-best-practices/mock-alternatives.ts}}
+</code></pre>
+
+    <h3>Dependency Injection</h3>
+    <p>
+        Proper dependency injection makes your code testable without complex mocking. Inject interfaces, 
+        not concrete implementations.
+    </p>
+
+    <h3>Test Doubles</h3>
+    <p>
+        Simple fake implementations often work better than mocks. They're easier to understand and maintain, 
+        and they can evolve with your system.
+    </p>
+
+    <h3>Pure Functions</h3>
+    <p>
+        The more of your logic you can express as pure functions, the easier testing becomes. Pure functions 
+        need no mocks - just call them and verify the output.
+    </p>
+</section>
+
+<section>
+    <h2>The Mocking Decision Tree</h2>
+    <p>
+        Use this decision tree to determine whether something should be mocked:
+    </p>
+
+    <pre><code class="language-typescript">{{SNIPPET:mocking-best-practices/mocking-guidelines.ts}}
+</code></pre>
+
+    <h3>Questions to Ask Yourself</h3>
+    <ol>
+        <li><strong>Is it an external system?</strong> (Database, API, file system) → Mock it</li>
+        <li><strong>Does it have side effects?</strong> (Logging, email, events) → Mock it</li>
+        <li><strong>Is it non-deterministic?</strong> (Random, time-based) → Mock it</li>
+        <li><strong>Is it slow or expensive?</strong> → Consider mocking</li>
+        <li><strong>Is it business logic I want to test?</strong> → Don't mock it</li>
+    </ol>
+</section>
+
+<section>
+    <h2>Mocking Anti-Patterns to Avoid</h2>
+    
+    <h3>The "Mock Everything" Pattern</h3>
+    <p>
+        Creating mocks for every dependency, including value objects and pure functions. This leads to 
+        tests that break constantly and provide no real value.
+    </p>
+
+    <h3>The "Implementation Coupling" Pattern</h3>
+    <p>
+        Using <code>expect().toHaveBeenCalledWith()</code> for every mock interaction. This couples your 
+        tests to implementation details instead of behavior.
+    </p>
+
+    <h3>The "Mock Return Mock" Pattern</h3>
+    <p>
+        Mocks that return other mocks, creating complex nested mock hierarchies that are impossible to maintain.
+    </p>
+
+    <h3>The "Shared Mock State" Pattern</h3>
+    <p>
+        Reusing mock objects across tests without proper cleanup, leading to test interdependence and flaky tests.
+    </p>
+</section>
+
+<section>
+    <h2>Testing in Production: Real-World Guidelines</h2>
+    
+    <h3>The 80/20 Rule</h3>
+    <p>
+        In a well-architected system, about 80% of your business logic should be testable without mocks. 
+        The remaining 20% involves external integrations that genuinely need mocking.
+    </p>
+
+    <h3>Mock at the Boundaries</h3>
+    <p>
+        Mock at the edges of your system - where your code talks to external services. Keep the internal 
+        domain logic mock-free.
+    </p>
+
+    <h3>Integration Tests for Glue Code</h3>
+    <p>
+        Use integration tests to verify that your mocked components actually work together. Unit tests 
+        with mocks verify individual components; integration tests verify the whole system.
+    </p>
+</section>
+
+<section>
+    <h2>Modern Testing Tools and Frameworks</h2>
+    
+    <h3>TypeScript with Vitest (2025)</h3>
+    <p>
+        <a href="https://vitest.dev/" target="_blank" rel="noopener">Vitest</a> provides excellent TypeScript support 
+        and fast test execution. Unlike Jest, it doesn't auto-mock modules, forcing you to be intentional 
+        about what you mock.
+    </p>
+
+    <h3>PHP with PHPUnit 11+</h3>
+    <p>
+        Modern <a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a> versions work well with PHP 8.4's 
+        type system and provide better mock object APIs. Consider using 
+        <a href="https://github.com/mockery/mockery" target="_blank" rel="noopener">Mockery</a> for more expressive mock syntax.
+    </p>
+</section>
+
+<section>
+    <h2>Signs Your Tests Need Less Mock</h2>
+    <p>
+        Watch for these warning signs that indicate over-mocking:
+    </p>
+
+    <ul>
+        <li><strong>Mock setup is longer than the actual test</strong> - You're probably mocking too much</li>
+        <li><strong>Tests break when you refactor internal implementation</strong> - Tests are coupled to implementation</li>
+        <li><strong>You can't understand what the code does by reading the test</strong> - Too many mocks obscure intent</li>
+        <li><strong>Adding a new parameter breaks 20 tests</strong> - Over-mocked tests are brittle</li>
+        <li><strong>Mocks return other mocks</strong> - Your object graph is too complex</li>
+        <li><strong>You spend more time fixing tests than writing features</strong> - Technical debt from bad mocking</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Conclusion: The Hot Sauce Test</h2>
+    <p>
+        Before you add a mock to your test, ask yourself: "Is this mock like a drop of hot sauce that enhances 
+        the test, or am I drowning my test in mocks until I can't taste the actual logic anymore?"
+    </p>
+
+    <h3>Key Takeaways</h3>
+    <ul>
+        <li><strong>Mock external dependencies and side effects</strong> - databases, APIs, logging, email</li>
+        <li><strong>Don't mock business logic</strong> - test the real implementations</li>
+        <li><strong>Use dependency injection</strong> - makes testing easier without complex mocks</li>
+        <li><strong>Prefer test doubles over complex mocks</strong> - simpler and more maintainable</li>
+        <li><strong>Focus on behavior, not implementation</strong> - test what the code does, not how</li>
+        <li><strong>If your test is mostly mocks, reconsider your architecture</strong> - the problem might be design, not testing</li>
+    </ul>
+
+    <p>
+        Remember: good tests should help you refactor with confidence. If your tests break every time you 
+        change internal implementation details, you're not testing behavior - you're testing implementation. 
+        Use mocks like hot sauce: sparingly, purposefully, and only where they truly add value.
+    </p>
+</section>
+
+<section>
+    <h2>Further Reading</h2>
+    <ul>
+        <li><a href="https://vitest.dev/guide/mocking" target="_blank" rel="noopener">Vitest Mocking Guide</a> - Official documentation with TypeScript examples</li>
+        <li><a href="https://docs.phpunit.de/en/11.0/test-doubles.html" target="_blank" rel="noopener">PHPUnit Test Doubles</a> - Comprehensive guide to mocking in PHP</li>
+        <li><a href="https://martinfowler.com/articles/mocksArentStubs.html" target="_blank" rel="noopener">Mocks Aren't Stubs</a> - Martin Fowler's classic explanation of test doubles</li>
+        <li><a href="https://github.com/mockery/mockery" target="_blank" rel="noopener">Mockery</a> - Expressive mocking framework for PHP</li>
+        <li><a href="https://github.com/dg/bypass-finals" target="_blank" rel="noopener">Bypass Finals</a> - Tool for mocking final classes in PHP</li>
+    </ul>
+</section>
+    `
+}) %>
