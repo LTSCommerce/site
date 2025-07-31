@@ -141,14 +141,38 @@ function initializeDynamicGradients() {
         
         // Update CSS custom property for gradient angle
         document.documentElement.style.setProperty('--gradient-angle', `${angle}deg`);
+        
+        // Calculate complementary drop shadow position (inverted from mouse)
+        // Normalize mouse position to viewport percentage
+        const mouseX = (e.clientX / window.innerWidth) * 100;
+        const mouseY = (e.clientY / window.innerHeight) * 100;
+        
+        // Calculate shadow offset (subtle, opposite to mouse position)
+        // Shadow appears to be "cast" away from mouse position
+        const shadowX = (50 - mouseX) * 0.08; // Very subtle horizontal offset
+        const shadowY = (50 - mouseY) * 0.06; // Very subtle vertical offset
+        
+        // Update CSS custom properties for dynamic shadow
+        document.documentElement.style.setProperty('--shadow-x', `${shadowX}px`);
+        document.documentElement.style.setProperty('--shadow-y', `${shadowY}px`);
+        
+        // Calculate subtle blur based on distance from center
+        const distanceFromCenter = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY);
+        const blurIntensity = 2 + (distanceFromCenter / maxDistance) * 1; // 2-3px blur range
+        
+        document.documentElement.style.setProperty('--shadow-blur', `${blurIntensity}px`);
     }, 16); // 60fps
     
     // Add mouse move listener
     document.addEventListener('mousemove', dynamicGradientHandler);
     
-    // Reset to default angle when mouse leaves the window
+    // Reset to default values when mouse leaves the window
     document.addEventListener('mouseleave', () => {
         document.documentElement.style.setProperty('--gradient-angle', '135deg');
+        document.documentElement.style.setProperty('--shadow-x', '2px');
+        document.documentElement.style.setProperty('--shadow-y', '2px');
+        document.documentElement.style.setProperty('--shadow-blur', '2px');
     });
 }
 

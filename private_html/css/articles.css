@@ -731,6 +731,7 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-dynamic-card);
 }
 
 .article-card::before {
