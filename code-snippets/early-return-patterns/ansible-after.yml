@@ -1,0 +1,59 @@
+---
+# AFTER: Guard pattern with early failures and clear flow
+- name: Deploy application with guard pattern
+  hosts: web_servers  
+  any_errors_fatal: true  # Fail fast on any error
+  tasks:
+    # Guard clauses - validate prerequisites first
+    - name: Guard - Validate environment
+      fail:
+        msg: "Invalid environment '{{ app_environment }}'. Must be 'production' or 'staging'"
+      when: app_environment not in ['production', 'staging']
+      
+    - name: Guard - Check application jar exists
+      stat:
+        path: "/opt/{{ app_name }}/app.jar"
+      register: app_jar
+      failed_when: not app_jar.stat.exists
+      
+    - name: Guard - Verify nginx is running
+      service_facts:
+      failed_when: "'nginx' not in services or services['nginx'].state != 'running'"
+      
+    - name: Guard - Check disk space (minimum 1GB)
+      shell: df /opt --output=avail | tail -1
+      register: disk_space
+      failed_when: disk_space.stdout | int < 1000000
+      changed_when: false
+      
+    - name: Guard - Verify database connectivity
+      fail:
+        msg: "Database not ready for deployment"
+      when: not (database_ready | default(false))
+      
+    # Main deployment flow - clean and straightforward
+    - name: Stop application service
+      systemd:
+        name: "{{ app_name }}"
+        state: stopped
+      ignore_errors: true  # Service might not be running
+      
+    - name: Deploy new application version
+      copy:
+        src: "/tmp/{{ app_name }}-{{ version }}.jar"
+        dest: "/opt/{{ app_name }}/app.jar"
+        backup: true
+        
+    - name: Start and enable application service
+      systemd:
+        name: "{{ app_name }}"
+        state: started
+        enabled: true
+        
+    - name: Verify deployment success
+      uri:
+        url: "http://localhost:{{ app_port | default(8080) }}/health"
+        method: GET
+        status_code: 200
+      retries: 5
+      delay: 10

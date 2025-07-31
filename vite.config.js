@@ -48,6 +48,7 @@ export default defineConfig({
         'js/author': resolve(__dirname, 'private_html/js/author.js'),
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         // Article JavaScript entry points
+        'js/articles/early-return-patterns-cleaner-code': resolve(__dirname, 'private_html/js/articles/early-return-patterns-cleaner-code.js'),
         'js/articles/mocking-best-practices': resolve(__dirname, 'private_html/js/articles/mocking-best-practices.js'),
         'js/articles/php-magic-constants-maintainable-logging': resolve(__dirname, 'private_html/js/articles/php-magic-constants-maintainable-logging.js'),
         'js/articles/php-qa-ci-comprehensive-quality-pipeline': resolve(__dirname, 'private_html/js/articles/php-qa-ci-comprehensive-quality-pipeline.js'),

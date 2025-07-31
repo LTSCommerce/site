@@ -1,0 +1,42 @@
+---
+# BEFORE: Complex nested conditions in single task
+- name: Deploy application with nested conditions
+  hosts: web_servers
+  tasks:
+    - name: Complex deployment task with nested logic
+      block:
+        - name: Check all conditions and deploy
+          shell: |
+            if [ "{{ app_environment }}" = "production" ] || [ "{{ app_environment }}" = "staging" ]; then
+              if [ -f "/opt/{{ app_name }}/app.jar" ]; then
+                if systemctl is-active --quiet nginx; then
+                  if [ $(df /opt --output=avail | tail -1) -gt 1000000 ]; then
+                    if [ "{{ database_ready | default(false) }}" = "True" ]; then
+                      echo "Starting deployment..."
+                      systemctl stop {{ app_name }} || true
+                      cp /tmp/{{ app_name }}-{{ version }}.jar /opt/{{ app_name }}/app.jar
+                      systemctl start {{ app_name }}
+                      systemctl enable {{ app_name }}
+                      echo "Deployment completed successfully"
+                    else
+                      echo "Database not ready" >&2
+                      exit 1
+                    fi
+                  else
+                    echo "Insufficient disk space" >&2
+                    exit 1
+                  fi
+                else
+                  echo "Nginx not running" >&2
+                  exit 1
+                fi
+              else
+                echo "Application jar not found" >&2
+                exit 1
+              fi
+            else
+              echo "Invalid environment" >&2
+              exit 1
+            fi
+          register: deployment_result
+          failed_when: deployment_result.rc != 0
