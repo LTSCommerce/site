@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 416,
+    "title": "Early Return Patterns: Your Code's Best Exit Strategy",
+    "excerpt": "Master guard clauses and early return patterns across PHP, TypeScript, Bash, and Ansible to write cleaner, more maintainable code with reduced cognitive complexity",
+    "category": "php",
+    "date": "2025-07-31",
+    "slug": "early-return-patterns-cleaner-code",
+    "readingTime": "9"
+  },
+  {
     "id": 223,
     "title": "Mocking in Tests: Like Hot Sauce - A Little Goes a Long Way",
     "excerpt": "Learn when to mock and when not to mock in unit tests. Discover why over-mocking creates brittle, unmaintainable tests and how to write better tests with minimal mocking using TypeScript, Vitest, and PHPUnit.",
