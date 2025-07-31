@@ -21,6 +21,11 @@
     --gradient-angle: 135deg;
     --max-width: 1200px;
     
+    /* Dynamic Shadow Variables (synced with mouse movement) */
+    --shadow-x: 2px;
+    --shadow-y: 2px;
+    --shadow-blur: 2px;
+    
     /* Mathematical Spacing Scale (Fibonacci-inspired) */
     --spacing-xs: 0.5rem;    /* 8px */
     --spacing-sm: 0.8rem;    /* 13px */
@@ -40,6 +45,11 @@
     --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
     --shadow-elegant: 0 8px 32px rgba(0, 0, 0, 0.12);
     --shadow-dramatic: 0 20px 60px rgba(0, 0, 0, 0.15);
+    
+    /* Dynamic Shadows (mouse-responsive, very subtle) */
+    --shadow-dynamic-subtle: var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0, 0, 0, 0.04);
+    --shadow-dynamic-medium: var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0, 0, 0, 0.06);
+    --shadow-dynamic-card: var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0, 0, 0, 0.08);
     
     /* Border Radius Based on Golden Ratio */
     --radius-sm: 4px;
@@ -147,7 +157,7 @@ h2 {
     backdrop-filter: var(--blur-medium) saturate(180%);
     -webkit-backdrop-filter: var(--blur-medium) saturate(180%);
     transition: var(--transition-smooth);
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), var(--shadow-dynamic-subtle);
 }
 
 
@@ -364,7 +374,7 @@ h2 {
         var(--color-primary-dark) 100%
     );
     color: white;
-    box-shadow: var(--shadow-medium);
+    box-shadow: var(--shadow-medium), var(--shadow-dynamic-medium);
 }
 
 .btn-primary:hover {
@@ -442,7 +452,7 @@ h2 {
     padding: var(--spacing-lg);
     border-radius: var(--radius-lg);
     border: 1px solid rgba(229, 231, 235, 0.5);
-    box-shadow: var(--shadow-subtle);
+    box-shadow: var(--shadow-subtle), var(--shadow-dynamic-subtle);
     transition: var(--transition-smooth);
     position: relative;
     overflow: hidden;
