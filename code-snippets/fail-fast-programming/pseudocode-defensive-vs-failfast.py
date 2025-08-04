@@ -1,82 +1,53 @@
 # DEFENSIVE PROGRAMMING APPROACH ("Fingers Crossed")
-def process_order(order: dict, user: dict, inventory: dict) -> dict:
-    """
-    Defensive approach: Try to handle everything gracefully,
-    hide errors, and keep limping forward regardless of issues.
-    """
-    result = {"status": "processing"}
+function processOrder(order, user, inventory):
+    result = empty result object
     
-    if order and "id" in order and order["id"]:
-        if user and "permissions" in user:
-            if "order_process" in user["permissions"]:
-                if inventory and "items" in inventory:
-                    if order["item_id"] in inventory["items"]:
-                        item = inventory["items"].get(order["item_id"], {})
-                        quantity = item.get("quantity", 0)
-                        if quantity >= order.get("quantity", 1):
-                            # Finally, do the actual work buried 6 levels deep
-                            result["status"] = "success"
-                            result["processed"] = True
+    if order exists and has id:
+        if user exists and has permissions:
+            if user has order_process permission:
+                if inventory exists and has items:
+                    if item exists in inventory:
+                        if enough stock available:
+                            // Finally do the work, buried 6 levels deep
+                            set result to success
                         else:
-                            result["status"] = "warning"  # Hidden error!
-                            result["message"] = "Low stock"  # Vague!
+                            set result to warning  // Hidden error!
                     else:
-                        result["status"] = "warning"  # Another hidden issue
-                        result["message"] = "Item not found"
+                        set result to warning     // Another hidden issue
                 else:
-                    result["status"] = "error"  # Silent failure potential
-                    result["message"] = "Inventory unavailable"
+                    set result to error          // Silent failure potential
             else:
-                result["status"] = "error"
-                result["message"] = "Insufficient permissions"
+                set result to error
         else:
-            result["status"] = "error"
-            result["message"] = "User data incomplete"
+            set result to error
     else:
-        result["status"] = "error"
-        result["message"] = "Invalid order"
+        set result to error
     
-    return result  # Returns something, even when broken
+    return result  // Always returns something, even when broken
 
 
-# FAIL-FAST APPROACH ("Fail Loud and Clear")
-def process_order_fail_fast(order: dict, user: dict, inventory: dict) -> dict:
-    """
-    Fail-fast approach: Validate everything upfront, 
-    fail immediately with clear error messages.
-    """
-    # Guard clauses: Check prerequisites and fail fast
-    if not order or "id" not in order or not order["id"]:
-        raise ValueError("Order is missing or has no valid ID")
+# FAIL-FAST APPROACH ("Fail Loud and Clear")  
+function processOrderFailFast(order, user, inventory):
+    // Guard clauses: Check prerequisites and fail immediately
     
-    if not user or "permissions" not in user:
-        raise ValueError("User data is incomplete - missing permissions")
+    if order is null or missing id:
+        CRASH with "Order is missing or has no valid ID"
     
-    if "order_process" not in user["permissions"]:
-        raise PermissionError(f"User {user.get('id', 'unknown')} lacks order_process permission")
+    if user is null or missing permissions:
+        CRASH with "User data is incomplete - missing permissions"
     
-    if not inventory or "items" not in inventory:
-        raise RuntimeError("Inventory system is unavailable")
+    if user lacks order_process permission:
+        CRASH with "User lacks order_process permission"
     
-    if order["item_id"] not in inventory["items"]:
-        raise ValueError(f"Item {order['item_id']} not found in inventory")
+    if inventory is null or missing items:
+        CRASH with "Inventory system is unavailable"
     
-    item = inventory["items"][order["item_id"]]
-    requested_quantity = order.get("quantity", 1)
-    available_quantity = item.get("quantity", 0)
+    if item not found in inventory:
+        CRASH with "Item not found in inventory"
     
-    if available_quantity < requested_quantity:
-        raise ValueError(
-            f"Insufficient stock: requested {requested_quantity}, "
-            f"available {available_quantity} for item {order['item_id']}"
-        )
+    if insufficient stock:
+        CRASH with "Insufficient stock: requested X, available Y"
     
-    # All validations passed - do the actual work
-    # This code only executes when everything is guaranteed to be valid
-    return {
-        "status": "success",
-        "processed": True,
-        "order_id": order["id"],
-        "item_id": order["item_id"],
-        "quantity_processed": requested_quantity
-    }
+    // All validations passed - do the actual work
+    // This code only executes when everything is guaranteed valid
+    return success result
