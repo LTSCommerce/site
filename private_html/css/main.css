@@ -46,10 +46,20 @@
     --shadow-elegant: 0 8px 32px rgba(0, 0, 0, 0.12);
     --shadow-dramatic: 0 20px 60px rgba(0, 0, 0, 0.15);
     
-    /* Dynamic Shadows (mouse-responsive, very subtle) */
-    --shadow-dynamic-subtle: var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0, 0, 0, 0.04);
-    --shadow-dynamic-medium: var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0, 0, 0, 0.06);
-    --shadow-dynamic-card: var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0, 0, 0, 0.08);
+    /* Dynamic Shadows (mouse-responsive, tiered system) */
+    /* Tier 1: Small elements (buttons, badges, small cards) */
+    --shadow-dynamic-tier1: calc(var(--shadow-x) * 0.5) calc(var(--shadow-y) * 0.5) calc(var(--shadow-blur) * 0.5) rgba(0, 0, 0, 0.03);
+    
+    /* Tier 2: Medium elements (navigation, medium cards, form elements) */
+    --shadow-dynamic-tier2: var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0, 0, 0, 0.05);
+    
+    /* Tier 3: Large elements (article cards, main containers, hero sections) */
+    --shadow-dynamic-tier3: calc(var(--shadow-x) * 1.5) calc(var(--shadow-y) * 1.5) calc(var(--shadow-blur) * 1.2) rgba(0, 0, 0, 0.08);
+    
+    /* Legacy aliases for backward compatibility */
+    --shadow-dynamic-subtle: var(--shadow-dynamic-tier1);
+    --shadow-dynamic-medium: var(--shadow-dynamic-tier2);
+    --shadow-dynamic-card: var(--shadow-dynamic-tier3);
     
     /* Border Radius Based on Golden Ratio */
     --radius-sm: 4px;
@@ -157,7 +167,7 @@ h2 {
     backdrop-filter: var(--blur-medium) saturate(180%);
     -webkit-backdrop-filter: var(--blur-medium) saturate(180%);
     transition: var(--transition-smooth);
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), var(--shadow-dynamic-subtle);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), var(--shadow-dynamic-tier2);
 }
 
 
@@ -374,7 +384,7 @@ h2 {
         var(--color-primary-dark) 100%
     );
     color: white;
-    box-shadow: var(--shadow-medium), var(--shadow-dynamic-medium);
+    box-shadow: var(--shadow-medium), var(--shadow-dynamic-tier1);
 }
 
 .btn-primary:hover {
@@ -452,7 +462,7 @@ h2 {
     padding: var(--spacing-lg);
     border-radius: var(--radius-lg);
     border: 1px solid rgba(229, 231, 235, 0.5);
-    box-shadow: var(--shadow-subtle), var(--shadow-dynamic-subtle);
+    box-shadow: var(--shadow-subtle), var(--shadow-dynamic-tier2);
     transition: var(--transition-smooth);
     position: relative;
     overflow: hidden;

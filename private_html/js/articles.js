@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 268,
+    "title": "Fail Fast Programming: Why Your Code Should Crash Spectacularly",
+    "excerpt": "Master the fail-fast programming philosophy with practical examples in PHP 8.4, TypeScript, Bash, and Ansible. Learn to write high-trust code that fails early, clearly, and at the exact point of deviation from expectations.",
+    "category": "php",
+    "date": "2025-08-04",
+    "slug": "fail-fast-programming-philosophy",
+    "readingTime": "12"
+  },
+  {
     "id": 416,
     "title": "Early Return Patterns: Your Code's Best Exit Strategy",
     "excerpt": "Master guard clauses and early return patterns across PHP, TypeScript, Bash, and Ansible to write cleaner, more maintainable code with reduced cognitive complexity",

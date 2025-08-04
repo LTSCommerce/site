@@ -37,6 +37,7 @@
     font-size: 0.9rem;
     transition: all 0.2s ease;
     cursor: pointer;
+    box-shadow: var(--shadow-dynamic-tier1);
 }
 
 .pagination-link:hover {
@@ -679,6 +680,7 @@
     transition: var(--transition);
     font-family: var(--font-main);
     margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-dynamic-tier2);
 }
 
 .search-input:focus {
@@ -702,6 +704,7 @@
     cursor: pointer;
     transition: var(--transition);
     font-family: var(--font-main);
+    box-shadow: var(--shadow-dynamic-tier1);
 }
 
 .filter-btn:hover {
@@ -804,6 +807,7 @@
 
 .article-title:hover {
     color: var(--color-primary);
+    text-decoration: underline;
 }
 
 .article-excerpt {

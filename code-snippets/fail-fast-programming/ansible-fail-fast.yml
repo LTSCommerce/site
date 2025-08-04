@@ -1,0 +1,180 @@
+# ANTI-PATTERN: Ansible playbook with hidden failures and poor error handling
+---
+- name: Deploy Application (Defensive Approach)
+  hosts: web_servers
+  gather_facts: no
+  vars:
+    app_name: "{{ app_name | default('myapp') }}"  # Default hides missing vars
+    app_version: "{{ app_version | default('latest') }}"
+    environment: "{{ environment | default('dev') }}"
+  
+  tasks:
+    - name: Try to create app directory
+      file:
+        path: "/opt/apps/{{ app_name }}"
+        state: directory
+        mode: '0755'
+      ignore_errors: yes  # Anti-pattern: Ignore failures
+      
+    - name: Attempt to download package
+      get_url:
+        url: "https://releases.example.com/{{ app_name }}/{{ app_version }}.tar.gz"
+        dest: "/tmp/{{ app_name }}.tar.gz"
+        timeout: 30
+      ignore_errors: yes  # Anti-pattern: Continue even if download fails
+      register: download_result
+      
+    - name: Try to extract package
+      unarchive:
+        src: "/tmp/{{ app_name }}.tar.gz"
+        dest: "/opt/apps/{{ app_name }}"
+        remote_src: yes
+      ignore_errors: yes  # Anti-pattern: Ignore extraction failures
+      when: download_result is not failed  # But this condition might not work as expected
+
+
+# FAIL-FAST APPROACH: Explicit validation with immediate failure
+---
+- name: Deploy Application (Fail-Fast Approach)  
+  hosts: web_servers
+  gather_facts: yes
+  any_errors_fatal: true  # Fail fast across all hosts
+  vars:
+    required_disk_space_mb: 1024
+    app_timeout_seconds: 60
+  
+  pre_tasks:
+    # Guard clause: Validate all required variables are defined
+    - name: Validate required variables are defined
+      assert:
+        that:
+          - app_name is defined
+          - app_name | length > 0
+          - app_version is defined
+          - app_version | regex_search('^[0-9]+\.[0-9]+\.[0-9]+$')
+          - environment is defined
+          - environment in ['dev', 'staging', 'prod']
+        fail_msg: |
+          Required variables missing or invalid:
+          - app_name: {{ app_name | default('UNDEFINED') }}
+          - app_version: {{ app_version | default('UNDEFINED') }} (must be semver format)
+          - environment: {{ environment | default('UNDEFINED') }} (must be dev/staging/prod)
+        success_msg: "All required variables validated successfully"
+    
+    # Guard clause: Validate system prerequisites
+    - name: Check required commands are available
+      command: "which {{ item }}"
+      loop:
+        - wget
+        - tar
+        - systemctl
+      changed_when: false
+      failed_when: false
+      register: command_check
+      
+    - name: Fail if required commands are missing
+      fail:
+        msg: "Required command '{{ item.item }}' not found on {{ inventory_hostname }}"
+      when: item.rc != 0
+      loop: "{{ command_check.results }}"
+    
+    # Guard clause: Validate sufficient disk space
+    - name: Check available disk space in /opt/apps
+      shell: df /opt/apps --output=avail | tail -n1
+      register: disk_space_check
+      changed_when: false
+      
+    - name: Fail if insufficient disk space
+      fail:
+        msg: |
+          Insufficient disk space on {{ inventory_hostname }}:
+          Required: {{ required_disk_space_mb }}MB
+          Available: {{ disk_space_check.stdout | int // 1024 }}MB
+      when: (disk_space_check.stdout | int // 1024) < required_disk_space_mb
+      
+    # Guard clause: Validate package availability before proceeding
+    - name: Verify package exists and is accessible
+      uri:
+        url: "https://releases.example.com/{{ app_name }}/{{ app_version }}.tar.gz"
+        method: HEAD
+        timeout: 30
+      register: package_check
+      failed_when: package_check.status != 200
+      
+  tasks:
+    # All prerequisites validated - safe to proceed with deployment
+    - name: Create application directory
+      file:
+        path: "/opt/apps/{{ app_name }}"
+        state: directory
+        mode: '0755'
+        owner: appuser
+        group: appgroup
+      # No ignore_errors - let it fail fast if permissions are wrong
+      
+    - name: Download application package
+      get_url:
+        url: "https://releases.example.com/{{ app_name }}/{{ app_version }}.tar.gz"
+        dest: "/tmp/{{ app_name }}-{{ app_version }}.tar.gz"
+        timeout: "{{ app_timeout_seconds }}"
+        checksum: "sha256:{{ package_checksum | default(omit) }}"
+      register: download_result
+      # No ignore_errors - fail fast on download issues
+      
+    - name: Validate downloaded package integrity
+      command: tar -tzf "/tmp/{{ app_name }}-{{ app_version }}.tar.gz"
+      changed_when: false
+      # Fail fast if package is corrupted
+      
+    - name: Extract application package
+      unarchive:
+        src: "/tmp/{{ app_name }}-{{ app_version }}.tar.gz"
+        dest: "/opt/apps/{{ app_name }}"
+        remote_src: yes
+        owner: appuser
+        group: appgroup
+        creates: "/opt/apps/{{ app_name }}/VERSION"
+      notify: restart application service
+      
+    - name: Verify deployment by checking version file
+      stat:
+        path: "/opt/apps/{{ app_name }}/VERSION"
+      register: version_file
+      failed_when: not version_file.stat.exists
+      
+    - name: Validate deployed version matches expected
+      command: cat "/opt/apps/{{ app_name }}/VERSION"
+      register: deployed_version
+      changed_when: false
+      failed_when: deployed_version.stdout.strip() != app_version
+      
+  post_tasks:
+    # Guard clause: Verify service can start successfully
+    - name: Attempt to start application service
+      systemd:
+        name: "{{ app_name }}"
+        state: started
+        enabled: yes
+      register: service_start
+      
+    - name: Wait for application to become healthy
+      uri:
+        url: "http://localhost:8080/health"
+        method: GET
+        timeout: 30
+      retries: 5
+      delay: 10
+      register: health_check
+      until: health_check.status == 200
+      
+    - name: Clean up temporary files
+      file:
+        path: "/tmp/{{ app_name }}-{{ app_version }}.tar.gz"
+        state: absent
+        
+  handlers:
+    - name: restart application service
+      systemd:
+        name: "{{ app_name }}"
+        state: restarted
+        daemon_reload: yes
