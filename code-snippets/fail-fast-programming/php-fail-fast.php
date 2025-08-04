@@ -10,6 +10,14 @@ class FailFastOrderProcessor
         $orderData = $orderData ?? throw new InvalidArgumentException('Order data cannot be null');
         
         // Extract required fields with fail-fast validation
+        // Note: Use ?? (null coalescing) not ?: (Elvis operator)
+        // ?: does type coercion (treats 0, '', false as falsy) which hides valid values
+        // ?? only checks for null/undefined, preserving all other values including 0, '', false
+        //
+        // WRONG: $quantity = $orderData['quantity'] ?: throw new Exception('Missing quantity');
+        // This would throw even if quantity = 0, hiding a valid edge case!
+        //
+        // CORRECT: Only throw when the key is actually missing (null/undefined)
         $orderId = $orderData['id'] ?? throw new InvalidArgumentException('Order must have a valid ID');
         $userId = $orderData['user_id'] ?? throw new InvalidArgumentException('Order must have a valid user_id');
         $itemId = $orderData['item_id'] ?? throw new InvalidArgumentException('Order must specify a valid item_id');
