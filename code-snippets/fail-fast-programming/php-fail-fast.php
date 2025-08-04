@@ -6,32 +6,27 @@ class FailFastOrderProcessor
 {
     public function processOrder(?array $orderData): array
     {
-        // Guard clause: Validate order data exists and is properly structured
-        if ($orderData === null) {
-            throw new InvalidArgumentException('Order data cannot be null');
+        // Fail-fast validation using null coalescing throw operator (PHP 8.0+)
+        $orderData = $orderData ?? throw new InvalidArgumentException('Order data cannot be null');
+        
+        // Extract required fields with fail-fast validation
+        $orderId = $orderData['id'] ?? throw new InvalidArgumentException('Order must have a valid ID');
+        $userId = $orderData['user_id'] ?? throw new InvalidArgumentException('Order must have a valid user_id');
+        $itemId = $orderData['item_id'] ?? throw new InvalidArgumentException('Order must specify a valid item_id');
+        $quantity = $orderData['quantity'] ?? throw new InvalidArgumentException('Order must specify quantity');
+        
+        // Additional type and value validation with clear failure points
+        if (!is_int($userId) || $userId <= 0) {
+            throw new InvalidArgumentException("Invalid user_id: expected positive integer, got " . gettype($userId));
         }
         
-        if (!isset($orderData['id']) || empty($orderData['id'])) {
-            throw new InvalidArgumentException('Order must have a valid ID');
+        if (!is_string($itemId) || empty($itemId)) {
+            throw new InvalidArgumentException("Invalid item_id: expected non-empty string, got " . gettype($itemId));
         }
         
-        if (!isset($orderData['user_id']) || !is_int($orderData['user_id']) || $orderData['user_id'] <= 0) {
-            throw new InvalidArgumentException('Order must have a valid user_id');
+        if (!is_int($quantity) || $quantity <= 0) {
+            throw new InvalidArgumentException("Invalid quantity: expected positive integer, got " . gettype($quantity));
         }
-        
-        if (!isset($orderData['item_id']) || empty($orderData['item_id'])) {
-            throw new InvalidArgumentException('Order must specify a valid item_id');
-        }
-        
-        if (!isset($orderData['quantity']) || !is_int($orderData['quantity']) || $orderData['quantity'] <= 0) {
-            throw new InvalidArgumentException('Order quantity must be a positive integer');
-        }
-        
-        // All basic validation passed - extract the validated data
-        $orderId = $orderData['id'];
-        $userId = $orderData['user_id'];
-        $itemId = $orderData['item_id'];
-        $quantity = $orderData['quantity'];
         
         // Guard clause: Validate user exists and has permissions
         $user = $this->getUserOrFail($userId);
@@ -64,11 +59,9 @@ class FailFastOrderProcessor
             $result = $this->database->query('SELECT * FROM users WHERE id = ?', [$userId]);
             $user = $result->fetch();
             
-            if ($user === false) {
-                throw new UserNotFoundException("User with ID {$userId} not found");
-            }
+            // Fail-fast with null coalescing throw
+            return $user ?? throw new UserNotFoundException("User with ID {$userId} not found");
             
-            return $user;
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to fetch user {$userId}: " . $e->getMessage(), 0, $e);
         }
@@ -106,11 +99,9 @@ class FailFastOrderProcessor
             $result = $this->database->query('SELECT * FROM inventory WHERE item_id = ?', [$itemId]);
             $item = $result->fetch();
             
-            if ($item === false) {
-                throw new ItemNotFoundException("Item '{$itemId}' not found in inventory");
-            }
+            // Fail-fast with null coalescing throw
+            return $item ?? throw new ItemNotFoundException("Item '{$itemId}' not found in inventory");
             
-            return $item;
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to fetch item {$itemId}: " . $e->getMessage(), 0, $e);
         }
