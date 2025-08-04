@@ -59,9 +59,12 @@ class FailFastOrderProcessor
             $result = $this->database->query('SELECT * FROM users WHERE id = ?', [$userId]);
             $user = $result->fetch();
             
-            // Fail-fast with null coalescing throw
-            return $user ?? throw new UserNotFoundException("User with ID {$userId} not found");
+            // PDO returns false (not null) when no rows found, so we need explicit check
+            if ($user === false) {
+                throw new UserNotFoundException("User with ID {$userId} not found");
+            }
             
+            return $user;
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to fetch user {$userId}: " . $e->getMessage(), 0, $e);
         }
@@ -99,9 +102,12 @@ class FailFastOrderProcessor
             $result = $this->database->query('SELECT * FROM inventory WHERE item_id = ?', [$itemId]);
             $item = $result->fetch();
             
-            // Fail-fast with null coalescing throw
-            return $item ?? throw new ItemNotFoundException("Item '{$itemId}' not found in inventory");
+            // PDO returns false (not null) when no rows found, so we need explicit check
+            if ($item === false) {
+                throw new ItemNotFoundException("Item '{$itemId}' not found in inventory");
+            }
             
+            return $item;
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to fetch item {$itemId}: " . $e->getMessage(), 0, $e);
         }
