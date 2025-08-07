@@ -1,0 +1,85 @@
+# Bad: YAGNI violation - Over-engineered "flexible" deployment
+---
+- name: Deploy application with excessive flexibility
+  hosts: "{{ target_environment | default('production') }}"
+  vars:
+    deployment_strategies:
+      - blue_green
+      - rolling
+      - canary  
+      - recreate
+    
+    supported_databases:
+      - mysql
+      - postgresql
+      - mongodb
+      - redis
+    
+    notification_channels:
+      - slack
+      - email
+      - webhook
+      - sms
+    
+    monitoring_integrations:
+      - datadog
+      - newrelic
+      - prometheus
+      - splunk
+  
+  tasks:
+    - name: Determine deployment strategy
+      set_fact:
+        deploy_strategy: "{{ deployment_strategy | default('rolling') }}"
+      when: deploy_strategy is not defined
+    
+    - name: Configure database based on type
+      include_tasks: "database/{{ database_type | default('mysql') }}.yml"
+      loop: "{{ supported_databases }}"
+      when: database_type == item
+    
+    - name: Setup monitoring for each integration
+      include_tasks: "monitoring/{{ item }}.yml"
+      loop: "{{ monitoring_integrations }}"
+      when: monitoring_enabled | default(false)
+    
+    - name: Deploy using strategy
+      include_tasks: "deploy/{{ deploy_strategy }}.yml"
+    
+    - name: Send notifications
+      include_tasks: "notifications/{{ item }}.yml" 
+      loop: "{{ notification_channels }}"
+      when: notifications_enabled | default(false)
+
+# Good: YAGNI applied - Simple, focused deployment
+---
+- name: Deploy PHP application
+  hosts: production
+  
+  tasks:
+    - name: Pull latest code
+      git:
+        repo: https://github.com/company/app.git
+        dest: /var/www/app
+        version: "{{ git_tag }}"
+      
+    - name: Install dependencies
+      composer:
+        command: install
+        working_dir: /var/www/app
+        no_dev: true
+        
+    - name: Run database migrations
+      command: php artisan migrate --force
+      args:
+        chdir: /var/www/app
+    
+    - name: Restart PHP-FPM
+      service:
+        name: php8.3-fpm
+        state: restarted
+        
+    - name: Clear application cache
+      command: php artisan cache:clear
+      args:
+        chdir: /var/www/app

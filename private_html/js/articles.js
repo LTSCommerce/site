@@ -133,6 +133,15 @@ const articles = [
     "readingTime": "5"
   },
   {
+    "id": 312,
+    "title": "Defensive Programming Principles: YAGNI, Invalid States, and Domain Purity",
+    "excerpt": "Master three fundamental defensive programming principles: YAGNI for avoiding unnecessary complexity, making invalid states unrepresentable through type safety, and maintaining domain object purity for clean architecture.",
+    "category": "php",
+    "date": "2025-01-08",
+    "slug": "defensive-programming-principles",
+    "readingTime": "14"
+  },
+  {
     "id": 656,
     "title": "Proxmox vs Cloud: Why Private Infrastructure Wins",
     "excerpt": "Comparative analysis of Proxmox private cloud vs public cloud solutions for enterprise infrastructure",
