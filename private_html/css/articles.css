@@ -189,6 +189,8 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    /* Mouse-responsive drop shadow */
+    filter: drop-shadow(var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0, 0, 0, 0.15));
     position: relative;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -308,6 +310,8 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    /* Mouse-responsive drop shadow (subtler for h2) */
+    filter: drop-shadow(calc(var(--shadow-x) * 0.8) calc(var(--shadow-y) * 0.8) calc(var(--shadow-blur) * 0.9) rgba(0, 0, 0, 0.12));
 }
 
 .article-container h2::before {
@@ -335,6 +339,8 @@
     line-height: var(--golden-line-height);
     position: relative;
     padding-left: var(--spacing-sm);
+    /* Mouse-responsive drop shadow (very subtle for h3) */
+    filter: drop-shadow(calc(var(--shadow-x) * 0.5) calc(var(--shadow-y) * 0.5) calc(var(--shadow-blur) * 0.7) rgba(0, 0, 0, 0.08));
 }
 
 .article-container h3::before {
