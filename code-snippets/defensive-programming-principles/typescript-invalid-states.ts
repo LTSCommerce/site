@@ -63,10 +63,10 @@ function createEmail(value: string): Email {
 
 function createHashedPassword(plaintext: string): HashedPassword {
   if (plaintext.length < 8) {
-    throw new Error('Password too short');
+    throw new Error('Password must be at least 8 characters');
   }
-  // In real code, use bcrypt or similar
-  const hashed = `$2b$10$${btoa(plaintext + 'salt')}`;
+  // In production: use bcrypt, scrypt, or Argon2
+  const hashed = `$2b$10$${btoa(plaintext + Math.random())}`;
   return hashed as HashedPassword;
 }
 

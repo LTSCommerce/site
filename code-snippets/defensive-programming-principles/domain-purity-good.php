@@ -1,13 +1,13 @@
 <?php
 
-// Good: Pure domain object with clean boundaries
-class Order 
+// Good: Pure domain object with clean boundaries  
+readonly class Order 
 {
     public function __construct(
-        private readonly OrderId $id,
-        private readonly CustomerId $customerId,
-        private readonly OrderItems $items,
-        private readonly Money $total,
+        private OrderId $id,
+        private CustomerId $customerId,
+        private OrderItems $items,
+        private Money $total,
         private OrderStatus $status = OrderStatus::PENDING
     ) {}
     
