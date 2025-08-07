@@ -157,6 +157,18 @@ h2 {
     filter: drop-shadow(calc(var(--shadow-x) * 0.8) calc(var(--shadow-y) * 0.8) calc(var(--shadow-blur) * 0.9) rgba(0, 0, 0, 0.12));
 }
 
+h3 {
+    background: linear-gradient(var(--gradient-angle), 
+        var(--color-text) 0%, 
+        var(--color-primary-dark) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    /* Mouse-responsive drop shadow (even more subtle for h3) */
+    filter: drop-shadow(calc(var(--shadow-x) * 0.6) calc(var(--shadow-y) * 0.6) calc(var(--shadow-blur) * 0.8) rgba(0, 0, 0, 0.10));
+}
+
 .container {
     max-width: var(--max-width);
     margin: 0 auto;
@@ -680,7 +692,7 @@ h2 {
     background: var(--surface);
     border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), var(--shadow-dynamic-tier2);
 }
 
 .data-table thead {
