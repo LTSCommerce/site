@@ -75,26 +75,47 @@ For proper code formatting that preserves indentation:
 3. **Use full paths**: Reference snippets with the complete directory path: `{{SNIPPET:article-slug-name/filename.ext}}`
 4. **IMPORTANT**: Always put closing `</code></pre>` tags on a new line
 
+**Multi-Language Article Requirements**:
+Every technical article must include examples in ALL of these languages **IN THIS ORDER**:
+1. **Pseudocode** (`.txt` files) - Conceptual explanation first
+2. **PHP** (`.php` files) - Current 8.4 syntax and best practices  
+3. **TypeScript** (`.ts` files) - Modern Node.js/TypeScript examples
+4. **Ansible** (`.yml` files) - Infrastructure automation playbooks
+5. **Bash** (`.sh` files) - Shell scripting with error handling
+
 **Directory Structure Example**:
 ```
 code-snippets/
-├── php-magic-constants-logging/
-│   ├── basic-magic-constants.php
-│   ├── enhanced-logger.php
-│   └── composer.json
-└── oclif/
-    ├── hello-command.js
-    └── typescript-example.ts
+├── defensive-programming-principles/
+│   ├── yagni-pseudocode.txt           # Pseudocode first
+│   ├── yagni-good-php.php             # PHP implementation
+│   ├── typescript-invalid-states.ts   # TypeScript examples
+│   ├── ansible-yagni.yml              # Ansible playbooks
+│   └── bash-defensive-patterns.sh     # Bash scripts
+└── php-magic-constants-logging/
+    ├── algorithm-pseudocode.txt        # Always start with pseudocode
+    ├── basic-magic-constants.php
+    ├── enhanced-logger.php
+    └── composer.json
 ```
+
+**Pseudocode File Extension Rule**:
+- **ALWAYS use `.txt` extension** for pseudocode files to clearly indicate they are conceptual, not real Python code
+- Use `language-python` for syntax highlighting, but content must be language-agnostic pseudocode
+- Examples: `CLASS UserService`, `METHOD validate() -> boolean`, `IF condition THEN action`
 
 **Article Template Usage**:
 ```html
-<!-- ✅ CORRECT: Full directory path -->
-<pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/basic-magic-constants.php}}
+<!-- ✅ CORRECT: Pseudocode first with .txt extension -->
+<pre><code class="language-python">{{SNIPPET:article-slug/concept-pseudocode.txt}}
 </code></pre>
 
-<!-- ❌ WRONG: Missing directory path -->
-<pre><code class="language-php">{{SNIPPET:basic-magic-constants.php}}
+<!-- ✅ CORRECT: Then specific language implementations -->
+<pre><code class="language-php">{{SNIPPET:article-slug/implementation.php}}
+</code></pre>
+
+<!-- ❌ WRONG: Using .py for pseudocode -->
+<pre><code class="language-python">{{SNIPPET:article-slug/pseudocode.py}}
 </code></pre>
 ```
 
@@ -289,6 +310,17 @@ The system will:
 
 Before publishing, verify:
 
+**Multi-Language Code Requirements:**
+- [ ] **PSEUDOCODE FIRST**: Every concept starts with language-agnostic pseudocode explanation  
+- [ ] **PSEUDOCODE FILE EXTENSION**: All pseudocode files use `.txt` extension (not `.py`)
+- [ ] **PRESENTATION ORDER**: Pseudocode (.txt) → PHP → TypeScript → Ansible → Bash
+- [ ] **PHP examples** using current 8.4 syntax and best practices (shown after pseudocode)
+- [ ] **TypeScript examples** with modern syntax and typing
+- [ ] **Ansible YAML examples** with proper task structure
+- [ ] **Bash script examples** with error handling and best practices
+- [ ] All examples demonstrate the same concepts across different implementation approaches
+
+**Content Quality:**
 - [ ] **Current research completed** - All version numbers and features verified through official sources
 - [ ] **No training data used** - Everything fact-checked with real-time research
 - [ ] **Dates are current** - No references to "recently" or "latest" without specific dates
