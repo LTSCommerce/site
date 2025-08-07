@@ -35,8 +35,10 @@ function injectCodeSnippets(html) {
       // Return the escaped snippet content
       return snippetContent;
     } catch (error) {
-      console.warn(`⚠️  Could not find snippet: ${snippetPath}`);
-      return match; // Return placeholder if snippet not found
+      console.error(`❌ FATAL ERROR: Missing code snippet: ${snippetPath}`);
+      console.error(`   Expected at: ${fullPath}`);
+      console.error(`   This will cause broken code examples in the published article!`);
+      process.exit(1); // FAIL THE BUILD IMMEDIATELY
     }
   });
 }
@@ -160,8 +162,12 @@ async function processEjsFiles() {
   // Find all EJS files in pages directory
   const ejsFiles = await glob('private_html/pages/**/*.ejs', { cwd: projectRoot });
   
-  // Also find article EJS files
-  const articleEjsFiles = await glob('private_html/articles/**/*.ejs', { cwd: projectRoot });
+  // Also find article EJS files (exclude templates starting with underscore)
+  const allArticleEjsFiles = await glob('private_html/articles/**/*.ejs', { cwd: projectRoot });
+  const articleEjsFiles = allArticleEjsFiles.filter(file => {
+    const fileName = path.basename(file);
+    return !fileName.startsWith('_'); // Exclude template files
+  });
   
   if (ejsFiles.length === 0) {
     console.log('No EJS files found to process');

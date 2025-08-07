@@ -49,7 +49,7 @@
         Consider this over-engineered caching system that violates YAGNI:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:yagni-violation-php.php}}
+    <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/yagni-violation-php.php}}
 </code></pre>
 
     <p>
@@ -64,7 +64,7 @@
         The YAGNI-compliant approach focuses on the actual requirement:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:yagni-good-php.php}}
+    <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/yagni-good-php.php}}
 </code></pre>
 
     <p>
@@ -79,7 +79,7 @@
         YAGNI applies equally well to infrastructure automation. Compare these Ansible playbooks:
     </p>
     
-    <pre><code class="language-yaml">{{SNIPPET:ansible-yagni.yml}}
+    <pre><code class="language-yaml">{{SNIPPET:defensive-programming-principles/ansible-yagni.yml}}
 </code></pre>
 
     <p>
@@ -115,7 +115,7 @@
         Traditional object-oriented code often allows invalid states to be represented:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:invalid-states-bad.php}}
+    <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/invalid-states-bad.php}}
 </code></pre>
 
     <p>
@@ -129,7 +129,7 @@
         PHP 8.4's enums, readonly classes, property hooks, and asymmetric visibility enable safer domain modeling:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:invalid-states-good.php}}
+    <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/invalid-states-good.php}}
 </code></pre>
 
     <p>
@@ -241,7 +241,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
         TypeScript's structural typing can be enhanced with branded types to achieve similar safety:
     </p>
     
-    <pre><code class="language-typescript">{{SNIPPET:typescript-invalid-states.ts}}
+    <pre><code class="language-typescript">{{SNIPPET:defensive-programming-principles/typescript-invalid-states.ts}}
 </code></pre>
 
     <p>
@@ -276,7 +276,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
         Many applications suffer from domain objects that are tightly coupled to infrastructure:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:domain-purity-bad.php}}
+    <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/domain-purity-bad.php}}
 </code></pre>
 
     <p>
@@ -290,7 +290,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
         The pure approach separates domain logic from infrastructure concerns:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:domain-purity-good.php}}
+    <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/domain-purity-good.php}}
 </code></pre>
 
     <p>
@@ -333,7 +333,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     </p>
     
     <h3>Bash Scripting with Defensive Patterns</h3>
-    <pre><code class="language-bash">{{SNIPPET:bash-defensive-patterns.sh}}
+    <pre><code class="language-bash">{{SNIPPET:defensive-programming-principles/bash-defensive-patterns.sh}}
 </code></pre>
 
     <p>
@@ -342,7 +342,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     </p>
     
     <h3>Pseudocode Examples</h3>
-    <pre><code class="language-python">{{SNIPPET:pseudocode-principles.py}}
+    <pre><code class="language-python">{{SNIPPET:defensive-programming-principles/pseudocode-principles.py}}
 </code></pre>
 
     <p>
