@@ -1,0 +1,71 @@
+# Invalid States Prevention: Type Safety by Design
+
+# ❌ Bad: Invalid states are representable - runtime errors waiting to happen
+CLASS UserAccount
+    PROPERTY email AS string          # Any string allowed!
+    PROPERTY status AS string         # "active", "deleted", "banana" - all valid
+    PROPERTY password_hash AS string  # Could be plaintext by accident
+    PROPERTY verified_at AS datetime  # Could be null when shouldn't be
+    
+    METHOD can_login() -> boolean
+        # Must defensively check all possible invalid combinations
+        IF status NOT IN ['active', 'verified', 'pending']
+            RETURN false
+        IF password_hash IS null OR password_hash IS empty
+            RETURN false  
+        IF status = 'pending' AND verified_at IS null
+            RETURN false
+        # Many more defensive checks...
+        RETURN true
+
+# Problems with weak typing:
+user = new UserAccount()
+user.email = "definitely-not-an-email"     # Compiles fine!
+user.status = "INVALID_STATUS"             # Runtime bug waiting to happen  
+user.password_hash = "plaintext-password"  # Security vulnerability!
+
+# ✅ Good: Invalid states are unrepresentable through type design
+ENUM UserStatus
+    ACTIVE
+    INACTIVE
+    SUSPENDED
+    PENDING_VERIFICATION  
+    DELETED
+
+# Smart value types with built-in validation
+TYPE Email = string WITH CONSTRAINT valid_email_format(value)
+TYPE PasswordHash = string WITH CONSTRAINT valid_bcrypt_format(value) 
+TYPE UserId = string WITH CONSTRAINT non_empty_alphanumeric(value)
+
+CLASS UserAccount
+    PROPERTY id AS UserId
+    PROPERTY email AS Email  
+    PROPERTY status AS UserStatus
+    PROPERTY password_hash AS PasswordHash OPTIONAL
+    PROPERTY verified_at AS datetime OPTIONAL
+    
+    METHOD can_login() -> boolean
+        # Type system guarantees status is valid - no defensive checks needed!
+        SWITCH status
+            CASE ACTIVE:
+                RETURN password_hash IS NOT null
+            CASE PENDING_VERIFICATION:
+                RETURN password_hash IS NOT null AND verified_at IS NOT null
+            CASE INACTIVE, SUSPENDED, DELETED:
+                RETURN false
+
+# Smart constructors enforce business invariants
+FUNCTION create_user(id_str, email_str, password_str) -> UserAccount
+    # These validations throw exceptions for invalid inputs
+    id = UserId.from(id_str)              # Validates format
+    email = Email.from(email_str)         # Validates email format
+    hash = PasswordHash.from_password(password_str)  # Hashes securely
+    
+    # Constructor call with guaranteed-valid values
+    RETURN new UserAccount(id, email, PENDING_VERIFICATION, hash, null)
+
+# Benefits:
+# - Invalid data cannot be represented in the type system
+# - Business logic becomes simpler - no defensive validation needed
+# - Compiler catches type errors at build time
+# - Refactoring is safe - type changes force code updates

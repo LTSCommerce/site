@@ -44,24 +44,37 @@
         that don't exist.
     </p>
     
-    <h3>The Cost of Premature Flexibility</h3>
+    <h3>Understanding YAGNI Through Pseudocode</h3>
     <p>
-        Consider this over-engineered caching system that violates YAGNI:
+        The core concept is best understood by contrasting over-engineered and simple approaches. Here's 
+        how YAGNI violations typically manifest and how to apply the principle correctly:
+    </p>
+    
+    <pre><code class="language-plaintext">{{SNIPPET:defensive-programming-principles/yagni-pseudocode.txt}}
+</code></pre>
+
+    <p>
+        This pseudocode illustrates the fundamental YAGNI principle: focus on solving the actual requirement 
+        with the simplest possible solution. The over-engineered approach creates extensive abstractions for 
+        hypothetical future needs, while the YAGNI-compliant version addresses the immediate problem directly.
+    </p>
+    
+    <h3>YAGNI in PHP: A Real-World Example</h3>
+    <p>
+        Here's how the YAGNI violation looks in actual PHP code—an over-engineered caching system built 
+        for requirements that don't exist:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/yagni-violation-php.php}}
 </code></pre>
 
     <p>
-        This code represents a common anti-pattern: building extensive infrastructure for requirements that 
-        are entirely hypothetical. The developer has created abstract base classes, multiple implementations, 
-        factory patterns, and configuration systems—all for a simple need that could be solved with a 
-        straightforward Redis service.
+        This represents months of development time invested in abstract base classes, multiple implementations, 
+        factory patterns, and configuration systems—all for a simple session storage need.
     </p>
     
-    <h3>YAGNI Applied: Start Simple</h3>
     <p>
-        The YAGNI-compliant approach focuses on the actual requirement:
+        The YAGNI-compliant PHP approach focuses on the actual requirement:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/yagni-good-php.php}}
@@ -70,8 +83,8 @@
     <p>
         This simple implementation solves the immediate need without unnecessary abstraction. The key insight 
         from <a href="https://www.techtarget.com/whatis/definition/You-arent-gonna-need-it">YAGNI's definition</a> 
-        is that when Redis is actually needed, refactoring this code is straightforward—and you'll have 
-        concrete requirements to guide the design.
+        is that when additional caching features are actually needed, refactoring this code is straightforward—and 
+        you'll have concrete requirements to guide the design.
     </p>
     
     <h3>YAGNI in Infrastructure as Code</h3>
@@ -110,9 +123,24 @@
         correctly, the compiler prevents entire classes of runtime errors.
     </p>
     
-    <h3>The Problem with Weak Typing</h3>
+    <h3>Understanding Type Safety Through Pseudocode</h3>
     <p>
-        Traditional object-oriented code often allows invalid states to be represented:
+        The core concept involves using type systems to make invalid data combinations impossible to represent. 
+        Here's how weak typing creates problems and how proper type design solves them:
+    </p>
+    
+    <pre><code class="language-plaintext">{{SNIPPET:defensive-programming-principles/invalid-states-pseudocode.txt}}
+</code></pre>
+
+    <p>
+        This pseudocode demonstrates the fundamental shift from runtime validation to compile-time safety. 
+        When invalid states are unrepresentable in the type system, entire categories of bugs become impossible. 
+        Business logic becomes simpler because it doesn't need defensive validation—the types guarantee data integrity.
+    </p>
+    
+    <h3>PHP 8.4: Type-Safe Domain Modeling</h3>
+    <p>
+        Here's how weak typing creates problems in traditional object-oriented PHP code:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/invalid-states-bad.php}}
@@ -124,7 +152,6 @@
         object must include defensive checks for malformed data.
     </p>
     
-    <h3>Type-Safe Domain Modeling</h3>
     <p>
         PHP 8.4's enums, readonly classes, property hooks, and asymmetric visibility enable safer domain modeling:
     </p>
@@ -133,10 +160,9 @@
 </code></pre>
 
     <p>
-        Now invalid states are literally impossible to construct. The enum restricts status values, value 
-        objects validate their input via property hooks, asymmetric visibility prevents external mutation,
-        and the match expression ensures exhaustive handling of all cases. This approach eliminates an
-        entire category of bugs at compile time.
+        Now invalid states are literally impossible to construct. The enum restricts status values, constructor 
+        validation ensures data integrity, readonly properties prevent mutation, and the match expression ensures 
+        exhaustive handling of all cases. This approach eliminates an entire category of bugs at compile time.
     </p>
     
     <h3>PHP 8.4 Property Hooks for Defensive Programming</h3>
@@ -271,9 +297,26 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
         domain objects and primitive types, never on external systems like databases, APIs, or frameworks.
     </p>
     
-    <h3>The Problem with Impure Domain Objects</h3>
+    <h3>Understanding Domain Purity Through Pseudocode</h3>
     <p>
-        Many applications suffer from domain objects that are tightly coupled to infrastructure:
+        Domain purity is about architectural separation—keeping business logic isolated from infrastructure 
+        concerns. Here's how impure domain objects create problems and how clean boundaries solve them:
+    </p>
+    
+    <pre><code class="language-plaintext">{{SNIPPET:defensive-programming-principles/domain-purity-pseudocode.txt}}
+</code></pre>
+
+    <p>
+        This pseudocode illustrates the core principle: domain objects should contain only business logic and 
+        state transitions. Infrastructure concerns like database access, external APIs, and side effects are 
+        handled by application services. This separation makes code testable, maintainable, and adaptable to 
+        infrastructure changes.
+    </p>
+    
+    <h3>PHP Example: From Impure to Pure Domain Objects</h3>
+    <p>
+        Many applications suffer from domain objects that are tightly coupled to infrastructure. Here's a 
+        typical violation of domain purity:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/domain-purity-bad.php}}
@@ -285,7 +328,6 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
         mocking multiple services, and changes to infrastructure affect domain logic.
     </p>
     
-    <h3>Pure Domain Objects with Clean Boundaries</h3>
     <p>
         The pure approach separates domain logic from infrastructure concerns:
     </p>
@@ -329,25 +371,39 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 <section>
     <h2>Cross-Language Application</h2>
     <p>
-        These principles aren't language-specific. Here's how they apply across different technologies:
+        These principles aren't language-specific. While we've focused on pseudocode and PHP examples 
+        to demonstrate the core concepts, the same defensive patterns apply across different technologies. 
+        Here's how to implement these principles in other environments.
     </p>
     
     <h3>Bash Scripting with Defensive Patterns</h3>
+    <p>
+        Even in Bash scripting, we can apply defensive programming principles by validating inputs, 
+        handling errors explicitly, and keeping functions focused on single responsibilities:
+    </p>
+    
     <pre><code class="language-bash">{{SNIPPET:defensive-programming-principles/bash-defensive-patterns.sh}}
 </code></pre>
 
     <p>
-        Even in Bash, we can apply defensive principles: validate inputs, handle errors explicitly, 
-        and keep functions focused on single responsibilities.
+        Notice how even in a shell script, we validate inputs early, handle errors explicitly with proper 
+        exit codes, and structure functions to have single responsibilities. The YAGNI principle applies 
+        here too—this script does exactly what's needed without unnecessary complexity.
     </p>
     
-    <h3>Pseudocode Examples</h3>
+    <h3>Complete Reference: All Principles in Pseudocode</h3>
+    <p>
+        For a comprehensive view of how all three principles work together conceptually across any 
+        programming language:
+    </p>
+    
     <pre><code class="language-python">{{SNIPPET:defensive-programming-principles/pseudocode-principles.py}}
 </code></pre>
 
     <p>
-        These pseudocode examples show how the principles work conceptually across any language that 
-        supports appropriate abstractions.
+        This extended pseudocode reference demonstrates how YAGNI, invalid state prevention, and domain 
+        purity work together in any language that supports appropriate abstractions. Use this as a 
+        template when implementing these patterns in your preferred programming language.
     </p>
 </section>
 

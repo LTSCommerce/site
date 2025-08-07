@@ -1,230 +1,222 @@
-# YAGNI Principle Examples
+# Defensive Programming Principles - Pseudocode Examples
 
-# Bad: Over-engineered caching solution
-class FlexibleCacheSystem:
-    """
-    Abstract cache system supporting multiple backends,
-    fallback strategies, serialization methods, and more!
-    """
-    def __init__(self, primary_cache, fallback_caches=None, 
-                 serializer='json', compression='gzip',
-                 encryption_key=None, ttl_strategies=None):
-        # Complex initialization for features nobody asked for
-        pass
+# YAGNI Principle: Over-engineering vs Simplicity
+
+# Bad: Over-engineered cache system with premature flexibility
+INTERFACE CacheAdapter
+    METHOD get(key) -> value
+    METHOD set(key, value, ttl)
+    METHOD delete(key)
+    METHOD clear()
+    METHOD exists(key) -> boolean
+    METHOD getMultiple(keys) -> array
+    METHOD setMultiple(items, ttl)
+    METHOD increment(key, amount) -> integer
+    METHOD getTtl(key) -> integer
+    METHOD addTags(key, tags)
+    METHOD invalidateByTag(tag) -> count
+
+CLASS RedisCacheAdapter IMPLEMENTS CacheAdapter
+    // 300+ lines of Redis-specific implementation
+    // Most methods never used in production
+
+CLASS FileCacheAdapter IMPLEMENTS CacheAdapter  
+    // Complex file locking, serialization, cleanup
     
-    def get_with_fallback(self, key, fallback_fn=None):
-        # Tries multiple cache backends with complex fallback logic
-        pass
+CLASS DatabaseCacheAdapter IMPLEMENTS CacheAdapter
+    // SQL queries for caching - defeats the purpose
+
+CLASS CacheFactory
+    METHOD create(config) -> CacheAdapter
+        SWITCH config.type
+            CASE 'redis': RETURN new RedisCacheAdapter(config)
+            CASE 'file': RETURN new FileCacheAdapter(config)
+            // ... more unused implementations
+
+# Good: Simple solution for actual requirement
+CLASS SessionStore
+    PROPERTY redis_client
     
-    def set_with_strategies(self, key, value, ttl=None, 
-                          replicate_to=None, async_write=False):
-        # Over-engineered write strategies
-        pass
-
-# Good: Simple solution for actual need
-class SessionCache:
-    """Simple file-based session storage"""
-    def __init__(self, cache_dir='/tmp/sessions'):
-        self.cache_dir = cache_dir
-        os.makedirs(cache_dir, exist_ok=True)
+    METHOD get(session_id)
+        data = redis_client.get("session:" + session_id)
+        RETURN data ? parse_json(data) : null
     
-    def get(self, session_id):
-        try:
-            with open(f"{self.cache_dir}/{session_id}", 'r') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return None
+    METHOD set(session_id, data, ttl = 3600)
+        redis_client.setex("session:" + session_id, ttl, to_json(data))
     
-    def set(self, session_id, data):
-        with open(f"{self.cache_dir}/{session_id}", 'w') as f:
-            json.dump(data, f)
+    METHOD delete(session_id)
+        redis_client.delete("session:" + session_id)
 
 
-# Make Invalid States Unrepresentable Examples
+# Invalid States Prevention: Type Safety vs Runtime Validation
 
-# Bad: Invalid states possible
-class UserAccountBad:
-    def __init__(self, email, status='active'):
-        self.email = email  # Any string accepted
-        self.status = status  # Any string accepted
-        self.password_hash = None
-        self.verified_at = None
+# Bad: Invalid states representable - runtime errors waiting to happen  
+CLASS UserAccount
+    PROPERTY email AS string          // Any string allowed!
+    PROPERTY status AS string         // "active", "deleted", "banana" - all valid
+    PROPERTY password_hash AS string  // Could be plaintext by accident
+    PROPERTY verified_at AS datetime  // Could be null when shouldn't be
     
-    def can_login(self):
-        # Must handle all possible invalid states
-        if self.status not in ['active', 'verified', 'pending']:
-            return False
-        if not self.password_hash:
-            return False
-        if self.status == 'pending' and not self.verified_at:
-            return False
-        return True
+    METHOD can_login() -> boolean
+        // Must defensively check all possible invalid combinations
+        IF status NOT IN ['active', 'verified', 'pending']
+            RETURN false
+        IF password_hash IS null OR password_hash IS empty
+            RETURN false  
+        IF status = 'pending' AND verified_at IS null
+            RETURN false
+        RETURN true
 
-# Good: Invalid states impossible
-from enum import Enum
-from dataclasses import dataclass
-from datetime import datetime
-import re
+# Problems with above approach:
+user = new UserAccount()
+user.email = "definitely-not-an-email"     // Compiles fine!
+user.status = "INVALID_STATUS"             // Runtime bug waiting to happen  
+user.password_hash = "plaintext-password"  // Security vulnerability
 
-class UserStatus(Enum):
-    ACTIVE = 'active'
-    PENDING = 'pending'
-    SUSPENDED = 'suspended'
-    DELETED = 'deleted'
+# Good: Invalid states unrepresentable through type design
+ENUM UserStatus
+    ACTIVE
+    PENDING_VERIFICATION  
+    SUSPENDED
+    DELETED
 
-@dataclass(frozen=True)
-class Email:
-    value: str
+TYPE Email = string WITH CONSTRAINT valid_email_format(value)
+TYPE PasswordHash = string WITH CONSTRAINT valid_hash_format(value) 
+TYPE UserId = string WITH CONSTRAINT non_empty(value)
+
+CLASS UserAccount
+    PROPERTY id AS UserId
+    PROPERTY email AS Email  
+    PROPERTY status AS UserStatus
+    PROPERTY password_hash AS PasswordHash OPTIONAL
+    PROPERTY verified_at AS datetime OPTIONAL
     
-    def __post_init__(self):
-        if not re.match(r'^[^@]+@[^@]+\.[^@]+$', self.value):
-            raise ValueError(f"Invalid email: {self.value}")
+    METHOD can_login() -> boolean
+        // Type system guarantees status is valid
+        SWITCH status
+            CASE ACTIVE:
+                RETURN password_hash IS NOT null
+            CASE PENDING_VERIFICATION:
+                RETURN password_hash IS NOT null AND verified_at IS NOT null
+            CASE SUSPENDED, DELETED:
+                RETURN false
 
-@dataclass(frozen=True)  
-class PasswordHash:
-    hash: str
+// Smart constructors enforce invariants
+FUNCTION create_user(id_str, email_str, password_str) -> UserAccount
+    id = validate_user_id(id_str)        // Throws if invalid
+    email = validate_email(email_str)    // Throws if invalid  
+    hash = hash_password(password_str)   // Always properly hashed
     
-    def __post_init__(self):
-        if len(self.hash) < 60:  # bcrypt length
-            raise ValueError("Invalid password hash format")
+    RETURN new UserAccount(id, email, PENDING_VERIFICATION, hash, null)
 
-class UserAccountGood:
-    def __init__(self, email: Email, status: UserStatus, 
-                 password_hash: PasswordHash = None,
-                 verified_at: datetime = None):
-        self.email = email
-        self.status = status  
-        self.password_hash = password_hash
-        self.verified_at = verified_at
+
+# Domain Purity: Separating Business Logic from Infrastructure
+
+# Bad: Domain object polluted with infrastructure dependencies
+CLASS Order
+    PROPERTY order_id
+    PROPERTY customer_id  
+    PROPERTY items
+    PROPERTY database           // Infrastructure dependency!
+    PROPERTY email_service      // Infrastructure dependency!
+    PROPERTY payment_gateway    // Infrastructure dependency!
     
-    def can_login(self) -> bool:
-        # Exhaustive pattern matching enforced by type system
-        match self.status:
-            case UserStatus.ACTIVE:
-                return self.password_hash is not None
-            case UserStatus.PENDING:
-                return (self.password_hash is not None and 
-                       self.verified_at is not None)
-            case UserStatus.SUSPENDED | UserStatus.DELETED:
-                return False
-
-
-# Domain Object Purity Examples
-
-# Bad: Domain object with infrastructure dependencies
-class OrderBad:
-    def __init__(self, order_id, customer_id, items, 
-                 database, email_service, payment_gateway):
-        self.order_id = order_id
-        self.customer_id = customer_id
-        self.items = items
-        self.db = database
-        self.email = email_service
-        self.payment = payment_gateway
-    
-    def process(self):
-        # Domain logic mixed with infrastructure concerns
+    METHOD process()
+        // Domain logic mixed with database queries
+        inventory = database.query("SELECT * FROM inventory WHERE product_id = ?")
         
-        # Database query in domain object!
-        inventory = self.db.query("SELECT * FROM inventory WHERE ...")
+        FOR EACH item IN items
+            IF inventory[item.product_id] < item.quantity
+                THROW InsufficientInventoryError
         
-        for item in self.items:
-            if inventory[item.product_id] < item.quantity:
-                raise InsufficientInventoryError()
-        
-        # Payment processing mixed in
-        payment_result = self.payment.charge(self.total, self.customer_id)
-        
-        if not payment_result.success:
-            raise PaymentFailedError()
-        
-        # Email sending in domain object!
-        self.email.send_confirmation(self.customer_id, self)
-        
-        # Database update
-        self.db.execute("UPDATE orders SET status='completed' WHERE id=?", 
-                       [self.order_id])
-
-# Good: Pure domain object
-@dataclass
-class OrderProcessed:
-    order_id: str
-    customer_id: str
-    total: Money
-    processed_at: datetime
-
-@dataclass  
-class OrderFailed:
-    order_id: str
-    reason: str
-    failed_at: datetime
-
-class OrderGood:
-    def __init__(self, order_id, customer_id, items, total):
-        self.order_id = order_id
-        self.customer_id = customer_id  
-        self.items = items
-        self.total = total
-        self.status = 'pending'
-    
-    def can_process(self, inventory_service) -> bool:
-        """Pure domain logic with injected dependency"""
-        for item in self.items:
-            if not inventory_service.has_sufficient_stock(
-                item.product_id, item.quantity
-            ):
-                return False
-        return True
-    
-    def process(self) -> OrderProcessed:
-        """Pure state transition returning domain events"""
-        if self.status != 'pending':
-            raise InvalidOperationError("Order already processed")
-        
-        self.status = 'processed'
-        
-        return OrderProcessed(
-            order_id=self.order_id,
-            customer_id=self.customer_id,
-            total=self.total,
-            processed_at=datetime.now()
-        )
-    
-    def fail(self, reason: str) -> OrderFailed:
-        """Pure domain logic for failure cases"""
-        self.status = 'failed'
-        
-        return OrderFailed(
-            order_id=self.order_id,
-            reason=reason,
-            failed_at=datetime.now()
-        )
-
-# Application service handles orchestration
-class ProcessOrderService:
-    def __init__(self, order_repo, inventory_service, 
-                 payment_service, event_dispatcher):
-        self.orders = order_repo
-        self.inventory = inventory_service
-        self.payment = payment_service
-        self.events = event_dispatcher
-    
-    def execute(self, command):
-        order = self.orders.find_by_id(command.order_id)
-        
-        if not order.can_process(self.inventory):
-            failed = order.fail("Insufficient inventory")
-            self.orders.save(order)
-            self.events.dispatch(failed)
-            return
-        
-        try:
-            self.payment.charge(order.total, order.customer_id)
-            processed = order.process()
-            self.orders.save(order)
-            self.events.dispatch(processed)
+        // Payment processing mixed into domain logic
+        result = payment_gateway.charge(total, customer_id)
+        IF NOT result.success
+            THROW PaymentFailedError
             
-        except PaymentError as e:
-            failed = order.fail(f"Payment failed: {e}")
-            self.orders.save(order)
-            self.events.dispatch(failed)
+        // Email sending in domain object - wrong layer!
+        email_service.send_confirmation(customer_id, this)
+        
+        // Direct database mutation from domain object
+        database.execute("UPDATE orders SET status='completed'")
+
+# Problems: Hard to test, mixed concerns, infrastructure coupling
+
+# Good: Pure domain object with clean boundaries
+ENUM OrderStatus
+    PENDING
+    PROCESSING  
+    COMPLETED
+    FAILED
+
+RECORD OrderProcessed
+    order_id
+    customer_id
+    total
+    processed_at
+
+RECORD OrderFailed  
+    order_id
+    reason
+    failed_at
+
+CLASS Order
+    PROPERTY order_id
+    PROPERTY customer_id
+    PROPERTY items
+    PROPERTY total
+    PROPERTY status = PENDING
+    
+    METHOD can_process(inventory_service) -> boolean
+        // Pure domain logic - infrastructure injected as dependency
+        FOR EACH item IN items
+            IF NOT inventory_service.has_sufficient_stock(item.product_id, item.quantity)
+                RETURN false
+        RETURN true
+    
+    METHOD process() -> OrderProcessed
+        // Pure state transition - no side effects
+        IF status != PENDING
+            THROW DomainException("Order must be pending to process")
+        
+        status = PROCESSING
+        
+        // Return domain event instead of performing side effects
+        RETURN new OrderProcessed(order_id, customer_id, total, now())
+    
+    METHOD fail(reason) -> OrderFailed
+        status = FAILED
+        RETURN new OrderFailed(order_id, reason, now())
+
+# Application service orchestrates infrastructure concerns
+CLASS ProcessOrderService
+    PROPERTY order_repository
+    PROPERTY inventory_service
+    PROPERTY payment_service
+    PROPERTY event_dispatcher
+    
+    METHOD execute(process_command)
+        order = order_repository.find_by_id(process_command.order_id)
+        
+        IF NOT order.can_process(inventory_service)
+            failed_event = order.fail("Insufficient inventory")
+            order_repository.save(order)
+            event_dispatcher.publish(failed_event)
+            RETURN
+        
+        TRY
+            payment_service.charge(order.total, order.customer_id)
+            processed_event = order.process()
+            order_repository.save(order) 
+            event_dispatcher.publish(processed_event)
+            
+        CATCH PaymentError as error
+            failed_event = order.fail("Payment failed: " + error.message)
+            order_repository.save(order)
+            event_dispatcher.publish(failed_event)
+
+# Event handlers manage side effects separately  
+CLASS OrderCompletedHandler
+    METHOD handle(order_processed_event)
+        customer = customer_repository.find_by_id(event.customer_id)
+        email_service.send_confirmation(customer.email, event)

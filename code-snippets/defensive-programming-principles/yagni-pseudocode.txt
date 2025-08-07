@@ -1,0 +1,63 @@
+# YAGNI Principle: Reject Unnecessary Complexity
+
+# ❌ YAGNI Violation: Over-engineered for hypothetical needs
+ABSTRACT CLASS CacheAdapter
+    ABSTRACT METHOD get(key) -> value
+    ABSTRACT METHOD set(key, value, ttl)
+    ABSTRACT METHOD delete(key) 
+    ABSTRACT METHOD clear()
+    ABSTRACT METHOD exists(key) -> boolean
+    
+    # "We might need these features someday..."
+    ABSTRACT METHOD getMultiple(keys) -> array
+    ABSTRACT METHOD setMultiple(items, ttl)
+    ABSTRACT METHOD increment(key, amount) -> integer
+    ABSTRACT METHOD addTags(key, tags)
+    ABSTRACT METHOD invalidateByTag(tag) -> count
+    ABSTRACT METHOD getStats() -> metrics
+
+CLASS RedisCacheAdapter EXTENDS CacheAdapter
+    # Hundreds of lines implementing methods never used
+    
+CLASS FileCacheAdapter EXTENDS CacheAdapter  
+    # Complex file locking for "portability"
+    
+CLASS DatabaseCacheAdapter EXTENDS CacheAdapter
+    # SQL queries for caching - defeats the purpose
+
+CLASS CacheFactory
+    METHOD create(config) -> CacheAdapter
+        SWITCH config.type
+            CASE 'redis': RETURN new RedisCacheAdapter(config)
+            CASE 'file': RETURN new FileCacheAdapter(config)
+            # More unused implementations...
+
+# Problems:
+# - Months of development for unused features
+# - Complex abstractions for simple needs
+# - Maintenance burden of multiple implementations
+# - Configuration complexity
+
+# ✅ YAGNI Applied: Simple solution for actual requirement
+CLASS SessionStore
+    PROPERTY redis_client
+    
+    METHOD get(session_id) -> data
+        raw_data = redis_client.get("session:" + session_id)
+        RETURN raw_data ? parse_json(raw_data) : null
+    
+    METHOD save(session_id, data, ttl = 3600)
+        json_data = to_json(data)
+        redis_client.setex("session:" + session_id, ttl, json_data)
+    
+    METHOD delete(session_id)
+        redis_client.del("session:" + session_id)
+    
+    METHOD exists(session_id) -> boolean
+        RETURN redis_client.exists("session:" + session_id)
+
+# Benefits:
+# - Solves immediate need with minimal complexity
+# - Easy to understand and maintain  
+# - Quick to implement and deploy
+# - Refactoring is straightforward when Redis support is actually needed

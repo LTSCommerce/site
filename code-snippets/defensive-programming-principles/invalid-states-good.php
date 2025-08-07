@@ -1,6 +1,6 @@
 <?php
 
-// Good: Invalid states are unrepresentable using PHP 8.4 features
+// Good: Invalid states are unrepresentable through design
 enum UserStatus: string 
 {
     case ACTIVE = 'active';
@@ -10,128 +10,78 @@ enum UserStatus: string
     case DELETED = 'deleted';
 }
 
-readonly class UserId 
+readonly class User 
 {
-    public string $value {
-        set {
-            if (empty($value)) {
-                throw new InvalidArgumentException('User ID cannot be empty');
-            }
-            $this->value = $value;
+    public function __construct(
+        public string $id,
+        public string $email,
+        public UserStatus $status,
+        public ?string $passwordHash = null,
+        public ?DateTimeImmutable $emailVerifiedAt = null
+    ) {
+        // Validate at construction - fail fast
+        if (empty($id)) {
+            throw new InvalidArgumentException('User ID cannot be empty');
+        }
+        
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Invalid email format');
+        }
+        
+        if ($passwordHash !== null && strlen($passwordHash) < 60) {
+            throw new InvalidArgumentException('Invalid password hash format');
         }
     }
     
-    public function __construct(string $value) 
-    {
-        $this->value = $value; // Triggers property hook validation
-    }
-}
-
-readonly class Email 
-{
-    public string $value {
-        set {
-            if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                throw new InvalidArgumentException('Invalid email format');
-            }
-            $this->value = $value;
-        }
-    }
-    
-    public function __construct(string $value) 
-    {
-        $this->value = $value; // Triggers property hook validation
-    }
-}
-
-readonly class HashedPassword 
-{
-    public string $hash {
-        set {
-            if (strlen($value) < 60) { // bcrypt produces 60 char hashes
-                throw new InvalidArgumentException('Invalid password hash format');
-            }
-            $this->hash = $value;
-        }
-    }
-    
-    public function __construct(string $hash) 
-    {
-        $this->hash = $hash; // Triggers property hook validation
-    }
-    
-    public static function fromPlaintext(string $password): self 
+    public static function create(string $id, string $email, string $password): self
     {
         if (strlen($password) < 8) {
-            throw new InvalidArgumentException('Password too short');
+            throw new InvalidArgumentException('Password must be at least 8 characters');
         }
-        return new self(password_hash($password, PASSWORD_DEFAULT));
-    }
-}
-
-class User 
-{
-    // PHP 8.4 asymmetric visibility: publicly readable but privately settable
-    public private(set) UserId $id;
-    public private(set) Email $email;
-    public private(set) UserStatus $status;
-    public private(set) ?HashedPassword $hashedPassword;
-    public private(set) ?DateTimeImmutable $emailVerifiedAt;
-    
-    public function __construct(
-        UserId $id,
-        Email $email,
-        UserStatus $status,
-        ?HashedPassword $hashedPassword = null,
-        ?DateTimeImmutable $emailVerifiedAt = null
-    ) {
-        $this->id = $id;
-        $this->email = $email;
-        $this->status = $status;
-        $this->hashedPassword = $hashedPassword;
-        $this->emailVerifiedAt = $emailVerifiedAt;
+        
+        return new self(
+            $id,
+            $email, 
+            UserStatus::PENDING_VERIFICATION,
+            password_hash($password, PASSWORD_DEFAULT)
+        );
     }
     
     public function canLogin(): bool 
     {
         return match($this->status) {
-            UserStatus::ACTIVE => $this->hashedPassword !== null,
+            UserStatus::ACTIVE => $this->passwordHash !== null,
             UserStatus::PENDING_VERIFICATION => 
-                $this->hashedPassword !== null && $this->emailVerifiedAt !== null,
+                $this->passwordHash !== null && $this->emailVerifiedAt !== null,
             UserStatus::INACTIVE,
             UserStatus::SUSPENDED, 
             UserStatus::DELETED => false,
         };
     }
     
-    public function verify(DateTimeImmutable $verifiedAt = null): User 
+    public function verify(?DateTimeImmutable $verifiedAt = null): self 
     {
         if ($this->status !== UserStatus::PENDING_VERIFICATION) {
             throw new DomainException('User must be pending verification');
         }
         
-        return new User(
+        return new self(
             $this->id,
             $this->email,
             UserStatus::ACTIVE,
-            $this->hashedPassword,
+            $this->passwordHash,
             $verifiedAt ?? new DateTimeImmutable()
         );
     }
 }
 
-// PHP 8.4 benefits: Invalid states are impossible and better encapsulation
-$user = new User(
-    new UserId('user123'),
-    new Email('user@example.com'),
-    UserStatus::ACTIVE
-);
+// Clean usage - no over-engineered value objects
+$user = User::create('user123', 'user@example.com', 'secure-password');
+$verifiedUser = $user->verify();
 
-// Asymmetric visibility: can read but not write
-echo $user->id->value; // Works - public readable
-// $user->id = new UserId('new-id'); // Compile error - private settable
-
-// Property hooks provide automatic validation:
-// new HashedPassword('weak'); // Runtime validation error from property hook
-// new Email('not-email'); // Runtime validation error from property hook  
-// new UserId(''); // Runtime validation error from property hook
+// Invalid states are impossible:
+// - Empty ID/email caught at construction
+// - Invalid email format caught at construction  
+// - Weak passwords caught at creation
+// - Status transitions controlled through methods
+// - Match expression ensures exhaustive status handling

@@ -9,11 +9,8 @@ class User
     public ?string $hashedPassword;
     public ?DateTime $emailVerifiedAt;
     
-    public function __construct(
-        string $id, 
-        string $email, 
-        string $status = 'active'
-    ) {
+    public function __construct(string $id, string $email, string $status = 'active') 
+    {
         $this->id = $id;
         $this->email = $email;
         $this->status = $status; // No validation!

@@ -3,26 +3,16 @@
 // Bad: Domain object tightly coupled to infrastructure
 class Order 
 {
-    private PDO $db;
-    private LoggerInterface $logger;
-    private MailerInterface $mailer;
-    private PaymentGateway $paymentGateway;
-    
     public function __construct(
         private string $id,
         private string $customerId,
         private array $items,
         private Money $total,
-        PDO $db,
-        LoggerInterface $logger,
-        MailerInterface $mailer,
-        PaymentGateway $paymentGateway
-    ) {
-        $this->db = $db;
-        $this->logger = $logger;
-        $this->mailer = $mailer;
-        $this->paymentGateway = $paymentGateway;
-    }
+        private PDO $db,
+        private LoggerInterface $logger,
+        private MailerInterface $mailer,
+        private PaymentGateway $paymentGateway
+    ) {}
     
     public function process(): void 
     {

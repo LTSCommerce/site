@@ -1,0 +1,132 @@
+# Domain Purity: Separating Business Logic from Infrastructure
+
+# ❌ Bad: Domain object polluted with infrastructure dependencies
+CLASS Order
+    PROPERTY order_id
+    PROPERTY customer_id  
+    PROPERTY items AS array
+    PROPERTY total AS money
+    
+    # Infrastructure dependencies polluting domain object!
+    PROPERTY database           # Database access
+    PROPERTY email_service      # Email sending
+    PROPERTY payment_gateway    # Payment processing
+    PROPERTY inventory_api      # External API calls
+    
+    METHOD process()
+        # Domain logic mixed with database queries
+        FOR EACH item IN items
+            stock = database.query("SELECT quantity FROM inventory WHERE product_id = ?", item.product_id)
+            IF stock < item.quantity
+                THROW InsufficientInventoryError
+        
+        # Payment processing mixed into domain logic
+        result = payment_gateway.charge(total, customer_id)
+        IF NOT result.success
+            THROW PaymentFailedError
+            
+        # Email sending in domain object - wrong architectural layer!
+        email_service.send_confirmation(customer_id, this)
+        
+        # Direct database mutation from domain object
+        database.execute("UPDATE orders SET status='completed' WHERE id = ?", order_id)
+
+# Problems:
+# - Hard to test (requires database, payment service, email service)
+# - Mixed concerns (business logic + infrastructure)
+# - Tight coupling to external systems
+# - Cannot reuse domain logic in different contexts
+
+# ✅ Good: Pure domain object with clean boundaries  
+ENUM OrderStatus
+    PENDING
+    PROCESSING  
+    COMPLETED
+    FAILED
+
+# Domain events describe what happened - no side effects
+RECORD OrderProcessed
+    order_id
+    customer_id
+    total
+    processed_at
+
+RECORD OrderFailed  
+    order_id
+    reason
+    failed_at
+
+CLASS Order
+    PROPERTY order_id
+    PROPERTY customer_id
+    PROPERTY items AS array
+    PROPERTY total AS money
+    PROPERTY status AS OrderStatus = PENDING
+    
+    # Pure business logic - no infrastructure dependencies
+    METHOD can_process(inventory_checker) -> boolean
+        FOR EACH item IN items
+            IF NOT inventory_checker.has_sufficient_stock(item.product_id, item.quantity)
+                RETURN false
+        RETURN status = PENDING
+    
+    METHOD process() -> OrderProcessed
+        # Pure state transition - no side effects!
+        IF status != PENDING
+            THROW DomainException("Order must be pending to process")
+        
+        status = PROCESSING
+        
+        # Return domain event instead of performing side effects
+        RETURN new OrderProcessed(order_id, customer_id, total, current_time())
+    
+    METHOD fail(reason) -> OrderFailed
+        status = FAILED
+        RETURN new OrderFailed(order_id, reason, current_time())
+
+# Application service orchestrates infrastructure concerns
+CLASS ProcessOrderService
+    PROPERTY order_repository
+    PROPERTY inventory_service  
+    PROPERTY payment_service
+    PROPERTY event_dispatcher
+    
+    METHOD execute(order_id)
+        # Load domain object from repository
+        order = order_repository.find_by_id(order_id)
+        
+        # Check business rules using injected service
+        IF NOT order.can_process(inventory_service)
+            failed_event = order.fail("Insufficient inventory")
+            order_repository.save(order)
+            event_dispatcher.publish(failed_event)  # Email sent by event handler
+            RETURN
+        
+        TRY
+            # Handle infrastructure concerns at application layer
+            payment_service.charge(order.total, order.customer_id)
+            processed_event = order.process()  # Pure domain transition
+            order_repository.save(order)
+            event_dispatcher.publish(processed_event)  # Triggers confirmation email
+            
+        CATCH PaymentError as error
+            failed_event = order.fail("Payment failed: " + error.message)
+            order_repository.save(order)
+            event_dispatcher.publish(failed_event)
+
+# Event handlers manage side effects separately from domain logic
+CLASS OrderCompletedHandler
+    PROPERTY email_service
+    PROPERTY analytics_service
+    
+    METHOD handle(order_processed_event)
+        # Infrastructure concerns handled separately
+        customer = customer_repository.find_by_id(event.customer_id) 
+        email_service.send_confirmation(customer.email, event)
+        analytics_service.track_conversion(event.order_id, event.total)
+
+# Benefits:
+# - Domain logic is testable in isolation (no mocking required)
+# - Business rules are clear and focused  
+# - Infrastructure can change without affecting domain logic
+# - Domain objects are reusable across different application contexts
