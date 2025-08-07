@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 312,
+    "title": "Defensive Programming Principles: YAGNI, Invalid States, and Domain Purity",
+    "excerpt": "Master three fundamental defensive programming principles: YAGNI for avoiding unnecessary complexity, making invalid states unrepresentable through type safety, and maintaining domain object purity for clean architecture.",
+    "category": "php",
+    "date": "2025-08-07",
+    "slug": "defensive-programming-principles",
+    "readingTime": "14"
+  },
+  {
     "id": 268,
     "title": "Fail Fast Programming: Why Your Code Should Crash Spectacularly",
     "excerpt": "Master the fail-fast programming philosophy with practical examples in PHP 8.4, TypeScript, Bash, and Ansible. Learn to write high-trust code that fails early, clearly, and at the exact point of deviation from expectations.",
@@ -131,15 +140,6 @@ const articles = [
     "date": "2025-01-10",
     "slug": "ansible-php-infrastructure",
     "readingTime": "5"
-  },
-  {
-    "id": 312,
-    "title": "Defensive Programming Principles: YAGNI, Invalid States, and Domain Purity",
-    "excerpt": "Master three fundamental defensive programming principles: YAGNI for avoiding unnecessary complexity, making invalid states unrepresentable through type safety, and maintaining domain object purity for clean architecture.",
-    "category": "php",
-    "date": "2025-01-08",
-    "slug": "defensive-programming-principles",
-    "readingTime": "14"
   },
   {
     "id": 656,
