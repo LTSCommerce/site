@@ -42,17 +42,24 @@ class CacheFactory
     }
 }
 
-// Reality: You only needed simple file caching for user sessions
+// Reality: You only needed simple Redis session storage
 class UserSessionCache 
 {
+    private Redis $redis;
+    
+    public function __construct(Redis $redis) 
+    {
+        $this->redis = $redis;
+    }
+    
     public function getSession(string $sessionId): ?array 
     {
-        $file = "/tmp/sessions/$sessionId";
-        return file_exists($file) ? json_decode(file_get_contents($file), true) : null;
+        $data = $this->redis->get("session:$sessionId");
+        return $data ? json_decode($data, true) : null;
     }
     
     public function saveSession(string $sessionId, array $data): void 
     {
-        file_put_contents("/tmp/sessions/$sessionId", json_encode($data));
+        $this->redis->setex("session:$sessionId", 3600, json_encode($data));
     }
 }
