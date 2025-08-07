@@ -48,6 +48,7 @@ export default defineConfig({
         'js/author': resolve(__dirname, 'private_html/js/author.js'),
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         // Article JavaScript entry points
+        'js/articles/defensive-programming-principles': resolve(__dirname, 'private_html/js/articles/defensive-programming-principles.js'),
         'js/articles/fail-fast-programming-philosophy': resolve(__dirname, 'private_html/js/articles/fail-fast-programming-philosophy.js'),
         'js/articles/early-return-patterns-cleaner-code': resolve(__dirname, 'private_html/js/articles/early-return-patterns-cleaner-code.js'),
         'js/articles/mocking-best-practices': resolve(__dirname, 'private_html/js/articles/mocking-best-practices.js'),
@@ -62,7 +63,6 @@ export default defineConfig({
         'js/articles/ansible-fact-caching-problems': resolve(__dirname, 'private_html/js/articles/ansible-fact-caching-problems.js'),
         'js/articles/legacy-php-modernization': resolve(__dirname, 'private_html/js/articles/legacy-php-modernization.js'),
         'js/articles/ansible-php-infrastructure': resolve(__dirname, 'private_html/js/articles/ansible-php-infrastructure.js'),
-        'js/articles/defensive-programming-principles': resolve(__dirname, 'private_html/js/articles/defensive-programming-principles.js'),
         'js/articles/proxmox-vs-cloud': resolve(__dirname, 'private_html/js/articles/proxmox-vs-cloud.js'),
         'js/articles/high-performance-php': resolve(__dirname, 'private_html/js/articles/high-performance-php.js'),
         'js/articles/mysql-performance-php': resolve(__dirname, 'private_html/js/articles/mysql-performance-php.js'),
