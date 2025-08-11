@@ -1,0 +1,131 @@
+# Dependency Inversion Principle - Core Concepts
+
+# 1. VIOLATION: High-level module depends on low-level module
+CLASS OrderProcessor
+    PROPERTY sqlDatabase AS MySqlDatabase  # Direct dependency!
+    
+    METHOD processOrder(order)
+        sql = "INSERT INTO orders..."
+        this.sqlDatabase.execute(sql)  # Tight coupling
+    END METHOD
+END CLASS
+
+# 2. SOLUTION: Both depend on abstraction
+INTERFACE IOrderStorage
+    METHOD saveOrder(order) -> boolean
+END INTERFACE
+
+CLASS OrderProcessor  # High-level module
+    PROPERTY storage AS IOrderStorage  # Depends on abstraction
+    
+    CONSTRUCTOR(storage AS IOrderStorage)
+        this.storage = storage
+    END CONSTRUCTOR
+    
+    METHOD processOrder(order)
+        RETURN this.storage.saveOrder(order)  # Loose coupling
+    END METHOD
+END CLASS
+
+CLASS MySqlOrderStorage IMPLEMENTS IOrderStorage  # Low-level module
+    METHOD saveOrder(order) -> boolean
+        # MySQL implementation details
+        RETURN true
+    END METHOD
+END CLASS
+
+# 3. FINAL CLASSES WITH COMPOSITION
+FINAL CLASS PaymentProcessor
+    PROPERTY paymentGateway AS IPaymentGateway
+    PROPERTY logger AS ILogger
+    
+    CONSTRUCTOR(gateway AS IPaymentGateway, logger AS ILogger)
+        this.paymentGateway = gateway
+        this.logger = logger
+    END CONSTRUCTOR
+    
+    METHOD processPayment(amount, method)
+        this.logger.info("Processing payment: " + amount)
+        result = this.paymentGateway.charge(amount, method)
+        
+        IF result.success THEN
+            this.logger.info("Payment successful")
+        ELSE
+            this.logger.error("Payment failed: " + result.error)
+        END IF
+        
+        RETURN result
+    END METHOD
+END CLASS
+
+# 4. TESTING STRATEGY: Detroit vs London Schools
+# Detroit School (Classical) - Use real objects when possible
+TEST_CLASS OrderProcessorTest
+    METHOD testProcessOrderWithInMemoryStorage()
+        # Use real, lightweight implementation
+        storage = NEW InMemoryOrderStorage()
+        processor = NEW OrderProcessor(storage)
+        order = NEW Order("123", 100.00)
+        
+        result = processor.processOrder(order)
+        
+        ASSERT result == true
+        ASSERT storage.getOrderCount() == 1
+    END METHOD
+END TEST_CLASS
+
+# London School (Mockist) - Mock dependencies for interaction testing
+TEST_CLASS PaymentProcessorTest
+    METHOD testProcessPaymentLogsCorrectly()
+        # Mock when testing interactions are important
+        mockGateway = MOCK IPaymentGateway
+        mockLogger = MOCK ILogger
+        processor = NEW PaymentProcessor(mockGateway, mockLogger)
+        
+        EXPECT mockGateway.charge(100, "credit") RETURNS successResult
+        EXPECT mockLogger.info("Processing payment: 100")
+        EXPECT mockLogger.info("Payment successful")
+        
+        processor.processPayment(100, "credit")
+        
+        VERIFY_ALL_EXPECTATIONS()
+    END METHOD
+END TEST_CLASS
+
+# 5. PRAGMATIC APPROACH: When to Mock vs Use Real Objects
+# Use REAL objects when:
+# - Easy to instantiate and configure
+# - No external dependencies (database, network)
+# - Fast execution
+# - Deterministic behavior
+
+# Use MOCKS when:
+# - External resources (database, HTTP APIs)
+# - Slow operations
+# - Non-deterministic behavior (random, time-based)
+# - Testing error conditions
+# - Interaction verification is important
+
+# 6. UNION TYPES FOR FLEXIBLE TESTING (Modern approach)
+INTERFACE ITestableService
+    METHOD performOperation(data) -> Result
+END INTERFACE
+
+# Allow both real service AND mock in tests
+TYPE TestService = RealService | MockService
+WHERE MockService IMPLEMENTS ITestableService
+  AND RealService IMPLEMENTS ITestableService
+
+TEST_CLASS FlexibleServiceTest
+    METHOD testWithRealService()
+        service AS TestService = NEW RealService()
+        result = service.performOperation(testData)
+        ASSERT result.isValid()
+    END METHOD
+    
+    METHOD testWithMockService()
+        service AS TestService = MOCK MockService
+        EXPECT service.performOperation(testData) RETURNS expectedResult
+        # Test continues...
+    END METHOD
+END TEST_CLASS

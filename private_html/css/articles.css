@@ -44,7 +44,6 @@
     border-color: var(--color-primary);
     background: var(--color-primary-light);
     color: var(--color-primary);
-    transform: translateY(-1px);
 }
 
 .pagination-link.pagination-current {
@@ -494,7 +493,6 @@
 
 .article-container blockquote:hover {
     box-shadow: var(--shadow-medium);
-    transform: translateX(2px);
 }
 
 .article-container code {
@@ -548,7 +546,6 @@
 
 .article-container pre:hover {
     box-shadow: var(--shadow-medium);
-    transform: translateY(-1px);
 }
 
 .article-container pre code {
@@ -602,7 +599,6 @@
 
 .cta:hover {
     box-shadow: var(--shadow-elegant);
-    transform: translateY(-2px);
 }
 
 .cta h2 {
@@ -770,7 +766,6 @@
 
 .article-card:hover {
     box-shadow: var(--shadow-elegant);
-    transform: translateY(-4px) scale(1.02);
     border-color: rgba(0, 102, 204, 0.2);
 }
 
