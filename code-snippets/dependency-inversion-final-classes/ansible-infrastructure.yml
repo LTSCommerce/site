@@ -1,0 +1,372 @@
+---
+# Ansible Playbook: Dependency Inversion in Infrastructure Automation
+# 
+# This playbook demonstrates dependency inversion principles in infrastructure:
+# - Abstract roles define interfaces (what should be done)
+# - Concrete implementations handle specifics (how it's done)
+# - Environment-specific variables control behavior
+# - Composition over inheritance through role dependencies
+
+# Main playbook that orchestrates the deployment
+- name: Deploy order processing application with dependency inversion
+  hosts: web_servers
+  become: yes
+  vars:
+    # Abstract configuration - what we want, not how to achieve it
+    app_name: order-processor
+    app_version: "{{ lookup('env', 'APP_VERSION') | default('latest') }}"
+    environment: "{{ lookup('env', 'ENVIRONMENT') | default('development') }}"
+    
+    # Dependency inversion: depend on abstractions, not concretions
+    database_type: "{{ database_config.type }}"
+    cache_type: "{{ cache_config.type }}"
+    queue_type: "{{ queue_config.type }}"
+    
+    # Environment-specific configurations (injected dependencies)
+    database_config:
+      type: "{{ 'mysql' if environment == 'production' else 'sqlite' }}"
+      host: "{{ 'db.prod.example.com' if environment == 'production' else 'localhost' }}"
+      port: "{{ 3306 if environment == 'production' else 3306 }}"
+      name: "{{ app_name }}_{{ environment }}"
+    
+    cache_config:
+      type: "{{ 'redis' if environment in ['production', 'staging'] else 'memory' }}"
+      host: "{{ 'cache.prod.example.com' if environment == 'production' else 'localhost' }}"
+      port: 6379
+    
+    queue_config:
+      type: "{{ 'rabbitmq' if environment == 'production' else 'database' }}"
+      host: "{{ 'queue.prod.example.com' if environment == 'production' else 'localhost' }}"
+      port: 5672
+
+  # Role composition - dependency injection for infrastructure
+  roles:
+    # Core roles (always needed - stable dependencies)
+    - role: system_preparation
+      tags: [system, always]
+    
+    - role: php_runtime
+      php_version: "8.4"
+      tags: [php, runtime]
+    
+    # Conditional roles based on environment (injected dependencies)
+    - role: database_service
+      database_implementation: "{{ database_type }}"
+      when: database_type is defined
+      tags: [database]
+    
+    - role: cache_service
+      cache_implementation: "{{ cache_type }}"
+      when: cache_type != 'memory'
+      tags: [cache]
+    
+    - role: queue_service
+      queue_implementation: "{{ queue_type }}"
+      when: queue_type != 'database'
+      tags: [queue]
+    
+    # Application deployment (depends on abstractions above)
+    - role: application_deployment
+      tags: [app, deploy]
+    
+    # Monitoring and health checks (final layer)
+    - role: monitoring
+      when: environment in ['staging', 'production']
+      tags: [monitoring]
+
+  # Post-deployment tasks
+  post_tasks:
+    - name: Verify application health
+      uri:
+        url: "http://localhost:8080/health"
+        method: GET
+        status_code: 200
+      register: health_check
+      retries: 5
+      delay: 10
+      
+    - name: Display deployment summary
+      debug:
+        msg: |
+          Deployment completed successfully:
+          - Application: {{ app_name }} v{{ app_version }}
+          - Environment: {{ environment }}
+          - Database: {{ database_type }} on {{ database_config.host }}
+          - Cache: {{ cache_type }}
+          - Queue: {{ queue_type }}
+          - Health check: {{ 'PASSED' if health_check.status == 200 else 'FAILED' }}
+
+---
+# Database Service Role - Implements database abstraction
+# roles/database_service/tasks/main.yml
+
+- name: Include database-specific tasks
+  include_tasks: "{{ database_implementation }}.yml"
+  when: database_implementation is defined
+
+---
+# MySQL implementation - roles/database_service/tasks/mysql.yml
+- name: Install MySQL server
+  package:
+    name: "{{ mysql_package_name }}"
+    state: present
+  vars:
+    mysql_package_name: "{{ 'mysql-server' if ansible_os_family == 'Debian' else 'mysql-community-server' }}"
+
+- name: Configure MySQL for high performance
+  template:
+    src: mysql.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/99-custom.cnf
+    backup: yes
+  notify: restart mysql
+  vars:
+    # PHP 8.4 optimized MySQL configuration
+    mysql_config:
+      innodb_buffer_pool_size: "{{ (ansible_memtotal_mb * 0.7) | int }}M"
+      innodb_log_file_size: "256M"
+      max_connections: "{{ 500 if environment == 'production' else 100 }}"
+      query_cache_size: "{{ '256M' if environment == 'production' else '64M' }}"
+
+- name: Create application database
+  mysql_db:
+    name: "{{ database_config.name }}"
+    state: present
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+  notify: reload mysql privileges
+
+- name: Create database user for application
+  mysql_user:
+    name: "{{ app_name }}"
+    password: "{{ database_password | default(lookup('password', '/dev/null chars=ascii_letters,digits length=32')) }}"
+    priv: "{{ database_config.name }}.*:ALL"
+    host: "{{ 'localhost' if database_config.host == 'localhost' else '%' }}"
+    state: present
+  notify: reload mysql privileges
+
+---
+# SQLite implementation - roles/database_service/tasks/sqlite.yml  
+- name: Install SQLite
+  package:
+    name: sqlite3
+    state: present
+
+- name: Create SQLite database directory
+  file:
+    path: /var/lib/{{ app_name }}/database
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0750'
+
+- name: Initialize SQLite database
+  command: sqlite3 /var/lib/{{ app_name }}/database/{{ database_config.name }}.db "SELECT 1;"
+  args:
+    creates: /var/lib/{{ app_name }}/database/{{ database_config.name }}.db
+  become_user: www-data
+
+---
+# Cache Service Role - Implements caching abstraction
+# roles/cache_service/tasks/main.yml
+
+- name: Include cache-specific tasks
+  include_tasks: "{{ cache_implementation }}.yml"
+  when: cache_implementation is defined and cache_implementation != 'memory'
+
+---
+# Redis implementation - roles/cache_service/tasks/redis.yml
+- name: Install Redis server
+  package:
+    name: redis-server
+    state: present
+
+- name: Configure Redis for application caching
+  template:
+    src: redis.conf.j2
+    dest: /etc/redis/redis.conf
+    backup: yes
+  notify: restart redis
+  vars:
+    redis_config:
+      maxmemory: "{{ (ansible_memtotal_mb * 0.2) | int }}mb"
+      maxmemory_policy: "allkeys-lru"
+      save: "900 1 300 10 60 10000"  # Persistence configuration
+      tcp_keepalive: 300
+      timeout: 0
+
+- name: Start and enable Redis service
+  systemd:
+    name: redis-server
+    state: started
+    enabled: yes
+
+---
+# Application Deployment Role - Uses injected dependencies
+# roles/application_deployment/tasks/main.yml
+
+- name: Create application directory structure
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  loop:
+    - /var/www/{{ app_name }}
+    - /var/www/{{ app_name }}/storage
+    - /var/www/{{ app_name }}/config
+    - /var/log/{{ app_name }}
+
+- name: Deploy application configuration
+  template:
+    src: app-config.php.j2
+    dest: /var/www/{{ app_name }}/config/config.php
+    owner: www-data
+    group: www-data
+    mode: '0640'
+  vars:
+    # Configuration uses abstract dependencies
+    config:
+      database:
+        driver: "{{ database_type }}"
+        host: "{{ database_config.host }}"
+        port: "{{ database_config.port }}"
+        name: "{{ database_config.name }}"
+        username: "{{ app_name }}"
+      cache:
+        driver: "{{ cache_type }}"
+        host: "{{ cache_config.host if cache_type != 'memory' else 'localhost' }}"
+        port: "{{ cache_config.port if cache_type != 'memory' else null }}"
+      queue:
+        driver: "{{ queue_type }}"
+        host: "{{ queue_config.host if queue_type != 'database' else null }}"
+        port: "{{ queue_config.port if queue_type != 'database' else null }}"
+      app:
+        environment: "{{ environment }}"
+        debug: "{{ environment in ['development', 'testing'] }}"
+        log_level: "{{ 'debug' if environment == 'development' else 'warning' }}"
+
+- name: Deploy PHP 8.4 application with dependency injection
+  template:
+    src: bootstrap.php.j2
+    dest: /var/www/{{ app_name }}/bootstrap.php
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Install Composer dependencies
+  composer:
+    command: install
+    working_dir: /var/www/{{ app_name }}
+    no_dev: "{{ environment == 'production' }}"
+  become_user: www-data
+
+- name: Run database migrations
+  shell: |
+    cd /var/www/{{ app_name }}
+    php artisan migrate --force
+  become_user: www-data
+  when: database_type is defined
+
+---
+# Testing Role - Demonstrates testing different configurations
+# roles/application_testing/tasks/main.yml
+
+- name: Run unit tests with real dependencies (Detroit school)
+  shell: |
+    cd /var/www/{{ app_name }}
+    ./vendor/bin/phpunit --testsuite=unit --filter=DetroitTest
+  become_user: www-data
+  register: unit_test_results
+  when: environment in ['development', 'testing']
+
+- name: Run integration tests with mocked external services (London school)
+  shell: |
+    cd /var/www/{{ app_name }}
+    ./vendor/bin/phpunit --testsuite=integration --filter=LondonTest
+  become_user: www-data
+  register: integration_test_results
+  when: environment in ['development', 'testing']
+
+- name: Run hybrid tests (pragmatic approach)
+  shell: |
+    cd /var/www/{{ app_name }}
+    ./vendor/bin/phpunit --testsuite=hybrid
+  become_user: www-data
+  register: hybrid_test_results
+  when: environment in ['development', 'testing']
+
+- name: Display test results
+  debug:
+    msg: |
+      Test Results Summary:
+      - Unit Tests (Detroit): {{ 'PASSED' if unit_test_results.rc == 0 else 'FAILED' }}
+      - Integration Tests (London): {{ 'PASSED' if integration_test_results.rc == 0 else 'FAILED' }}
+      - Hybrid Tests: {{ 'PASSED' if hybrid_test_results.rc == 0 else 'FAILED' }}
+  when: environment in ['development', 'testing']
+
+---
+# Error Handling and Rollback (Defensive Infrastructure)
+# This demonstrates fail-fast principles in infrastructure
+
+- name: Validate configuration before deployment
+  block:
+    - name: Check PHP 8.4 compatibility
+      shell: php -v | grep "PHP 8.4"
+      register: php_version_check
+      failed_when: php_version_check.rc != 0
+
+    - name: Validate database connectivity  
+      shell: |
+        php -r "
+        try {
+          {% if database_type == 'mysql' %}
+          new PDO('mysql:host={{ database_config.host }};port={{ database_config.port }}', 'root', '');
+          {% else %}
+          new PDO('sqlite:/var/lib/{{ app_name }}/database/test.db');
+          {% endif %}
+          echo 'OK';
+        } catch (Exception \$e) {
+          echo 'FAILED: ' . \$e->getMessage();
+          exit(1);
+        }"
+      register: db_connectivity_check
+
+    - name: Validate cache connectivity
+      shell: |
+        {% if cache_type == 'redis' %}
+        redis-cli -h {{ cache_config.host }} -p {{ cache_config.port }} ping
+        {% else %}
+        echo "PONG"  # Memory cache always available
+        {% endif %}
+      register: cache_connectivity_check
+      when: cache_type != 'memory'
+
+  rescue:
+    - name: Rollback on validation failure
+      debug:
+        msg: |
+          Validation failed - Rolling back deployment:
+          - PHP Version: {{ php_version_check.stdout | default('FAILED') }}
+          - Database: {{ db_connectivity_check.stdout | default('FAILED') }}
+          - Cache: {{ cache_connectivity_check.stdout | default('SKIPPED') }}
+      
+    - name: Stop deployment
+      fail:
+        msg: "Pre-deployment validation failed. Deployment aborted."
+
+---
+# Handlers file - roles/database_service/handlers/main.yml
+- name: restart mysql
+  systemd:
+    name: mysql
+    state: restarted
+
+- name: reload mysql privileges
+  mysql_query:
+    query: "FLUSH PRIVILEGES"
+
+- name: restart redis
+  systemd:
+    name: redis-server
+    state: restarted

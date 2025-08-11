@@ -412,12 +412,10 @@ h3 {
         var(--color-primary-light) 0%, 
         var(--color-primary) 100%
     );
-    transform: translateY(-2px) scale(1.02);
     box-shadow: var(--shadow-elegant);
 }
 
 .btn-primary:active {
-    transform: translateY(-1px) scale(1.01);
     transition: var(--transition-quick);
 }
 
@@ -430,12 +428,10 @@ h3 {
 .btn-secondary:hover {
     background-color: var(--color-primary);
     color: white;
-    transform: translateY(-2px) scale(1.02);
     box-shadow: var(--shadow-elegant);
 }
 
 .btn-secondary:active {
-    transform: translateY(-1px) scale(1.01);
     transition: var(--transition-quick);
 }
 
@@ -515,7 +511,6 @@ h3 {
 
 .expertise-card:hover {
     box-shadow: var(--shadow-elegant);
-    transform: translateY(-4px) scale(1.02);
     border-color: rgba(0, 102, 204, 0.2);
 }
 
@@ -615,7 +610,6 @@ h3 {
 
 .footer-nav a:hover {
     color: var(--color-primary);
-    transform: translateY(-1px);
 }
 
 .footer-nav a:hover::after {

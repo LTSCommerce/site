@@ -48,6 +48,7 @@ export default defineConfig({
         'js/author': resolve(__dirname, 'private_html/js/author.js'),
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         // Article JavaScript entry points
+        'js/articles/dependency-inversion-final-classes-pragmatic-testing': resolve(__dirname, 'private_html/js/articles/dependency-inversion-final-classes-pragmatic-testing.js'),
         'js/articles/defensive-programming-principles': resolve(__dirname, 'private_html/js/articles/defensive-programming-principles.js'),
         'js/articles/fail-fast-programming-philosophy': resolve(__dirname, 'private_html/js/articles/fail-fast-programming-philosophy.js'),
         'js/articles/early-return-patterns-cleaner-code': resolve(__dirname, 'private_html/js/articles/early-return-patterns-cleaner-code.js'),

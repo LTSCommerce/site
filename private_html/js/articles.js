@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 260,
+    "title": "Dependency Inversion, Final Classes, and Pragmatic Testing in PHP 8.4",
+    "excerpt": "Master dependency inversion with final classes in PHP 8.4, learn when to use real objects vs mocks, and discover the pragmatic testing approach that combines Detroit and London schools for maintainable, testable code.",
+    "category": "php",
+    "date": "2025-08-11",
+    "slug": "dependency-inversion-final-classes-pragmatic-testing",
+    "readingTime": "18"
+  },
+  {
     "id": 312,
     "title": "Defensive Programming Principles: YAGNI, Invalid States, and Domain Purity",
     "excerpt": "Master three fundamental defensive programming principles: YAGNI for avoiding unnecessary complexity, making invalid states unrepresentable through type safety, and maintaining domain object purity for clean architecture.",
