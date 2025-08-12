@@ -43,13 +43,13 @@
 <h3>3. Implement the Strangler Fig Pattern</h3>
 <p>This pattern allows you to gradually replace old code with new code by routing requests through a facade:</p>
 <pre><code class="language-php">&lt;?php
-declare(strict_types=1);
+<a href="https://www.php.net/manual/en/control-structures.declare.php" target="_blank">declare(strict_types=1)</a>;
 namespace AppServicesUser;
 use AppContractsUserServiceInterface;
 use AppValueObjectsUserId;
 use AppEntitiesUser;
 use AppExceptionsUserNotFoundException;
-final readonly class StranglerFigUserService implements UserServiceInterface
+<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank">final</a> <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank">readonly</a> class StranglerFigUserService implements UserServiceInterface
 {
 public function __construct(
 private UserServiceInterface $legacyService,
@@ -58,7 +58,7 @@ private FeatureToggleService $featureToggle,
 ) {}
 public function getUser(UserId $id): User
 {
-return match ($this-&gt;featureToggle-&gt;isEnabled(&#39;modern_user_service&#39;, $id)) {
+return <a href="https://www.php.net/manual/en/control-structures.match.php" target="_blank">match</a> ($this-&gt;featureToggle-&gt;isEnabled(&#39;modern_user_service&#39;, $id)) {
 true =&gt; $this-&gt;modernService-&gt;getUser($id),
 false =&gt; $this-&gt;legacyService-&gt;getUser($id),
 };
@@ -75,7 +75,7 @@ return $id-&gt;value % 10 === 0;
 <h3>Dependency Injection</h3>
 <p>Replace global state with explicit dependencies:</p>
 <pre><code class="language-php">&lt;?php
-declare(strict_types=1);
+<a href="https://www.php.net/manual/en/control-structures.declare.php" target="_blank">declare(strict_types=1)</a>;
 // Before: Global database connection
 function getUser(int $id): array|false
 {
@@ -83,7 +83,7 @@ global $db;
 return $db-&gt;query(&quot;SELECT * FROM users WHERE id = {$id}&quot;)-&gt;fetch();
 }
 // After: Modern dependency injection with proper typing
-final readonly class UserRepository implements UserRepositoryInterface
+<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank">final</a> <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank">readonly</a> class UserRepository implements UserRepositoryInterface
 {
 public function __construct(
 private PDO $connection,
@@ -104,13 +104,13 @@ return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
 <h3>Extract Service Classes</h3>
 <p>Move business logic out of controllers and into dedicated service classes:</p>
 <pre><code class="language-php">&lt;?php
-declare(strict_types=1);
+<a href="https://www.php.net/manual/en/control-structures.declare.php" target="_blank">declare(strict_types=1)</a>;
 namespace AppServicesOrder;
 use AppValueObjects{OrderId, Money, CustomerId};
 use AppEntitiesOrder;
 use AppEventsOrderPlaced;
 use AppExceptions{OrderValidationException, PaymentFailedException};
-final readonly class OrderService
+<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank">final</a> <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank">readonly</a> class OrderService
 {
 public function __construct(
 private OrderValidator $validator,
@@ -146,17 +146,17 @@ return $order;
 <h3>Implement Automated Testing</h3>
 <p>Start with integration tests for critical paths, then add unit tests as you refactor:</p>
 <pre><code class="language-php">&lt;?php
-declare(strict_types=1);
+<a href="https://www.php.net/manual/en/control-structures.declare.php" target="_blank">declare(strict_types=1)</a>;
 namespace TestsUnitServicesOrder;
 use AppServicesOrderOrderService;
 use AppTesting{OrderDataBuilder, PaymentResultBuilder};
 use AppExceptionsPaymentFailedException;
 use PHPUnitFrameworkTestCase;
 use PHPUnitFrameworkAttributes{Test, TestDox};
-final class OrderServiceTest extends TestCase
+<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank">final</a> class OrderServiceTest extends TestCase
 {
-#[Test]
-#[TestDox(&#39;Successfully processes valid order with payment&#39;)]
+<a href="https://www.php.net/manual/en/language.attributes.php" target="_blank">#[Test]</a>
+<a href="https://www.php.net/manual/en/language.attributes.php" target="_blank">#[TestDox(&#39;Successfully processes valid order with payment&#39;)]</a>
 public function processOrder_WithValidData_CreatesOrderAndProcessesPayment(): void
 {
 // Arrange

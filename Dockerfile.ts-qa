@@ -1,0 +1,47 @@
+FROM node:20-alpine
+
+# Install TypeScript QA tools globally
+RUN npm install -g \
+    typescript@latest \
+    eslint@latest \
+    prettier@latest \
+    @typescript-eslint/parser@latest \
+    @typescript-eslint/eslint-plugin@latest
+
+# Set up working directory for code snippets
+WORKDIR /code-snippets
+
+# Create basic tsconfig.json for linting
+RUN echo '{\
+    "compilerOptions": {\
+        "target": "ES2022",\
+        "module": "ESNext",\
+        "moduleResolution": "node",\
+        "strict": true,\
+        "noEmit": true,\
+        "skipLibCheck": true,\
+        "forceConsistentCasingInFileNames": true\
+    },\
+    "include": ["**/*.ts"]\
+}' > tsconfig.json
+
+# Create basic eslint config
+RUN echo '{\
+    "parser": "@typescript-eslint/parser",\
+    "plugins": ["@typescript-eslint"],\
+    "extends": [\
+        "eslint:recommended",\
+        "@typescript-eslint/recommended"\
+    ],\
+    "env": {\
+        "node": true,\
+        "es2022": true\
+    },\
+    "parserOptions": {\
+        "ecmaVersion": 2022,\
+        "sourceType": "module"\
+    }\
+}' > .eslintrc.json
+
+# Default command
+CMD ["tsc", "--noEmit"]

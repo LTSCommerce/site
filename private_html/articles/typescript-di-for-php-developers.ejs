@@ -22,8 +22,8 @@
     
     <h3>PHP: Nominal Typing</h3>
     <p>
-        PHP uses <strong>nominal typing</strong>—types are based on explicit declarations. A class must explicitly 
-        implement an interface or extend a class to be considered compatible:
+        PHP uses <strong><a href="https://www.php.net/manual/en/language.types.type-system.php" target="_blank" rel="noopener">nominal typing</a></strong>—types are based on explicit declarations. A class must explicitly 
+        <a href="https://www.php.net/manual/en/language.oop5.interfaces.php#language.oop5.interfaces.implements" target="_blank" rel="noopener">implement</a> an interface or extend a class to be considered compatible:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:typescript-di/nominal-typing.php}}
@@ -31,7 +31,7 @@
 
     <h3>TypeScript: Structural Typing</h3>
     <p>
-        TypeScript uses <strong>structural typing</strong> (also called "duck typing")—if it walks like a duck 
+        TypeScript uses <strong><a href="https://www.typescriptlang.org/docs/handbook/type-compatibility.html#structural-typing" target="_blank" rel="noopener">structural typing</a></strong> (also called "<a href="https://en.wikipedia.org/wiki/Duck_typing" target="_blank" rel="noopener">duck typing</a>")—if it walks like a duck 
         and quacks like a duck, it's a duck:
     </p>
     
@@ -189,7 +189,7 @@ yarn add reflect-metadata inversify</code></pre>
 
     <h3>1. Boundaries are Conventions, Not Constraints</h3>
     <p>
-        In PHP, you can enforce architectural boundaries through visibility modifiers and final classes. 
+        In PHP, you can enforce architectural boundaries through <a href="https://www.php.net/manual/en/language.oop5.visibility.php" target="_blank" rel="noopener">visibility modifiers</a> and <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final classes</a>. 
         In TypeScript, these boundaries are more <a href="https://www.typescriptlang.org/docs/handbook/2/classes.html#member-visibility" target="_blank" rel="noopener">suggestions than rules</a>.
     </p>
 

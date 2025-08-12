@@ -1,0 +1,37 @@
+
+services:
+  php-qa:
+    build: 
+      context: .
+      dockerfile: Dockerfile.php-qa
+    volumes:
+      - ./code-snippets:/code-snippets:ro
+    working_dir: /code-snippets
+    command: /app/bin/phpstan analyse . --level=8 --no-progress
+
+  php-cs-fixer:
+    build: 
+      context: .
+      dockerfile: Dockerfile.php-qa
+    volumes:
+      - ./code-snippets:/code-snippets:ro
+    working_dir: /code-snippets
+    command: /app/bin/php-cs-fixer fix . --dry-run --diff --verbose
+
+  typescript-qa:
+    build:
+      context: .
+      dockerfile: Dockerfile.ts-qa
+    volumes:
+      - ./code-snippets:/code-snippets:ro
+    working_dir: /code-snippets
+    command: tsc --noEmit
+
+  eslint-qa:
+    build:
+      context: .
+      dockerfile: Dockerfile.ts-qa
+    volumes:
+      - ./code-snippets:/code-snippets:ro
+    working_dir: /code-snippets
+    command: eslint . --ext .ts

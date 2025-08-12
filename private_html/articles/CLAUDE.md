@@ -156,6 +156,11 @@ git push origin main # Triggers auto-deployment
   - Link ALL frameworks and platforms (e.g., Symfony, Laravel, Angular)
   - Link ALL specifications and standards (e.g., PSR standards, RFCs)
   - Link version numbers to release notes when mentioning specific versions
+  - **CRITICAL**: EVERY language feature mentioned must link to official documentation
+    - PHP features → php.net manual (e.g., final classes, property hooks, constructor promotion)
+    - TypeScript features → typescriptlang.org handbook (e.g., union types, branded types, discriminated unions)
+    - JavaScript features → MDN documentation
+    - New language features → official RFCs or specifications
   - Aim for 30-50+ links per article minimum
 - **Primary sources** - Link directly to official docs, not blog posts about them
 - **Verification** - All claims must be verifiable through linked sources
@@ -199,6 +204,22 @@ Examples of well-linked content:
     open-source framework for building command-line interfaces in 
     <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> and 
     <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>.
+</p>
+```
+
+**Language feature linking (MANDATORY)**:
+```html
+<p>
+    PHP 8.4 introduces <a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener">property hooks</a> 
+    and <a href="https://wiki.php.net/rfc/asymmetric-visibility" target="_blank" rel="noopener">asymmetric visibility</a>.
+    <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">Final classes</a> 
+    prevent inheritance, encouraging composition over inheritance.
+</p>
+
+<p>
+    TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types" target="_blank" rel="noopener">union types</a> 
+    and <a href="https://egghead.io/blog/using-branded-types-in-typescript" target="_blank" rel="noopener">branded types</a> 
+    provide stronger type safety than traditional approaches.
 </p>
 ```
 
@@ -329,6 +350,11 @@ Before publishing, verify:
 - [ ] All external tools/libraries are linked
 - [ ] All technical terms linked on first mention
 - [ ] All frameworks, specifications, and standards linked
+- [ ] **LANGUAGE FEATURE LINKING** - Every language feature mentioned has official documentation link:
+  - [ ] PHP features link to php.net manual (final classes, property hooks, etc.)
+  - [ ] TypeScript features link to typescriptlang.org handbook (union types, branded types, etc.)
+  - [ ] JavaScript features link to MDN documentation
+  - [ ] New features link to official RFCs or specifications
 - [ ] Code snippets are stored separately and injected
 - [ ] Article provides practical, actionable value
 - [ ] No fabricated examples or metrics
