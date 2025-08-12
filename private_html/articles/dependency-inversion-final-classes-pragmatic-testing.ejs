@@ -14,7 +14,7 @@
         <section>
             <h2>Understanding Dependency Inversion in Modern PHP</h2>
             
-            <p>The Dependency Inversion Principle (DIP) states that high-level modules should not depend on low-level modules—both should depend on abstractions. In PHP 8.4, this principle takes on new dimensions with enhanced language features like property hooks, asymmetric visibility, and improved type system capabilities.</p>
+            <p>The <a href="https://en.wikipedia.org/wiki/Dependency_inversion_principle" target="_blank" rel="noopener">Dependency Inversion Principle (DIP)</a> states that high-level modules should not depend on low-level modules—both should depend on abstractions. In PHP 8.4, this principle takes on new dimensions with enhanced language features like <a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener">property hooks</a>, <a href="https://wiki.php.net/rfc/asymmetric-visibility" target="_blank" rel="noopener">asymmetric visibility</a>, and improved type system capabilities.</p>
 
             <h3>The Problem: Violating Dependency Inversion</h3>
             
@@ -39,7 +39,7 @@
 
             <h3>The Solution: Final Classes with Dependency Inversion</h3>
             
-            <p>The modern PHP 8.4 approach leverages final classes combined with dependency injection to achieve proper inversion of control. Final classes prevent inheritance, forcing developers to use composition—which aligns perfectly with dependency inversion principles.</p>
+            <p>The modern PHP 8.4 approach leverages <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final classes</a> combined with <a href="https://www.php.net/manual/en/language.oop5.decon.php#language.oop5.decon.constructor.promotion" target="_blank" rel="noopener">dependency injection</a> to achieve proper inversion of control. Final classes prevent inheritance, forcing developers to use composition—which aligns perfectly with dependency inversion principles.</p>
 
             <pre><code class="language-php">{{SNIPPET:dependency-inversion-final-classes/right-approach.php}}
 </code></pre>
@@ -58,7 +58,7 @@
         <section>
             <h2>The Testing Philosophy: Detroit vs London Schools</h2>
             
-            <p>The testing community has long been divided between two approaches, historically known as the Detroit School (classical/state-based testing) and London School (mockist/interaction-based testing). However, modern practice has evolved toward a more pragmatic approach that combines both strategies.</p>
+            <p>The testing community has long been divided between two approaches, historically known as the <a href="https://martinfowler.com/articles/mocksArentStubs.html#ClassicalAndMockistTesting" target="_blank" rel="noopener">Detroit School</a> (classical/state-based testing) and <a href="https://martinfowler.com/articles/mocksArentStubs.html#ClassicalAndMockistTesting" target="_blank" rel="noopener">London School</a> (mockist/interaction-based testing). However, modern practice has evolved toward a more pragmatic approach that combines both strategies.</p>
 
             <h3>Detroit School: Testing with Real Objects</h3>
             
@@ -126,16 +126,18 @@
         <section>
             <h2>TypeScript Patterns: Learning from Structural Typing</h2>
             
-            <p>TypeScript offers valuable insights for PHP developers working with dependency inversion. While PHP uses nominal typing (class-based), TypeScript's structural typing provides interesting patterns we can adapt:</p>
+            <p><a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a> offers valuable insights for PHP developers working with dependency inversion. While PHP uses <a href="https://www.php.net/manual/en/language.oop5.basic.php" target="_blank" rel="noopener">nominal typing</a> (class-based), TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/type-compatibility.html#structural-typing" target="_blank" rel="noopener">structural typing</a> provides interesting patterns we can adapt:</p>
 
             <pre><code class="language-typescript">{{SNIPPET:dependency-inversion-final-classes/typescript-patterns.ts}}
 </code></pre>
 
-            <h3>Union Types for Flexible Testing</h3>
+            <h3><a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types" target="_blank" rel="noopener">Union Types</a> for Flexible Testing</h3>
             
-            <p>TypeScript's union types inspire a flexible testing approach where the same interface can accommodate both real implementations and mocks. While PHP doesn't have union types in the same way, we can achieve similar flexibility through careful interface design.</p>
+            <p>The TypeScript code above demonstrates several advanced patterns that PHP developers can learn from, including <a href="https://egghead.io/blog/using-branded-types-in-typescript" target="_blank" rel="noopener">branded types</a> for stronger type safety, <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions" target="_blank" rel="noopener">discriminated unions</a> for result types, and <a href="https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html" target="_blank" rel="noopener">template literal types</a> for advanced configurations.</p>
+            
+            <p>TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types" target="_blank" rel="noopener">union types</a> inspire a flexible testing approach where the same interface can accommodate both real implementations and mocks. While PHP doesn't have union types in the same way, we can achieve similar flexibility through careful interface design.</p>
 
-            <p>The key insight from TypeScript is that testing interfaces should be designed to accommodate both real and mock implementations naturally, rather than forcing a choice between approaches.</p>
+            <p>The key insight from TypeScript is that testing interfaces should be designed to accommodate both real and mock implementations naturally, rather than forcing a choice between approaches. The <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-properties" target="_blank" rel="noopener">readonly pattern</a> in TypeScript also provides inspiration for creating immutable dependencies in PHP.</p>
         </section>
 
         <section>
@@ -183,7 +185,7 @@
             
             <p>PHP 8.4 introduces several features that enhance dependency inversion implementation:</p>
 
-            <h3>Property Hooks for Lazy Initialization</h3>
+            <h3><a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener">Property Hooks</a> for Lazy Initialization</h3>
             
             <pre><code class="language-php">class LazyOrderProcessor
 {
@@ -209,7 +211,7 @@
     }
 }</code></pre>
 
-            <h3>Asymmetric Visibility for Immutable Dependencies</h3>
+            <h3><a href="https://wiki.php.net/rfc/asymmetric-visibility" target="_blank" rel="noopener">Asymmetric Visibility</a> for Immutable Dependencies</h3>
             
             <pre><code class="language-php">final class SecureOrderProcessor
 {
@@ -225,9 +227,9 @@
     // but can be read for testing and debugging
 }</code></pre>
 
-            <h3>Lazy Objects for Performance</h3>
+            <h3><a href="https://wiki.php.net/rfc/lazy_objects" target="_blank" rel="noopener">Lazy Objects</a> for Performance</h3>
             
-            <p>PHP 8.4's lazy objects feature allows for sophisticated dependency injection patterns:</p>
+            <p>PHP 8.4's <a href="https://wiki.php.net/rfc/lazy_objects" target="_blank" rel="noopener">lazy objects</a> feature allows for sophisticated dependency injection patterns:</p>
             
             <pre><code class="language-php">$lazyDatabase = LazyObjectFactory::create(
     MySqlDatabase::class,

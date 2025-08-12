@@ -94,7 +94,7 @@ LIMIT 20;</code></pre>
 <h2>PHP Database Optimization</h2>
 <h3>Connection Optimization</h3>
 <pre><code class="language-php">&lt;?php
-declare(strict_types=1);
+<a href="https://www.php.net/manual/en/control-structures.declare.php#control-structures.declare.strict_types" target="_blank" rel="noopener">declare(strict_types=1)</a>;
 namespace AppDatabaseOptimization;
 use AppValueObjects{DatabaseConfig, QueryResult, CacheKey, CacheTTL};
 use AppExceptions{DatabaseConnectionException, QueryExecutionException};
@@ -102,7 +102,7 @@ use AppContracts{CacheInterface, QueryMetricsInterface};
 use PDO;
 use PDOException;
 use PsrLogLoggerInterface;
-final readonly class DatabaseOptimizer
+<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final</a> <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> class DatabaseOptimizer
 {
 private PDO $connection;
 public function __construct(
@@ -170,7 +170,7 @@ previous: $e
 public function executeQueryWithCache(
 string $sql,
 array $params = [],
-?CacheTTL $ttl = null
+<a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.nullable" target="_blank" rel="noopener">?</a>CacheTTL $ttl = null
 ): QueryResult {
 $cacheKey = CacheKey::forQuery($sql, $params);
 // Check cache first
@@ -182,7 +182,7 @@ $result = $this-&gt;executeQuery($sql, $params);
 $this-&gt;cache-&gt;set($cacheKey, $result, $ttl ?? new CacheTTL(300));
 return $result;
 }
-public function transaction(callable $callback): mixed
+public function transaction(<a href="https://www.php.net/manual/en/language.types.callable.php" target="_blank" rel="noopener">callable</a> $callback): <a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.mixed" target="_blank" rel="noopener">mixed</a>
 {
 $this-&gt;connection-&gt;beginTransaction();
 try {
@@ -197,7 +197,7 @@ throw $e;
 }</code></pre>
 <h3>Prepared Statement Optimization</h3>
 <pre><code class="language-php">&lt;?php
-declare(strict_types=1);
+<a href="https://www.php.net/manual/en/control-structures.declare.php#control-structures.declare.strict_types" target="_blank" rel="noopener">declare(strict_types=1)</a>;
 namespace AppDatabaseStatements;
 use AppValueObjects{SqlStatement, BatchResult};
 use AppExceptions{StatementExecutionException, BatchExecutionException};
@@ -205,18 +205,18 @@ use PDO;
 use PDOStatement;
 use PDOException;
 use PsrLogLoggerInterface;
-use WeakMap;
-final class PreparedStatementPool
+use <a href="https://www.php.net/manual/en/class.weakmap.php" target="_blank" rel="noopener">WeakMap</a>;
+<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final</a> class PreparedStatementPool
 {
 /** @var array&lt;string, PDOStatement&gt; */
 private array $statements = [];
-private readonly WeakMap $statementMetadata;
+private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> <a href="https://www.php.net/manual/en/class.weakmap.php" target="_blank" rel="noopener">WeakMap</a> $statementMetadata;
 public function __construct(
-private readonly PDO $connection,
-private readonly LoggerInterface $logger,
-private readonly int $maxStatements = 1000,
+private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> PDO $connection,
+private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> LoggerInterface $logger,
+private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> int $maxStatements = 1000,
 ) {
-$this-&gt;statementMetadata = new WeakMap();
+$this-&gt;statementMetadata = new <a href="https://www.php.net/manual/en/class.weakmap.php" target="_blank" rel="noopener">WeakMap</a>();
 }
 public function getStatement(SqlStatement $sql): PDOStatement
 {
@@ -384,13 +384,13 @@ ORDER BY date DESC;</code></pre>
 <h2>Performance Monitoring</h2>
 <h3>Slow Query Log Analysis</h3>
 <pre><code class="language-php">&lt;?php
-declare(strict_types=1);
+<a href="https://www.php.net/manual/en/control-structures.declare.php#control-structures.declare.strict_types" target="_blank" rel="noopener">declare(strict_types=1)</a>;
 namespace AppDatabaseMonitoring;
 use PDO;
-final class SlowQueryAnalyzer
+<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final</a> class SlowQueryAnalyzer
 {
 public function __construct(
-private readonly PDO $pdo
+private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> PDO $pdo
 ) {}
 public function enableSlowQueryLog(): void
 {
@@ -569,7 +569,7 @@ private $defaultTTL = 300;
 public function __construct(Redis $redis) {
 $this-&gt;redis = $redis;
 }
-public function getCachedQuery(string $sql, array $params = [], int $ttl = null): ?array {
+public function getCachedQuery(string $sql, array $params = [], int $ttl = null): <a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.nullable" target="_blank" rel="noopener">?</a>array {
 $cacheKey = $this-&gt;generateCacheKey($sql, $params);
 $cached = $this-&gt;redis-&gt;get($cacheKey);
 if ($cached !== false) {
