@@ -207,10 +207,10 @@ function generatePaginatedPages() {
     const paginationInfo = generatePaginationInfo(articles, page, ARTICLES_PER_PAGE);
     const paginationControls = generatePaginationControls(paginationInfo);
 
-    // Prepare unique categories for this page
-    const pageCategories = [...new Set(paginationInfo.pageArticles.map(article => article.category))].sort();
+    // Prepare unique categories from ALL articles (build-time generation)
+    const allCategories = [...new Set(articles.map(article => article.category))].sort();
     let categoryButtons = '';
-    for (const category of pageCategories) { 
+    for (const category of allCategories) { 
       const categoryInfo = templateData.categories[category] || { label: category };
       categoryButtons += `<button class="filter-btn" data-category="${category}">${categoryInfo.label}</button>`;
     }
