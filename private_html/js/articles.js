@@ -13,7 +13,7 @@ const articles = [
     "category": "infrastructure",
     "date": "2025-08-13",
     "slug": "unix-philosophy-strategic-guide",
-    "readingTime": "14"
+    "readingTime": "12"
   },
   {
     "id": 260,
