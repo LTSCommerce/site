@@ -1,0 +1,360 @@
+# Ansible: Unix Philosophy in Infrastructure Automation
+
+# Single Responsibility: Each playbook does one thing well
+---
+- name: Deploy User Authentication Service
+  hosts: auth_servers
+  become: yes
+  vars:
+    service_name: user-auth-service
+    app_port: 8080
+    health_check_path: /health
+  
+  tasks:
+    # Each task has a single, clear purpose
+    - name: Create application user
+      user:
+        name: "{{ service_name }}"
+        system: yes
+        shell: /bin/false
+        home: "/opt/{{ service_name }}"
+        create_home: yes
+
+    - name: Install application dependencies
+      package:
+        name:
+          - nodejs
+          - npm
+          - nginx
+        state: present
+
+    - name: Deploy application code
+      copy:
+        src: "{{ service_name }}-{{ version }}.tar.gz"
+        dest: "/opt/{{ service_name }}/app.tar.gz"
+        owner: "{{ service_name }}"
+        group: "{{ service_name }}"
+      notify: restart service
+
+    - name: Extract application
+      unarchive:
+        src: "/opt/{{ service_name }}/app.tar.gz"
+        dest: "/opt/{{ service_name }}"
+        remote_src: yes
+        owner: "{{ service_name }}"
+        group: "{{ service_name }}"
+      notify: restart service
+
+  handlers:
+    - name: restart service
+      systemd:
+        name: "{{ service_name }}"
+        state: restarted
+
+---
+# Composition: Building complex deployments from simple roles
+- name: Deploy Complete E-Commerce Platform
+  hosts: all
+  become: yes
+  
+  roles:
+    # Each role handles one specific service (Unix principle)
+    - role: user_authentication_service
+      vars:
+        service_port: 8080
+        database_url: "{{ auth_db_url }}"
+    
+    - role: payment_processing_service
+      vars:
+        service_port: 8081
+        stripe_api_key: "{{ vault_stripe_key }}"
+        fallback_gateway: paypal
+    
+    - role: order_management_service
+      vars:
+        service_port: 8082
+        inventory_service_url: "http://inventory:8083"
+    
+    - role: nginx_load_balancer
+      vars:
+        upstream_services:
+          - { name: auth, host: "{{ groups['auth_servers'] }}", port: 8080 }
+          - { name: payment, host: "{{ groups['payment_servers'] }}", port: 8081 }
+          - { name: orders, host: "{{ groups['order_servers'] }}", port: 8082 }
+
+---
+# Text-based Configuration and Data Flow
+- name: Configure Service Discovery and Routing
+  hosts: api_gateway
+  become: yes
+  vars:
+    # Configuration as data (Unix text streams principle)
+    services_config: |
+      upstream auth_service {
+          least_conn;
+          {% for host in groups['auth_servers'] %}
+          server {{ host }}:8080 max_fails=3 fail_timeout=30s;
+          {% endfor %}
+      }
+      
+      upstream payment_service {
+          least_conn;
+          {% for host in groups['payment_servers'] %}
+          server {{ host }}:8081 max_fails=3 fail_timeout=30s;
+          {% endfor %}
+      }
+      
+      server {
+          listen 80;
+          server_name api.company.com;
+          
+          # Route to specific services based on path
+          location /auth/ {
+              proxy_pass http://auth_service/;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+          }
+          
+          location /payment/ {
+              proxy_pass http://payment_service/;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+          }
+      }
+
+  tasks:
+    - name: Write nginx configuration
+      copy:
+        content: "{{ services_config }}"
+        dest: /etc/nginx/sites-available/api-gateway
+      notify: reload nginx
+
+    - name: Enable nginx site
+      file:
+        src: /etc/nginx/sites-available/api-gateway
+        dest: /etc/nginx/sites-enabled/api-gateway
+        state: link
+      notify: reload nginx
+
+  handlers:
+    - name: reload nginx
+      systemd:
+        name: nginx
+        state: reloaded
+
+---
+# Modular Infrastructure: Container Orchestration
+- name: Deploy Microservices with Docker Compose
+  hosts: docker_hosts
+  become: yes
+  vars:
+    # Each service defined independently (modularity)
+    docker_compose_config:
+      version: '3.8'
+      services:
+        auth-service:
+          image: "company/auth-service:{{ version }}"
+          ports:
+            - "8080:8080"
+          environment:
+            DATABASE_URL: "{{ auth_db_url }}"
+            JWT_SECRET: "{{ vault_jwt_secret }}"
+          healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+          restart: unless-stopped
+
+        payment-service:
+          image: "company/payment-service:{{ version }}"
+          ports:
+            - "8081:8081"
+          environment:
+            STRIPE_API_KEY: "{{ vault_stripe_key }}"
+            FALLBACK_GATEWAY: paypal
+          depends_on:
+            - auth-service
+          restart: unless-stopped
+
+        order-service:
+          image: "company/order-service:{{ version }}"
+          ports:
+            - "8082:8082"
+          environment:
+            AUTH_SERVICE_URL: http://auth-service:8080
+            PAYMENT_SERVICE_URL: http://payment-service:8081
+          depends_on:
+            - auth-service
+            - payment-service
+          restart: unless-stopped
+
+  tasks:
+    - name: Create docker-compose directory
+      file:
+        path: /opt/ecommerce
+        state: directory
+        mode: '0755'
+
+    - name: Write docker-compose configuration
+      copy:
+        content: "{{ docker_compose_config | to_nice_yaml }}"
+        dest: /opt/ecommerce/docker-compose.yml
+      notify: restart containers
+
+    - name: Start services
+      docker_compose:
+        project_src: /opt/ecommerce
+        state: present
+
+  handlers:
+    - name: restart containers
+      docker_compose:
+        project_src: /opt/ecommerce
+        restarted: yes
+
+---
+# Resilience and Monitoring: Fail Fast with Recovery
+- name: Configure Health Checks and Circuit Breakers
+  hosts: all
+  become: yes
+  
+  tasks:
+    # Health checking script (simple, focused tool)
+    - name: Install health check script
+      copy:
+        content: |
+          #!/bin/bash
+          # Simple health check following Unix philosophy
+          
+          SERVICE_NAME="${1:-unknown}"
+          HEALTH_URL="${2:-http://localhost:8080/health}"
+          MAX_FAILURES="${3:-3}"
+          
+          FAILURE_FILE="/tmp/${SERVICE_NAME}_failures"
+          
+          # Check service health
+          if curl -f -s "$HEALTH_URL" > /dev/null 2>&1; then
+              # Success: reset failure counter
+              rm -f "$FAILURE_FILE"
+              echo "$(date): $SERVICE_NAME healthy" >> /var/log/health-checks.log
+              exit 0
+          else
+              # Failure: increment counter
+              CURRENT_FAILURES=$(cat "$FAILURE_FILE" 2>/dev/null || echo "0")
+              NEW_FAILURES=$((CURRENT_FAILURES + 1))
+              echo "$NEW_FAILURES" > "$FAILURE_FILE"
+              
+              echo "$(date): $SERVICE_NAME unhealthy ($NEW_FAILURES failures)" >> /var/log/health-checks.log
+              
+              # Fail fast if max failures reached
+              if [ "$NEW_FAILURES" -ge "$MAX_FAILURES" ]; then
+                  echo "$(date): $SERVICE_NAME circuit breaker activated" >> /var/log/health-checks.log
+                  # Could trigger failover, alerts, etc.
+                  exit 2
+              fi
+              
+              exit 1
+          fi
+        dest: /usr/local/bin/health-check
+        mode: '0755'
+
+    # Cron jobs for continuous monitoring (Unix: small tools)
+    - name: Schedule health checks
+      cron:
+        name: "Health check {{ item.service }}"
+        minute: "*/2"
+        job: "/usr/local/bin/health-check {{ item.service }} {{ item.url }} 3"
+      loop:
+        - { service: "auth-service", url: "http://localhost:8080/health" }
+        - { service: "payment-service", url: "http://localhost:8081/health" }
+        - { service: "order-service", url: "http://localhost:8082/health" }
+
+    # Log rotation (Unix: text processing)
+    - name: Configure log rotation
+      copy:
+        content: |
+          /var/log/health-checks.log {
+              daily
+              rotate 7
+              compress
+              delaycompress
+              missingok
+              notifempty
+              create 644 root root
+          }
+        dest: /etc/logrotate.d/health-checks
+
+---
+# Infrastructure as Code: Version-Controlled, Repeatable
+- name: Provision Cloud Infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  
+  vars:
+    # Infrastructure defined as data
+    vpc_cidr: "10.0.0.0/16"
+    availability_zones:
+      - us-west-2a
+      - us-west-2b
+      - us-west-2c
+    
+    services:
+      - name: auth
+        instances: 3
+        instance_type: t3.small
+      - name: payment
+        instances: 2
+        instance_type: t3.medium
+      - name: orders
+        instances: 3
+        instance_type: t3.small
+
+  tasks:
+    # Each resource provisioning task is focused and independent
+    - name: Create VPC
+      amazon.aws.ec2_vpc:
+        name: "ecommerce-vpc"
+        cidr_block: "{{ vpc_cidr }}"
+        tags:
+          Environment: "{{ env }}"
+          Project: "ecommerce"
+        state: present
+      register: vpc
+
+    - name: Create subnets
+      amazon.aws.ec2_vpc_subnet:
+        vpc_id: "{{ vpc.vpc.id }}"
+        cidr: "{{ item.cidr }}"
+        az: "{{ item.az }}"
+        tags:
+          Name: "{{ item.name }}"
+          Environment: "{{ env }}"
+        state: present
+      loop:
+        - { name: "public-subnet-1", cidr: "10.0.1.0/24", az: "{{ availability_zones[0] }}" }
+        - { name: "public-subnet-2", cidr: "10.0.2.0/24", az: "{{ availability_zones[1] }}" }
+        - { name: "private-subnet-1", cidr: "10.0.10.0/24", az: "{{ availability_zones[0] }}" }
+        - { name: "private-subnet-2", cidr: "10.0.11.0/24", az: "{{ availability_zones[1] }}" }
+
+    # Auto Scaling Groups follow Unix principle of simplicity
+    - name: Create launch template for service
+      amazon.aws.ec2_launch_template:
+        name: "{{ item.name }}-template"
+        image_id: "{{ base_ami_id }}"
+        instance_type: "{{ item.instance_type }}"
+        security_group_ids:
+          - "{{ service_security_group_id }}"
+        user_data: |
+          #!/bin/bash
+          # Simple service bootstrap
+          docker run -d \
+            --name {{ item.name }}-service \
+            --restart unless-stopped \
+            -p {{ item.port }}:{{ item.port }} \
+            company/{{ item.name }}-service:latest
+        tags:
+          Service: "{{ item.name }}"
+          Environment: "{{ env }}"
+      loop: "{{ services }}"
