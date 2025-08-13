@@ -75,13 +75,27 @@ For proper code formatting that preserves indentation:
 3. **Use full paths**: Reference snippets with the complete directory path: `{{SNIPPET:article-slug-name/filename.ext}}`
 4. **IMPORTANT**: Always put closing `</code></pre>` tags on a new line
 
-**Multi-Language Article Requirements**:
-Every technical article must include examples in ALL of these languages **IN THIS ORDER**:
+**Code Examples Requirements - Audience-Dependent**:
+
+### Developer-Focused Technical Articles
+**MANDATORY** - Include examples in ALL of these languages **IN THIS ORDER**:
 1. **Pseudocode** (`.txt` files) - Conceptual explanation first
 2. **PHP** (`.php` files) - Current 8.4 syntax and best practices  
 3. **TypeScript** (`.ts` files) - Modern Node.js/TypeScript examples
 4. **Ansible** (`.yml` files) - Infrastructure automation playbooks
 5. **Bash** (`.sh` files) - Shell scripting with error handling
+
+### Executive/Strategic Articles (C-level, Business Focus)
+**OPTIONAL** - Code examples should be:
+- **Minimal or none** - Focus on business concepts, ROI, strategic value
+- **High-level conceptual** - If code is needed, use simple pseudocode or architecture diagrams
+- **Business-relevant** - Only include code that directly supports business decision-making
+
+### Mixed Technical/Business Articles
+**SELECTIVE** - Include code examples that:
+- **Support business points** - Code serves to illustrate business concepts
+- **1-3 languages maximum** - Choose most relevant to the business context
+- **Focus on outcomes** - Emphasize results rather than implementation details
 
 **Directory Structure Example**:
 ```
@@ -331,7 +345,9 @@ The system will:
 
 Before publishing, verify:
 
-**Multi-Language Code Requirements:**
+**Code Requirements (Audience-Dependent):**
+
+**For Developer-Focused Articles:**
 - [ ] **PSEUDOCODE FIRST**: Every concept starts with language-agnostic pseudocode explanation  
 - [ ] **PSEUDOCODE FILE EXTENSION**: All pseudocode files use `.txt` extension (not `.py`)
 - [ ] **PRESENTATION ORDER**: Pseudocode (.txt) → PHP → TypeScript → Ansible → Bash
@@ -340,6 +356,16 @@ Before publishing, verify:
 - [ ] **Ansible YAML examples** with proper task structure
 - [ ] **Bash script examples** with error handling and best practices
 - [ ] All examples demonstrate the same concepts across different implementation approaches
+
+**For Executive/Strategic Articles:**
+- [ ] **Minimal or no code** - Focus on business value, ROI, strategic implications
+- [ ] **High-level concepts only** - Use architectural diagrams, flowcharts, or simple pseudocode if needed
+- [ ] **Business-relevant examples** - Only include technical details that support business decisions
+
+**For Mixed Technical/Business Articles:**
+- [ ] **Selective code examples** - 1-3 languages maximum, chosen for business relevance
+- [ ] **Focus on outcomes** - Emphasize business results over implementation details
+- [ ] **Support business narrative** - Code serves to illustrate strategic points
 
 **Content Quality:**
 - [ ] **Current research completed** - All version numbers and features verified through official sources
