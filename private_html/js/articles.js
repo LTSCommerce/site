@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 183,
+    "title": "The Unix Philosophy: A Strategic Guide for Technology Leadership",
+    "excerpt": "How the 50-year-old Unix philosophy drives modern infrastructure success, reduces vendor lock-in, and delivers superior business outcomes through modular, composable systems.",
+    "category": "infrastructure",
+    "date": "2025-08-13",
+    "slug": "unix-philosophy-strategic-guide",
+    "readingTime": "14"
+  },
+  {
     "id": 260,
     "title": "Dependency Inversion, Final Classes, and Pragmatic Testing in PHP 8.4",
     "excerpt": "Master dependency inversion with final classes in PHP 8.4, learn when to use real objects vs mocks, and discover the pragmatic testing approach that combines Detroit and London schools for maintainable, testable code.",
@@ -336,16 +345,14 @@ class ArticleManager {
     
     return `
       <article class="article-card" style="opacity: 0; transform: translateY(20px);">
-        <a href="/articles/${article.slug}.html" class="article-card-link">
-          <div class="article-meta">
-            <span class="article-category ${article.category}">${categoryLabel}</span>
-            <time>${date}</time>
-          </div>
-          <h2 class="article-title">${article.title}</h2>
-          <p class="article-excerpt">${article.excerpt}</p>
-          <div class="article-footer">
-            <span class="read-more">Read more →</span>
-          </div>
+        <div class="article-meta">
+          <span class="article-category ${article.category}">${categoryLabel}</span>
+          <time>${date}</time>
+        </div>
+        <a href="/articles/${article.slug}.html" class="article-title">${article.title}</a>
+        <p class="article-excerpt">${article.excerpt}</p>
+        <a href="/articles/${article.slug}.html" class="article-read-more">
+          Read more →
         </a>
       </article>
     `;
