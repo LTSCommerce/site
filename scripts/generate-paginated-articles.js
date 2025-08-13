@@ -254,18 +254,18 @@ function generatePaginatedPages() {
                 <!-- Static articles for page ${page} -->
                 ${paginationInfo.pageArticles.map(article => `
                 <article class="article-card" data-category="${article.category}">
-                    <div class="article-meta">
-                        <span class="article-category article-category-${article.category}">${templateData.categories[article.category]?.label || article.category}</span>
-                        <time class="article-date" datetime="${article.date}">${templateData.formatDate(article.date)}</time>
-                    </div>
-                    <h2 class="article-title">
-                        <a href="${templateData.articleUrl(article.slug)}">${article.title}</a>
-                    </h2>
-                    <p class="article-excerpt">${article.excerpt}</p>
-                    <div class="article-footer">
-                        <a href="${templateData.articleUrl(article.slug)}" class="read-more">Read Article</a>
-                        <span class="reading-time">~${article.readingTime || '5'} min read</span>
-                    </div>
+                    <a href="${templateData.articleUrl(article.slug)}" class="article-card-link">
+                        <div class="article-meta">
+                            <span class="article-category article-category-${article.category}">${templateData.categories[article.category]?.label || article.category}</span>
+                            <time class="article-date" datetime="${article.date}">${templateData.formatDate(article.date)}</time>
+                        </div>
+                        <h2 class="article-title">${article.title}</h2>
+                        <p class="article-excerpt">${article.excerpt}</p>
+                        <div class="article-footer">
+                            <span class="read-more">Read Article</span>
+                            <span class="reading-time">~${article.readingTime || '5'} min read</span>
+                        </div>
+                    </a>
                 </article>
                 `).join('')}
             </div>

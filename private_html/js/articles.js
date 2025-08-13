@@ -336,14 +336,16 @@ class ArticleManager {
     
     return `
       <article class="article-card" style="opacity: 0; transform: translateY(20px);">
-        <div class="article-meta">
-          <span class="article-category ${article.category}">${categoryLabel}</span>
-          <time>${date}</time>
-        </div>
-        <a href="/articles/${article.slug}.html" class="article-title">${article.title}</a>
-        <p class="article-excerpt">${article.excerpt}</p>
-        <a href="/articles/${article.slug}.html" class="article-read-more">
-          Read more →
+        <a href="/articles/${article.slug}.html" class="article-card-link">
+          <div class="article-meta">
+            <span class="article-category ${article.category}">${categoryLabel}</span>
+            <time>${date}</time>
+          </div>
+          <h2 class="article-title">${article.title}</h2>
+          <p class="article-excerpt">${article.excerpt}</p>
+          <div class="article-footer">
+            <span class="read-more">Read more →</span>
+          </div>
         </a>
       </article>
     `;
