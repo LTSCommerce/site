@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 992,
+    "title": "Upgrading Legacy MySQL: From MyISAM to Modern MySQL 8.4",
+    "excerpt": "Comprehensive guide to upgrading legacy MySQL databases like osCommerce from MyISAM with implied foreign keys to modern MySQL 8.4 with InnoDB, proper constraints, and cutting-edge features for enhanced security, performance, and data integrity.",
+    "category": "database",
+    "date": "2025-08-18",
+    "slug": "mysql-legacy-to-modern-upgrade",
+    "readingTime": "12"
+  },
+  {
     "id": 183,
     "title": "The Unix Philosophy: A Strategic Guide for Technology Leadership",
     "excerpt": "How the 50-year-old Unix philosophy drives modern infrastructure success, reduces vendor lock-in, and delivers superior business outcomes through modular, composable systems.",
