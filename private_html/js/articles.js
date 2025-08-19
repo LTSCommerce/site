@@ -9,11 +9,11 @@ const articles = [
   {
     "id": 992,
     "title": "Upgrading Legacy MySQL: From MyISAM to Modern MySQL 8.4",
-    "excerpt": "Comprehensive guide to upgrading legacy MySQL databases like osCommerce from MyISAM with implied foreign keys to modern MySQL 8.4 with InnoDB, proper constraints, and cutting-edge features for enhanced security, performance, and data integrity.",
+    "excerpt": "Technical guide to upgrading legacy MySQL databases from MyISAM with implied foreign keys to modern MySQL 8.4 with InnoDB, proper constraints, and modern features for enhanced security, performance, and data integrity.",
     "category": "database",
     "date": "2025-08-18",
     "slug": "mysql-legacy-to-modern-upgrade",
-    "readingTime": "12"
+    "readingTime": "10"
   },
   {
     "id": 183,
