@@ -59,6 +59,368 @@ CREATE TABLE orders (
         </section>
 
         <section>
+            <h2>Real-World Data Corruption Scenarios and MySQL 8 Solutions</h2>
+            
+            <p>Understanding how data corruption occurs in legacy systems highlights the critical importance of MySQL 8's modern features. These scenarios demonstrate actual problems that occur in production systems and how modern MySQL prevents them.</p>
+
+            <h3>Scenario 1: The Double-Charge Problem - Why Transactions Matter</h3>
+            
+            <h4>The Problem: Partial Updates Without Transactions</h4>
+            <p>In a MyISAM-based e-commerce system, a customer purchase requires multiple table updates. When the server crashes mid-operation, customers get charged but orders aren't created:</p>
+            
+            <pre><code class="language-sql">-- Legacy MyISAM: No transaction support
+-- Step 1: Deduct from customer balance (SUCCEEDS)
+UPDATE customer_accounts 
+SET balance = balance - 500.00 
+WHERE customer_id = 1234;
+
+-- Step 2: Create order record (SERVER CRASHES HERE)
+INSERT INTO orders (customer_id, amount, status) 
+VALUES (1234, 500.00, 'pending');
+
+-- Step 3: Update inventory (NEVER EXECUTES)
+UPDATE inventory 
+SET quantity = quantity - 1 
+WHERE product_id = 5678;
+
+-- RESULT: Customer charged $500, no order created, inventory not updated
+-- Customer service nightmare: "Where's my order? You took my money!"</code></pre>
+
+            <h4>The Solution: ACID Transactions in InnoDB</h4>
+            <p>MySQL 8 with InnoDB ensures all operations succeed or all fail together:</p>
+            
+            <pre><code class="language-sql">-- Modern MySQL 8: Full transaction support
+START TRANSACTION;
+
+-- All operations are atomic
+UPDATE customer_accounts 
+SET balance = balance - 500.00 
+WHERE customer_id = 1234;
+
+INSERT INTO orders (customer_id, amount, status) 
+VALUES (1234, 500.00, 'pending');
+
+UPDATE inventory 
+SET quantity = quantity - 1 
+WHERE product_id = 5678;
+
+-- If ANY step fails, ALL are rolled back
+COMMIT;
+
+-- With automatic rollback on errors
+DELIMITER $$
+CREATE PROCEDURE safe_purchase(
+    IN p_customer_id INT,
+    IN p_product_id INT,
+    IN p_amount DECIMAL(10,2)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Purchase failed - no charges made';
+    END;
+    
+    START TRANSACTION;
+    
+    -- All succeed or all fail
+    UPDATE customer_accounts 
+    SET balance = balance - p_amount 
+    WHERE customer_id = p_customer_id;
+    
+    INSERT INTO orders (customer_id, amount, status) 
+    VALUES (p_customer_id, p_amount, 'pending');
+    
+    UPDATE inventory 
+    SET quantity = quantity - 1 
+    WHERE product_id = p_product_id;
+    
+    COMMIT;
+END$$
+DELIMITER ;</code></pre>
+
+            <h3>Scenario 2: The Orphaned Order Problem - Why Foreign Keys Matter</h3>
+            
+            <h4>The Problem: Data Integrity Without Constraints</h4>
+            <p>Without foreign keys, deleting customers leaves orphaned orders, causing reporting errors and legal compliance issues:</p>
+            
+            <pre><code class="language-sql">-- Legacy MyISAM: No foreign key support
+-- Admin deletes inactive customer
+DELETE FROM customers WHERE customer_id = 5000;
+
+-- Orders still reference deleted customer
+SELECT COUNT(*) FROM orders WHERE customer_id = 5000;
+-- Returns: 47 orphaned orders
+
+-- Financial report crashes or shows incorrect totals
+SELECT c.company_name, SUM(o.amount) as total_revenue
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id  -- NULL results!
+GROUP BY c.customer_id;
+
+-- GDPR compliance request fails
+-- "Delete all my data" - but orders remain, violating privacy laws</code></pre>
+
+            <h4>The Solution: Foreign Key Constraints</h4>
+            <p>MySQL 8 prevents orphaned records through enforced relationships:</p>
+            
+            <pre><code class="language-sql">-- Modern MySQL 8: Foreign keys prevent orphans
+ALTER TABLE orders
+ADD CONSTRAINT fk_orders_customer
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+ON DELETE RESTRICT;  -- Prevents deletion if orders exist
+
+-- Attempting to delete customer with orders
+DELETE FROM customers WHERE customer_id = 5000;
+-- ERROR 1451: Cannot delete or update a parent row: foreign key constraint fails
+
+-- For GDPR compliance: Cascade delete when appropriate
+ALTER TABLE customer_personal_data
+ADD CONSTRAINT fk_personal_customer
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+ON DELETE CASCADE;  -- Personal data deleted with customer
+
+-- For historical records: Set NULL for archived data
+ALTER TABLE orders
+ADD CONSTRAINT fk_orders_customer_archived
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+ON DELETE SET NULL;  -- Preserves order history without customer</code></pre>
+
+            <h3>Scenario 3: The Invalid Price Problem - Why Check Constraints Matter</h3>
+            
+            <h4>The Problem: Business Rules Not Enforced</h4>
+            <p>Application bugs or direct database access can insert invalid data that breaks business logic:</p>
+            
+            <pre><code class="language-sql">-- Legacy MySQL: No check constraints
+-- Bug in application sets negative prices
+UPDATE products SET price = -99.99 WHERE product_id = 100;
+-- SUCCESS - Database accepts negative price!
+
+-- Promotional code sets discount over 100%
+INSERT INTO promotions (code, discount_percent) 
+VALUES ('MEGA_SALE', 150);
+-- SUCCESS - 150% discount means we pay customers!
+
+-- Date logic error books appointment in the past
+INSERT INTO appointments (customer_id, appointment_date) 
+VALUES (123, '2020-01-01');
+-- SUCCESS - Appointment scheduled 5 years ago!
+
+-- Financial losses accumulate before detection
+-- Customer gets paid $50 to take a $100 product!</code></pre>
+
+            <h4>The Solution: Check Constraints (MySQL 8.0.16+)</h4>
+            <p>Database-level validation prevents invalid data regardless of source:</p>
+            
+            <pre><code class="language-sql">-- Modern MySQL 8: Check constraints enforce business rules
+ALTER TABLE products
+ADD CONSTRAINT chk_positive_price 
+CHECK (price >= 0),
+ADD CONSTRAINT chk_price_range 
+CHECK (price <= 999999.99);
+
+ALTER TABLE promotions
+ADD CONSTRAINT chk_valid_discount 
+CHECK (discount_percent BETWEEN 0 AND 100);
+
+ALTER TABLE appointments
+ADD CONSTRAINT chk_future_appointment 
+CHECK (appointment_date >= CURDATE());
+
+-- Invalid operations now fail immediately
+UPDATE products SET price = -99.99 WHERE product_id = 100;
+-- ERROR 3819: Check constraint 'chk_positive_price' is violated
+
+INSERT INTO promotions (code, discount_percent) VALUES ('MEGA', 150);
+-- ERROR 3819: Check constraint 'chk_valid_discount' is violated
+
+-- Complex business rules
+ALTER TABLE orders
+ADD CONSTRAINT chk_order_logic CHECK (
+    (status = 'cancelled' AND cancelled_at IS NOT NULL) OR
+    (status != 'cancelled' AND cancelled_at IS NULL)
+);</code></pre>
+
+            <h3>Scenario 4: The Inventory Race Condition - Why Row-Level Locking Matters</h3>
+            
+            <h4>The Problem: Table-Level Locks Cause Overselling</h4>
+            <p>MyISAM's table-level locking creates race conditions where inventory goes negative:</p>
+            
+            <pre><code class="language-sql">-- Legacy MyISAM: Table-level locking
+-- Two customers buying last item simultaneously
+
+-- Customer A reads inventory (quantity = 1)
+SELECT quantity FROM inventory WHERE product_id = 999;
+
+-- Customer B reads inventory (quantity = 1)  
+SELECT quantity FROM inventory WHERE product_id = 999;
+
+-- Customer A updates (locks entire table)
+UPDATE inventory SET quantity = 0 WHERE product_id = 999;
+
+-- Customer B waits for lock, then updates
+UPDATE inventory SET quantity = quantity - 1 WHERE product_id = 999;
+
+-- RESULT: quantity = -1, oversold inventory!
+-- Warehouse can't fulfill order, customer complaints</code></pre>
+
+            <h4>The Solution: Row-Level Locking with InnoDB</h4>
+            <p>MySQL 8's row-level locking prevents race conditions:</p>
+            
+            <pre><code class="language-sql">-- Modern MySQL 8: Row-level locking prevents overselling
+-- Pessimistic locking approach
+START TRANSACTION;
+
+-- Lock specific row for update
+SELECT quantity FROM inventory 
+WHERE product_id = 999 
+FOR UPDATE;  -- Row locked until transaction completes
+
+-- Check availability with lock held
+IF quantity >= 1 THEN
+    UPDATE inventory 
+    SET quantity = quantity - 1 
+    WHERE product_id = 999;
+    
+    INSERT INTO order_items (order_id, product_id, quantity)
+    VALUES (@order_id, 999, 1);
+ELSE
+    -- Rollback and inform customer
+    ROLLBACK;
+    SIGNAL SQLSTATE '45000' 
+    SET MESSAGE_TEXT = 'Product out of stock';
+END IF;
+
+COMMIT;
+
+-- Optimistic locking with version numbers
+ALTER TABLE inventory ADD COLUMN version INT DEFAULT 0;
+
+UPDATE inventory 
+SET quantity = quantity - 1,
+    version = version + 1
+WHERE product_id = 999 
+    AND quantity >= 1
+    AND version = @expected_version;
+
+-- Check affected rows to detect concurrent modification
+IF ROW_COUNT() = 0 THEN
+    -- Another transaction modified the row
+    SIGNAL SQLSTATE '45000' 
+    SET MESSAGE_TEXT = 'Inventory was modified, please retry';
+END IF;</code></pre>
+
+            <h3>Scenario 5: The Crash Recovery Nightmare - Why InnoDB's Recovery Matters</h3>
+            
+            <h4>The Problem: MyISAM Corruption After Crash</h4>
+            <p>Server crashes leave MyISAM tables corrupted, requiring manual repair and causing data loss:</p>
+            
+            <pre><code class="language-sql">-- Legacy MyISAM: After unexpected shutdown
+-- Tables marked as crashed
+SELECT table_name, table_comment 
+FROM information_schema.tables 
+WHERE engine = 'MyISAM' AND table_comment LIKE '%crashed%';
+
+-- Manual repair required (may lose data)
+REPAIR TABLE orders;  -- May take hours for large tables
+-- Query OK, 847232 rows affected
+-- Warning: Number of rows changed from 850000 to 847232
+-- DATA LOSS: 2,768 orders lost!
+
+-- During repair, table is locked
+-- Application down, customers can't access
+-- Recovery time: 2-6 hours for large database
+-- Business impact: $50,000/hour in lost sales</code></pre>
+
+            <h4>The Solution: InnoDB Automatic Crash Recovery</h4>
+            <p>MySQL 8 automatically recovers from crashes without data loss:</p>
+            
+            <pre><code class="language-sql">-- Modern MySQL 8: Automatic crash recovery
+-- InnoDB uses write-ahead logging (redo logs)
+
+-- After crash, automatic recovery on startup
+-- MySQL error log shows:
+-- InnoDB: Starting crash recovery
+-- InnoDB: Reading redo log from checkpoint
+-- InnoDB: Applying redo log records
+-- InnoDB: Rollback of uncommitted transactions
+-- InnoDB: Crash recovery completed in 12 seconds
+
+-- No data loss for committed transactions
+SELECT COUNT(*) FROM orders;  -- All committed orders intact
+
+-- Configure for faster recovery
+SET GLOBAL innodb_fast_shutdown = 0;  -- Clean shutdown when possible
+SET GLOBAL innodb_flush_log_at_trx_commit = 1;  -- Maximum durability
+SET GLOBAL innodb_doublewrite = ON;  -- Prevent partial page writes
+
+-- Point-in-time recovery with binary logs
+-- Enable binary logging for full recovery capability
+SET GLOBAL log_bin = ON;
+SET GLOBAL binlog_format = 'ROW';
+
+-- Recover to specific point before corruption
+mysqlbinlog --stop-datetime="2024-12-01 10:00:00" \
+    /var/log/mysql/binlog.000042 | mysql -u root -p</code></pre>
+
+            <h3>Scenario 6: The Cascading Update Problem - Why Referential Actions Matter</h3>
+            
+            <h4>The Problem: Manual Cascade Updates Miss Records</h4>
+            <p>Without referential actions, updating primary keys requires error-prone manual updates across all related tables:</p>
+            
+            <pre><code class="language-sql">-- Legacy: Manual updates across tables
+-- Company merger requires updating customer IDs
+
+-- Update primary customer record
+UPDATE customers SET customer_id = 9000 WHERE customer_id = 1000;
+
+-- Must manually update every related table (error-prone)
+UPDATE orders SET customer_id = 9000 WHERE customer_id = 1000;
+UPDATE invoices SET customer_id = 9000 WHERE customer_id = 1000;
+UPDATE support_tickets SET customer_id = 9000 WHERE customer_id = 1000;
+-- Forgot customer_addresses table! Addresses now orphaned
+
+-- Months later: Customer can't access their addresses
+-- Support confused: "Your addresses disappeared after the merger"</code></pre>
+
+            <h4>The Solution: Automatic Referential Actions</h4>
+            <p>MySQL 8's CASCADE actions ensure consistency across all tables:</p>
+            
+            <pre><code class="language-sql">-- Modern MySQL 8: Automatic cascade updates
+-- Define referential actions once
+ALTER TABLE orders
+ADD CONSTRAINT fk_orders_customer_cascade
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+ON UPDATE CASCADE;
+
+ALTER TABLE invoices
+ADD CONSTRAINT fk_invoices_customer_cascade
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+ON UPDATE CASCADE;
+
+ALTER TABLE customer_addresses
+ADD CONSTRAINT fk_addresses_customer_cascade
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+ON UPDATE CASCADE
+ON DELETE CASCADE;  -- Addresses deleted with customer
+
+-- Single update cascades everywhere
+UPDATE customers SET customer_id = 9000 WHERE customer_id = 1000;
+-- All related records automatically updated!
+
+-- Verify cascade worked
+SELECT 'orders' as table_name, COUNT(*) as updated_records
+FROM orders WHERE customer_id = 9000
+UNION ALL
+SELECT 'invoices', COUNT(*)
+FROM invoices WHERE customer_id = 9000
+UNION ALL
+SELECT 'addresses', COUNT(*)
+FROM customer_addresses WHERE customer_id = 9000;</code></pre>
+        </section>
+
+        <section>
             <h2>Pre-Migration Assessment</h2>
             
             <p>Before migration, assess your database structure and identify potential issues.</p>
