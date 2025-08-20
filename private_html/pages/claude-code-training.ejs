@@ -16,7 +16,7 @@
         <main class="container">
             <section class="intro-section">
                 <h2>Why Claude Code Changes Everything</h2>
-                <p>After 20+ years building enterprise PHP systems, I've seen countless "revolutionary" tools come and go. <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> is different. It's not just another AI chatbot—it's a terminal-native development partner that actually understands how developers work.</p>
+                <p>After 20+ years building enterprise PHP systems, I've seen countless "revolutionary" tools come and go. <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> is different. It's not just another AI chatbot, it's a terminal-native development partner that actually understands how developers work.</p>
                 
                 <div class="highlight-box">
                     <h3>Tailored Solutions for Your Team</h3>
@@ -29,13 +29,31 @@
                 </div>
             </section>
 
+            <section class="visual-showcase">
+                <h2>Claude Code in Action</h2>
+                <div class="screenshot-grid">
+                    <div class="screenshot-item">
+                        <img src="https://raw.githubusercontent.com/anthropics/claude-code/main/docs/images/claude-code-terminal.png" alt="Claude Code running in terminal" loading="lazy">
+                        <p>Terminal-native interface for seamless workflow integration</p>
+                    </div>
+                    <div class="screenshot-item">
+                        <img src="https://raw.githubusercontent.com/anthropics/claude-code/main/docs/images/claude-code-agents.png" alt="Claude Code agentic capabilities" loading="lazy">
+                        <p>Specialized agents handle complex multi-step tasks</p>
+                    </div>
+                    <div class="screenshot-item">
+                        <img src="https://raw.githubusercontent.com/anthropics/claude-code/main/docs/images/claude-code-mcp.png" alt="Claude Code MCP integration" loading="lazy">
+                        <p>Model Context Protocol enables powerful tool integrations</p>
+                    </div>
+                </div>
+            </section>
+
             <section class="features-section">
                 <h2>Master Claude Code's Powerful Features</h2>
                 
                 <div class="feature-grid">
                     <div class="feature-card">
                         <h3>Agentic Coding</h3>
-                        <p>Go beyond simple code generation. Learn to delegate entire features to Claude Code's <a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener">specialized agents</a>—from architecture planning to code review. Discover how to:</p>
+                        <p>Go beyond simple code generation. Learn to delegate entire features to Claude Code's <a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener">specialized agents</a> from architecture planning to code review. Discover how to:</p>
                         <ul>
                             <li>Build complete features from natural language descriptions</li>
                             <li>Navigate and understand large codebases instantly</li>
@@ -73,6 +91,60 @@
                         </ul>
                     </div>
                 </div>
+            </section>
+
+            <section class="workflow-diagram">
+                <h2>Claude Code Workflow</h2>
+                <div class="workflow-visual">
+                    <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Terminal Box -->
+                        <rect x="50" y="150" width="120" height="80" rx="8" fill="url(#grad1)" />
+                        <text x="110" y="195" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Terminal</text>
+                        
+                        <!-- Arrow 1 -->
+                        <path d="M 170 190 L 230 190" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)" />
+                        
+                        <!-- Claude Code Box -->
+                        <rect x="230" y="150" width="120" height="80" rx="8" fill="url(#grad1)" />
+                        <text x="290" y="185" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Claude Code</text>
+                        <text x="290" y="205" text-anchor="middle" fill="white" font-size="11">AI Agent</text>
+                        
+                        <!-- Arrow 2 -->
+                        <path d="M 350 190 L 410 190" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)" />
+                        
+                        <!-- Code Box -->
+                        <rect x="410" y="150" width="120" height="80" rx="8" fill="url(#grad1)" />
+                        <text x="470" y="185" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Your Code</text>
+                        <text x="470" y="205" text-anchor="middle" fill="white" font-size="11">Auto-Generated</text>
+                        
+                        <!-- Arrow 3 -->
+                        <path d="M 530 190 L 590 190" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)" />
+                        
+                        <!-- Testing Box -->
+                        <rect x="590" y="150" width="120" height="80" rx="8" fill="url(#grad1)" />
+                        <text x="650" y="185" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Testing</text>
+                        <text x="650" y="205" text-anchor="middle" fill="white" font-size="11">Automated</text>
+                        
+                        <!-- Arrow marker -->
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#667eea" />
+                        </marker>
+                        
+                        <!-- Labels -->
+                        <text x="110" y="260" text-anchor="middle" fill="var(--text-secondary)" font-size="12">Natural Language</text>
+                        <text x="290" y="260" text-anchor="middle" fill="var(--text-secondary)" font-size="12">AI Processing</text>
+                        <text x="470" y="260" text-anchor="middle" fill="var(--text-secondary)" font-size="12">Implementation</text>
+                        <text x="650" y="260" text-anchor="middle" fill="var(--text-secondary)" font-size="12">Validation</text>
+                    </svg>
+                </div>
+                <p class="workflow-description">Claude Code seamlessly integrates into your terminal workflow, transforming natural language instructions into tested, production-ready code.</p>
             </section>
 
             <section class="services-section">
@@ -171,8 +243,8 @@
                 <h2>Why Learn From an Experienced Practitioner</h2>
                 
                 <blockquote class="testimonial">
-                    <p>"After two decades of PHP development, I've learned that tools are only as good as your understanding of them. Claude Code isn't just about AI writing code—it's about amplifying your expertise and automating the tedious parts of development."</p>
-                    <cite>— Joseph, Senior PHP Engineer & AI Development Specialist</cite>
+                    <p>"After two decades of PHP development, I've learned that tools are only as good as your understanding of them. Claude Code isn't just about AI writing code, it's about amplifying your expertise and automating the tedious parts of development."</p>
+                    <cite>Joseph, Senior PHP Engineer & AI Development Specialist</cite>
                 </blockquote>
 
                 <div class="instructor-credentials">
@@ -290,10 +362,40 @@
             }
 
             .hero {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                position: relative;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
+                           url('https://raw.githubusercontent.com/anthropics/claude-code/main/docs/images/claude-code-terminal.png') center/cover;
                 color: white;
                 padding: 4rem 0;
                 margin-bottom: 3rem;
+                text-align: center;
+                overflow: hidden;
+            }
+            
+            .hero::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: 
+                    radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 50%, rgba(118, 75, 162, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+                animation: float 20s ease-in-out infinite;
+                pointer-events: none;
+            }
+            
+            @keyframes float {
+                0%, 100% { transform: translate(0, 0) scale(1); }
+                33% { transform: translate(-20px, -20px) scale(1.05); }
+                66% { transform: translate(20px, -10px) scale(0.95); }
+            }
+            
+            .hero .container {
+                position: relative;
+                z-index: 1;
             }
 
             .hero h1 {
@@ -312,6 +414,7 @@
                 font-size: 1.125rem;
                 max-width: 800px;
                 opacity: 0.9;
+                margin: 0 auto;
             }
 
             .highlight-box {
@@ -325,6 +428,68 @@
             .highlight-box h3 {
                 color: var(--primary-color);
                 margin-bottom: 1rem;
+            }
+
+            .visual-showcase {
+                margin: 3rem 0;
+            }
+
+            .screenshot-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 2rem;
+                margin: 2rem 0;
+            }
+
+            .screenshot-item {
+                background: var(--bg-secondary);
+                border-radius: 8px;
+                overflow: hidden;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            .screenshot-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+
+            .screenshot-item img {
+                width: 100%;
+                height: auto;
+                display: block;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .screenshot-item p {
+                padding: 1rem;
+                text-align: center;
+                font-size: 0.95rem;
+                color: var(--text-secondary);
+            }
+
+            .workflow-diagram {
+                margin: 3rem 0;
+            }
+
+            .workflow-visual {
+                max-width: 800px;
+                margin: 2rem auto;
+                padding: 2rem;
+                background: var(--bg-secondary);
+                border-radius: 12px;
+            }
+
+            .workflow-visual svg {
+                width: 100%;
+                height: auto;
+            }
+
+            .workflow-description {
+                text-align: center;
+                font-size: 1.1rem;
+                color: var(--text-secondary);
+                max-width: 700px;
+                margin: 2rem auto;
             }
 
             .feature-grid, .use-case-grid {
