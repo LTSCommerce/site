@@ -47,11 +47,13 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 ### Local Development
 ```bash
 npm install              # Install dependencies
-npm run dev             # Start development server (port 3000)
 npm run build           # Build for production (EJS → HTML → optimized build)
-npm run preview         # Preview built site
+# After build, read the generated HTML files directly from public_html/
+npm run preview         # Preview built site (optional)
 node scripts/process-ejs.js  # Process EJS templates manually (optional)
 ```
+
+**Note**: For testing changes, use `npm run build` and then read the generated HTML files directly from `public_html/`. The dev server (`npm run dev`) is optional and not required for most development tasks.
 
 ### Code Quality & Formatting
 
@@ -162,11 +164,11 @@ Edit the new EJS file with article metadata and content:
 
 #### Step 3: Build and Deploy (Articles Auto-Register!)
 ```bash
-# Test locally (auto-registers articles)
-npm run dev
-
-# Build and deploy (auto-registers articles)
+# Build locally (auto-registers articles)
 npm run build
+# Review generated HTML in public_html/articles/
+
+# Deploy
 git add .
 git commit -m "Add new article: Your Article Title"
 git push origin main
