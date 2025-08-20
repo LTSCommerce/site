@@ -31,17 +31,74 @@
 
             <section class="visual-showcase">
                 <h2>Claude Code in Action</h2>
-                <div class="screenshot-grid">
-                    <div class="screenshot-item">
-                        <img src="https://raw.githubusercontent.com/anthropics/claude-code/main/docs/images/claude-code-terminal.png" alt="Claude Code running in terminal" loading="lazy">
+                <div class="visual-grid">
+                    <div class="visual-card">
+                        <div class="visual-placeholder terminal-visual">
+                            <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="400" height="250" fill="#1a1a2e"/>
+                                <rect x="10" y="10" width="380" height="30" rx="5" fill="#16213e"/>
+                                <circle cx="30" cy="25" r="5" fill="#ff5f56"/>
+                                <circle cx="50" cy="25" r="5" fill="#ffbd2e"/>
+                                <circle cx="70" cy="25" r="5" fill="#27c93f"/>
+                                <text x="200" y="30" text-anchor="middle" fill="#8892b0" font-family="monospace" font-size="12">claude-code</text>
+                                <text x="20" y="70" fill="#64ffda" font-family="monospace" font-size="14">$ claude "build a REST API"</text>
+                                <text x="20" y="95" fill="#8892b0" font-family="monospace" font-size="12">🤖 I'll help you build a REST API...</text>
+                                <text x="20" y="115" fill="#8892b0" font-family="monospace" font-size="12">Creating project structure...</text>
+                                <text x="20" y="135" fill="#64ffda" font-family="monospace" font-size="12">✓ Generated: src/api/routes.ts</text>
+                                <text x="20" y="155" fill="#64ffda" font-family="monospace" font-size="12">✓ Generated: src/api/controllers.ts</text>
+                                <text x="20" y="175" fill="#64ffda" font-family="monospace" font-size="12">✓ Tests passing: 12/12</text>
+                                <rect x="20" y="195" width="120" height="3" fill="#64ffda"/>
+                            </svg>
+                        </div>
                         <p>Terminal-native interface for seamless workflow integration</p>
                     </div>
-                    <div class="screenshot-item">
-                        <img src="https://raw.githubusercontent.com/anthropics/claude-code/main/docs/images/claude-code-agents.png" alt="Claude Code agentic capabilities" loading="lazy">
+                    <div class="visual-card">
+                        <div class="visual-placeholder agents-visual">
+                            <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="400" height="250" fill="#1a1a2e"/>
+                                <g transform="translate(200, 50)">
+                                    <circle r="30" fill="#667eea" opacity="0.8"/>
+                                    <text y="5" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Agent</text>
+                                </g>
+                                <g transform="translate(100, 120)">
+                                    <rect x="-40" y="-15" width="80" height="30" rx="5" fill="#764ba2"/>
+                                    <text y="5" text-anchor="middle" fill="white" font-size="11">Architect</text>
+                                </g>
+                                <g transform="translate(200, 120)">
+                                    <rect x="-40" y="-15" width="80" height="30" rx="5" fill="#764ba2"/>
+                                    <text y="5" text-anchor="middle" fill="white" font-size="11">Coder</text>
+                                </g>
+                                <g transform="translate(300, 120)">
+                                    <rect x="-40" y="-15" width="80" height="30" rx="5" fill="#764ba2"/>
+                                    <text y="5" text-anchor="middle" fill="white" font-size="11">Reviewer</text>
+                                </g>
+                                <line x1="200" y1="80" x2="100" y2="105" stroke="#667eea" stroke-width="2"/>
+                                <line x1="200" y1="80" x2="200" y2="105" stroke="#667eea" stroke-width="2"/>
+                                <line x1="200" y1="80" x2="300" y2="105" stroke="#667eea" stroke-width="2"/>
+                                <text x="200" y="180" text-anchor="middle" fill="#8892b0" font-size="12">Multi-agent orchestration</text>
+                                <text x="200" y="200" text-anchor="middle" fill="#64ffda" font-size="11">Delegate complex tasks</text>
+                            </svg>
+                        </div>
                         <p>Specialized agents handle complex multi-step tasks</p>
                     </div>
-                    <div class="screenshot-item">
-                        <img src="https://raw.githubusercontent.com/anthropics/claude-code/main/docs/images/claude-code-mcp.png" alt="Claude Code MCP integration" loading="lazy">
+                    <div class="visual-card">
+                        <div class="visual-placeholder mcp-visual">
+                            <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="400" height="250" fill="#1a1a2e"/>
+                                <rect x="150" y="40" width="100" height="60" rx="5" fill="#667eea"/>
+                                <text x="200" y="75" text-anchor="middle" fill="white" font-size="14" font-weight="bold">MCP</text>
+                                <rect x="50" y="140" width="80" height="40" rx="5" fill="#764ba2"/>
+                                <text x="90" y="165" text-anchor="middle" fill="white" font-size="11">Database</text>
+                                <rect x="160" y="140" width="80" height="40" rx="5" fill="#764ba2"/>
+                                <text x="200" y="165" text-anchor="middle" fill="white" font-size="11">APIs</text>
+                                <rect x="270" y="140" width="80" height="40" rx="5" fill="#764ba2"/>
+                                <text x="310" y="165" text-anchor="middle" fill="white" font-size="11">Tools</text>
+                                <line x1="170" y1="100" x2="90" y2="140" stroke="#667eea" stroke-width="2"/>
+                                <line x1="200" y1="100" x2="200" y2="140" stroke="#667eea" stroke-width="2"/>
+                                <line x1="230" y1="100" x2="310" y2="140" stroke="#667eea" stroke-width="2"/>
+                                <text x="200" y="210" text-anchor="middle" fill="#64ffda" font-size="12">Connect to any service</text>
+                            </svg>
+                        </div>
                         <p>Model Context Protocol enables powerful tool integrations</p>
                     </div>
                 </div>
@@ -363,8 +420,7 @@
 
             .hero {
                 position: relative;
-                background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
-                           url('https://raw.githubusercontent.com/anthropics/claude-code/main/docs/images/claude-code-terminal.png') center/cover;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
                 color: white;
                 padding: 4rem 0;
                 margin-bottom: 3rem;
@@ -434,33 +490,41 @@
                 margin: 3rem 0;
             }
 
-            .screenshot-grid {
+            .visual-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
                 gap: 2rem;
                 margin: 2rem 0;
             }
 
-            .screenshot-item {
+            .visual-card {
                 background: var(--bg-secondary);
                 border-radius: 8px;
                 overflow: hidden;
                 transition: transform 0.2s, box-shadow 0.2s;
             }
 
-            .screenshot-item:hover {
+            .visual-card:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             }
 
-            .screenshot-item img {
+            .visual-placeholder {
                 width: 100%;
-                height: auto;
-                display: block;
+                height: 250px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
                 border-bottom: 1px solid var(--border-color);
             }
 
-            .screenshot-item p {
+            .visual-placeholder svg {
+                width: 100%;
+                height: 100%;
+            }
+
+            .visual-card p {
                 padding: 1rem;
                 text-align: center;
                 font-size: 0.95rem;
@@ -706,6 +770,7 @@
             .btn-primary:hover {
                 background: #5a57e0;
                 transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             }
 
             .btn-secondary {
@@ -717,6 +782,8 @@
             .btn-secondary:hover {
                 background: var(--primary-color);
                 color: white;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             }
 
             .btn-large {
