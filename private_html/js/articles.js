@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 685,
+    "title": "Understanding LLM Context: The Hidden Challenge of AI Development",
+    "excerpt": "A comprehensive guide to understanding and managing context when working with Large Language Models, especially in tools like Claude Code. Learn how context works, why it matters, and strategies to optimize your AI interactions.",
+    "category": "ai",
+    "date": "2025-08-20",
+    "slug": "understanding-llm-context-management",
+    "readingTime": "12"
+  },
+  {
     "id": 992,
     "title": "Upgrading Legacy MySQL: From MyISAM to Modern MySQL 8.4",
     "excerpt": "Technical guide to upgrading legacy MySQL databases from MyISAM with implied foreign keys to modern MySQL 8.4 with InnoDB, proper constraints, and modern features for enhanced security, performance, and data integrity.",
