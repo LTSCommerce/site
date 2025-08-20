@@ -1,0 +1,742 @@
+<%- include('../templates/layouts/base', {
+    pageTitle: 'Claude Code Training - Master AI-Assisted Development',
+    pageDescription: 'Learn Claude Code from an experienced developer. Hands-on training for AI-powered coding, terminal automation, and modern development workflows.',
+    pageClass: 'training-page',
+    canonicalUrl: '/claude-code-training.html',
+    currentPage: 'training',
+    content: `
+        <header class="hero">
+            <div class="container">
+                <h1>Claude Code Training</h1>
+                <p class="tagline">Transform Your Development Workflow with AI-Powered Coding</p>
+                <p class="lead">Learn from a senior engineer who uses Claude Code daily to build production systems. Get hands-on experience with the most powerful AI coding assistant available.</p>
+            </div>
+        </header>
+
+        <main class="container">
+            <section class="intro-section">
+                <h2>Why Claude Code Changes Everything</h2>
+                <p>After 20+ years building enterprise PHP systems, I've seen countless "revolutionary" tools come and go. <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> is different. It's not just another AI chatbot—it's a terminal-native development partner that actually understands how developers work.</p>
+                
+                <div class="highlight-box">
+                    <h3>What Makes This Training Unique</h3>
+                    <ul>
+                        <li><strong>Real-World Focus:</strong> Learn from actual production use cases, not toy examples</li>
+                        <li><strong>Terminal-First:</strong> Master the command-line interface where real development happens</li>
+                        <li><strong>Engineering Mindset:</strong> Understand when and how to leverage AI effectively</li>
+                        <li><strong>Hands-On Practice:</strong> Build real features, fix actual bugs, refactor production code</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="features-section">
+                <h2>Master Claude Code's Powerful Features</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>Agentic Coding</h3>
+                        <p>Go beyond simple code generation. Learn to delegate entire features to Claude Code's <a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener">specialized agents</a>—from architecture planning to code review. Discover how to:</p>
+                        <ul>
+                            <li>Build complete features from natural language descriptions</li>
+                            <li>Navigate and understand large codebases instantly</li>
+                            <li>Automate complex refactoring across multiple files</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h3>Custom Commands & Automation</h3>
+                        <p>Transform repetitive tasks into powerful automations. Learn to create custom commands that integrate with your existing workflow:</p>
+                        <ul>
+                            <li>Build project-specific commands using <a href="https://docs.anthropic.com/en/docs/claude-code/memory" target="_blank" rel="noopener">CLAUDE.md configuration</a></li>
+                            <li>Automate code reviews, testing, and deployment tasks</li>
+                            <li>Create reusable patterns for common development scenarios</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h3>Terminal-Native Development</h3>
+                        <p>Unlike browser-based AI tools, Claude Code lives in your terminal. Master the <a href="https://www.gnu.org/software/bash/" target="_blank" rel="noopener">Unix philosophy</a> approach to AI development:</p>
+                        <ul>
+                            <li>Pipe outputs, chain commands, script workflows</li>
+                            <li>Integrate with git, Docker, and existing toolchains</li>
+                            <li>Work offline with local model support</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <h3>MCP & Tool Integration</h3>
+                        <p>Extend Claude Code's capabilities with the <a href="https://docs.anthropic.com/en/docs/claude-code/mcp" target="_blank" rel="noopener">Model Context Protocol</a>. Connect to databases, APIs, and external services:</p>
+                        <ul>
+                            <li>Query databases directly during development</li>
+                            <li>Integrate with Slack, GitHub, and other platforms</li>
+                            <li>Build custom MCP servers for your tools</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="curriculum-section">
+                <h2>Comprehensive Training Curriculum</h2>
+                
+                <div class="curriculum-modules">
+                    <div class="module">
+                        <h3>Module 1: Foundation (2 hours)</h3>
+                        <h4>Getting Started Right</h4>
+                        <ul>
+                            <li>Installation and configuration best practices</li>
+                            <li>Understanding Claude Code's mental model</li>
+                            <li>Terminal workflow optimization</li>
+                            <li>First real feature implementation</li>
+                        </ul>
+                    </div>
+
+                    <div class="module">
+                        <h3>Module 2: Advanced Features (3 hours)</h3>
+                        <h4>Leveraging Full Capabilities</h4>
+                        <ul>
+                            <li>Multi-agent workflows for complex tasks</li>
+                            <li>Custom command development</li>
+                            <li>Memory management and context optimization</li>
+                            <li>IDE integration with <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VS Code</a> and <a href="https://neovim.io/" target="_blank" rel="noopener">Neovim</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="module">
+                        <h3>Module 3: Production Workflows (3 hours)</h3>
+                        <h4>Real-World Application</h4>
+                        <ul>
+                            <li>Test-driven development with AI assistance</li>
+                            <li>Debugging and error resolution strategies</li>
+                            <li>Code review and quality assurance</li>
+                            <li>CI/CD integration with <a href="https://github.com/features/actions" target="_blank" rel="noopener">GitHub Actions</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="module">
+                        <h3>Module 4: Enterprise Integration (2 hours)</h3>
+                        <h4>Scaling AI Development</h4>
+                        <ul>
+                            <li>Team collaboration patterns</li>
+                            <li>Security and compliance considerations</li>
+                            <li>Self-hosting on <a href="https://aws.amazon.com/bedrock/" target="_blank" rel="noopener">AWS Bedrock</a> or <a href="https://cloud.google.com/vertex-ai" target="_blank" rel="noopener">Google Vertex AI</a></li>
+                            <li>Cost optimization and monitoring</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="use-cases-section">
+                <h2>Real-World Use Cases You'll Master</h2>
+                
+                <div class="use-case-grid">
+                    <div class="use-case">
+                        <h3>Legacy Code Modernization</h3>
+                        <p>Learn to safely refactor and modernize legacy codebases using Claude Code's understanding of both old and new patterns. Perfect for PHP migrations, framework updates, and architectural improvements.</p>
+                    </div>
+
+                    <div class="use-case">
+                        <h3>API Development</h3>
+                        <p>Build REST and GraphQL APIs faster than ever. Claude Code understands <a href="https://www.openapis.org/" target="_blank" rel="noopener">OpenAPI specifications</a>, generates comprehensive tests, and ensures consistent error handling.</p>
+                    </div>
+
+                    <div class="use-case">
+                        <h3>Database Optimization</h3>
+                        <p>Analyze query performance, design efficient schemas, and migrate data safely. Claude Code works with MySQL, PostgreSQL, and modern solutions like <a href="https://www.influxdata.com/" target="_blank" rel="noopener">InfluxDB</a>.</p>
+                    </div>
+
+                    <div class="use-case">
+                        <h3>DevOps Automation</h3>
+                        <p>Automate infrastructure with Terraform, optimize Docker configurations, and build robust CI/CD pipelines. Claude Code understands the entire deployment stack.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="comparison-section">
+                <h2>Claude Code vs Other AI Tools</h2>
+                
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Claude Code</th>
+                                <th>GitHub Copilot</th>
+                                <th>Cursor IDE</th>
+                                <th>ChatGPT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Terminal-Native</td>
+                                <td class="check">✓</td>
+                                <td class="cross">✗</td>
+                                <td class="cross">✗</td>
+                                <td class="cross">✗</td>
+                            </tr>
+                            <tr>
+                                <td>File System Access</td>
+                                <td class="check">✓</td>
+                                <td class="partial">Limited</td>
+                                <td class="check">✓</td>
+                                <td class="cross">✗</td>
+                            </tr>
+                            <tr>
+                                <td>Multi-Agent System</td>
+                                <td class="check">✓</td>
+                                <td class="cross">✗</td>
+                                <td class="cross">✗</td>
+                                <td class="cross">✗</td>
+                            </tr>
+                            <tr>
+                                <td>Custom Commands</td>
+                                <td class="check">✓</td>
+                                <td class="cross">✗</td>
+                                <td class="partial">Limited</td>
+                                <td class="cross">✗</td>
+                            </tr>
+                            <tr>
+                                <td>MCP Protocol Support</td>
+                                <td class="check">✓</td>
+                                <td class="cross">✗</td>
+                                <td class="cross">✗</td>
+                                <td class="cross">✗</td>
+                            </tr>
+                            <tr>
+                                <td>Self-Hosting Option</td>
+                                <td class="check">✓</td>
+                                <td class="cross">✗</td>
+                                <td class="cross">✗</td>
+                                <td class="partial">API Only</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="comparison-note">While tools like <a href="https://github.com/features/copilot" target="_blank" rel="noopener">GitHub Copilot</a> excel at code completion, Claude Code operates at a higher level—understanding entire projects, managing complex workflows, and acting as a true development partner.</p>
+            </section>
+
+            <section class="testimonial-section">
+                <h2>Why Learn From an Experienced Practitioner</h2>
+                
+                <blockquote class="testimonial">
+                    <p>"After two decades of PHP development, I've learned that tools are only as good as your understanding of them. Claude Code isn't just about AI writing code—it's about amplifying your expertise and automating the tedious parts of development."</p>
+                    <cite>— Joseph, Senior PHP Engineer & AI Development Specialist</cite>
+                </blockquote>
+
+                <div class="instructor-credentials">
+                    <h3>Your Instructor's Background</h3>
+                    <ul>
+                        <li>20+ years of enterprise PHP development</li>
+                        <li>Daily Claude Code user since early access</li>
+                        <li>Built production systems handling millions of requests</li>
+                        <li>Expert in legacy modernization and performance optimization</li>
+                        <li>Active contributor to AI development best practices</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="pricing-section">
+                <h2>Training Options</h2>
+                
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h3>Individual Training</h3>
+                        <p class="price">$1,500</p>
+                        <ul>
+                            <li>10 hours of personalized instruction</li>
+                            <li>Custom curriculum for your stack</li>
+                            <li>Real project implementation</li>
+                            <li>30-day follow-up support</li>
+                            <li>Recording of sessions</li>
+                        </ul>
+                        <a href="mailto:joseph@ltscommerce.dev?subject=Claude%20Code%20Individual%20Training" class="btn btn-primary">Get Started</a>
+                    </div>
+
+                    <div class="pricing-card featured">
+                        <h3>Team Training</h3>
+                        <p class="price">$4,500</p>
+                        <ul>
+                            <li>20 hours for up to 5 developers</li>
+                            <li>Customized for your codebase</li>
+                            <li>Team collaboration patterns</li>
+                            <li>90-day implementation support</li>
+                            <li>Internal documentation setup</li>
+                        </ul>
+                        <a href="mailto:joseph@ltscommerce.dev?subject=Claude%20Code%20Team%20Training" class="btn btn-primary">Contact for Teams</a>
+                    </div>
+
+                    <div class="pricing-card">
+                        <h3>Enterprise Workshop</h3>
+                        <p class="price">Custom</p>
+                        <ul>
+                            <li>Multi-day intensive program</li>
+                            <li>Organization-wide rollout</li>
+                            <li>Custom tool development</li>
+                            <li>Ongoing consultation</li>
+                            <li>ROI measurement framework</li>
+                        </ul>
+                        <a href="mailto:joseph@ltscommerce.dev?subject=Claude%20Code%20Enterprise%20Workshop" class="btn btn-secondary">Discuss Requirements</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="faq-section">
+                <h2>Frequently Asked Questions</h2>
+                
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h3>Do I need prior AI experience?</h3>
+                        <p>No. This training is designed for developers who want to leverage AI effectively. We start from the fundamentals and build up to advanced techniques.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>What programming languages are covered?</h3>
+                        <p>While I specialize in PHP, Claude Code works with all languages. The training covers Python, JavaScript, TypeScript, Go, and any language your team uses.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>Is this training remote or in-person?</h3>
+                        <p>Both options are available. Remote training is conducted via screen sharing with full interaction. In-person workshops are available for enterprise clients.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>What's included in follow-up support?</h3>
+                        <p>You'll have direct access for questions, code reviews, and troubleshooting as you implement Claude Code in your daily workflow.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>Can training be customized for our stack?</h3>
+                        <p>Absolutely. We'll review your technology stack and tailor examples to your specific frameworks, databases, and deployment environments.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>What about data security and privacy?</h3>
+                        <p>We'll cover secure usage patterns, including self-hosting options, data handling best practices, and compliance with <a href="https://gdpr.eu/" target="_blank" rel="noopener">GDPR</a> and other regulations.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="resources-section">
+                <h2>Additional Resources</h2>
+                
+                <div class="resource-links">
+                    <h3>Official Documentation</h3>
+                    <ul>
+                        <li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code Documentation</a></li>
+                        <li><a href="https://www.anthropic.com/claude" target="_blank" rel="noopener">Anthropic Claude Platform</a></li>
+                        <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener">Claude Code GitHub Repository</a></li>
+                    </ul>
+
+                    <h3>AI Development Resources</h3>
+                    <ul>
+                        <li><a href="https://www.deeplearning.ai/" target="_blank" rel="noopener">DeepLearning.AI Courses</a></li>
+                        <li><a href="https://huggingface.co/" target="_blank" rel="noopener">Hugging Face Models</a></li>
+                        <li><a href="https://openai.com/blog" target="_blank" rel="noopener">OpenAI Research Blog</a></li>
+                    </ul>
+
+                    <h3>Development Best Practices</h3>
+                    <ul>
+                        <li><a href="https://martinfowler.com/" target="_blank" rel="noopener">Martin Fowler's Architecture Patterns</a></li>
+                        <li><a href="https://refactoring.guru/" target="_blank" rel="noopener">Refactoring and Design Patterns</a></li>
+                        <li><a href="https://12factor.net/" target="_blank" rel="noopener">The Twelve-Factor App</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="cta-section">
+                <h2>Ready to Transform Your Development Workflow?</h2>
+                <p class="cta-text">Join developers who are already 10x more productive with Claude Code. Whether you're modernizing legacy systems, building new features, or optimizing performance, AI-assisted development is the future—and the future is now.</p>
+                
+                <div class="cta-buttons">
+                    <a href="mailto:joseph@ltscommerce.dev?subject=Claude%20Code%20Training%20Inquiry" class="btn btn-primary btn-large">Schedule a Consultation</a>
+                    <a href="/articles/" class="btn btn-secondary btn-large">Read Technical Articles</a>
+                </div>
+
+                <p class="contact-note">Questions? Email <a href="mailto:joseph@ltscommerce.dev">joseph@ltscommerce.dev</a> or explore my <a href="/">PHP development services</a>.</p>
+            </section>
+        </main>
+
+        <style>
+            .training-page {
+                background: var(--bg-primary);
+            }
+
+            .hero {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 4rem 0;
+                margin-bottom: 3rem;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                font-weight: 700;
+            }
+
+            .hero .tagline {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+                opacity: 0.95;
+            }
+
+            .hero .lead {
+                font-size: 1.125rem;
+                max-width: 800px;
+                opacity: 0.9;
+            }
+
+            .highlight-box {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 2rem;
+                margin: 2rem 0;
+            }
+
+            .highlight-box h3 {
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            }
+
+            .feature-grid, .use-case-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+                margin: 2rem 0;
+            }
+
+            .feature-card, .use-case {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 1.5rem;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            .feature-card:hover, .use-case:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+
+            .feature-card h3, .use-case h3 {
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            }
+
+            .curriculum-modules {
+                display: grid;
+                gap: 2rem;
+                margin: 2rem 0;
+            }
+
+            .module {
+                background: var(--bg-secondary);
+                border-left: 4px solid var(--primary-color);
+                padding: 1.5rem;
+                border-radius: 0 8px 8px 0;
+            }
+
+            .module h3 {
+                color: var(--primary-color);
+                margin-bottom: 0.5rem;
+            }
+
+            .module h4 {
+                color: var(--text-secondary);
+                font-size: 1rem;
+                margin-bottom: 1rem;
+                font-weight: 500;
+            }
+
+            .comparison-table {
+                overflow-x: auto;
+                margin: 2rem 0;
+            }
+
+            .comparison-table table {
+                width: 100%;
+                border-collapse: collapse;
+                background: var(--bg-secondary);
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 1rem;
+                text-align: center;
+                border: 1px solid var(--border-color);
+            }
+
+            .comparison-table th {
+                background: var(--primary-color);
+                color: white;
+                font-weight: 600;
+            }
+
+            .comparison-table th:first-child {
+                text-align: left;
+            }
+
+            .comparison-table td:first-child {
+                text-align: left;
+                font-weight: 500;
+            }
+
+            .comparison-table .check {
+                color: #10b981;
+                font-weight: bold;
+            }
+
+            .comparison-table .cross {
+                color: #ef4444;
+            }
+
+            .comparison-table .partial {
+                color: #f59e0b;
+            }
+
+            .comparison-note {
+                font-style: italic;
+                color: var(--text-secondary);
+                margin-top: 1rem;
+            }
+
+            .testimonial {
+                background: var(--bg-secondary);
+                border-left: 4px solid var(--primary-color);
+                padding: 2rem;
+                margin: 2rem 0;
+                font-style: italic;
+                font-size: 1.125rem;
+            }
+
+            .testimonial cite {
+                display: block;
+                margin-top: 1rem;
+                font-style: normal;
+                color: var(--text-secondary);
+            }
+
+            .instructor-credentials {
+                background: var(--bg-secondary);
+                padding: 2rem;
+                border-radius: 8px;
+                margin: 2rem 0;
+            }
+
+            .pricing-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem;
+                margin: 2rem 0;
+            }
+
+            .pricing-card {
+                background: var(--bg-secondary);
+                border: 2px solid var(--border-color);
+                border-radius: 12px;
+                padding: 2rem;
+                text-align: center;
+                position: relative;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            .pricing-card.featured {
+                border-color: var(--primary-color);
+                transform: scale(1.05);
+            }
+
+            .pricing-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            }
+
+            .pricing-card.featured:hover {
+                transform: scale(1.05) translateY(-4px);
+            }
+
+            .pricing-card h3 {
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            }
+
+            .pricing-card .price {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 1.5rem;
+            }
+
+            .pricing-card ul {
+                list-style: none;
+                padding: 0;
+                margin: 0 0 2rem 0;
+                text-align: left;
+            }
+
+            .pricing-card li {
+                padding: 0.5rem 0;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .pricing-card li:last-child {
+                border-bottom: none;
+            }
+
+            .btn {
+                display: inline-block;
+                padding: 0.75rem 2rem;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.2s;
+            }
+
+            .btn-primary {
+                background: var(--primary-color);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background: #5a57e0;
+                transform: translateY(-1px);
+            }
+
+            .btn-secondary {
+                background: transparent;
+                color: var(--primary-color);
+                border: 2px solid var(--primary-color);
+            }
+
+            .btn-secondary:hover {
+                background: var(--primary-color);
+                color: white;
+            }
+
+            .btn-large {
+                padding: 1rem 2.5rem;
+                font-size: 1.125rem;
+            }
+
+            .faq-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 2rem;
+                margin: 2rem 0;
+            }
+
+            .faq-item {
+                background: var(--bg-secondary);
+                padding: 1.5rem;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+            }
+
+            .faq-item h3 {
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+                font-size: 1.125rem;
+            }
+
+            .resource-links {
+                background: var(--bg-secondary);
+                padding: 2rem;
+                border-radius: 8px;
+                margin: 2rem 0;
+            }
+
+            .resource-links h3 {
+                color: var(--primary-color);
+                margin-top: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .resource-links h3:first-child {
+                margin-top: 0;
+            }
+
+            .resource-links ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .resource-links li {
+                margin: 0.5rem 0;
+            }
+
+            .cta-section {
+                background: var(--bg-secondary);
+                padding: 3rem;
+                border-radius: 12px;
+                text-align: center;
+                margin: 3rem 0;
+            }
+
+            .cta-section h2 {
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            }
+
+            .cta-text {
+                font-size: 1.125rem;
+                margin-bottom: 2rem;
+                max-width: 800px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .cta-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-bottom: 2rem;
+            }
+
+            .contact-note {
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+            }
+
+            section {
+                margin: 4rem 0;
+            }
+
+            section h2 {
+                color: var(--primary-color);
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+                font-weight: 600;
+            }
+
+            section h3 {
+                font-size: 1.25rem;
+                margin-bottom: 1rem;
+            }
+
+            @media (max-width: 768px) {
+                .hero h1 {
+                    font-size: 2rem;
+                }
+
+                .hero .tagline {
+                    font-size: 1.25rem;
+                }
+
+                .pricing-card.featured {
+                    transform: none;
+                }
+
+                .cta-buttons {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .btn-large {
+                    width: 100%;
+                    max-width: 300px;
+                }
+            }
+        </style>
+    `
+}) %>
