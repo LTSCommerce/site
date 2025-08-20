@@ -1,0 +1,151 @@
+/* Terminal Window Styling - Site-wide */
+.terminal-window {
+    background: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+.terminal-header {
+    background: #323232;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #999;
+}
+
+.terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ff5f56;
+}
+
+.terminal-dot:nth-child(2) { 
+    background: #ffbd2e; 
+}
+
+.terminal-dot:nth-child(3) { 
+    background: #27c93f; 
+}
+
+.terminal-title {
+    margin-left: auto;
+    margin-right: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.terminal-content {
+    padding: 16px;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #d4d4d4;
+    background: #1e1e1e;
+}
+
+/* Terminal text colors */
+.terminal-prompt {
+    color: #569cd6;
+    font-weight: bold;
+}
+
+.terminal-command {
+    color: #ce9178;
+}
+
+.terminal-output {
+    color: #9cdcfe;
+    margin-left: 0;
+    display: block;
+    margin-top: 4px;
+}
+
+.terminal-user {
+    color: #4ec9b0;
+}
+
+.terminal-assistant {
+    color: #dcdcaa;
+}
+
+.terminal-comment {
+    color: #6a9955;
+    font-style: italic;
+}
+
+.terminal-error {
+    color: #f48771;
+}
+
+.terminal-success {
+    color: #4ec9b0;
+}
+
+.terminal-warning {
+    color: #ffbd2e;
+}
+
+.terminal-divider {
+    color: #666;
+    margin: 10px 0;
+    text-align: center;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+}
+
+/* Conversation flow in terminal */
+.terminal-conversation {
+    margin: 8px 0;
+}
+
+.terminal-conversation .terminal-user {
+    margin-bottom: 8px;
+}
+
+.terminal-conversation .terminal-assistant {
+    margin-bottom: 8px;
+    padding-left: 20px;
+}
+
+/* Compact terminal for inline examples */
+.terminal-inline {
+    display: inline-block;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+    font-size: 0.9em;
+}
+
+/* Terminal with no header (for quick examples) */
+.terminal-simple {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 0;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #d4d4d4;
+}
+
+/* Animation for typing effect (optional) */
+@keyframes terminal-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.terminal-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    background: #d4d4d4;
+    animation: terminal-blink 1s infinite;
+    vertical-align: text-bottom;
+}

@@ -39,6 +39,7 @@ export default defineConfig({
         'css/book': resolve(__dirname, 'private_html/css/book.css'),
         'css/author': resolve(__dirname, 'private_html/css/author.css'),
         'css/syntax-highlighting': resolve(__dirname, 'private_html/css/syntax-highlighting.css'),
+        'css/terminal': resolve(__dirname, 'private_html/css/terminal.css'),
         // JavaScript entry points
         'js/main': resolve(__dirname, 'private_html/js/main.js'),
         'js/about': resolve(__dirname, 'private_html/js/about.js'),

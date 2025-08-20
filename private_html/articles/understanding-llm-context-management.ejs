@@ -169,26 +169,165 @@ $ npm test --verbose  # Even more detail
             <h2>Essential Context Management Techniques</h2>
             
             <h3>1. Manual Context Hygiene</h3>
-            <p>Just like closing unnecessary browser tabs, periodically clean your conversation context:</p>
+            <p>Unlike browser tabs that persist, AI conversations require explicit clearing. Here's how to actually reset your context:</p>
             
-            <p><strong>The Phase Transition Clear:</strong> When moving from debugging to feature development, start fresh:</p>
-            <pre><code class="language-bash"># Instead of continuing in the same session
-"We fixed the bug, now let's add a new feature"
-
-# Better: Start a new conversation
-"I need to add a user authentication feature to my Express app"</code></pre>
+            <link rel="stylesheet" href="/assets/css/terminal.css">
             
-            <p><strong>The Summary Bridge:</strong> Before clearing context, ask for a summary you can reference in the new session:</p>
-            <pre><code class="language-markdown"># End of debugging session
-"Please summarize what we discovered and fixed"
+            <div class="callout">
+                <h4>How to Clear Context in Different Tools</h4>
+                
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-dot"></div>
+                        <div class="terminal-dot"></div>
+                        <div class="terminal-dot"></div>
+                        <div class="terminal-title">Claude Code</div>
+                    </div>
+                    <div class="terminal-content">
+                        <div><span class="terminal-prompt">❯</span> <span class="terminal-command">/clear</span></div>
+                        <div class="terminal-output">✓ Conversation history cleared</div>
+                        <br>
+                        <div><span class="terminal-prompt">❯</span> <span class="terminal-command">/compact</span></div>
+                        <div class="terminal-output">✓ Conversation compressed to key points</div>
+                        <br>
+                        <div><span class="terminal-prompt">❯</span> <span class="terminal-command">exit</span></div>
+                        <div class="terminal-output"># Close and reopen to fully reset</div>
+                    </div>
+                </div>
+                
+                <p><strong>Other Tools:</strong></p>
+                <ul>
+                    <li><strong>ChatGPT/Claude Web:</strong> Start a new chat/conversation</li>
+                    <li><strong>VS Code Copilot:</strong> Close and reopen the chat panel</li>
+                </ul>
+                
+                <p><em>Learn more about <a href="https://docs.anthropic.com/en/docs/claude-code/slash-commands" target="_blank" rel="noopener">Claude Code slash commands</a></em></p>
+            </div>
+            
+            <h4>The Phase Transition Clear - Step by Step</h4>
+            
+            <div class="workflow-diagram">
+                <pre><code class="language-markdown">📍 STEP 1: Complete Current Task
+└─ "We've fixed the authentication bug successfully"
 
-# Start of new session
-"Continuing from previous session where we fixed the async race condition in the auth module..."</code></pre>
+📍 STEP 2: Save Important Info (if needed)
+└─ Copy any critical findings or solutions
+
+📍 STEP 3: Clear Context
+└─ Type: /clear
+└─ Or: Close Claude Code window
+
+════════ CONTEXT BOUNDARY ════════
+
+📍 STEP 4: Start Fresh
+└─ Open new Claude Code session
+└─ "I need to add user profile features to my Express app"
+
+📍 STEP 5: New Clean Context
+└─ No debugging history polluting the conversation
+└─ AI focuses entirely on the new task</code></pre>
+            </div>
+            
+            <h4>The Summary Bridge - Complete Workflow</h4>
+            
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-dot"></div>
+                    <div class="terminal-dot"></div>
+                    <div class="terminal-dot"></div>
+                    <div class="terminal-title">Claude Code - Summary Bridge Example</div>
+                </div>
+                <div class="terminal-content">
+                    <div class="terminal-comment"># OLD CONTEXT (before clearing)</div>
+                    <div class="terminal-user">
+                        <span class="terminal-prompt">❯</span> Please summarize what we discovered and fixed, and save it to DEBUG_SUMMARY.md
+                    </div>
+                    <div class="terminal-assistant">
+                        I'll create a summary of our debugging session...
+                        <br><br>
+                        <span class="terminal-success">✓ Created DEBUG_SUMMARY.md</span>
+                    </div>
+                    <br>
+                    <div class="terminal-user">
+                        <span class="terminal-prompt">❯</span> <span class="terminal-command">/clear</span>
+                    </div>
+                    <div class="terminal-output">✓ Conversation history cleared</div>
+                    
+                    <div class="terminal-divider">════════ CONTEXT BOUNDARY ════════</div>
+                    
+                    <div class="terminal-comment"># NEW CONTEXT (completely fresh)</div>
+                    <div class="terminal-user">
+                        <span class="terminal-prompt">❯</span> Read DEBUG_SUMMARY.md to understand previous work
+                    </div>
+                    <div class="terminal-assistant">
+                        I'll read the summary from the previous session...
+                        <br><br>
+                        I can see you fixed an async race condition in the auth module by...
+                    </div>
+                    <br>
+                    <div class="terminal-user">
+                        <span class="terminal-prompt">❯</span> Now let's implement the user profile features building on the auth system we fixed
+                    </div>
+                    <div class="terminal-assistant">
+                        Perfect! Based on the summary, I understand the auth system is now working. Let's build the profile features...
+                    </div>
+                </div>
+            </div>
+            
+            <p><strong>Important:</strong> The summary is NOT automatically included after clearing. You must either:</p>
+            <ul>
+                <li>Save it to a file and read it in the new session</li>
+                <li>Manually copy and paste relevant parts</li>
+                <li>Reference it as a document in your project</li>
+            </ul>
             
             <h3>2. Plan Documents as Context Anchors</h3>
             
-            <p>Think of plan documents like a GPS route—they keep the journey focused regardless of temporary detours:</p>
+            <p>Plan documents act as persistent memory across context resets—like a GPS route that survives even when you restart your phone:</p>
             
+            <div class="workflow-diagram">
+                <pre><code class="language-markdown">📍 PHASE 1: Planning Session
+│
+├─ STEP 1: Discuss Feature
+│  └─ "I need to add user authentication to my app"
+│
+├─ STEP 2: Iterate on Requirements
+│  └─ Back-and-forth refining the approach
+│
+├─ STEP 3: Create Plan Document
+│  └─ "Write a detailed plan to IMPLEMENTATION_PLAN.md"
+│
+├─ STEP 4: Review and Refine
+│  └─ "Update the plan to include rate limiting"
+│
+════════ CLEAR CONTEXT ════════
+│
+📍 PHASE 2: Execution Session (Fresh Context)
+│
+├─ STEP 5: Start New Session
+│  └─ Open fresh Claude Code
+│
+├─ STEP 6: Load the Plan
+│  └─ "Read IMPLEMENTATION_PLAN.md"
+│
+├─ STEP 7: Confirm Understanding
+│  └─ AI: "I understand we're implementing JWT auth with..."
+│
+├─ STEP 8: Execute Step 1
+│  └─ "Let's implement step 1 from the plan"
+│
+════════ CLEAR CONTEXT ════════
+│
+📍 PHASE 3: Continue Next Day (Fresh Context)
+│
+├─ STEP 9: Load Plan + Progress
+│  └─ "Read IMPLEMENTATION_PLAN.md - we completed step 1"
+│
+└─ STEP 10: Execute Step 2
+   └─ "Now implement step 2 from the plan"</code></pre>
+            </div>
+            
+            <h4>Example Plan Document</h4>
             <pre><code class="language-markdown"># IMPLEMENTATION_PLAN.md
 ## Objective
 Implement user authentication system
@@ -207,9 +346,19 @@ Implement user authentication system
 ## Technical Decisions
 - <a href="https://www.npmjs.com/package/bcrypt" target="_blank" rel="noopener">bcrypt</a> for password hashing (rounds: 10)
 - 15-minute <a href="https://jwt.io/" target="_blank" rel="noopener">JWT</a> expiry with refresh tokens
-- <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a> for rate limiting state</code></pre>
+- <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a> for rate limiting state
+
+## Progress Log
+- 2025-08-20: Completed database schema (step 1)
+- 2025-08-21: Starting registration endpoint (step 2)</code></pre>
             
-            <p>With this plan document, you can start fresh contexts for each step while maintaining consistency. The plan acts like a constitution—a stable reference that survives context resets.</p>
+            <p><strong>Key Benefits:</strong></p>
+            <ul>
+                <li>Plan survives all context resets</li>
+                <li>Each execution starts clean but informed</li>
+                <li>Progress tracking across sessions</li>
+                <li>No confusion from old debugging attempts</li>
+            </ul>
             
         </section>
         
@@ -220,11 +369,43 @@ Implement user authentication system
             
             <p><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code's sub-agents</a> are like sending a research assistant to the library—they do the messy work and return only the essential findings:</p>
             
-            <pre><code class="language-bash"># Instead of polluting main context with extensive research
-"Search the entire codebase for all uses of the deprecated API"
-
-# Better: Delegate to a sub-agent
-"Use a sub-agent to audit deprecated API usage and report back a summary"</code></pre>
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-dot"></div>
+                    <div class="terminal-dot"></div>
+                    <div class="terminal-dot"></div>
+                    <div class="terminal-title">Claude Code - Sub-Agent Delegation</div>
+                </div>
+                <div class="terminal-content">
+                    <div class="terminal-comment"># WITHOUT Sub-Agent (pollutes main context)</div>
+                    <div class="terminal-user">
+                        <span class="terminal-prompt">❯</span> Search the entire codebase for all uses of the deprecated API
+                    </div>
+                    <div class="terminal-assistant">
+                        Searching for deprecated API usage...<br>
+                        <span class="terminal-output">Found in: src/auth/login.js:42</span><br>
+                        <span class="terminal-output">Found in: src/users/profile.js:156</span><br>
+                        <span class="terminal-output">[... 500 more lines of search results ...]</span><br>
+                        <span class="terminal-warning">⚠️ Main context now contains 500+ lines of search output</span>
+                    </div>
+                    
+                    <div class="terminal-divider">─────────────────────────</div>
+                    
+                    <div class="terminal-comment"># WITH Sub-Agent (keeps main context clean)</div>
+                    <div class="terminal-user">
+                        <span class="terminal-prompt">❯</span> Use a sub-agent to audit deprecated API usage and report back a summary
+                    </div>
+                    <div class="terminal-assistant">
+                        Delegating to sub-agent for comprehensive search...<br><br>
+                        <span class="terminal-success">✓ Sub-agent completed analysis</span><br><br>
+                        <strong>Summary:</strong> Found 23 instances of deprecated API across 8 files<br>
+                        • Authentication: 5 instances (needs urgent update)<br>
+                        • User profiles: 8 instances (low priority)<br>
+                        • Data processing: 10 instances (can be batch updated)<br><br>
+                        <span class="terminal-comment"># Main context stays clean - only 5 lines instead of 500!</span>
+                    </div>
+                </div>
+            </div>
             
             <p>Sub-agents are perfect for:</p>
             <ul>
