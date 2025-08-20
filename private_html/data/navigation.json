@@ -2,7 +2,7 @@
   "main": [
     { "label": "Home", "path": "/", "key": "home" },
     { "label": "Services", "path": "/services.html", "key": "services" },
-    { "label": "AI Training", "path": "/claude-code-training.html", "key": "training" },
+    { "label": "AI Consultancy", "path": "/claude-code-training.html", "key": "training" },
     { "label": "Articles", "path": "/articles.html", "key": "articles" },
     { "label": "About", "path": "/about.html", "key": "about" },
     { "label": "Author", "path": "/author.html", "key": "author" },
