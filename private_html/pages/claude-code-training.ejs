@@ -622,6 +622,38 @@
                 margin: 0.75rem 0;
                 line-height: 1.7;
             }
+            
+            /* Fix for all ul/li elements affected by CSS reset */
+            .expertise-content ul,
+            .engagement-card ul,
+            .service-type ul,
+            .instructor-credentials ul,
+            .whats-included {
+                list-style: disc;
+                padding-left: 1.5rem;
+                margin: 0;
+            }
+            
+            .expertise-content li,
+            .engagement-card li,
+            .service-type li,
+            .instructor-credentials li,
+            .whats-included li {
+                margin: 0.5rem 0;
+                line-height: 1.6;
+            }
+            
+            /* Special styling for engagement cards */
+            .engagement-card ul {
+                list-style: none;
+                padding-left: 0;
+            }
+            
+            .engagement-card li::before {
+                content: "→";
+                color: var(--primary-color);
+                margin-right: 0.5rem;
+            }
 
             .curriculum-modules {
                 display: grid;
