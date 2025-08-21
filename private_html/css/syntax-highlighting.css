@@ -1,94 +1,312 @@
-/* Syntax Highlighting Styles */
+/* Syntax Highlighting Styles - JetBrains Darcula Theme */
+
+/* Code blocks with dark background matching terminal windows */
 pre {
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    padding: 1rem;
+    background-color: #2b2b2b;
+    border-radius: 8px;
+    padding: 1.25rem;
     overflow-x: auto;
-    margin: 1rem 0;
-    border: 1px solid #e5e7eb;
+    margin: 1.5rem 0;
+    border: 1px solid #3c3f41;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    color: #a9b7c6;
+    font-size: 14px;
+    line-height: 1.6;
 }
 
+/* Inline code */
 code {
-    background-color: #f1f3f4;
-    padding: 0.2rem 0.4rem;
-    border-radius: 3px;
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-    font-size: 0.875em;
+    background-color: #2b2b2b;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #a9b7c6;
+    border: 1px solid #3c3f41;
 }
 
+/* Code inside pre blocks */
 pre code {
     background-color: transparent;
     padding: 0;
     border-radius: 0;
     white-space: pre;
     display: block;
+    border: none;
+    color: inherit;
 }
 
-/* Prism.js theme */
+/* JetBrains Darcula Color Scheme */
+
+/* Comments - Green */
 .token.comment,
 .token.prolog,
 .token.doctype,
-.token.cdata {
-    color: #6a737d;
+.token.cdata,
+.hljs-comment {
+    color: #629755;
+    font-style: italic;
 }
 
-.token.punctuation {
-    color: #5e6687;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-    color: #d73a49;
-}
-
-.token.selector,
-.token.attr-name,
+/* Strings - Green */
 .token.string,
 .token.char,
-.token.builtin,
-.token.inserted {
-    color: #032f62;
+.token.attr-value,
+.token.regex,
+.token.variable,
+.hljs-string,
+.hljs-attr {
+    color: #6a8759;
 }
 
+/* Keywords - Orange */
+.token.keyword,
+.token.control,
+.token.directive,
+.token.unit,
+.token.statement,
+.token.atrule,
+.hljs-keyword,
+.hljs-built_in {
+    color: #cc7832;
+    font-weight: bold;
+}
+
+/* Functions and Methods - Yellow */
+.token.function,
+.token.method,
+.hljs-function,
+.hljs-title.function_ {
+    color: #ffc66d;
+}
+
+/* Classes and Types - Light */
+.token.class-name,
+.token.type,
+.token.namespace,
+.hljs-class .hljs-title,
+.hljs-type {
+    color: #a9b7c6;
+}
+
+/* Numbers - Blue */
+.token.number,
+.token.boolean,
+.token.constant,
+.hljs-number,
+.hljs-literal {
+    color: #6897bb;
+}
+
+/* Operators and Punctuation */
 .token.operator,
+.token.punctuation,
+.hljs-operator {
+    color: #a9b7c6;
+}
+
+/* Properties and Attributes - Purple/Magenta */
+.token.property,
+.token.parameter,
+.token.attr-name,
+.token.tag,
+.hljs-attribute,
+.hljs-variable,
+.hljs-params {
+    color: #9876aa;
+}
+
+/* Selectors - Orange */
+.token.selector,
+.token.important,
+.token.pseudo-class,
+.hljs-selector-class,
+.hljs-selector-id {
+    color: #ffc66d;
+}
+
+/* Tags - Yellow */
+.token.tag,
+.token.tag.punctuation,
+.hljs-tag {
+    color: #e8bf6a;
+}
+
+/* Insertions - Green background */
+.token.inserted {
+    color: #a6e22e;
+    background-color: rgba(166, 226, 46, 0.1);
+}
+
+/* Deletions - Red background */
+.token.deleted {
+    color: #f92672;
+    background-color: rgba(249, 38, 114, 0.1);
+}
+
+/* Entity */
 .token.entity,
 .token.url,
 .language-css .token.string,
 .style .token.string {
-    color: #24292e;
+    color: #6897bb;
 }
 
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-    color: #d73a49;
-}
-
-.token.function,
-.token.class-name {
-    color: #6f42c1;
-}
-
-.token.regex,
+/* Bold */
 .token.important,
-.token.variable {
-    color: #e36209;
-}
-
-.token.important,
-.token.bold {
+.token.bold,
+.hljs-strong {
     font-weight: bold;
 }
 
-.token.italic {
+/* Italic */
+.token.italic,
+.hljs-emphasis {
     font-style: italic;
 }
 
+/* Cursor */
 .token.entity {
     cursor: help;
+}
+
+/* Language-specific adjustments */
+
+/* PHP */
+.language-php .token.variable {
+    color: #9876aa;
+}
+
+.language-php .token.keyword {
+    color: #cc7832;
+}
+
+/* JavaScript/TypeScript */
+.language-javascript .token.keyword,
+.language-typescript .token.keyword {
+    color: #cc7832;
+}
+
+.language-javascript .token.string,
+.language-typescript .token.string {
+    color: #6a8759;
+}
+
+/* CSS */
+.language-css .token.selector {
+    color: #ffc66d;
+}
+
+.language-css .token.property {
+    color: #a9b7c6;
+}
+
+.language-css .token.important {
+    color: #cc7832;
+}
+
+/* SQL */
+.language-sql .token.keyword {
+    color: #cc7832;
+    font-weight: bold;
+}
+
+.language-sql .token.function {
+    color: #ffc66d;
+}
+
+/* Bash/Shell */
+.language-bash .token.function,
+.language-shell .token.function {
+    color: #ffc66d;
+}
+
+.language-bash .token.builtin,
+.language-shell .token.builtin {
+    color: #cc7832;
+}
+
+/* YAML */
+.language-yaml .token.key {
+    color: #9876aa;
+}
+
+/* JSON */
+.language-json .token.property {
+    color: #9876aa;
+}
+
+/* Markdown */
+.language-markdown .token.title {
+    color: #ffc66d;
+    font-weight: bold;
+}
+
+.language-markdown .token.code {
+    color: #6a8759;
+}
+
+/* Line numbers (if used) */
+.line-numbers .line-numbers-rows {
+    border-right: 1px solid #3c3f41;
+}
+
+.line-numbers-rows > span:before {
+    color: #606366;
+}
+
+/* Selection */
+pre::selection,
+pre code::selection,
+code::selection {
+    background-color: #214283;
+    color: inherit;
+}
+
+pre::-moz-selection,
+pre code::-moz-selection,
+code::-moz-selection {
+    background-color: #214283;
+    color: inherit;
+}
+
+/* Scrollbar styling for code blocks */
+pre::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb {
+    background: #4a4a4a;
+    border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+    background: #5a5a5a;
+}
+
+/* Ensure consistency with terminal windows */
+pre,
+.terminal-window {
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+}
+
+/* Special highlighting for diffs */
+.token.coord {
+    color: #6897bb;
+}
+
+.token.diff.deleted {
+    color: #cc7832;
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.token.diff.inserted {
+    color: #629755;
+    background-color: rgba(0, 255, 0, 0.1);
 }
