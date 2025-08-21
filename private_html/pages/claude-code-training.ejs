@@ -10,6 +10,10 @@
                 <h1>Claude Code Consultancy</h1>
                 <p class="tagline">Strategic AI Integration for Development Teams</p>
                 <p class="lead">Bespoke consultancy tailored to your team's needs. From C-level strategy to hands-on developer enablement, accelerate your AI adoption with proven expertise.</p>
+                <div class="hero-actions">
+                    <a href="mailto:joseph@ltscommerce.dev?subject=Claude%20Code%20Consultancy" class="btn btn-primary">Book a Session</a>
+                    <a href="/contact.html" class="btn btn-secondary">Contact Form</a>
+                </div>
             </div>
         </header>
 
@@ -492,8 +496,20 @@
             .hero .lead {
                 font-size: 1.125rem;
                 max-width: 800px;
-                margin: 0 auto;
+                margin: 0 auto 2rem;
                 color: var(--text-secondary);
+            }
+
+            .hero-actions {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .hero-actions .btn {
+                padding: 0.75rem 2rem;
+                font-size: 1rem;
             }
 
             .highlight-box {
