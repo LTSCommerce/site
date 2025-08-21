@@ -511,9 +511,7 @@
     position: relative;
 }
 
-.article-container :not(pre) > code:hover {
-    background: var(--color-bg-secondary);
-}
+/* Removed hover effect - was causing unwanted background color change */
 
 .article-container pre {
     /* Dark theme to match JetBrains Darcula - removed gradient */
