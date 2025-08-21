@@ -511,16 +511,14 @@
     position: relative;
 }
 
-/* Removed hover effect - was causing unwanted background color change */
 
 .article-container pre {
-    /* Dark theme to match JetBrains Darcula - removed gradient */
+    /* Dark theme to match JetBrains Darcula */
     background: #2b2b2b;
     padding: var(--spacing-md);
     border-radius: var(--radius-lg);
     overflow-x: auto;
     margin: var(--spacing-lg) 0;
-    border: 1px solid #3c3f41;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     position: relative;
     transition: var(--transition-smooth);
