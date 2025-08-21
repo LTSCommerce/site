@@ -548,9 +548,9 @@
 }
 
 .article-container pre code {
+    /* All styling handled by syntax-highlighting.css */
     background-color: transparent;
     padding: 0;
-    /* Let syntax-highlighting.css handle the color */
     font-size: 0.9rem;
 }
 
