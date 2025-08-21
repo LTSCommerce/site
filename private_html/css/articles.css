@@ -495,7 +495,8 @@
     box-shadow: var(--shadow-medium);
 }
 
-.article-container code {
+/* Inline code styling - not for code blocks */
+.article-container :not(pre) > code {
     background: linear-gradient(135deg, 
         var(--color-bg-secondary) 0%, 
         rgba(248, 249, 250, 0.8) 100%
@@ -510,7 +511,7 @@
     position: relative;
 }
 
-.article-container code:hover {
+.article-container :not(pre) > code:hover {
     background: var(--color-bg-secondary);
 }
 
@@ -549,7 +550,7 @@
 .article-container pre code {
     background-color: transparent;
     padding: 0;
-    color: var(--color-text);
+    /* Let syntax-highlighting.css handle the color */
     font-size: 0.9rem;
 }
 
