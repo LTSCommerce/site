@@ -33,8 +33,13 @@
                 </div>
             </section>
 
+            <section class="terminal-showcase">
+                <h2>Experience Claude Code in Action</h2>
+                <div id="claude-terminal" class="terminal-container"></div>
+            </section>
+
             <section class="visual-showcase">
-                <h2>Claude Code in Action</h2>
+                <h2>Powerful Capabilities</h2>
                 <div class="visual-grid">
                     <div class="visual-card">
                         <div class="visual-placeholder terminal-visual">
@@ -231,23 +236,23 @@
             <section class="services-section">
                 <h2>How I Can Help Your Team</h2>
                 
-                <div class="service-offerings">
-                    <div class="service-type">
+                <div class="service-grid">
+                    <div class="service-card">
                         <h3>Technical Leadership Advisory</h3>
                         <p>Strategic guidance for CTOs and technical leaders on AI integration. We'll work together to create a practical roadmap that aligns with your business goals, assess your team's readiness, and establish governance frameworks that work.</p>
                     </div>
 
-                    <div class="service-type">
+                    <div class="service-card">
                         <h3>Team Enablement</h3>
                         <p>Hands-on training and mentorship for your developers. Using your actual codebase and real projects, I'll help your team master Claude Code and establish AI-augmented development practices that stick.</p>
                     </div>
 
-                    <div class="service-type">
+                    <div class="service-card">
                         <h3>Implementation Partnership</h3>
                         <p>Beyond training, I provide ongoing support as you integrate AI into production workflows. From architectural reviews to troubleshooting complex integrations, consider me an extension of your team.</p>
                     </div>
 
-                    <div class="service-type">
+                    <div class="service-card">
                         <h3>Process Optimization</h3>
                         <p>Review and optimize your development workflows for AI augmentation. We'll identify automation opportunities, streamline repetitive tasks, and build custom commands specific to your needs.</p>
                     </div>
@@ -440,6 +445,147 @@
         <style>
             .training-page {
                 background: var(--bg-primary);
+            }
+
+            /* Terminal Animation Styles */
+            .terminal-container {
+                margin: 2rem 0;
+                min-height: 500px;
+            }
+
+            .terminal-window {
+                background: #1a1a2e;
+                border-radius: 8px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                overflow: hidden;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            }
+
+            .terminal-header {
+                background: #2d2d44;
+                padding: 0.75rem 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .terminal-controls {
+                display: flex;
+                gap: 0.5rem;
+            }
+
+            .terminal-control {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                display: inline-block;
+            }
+
+            .terminal-control.close {
+                background: #ff5f56;
+            }
+
+            .terminal-control.minimize {
+                background: #ffbd2e;
+            }
+
+            .terminal-control.maximize {
+                background: #27c93f;
+            }
+
+            .terminal-title {
+                color: #8892b0;
+                font-size: 0.875rem;
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .terminal-body {
+                padding: 1.5rem;
+                min-height: 450px;
+                max-height: 500px;
+                overflow-y: auto;
+                color: #d1d5db;
+                line-height: 1.6;
+            }
+
+            .terminal-content {
+                margin-bottom: 1rem;
+            }
+
+            .terminal-command {
+                color: #64ffda;
+                margin: 1rem 0;
+                font-size: 0.95rem;
+            }
+
+            .terminal-prompt {
+                color: #64ffda;
+                margin-right: 0.5rem;
+            }
+
+            .terminal-input-line {
+                display: flex;
+                align-items: center;
+                color: #64ffda;
+            }
+
+            .terminal-input {
+                flex: 1;
+            }
+
+            .terminal-cursor {
+                display: inline-block;
+                width: 8px;
+                height: 18px;
+                background: #64ffda;
+                animation: blink 1s infinite;
+                margin-left: 2px;
+            }
+
+            @keyframes blink {
+                0%, 50% { opacity: 1; }
+                51%, 100% { opacity: 0; }
+            }
+
+            .terminal-response {
+                color: #e5e7eb;
+                margin: 1rem 0;
+                font-size: 0.9rem;
+                line-height: 1.7;
+            }
+
+            .terminal-response strong {
+                color: #fbbf24;
+                font-weight: 600;
+            }
+
+            .terminal-thinking {
+                color: #8892b0;
+                font-style: italic;
+                margin: 1rem 0;
+            }
+
+            .thinking-text {
+                margin-right: 0.5rem;
+            }
+
+            .terminal-body::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .terminal-body::-webkit-scrollbar-track {
+                background: #16213e;
+            }
+
+            .terminal-body::-webkit-scrollbar-thumb {
+                background: #4a5568;
+                border-radius: 4px;
+            }
+
+            .terminal-body::-webkit-scrollbar-thumb:hover {
+                background: #718096;
             }
 
             .hero {
@@ -699,25 +845,54 @@
                 font-weight: 500;
             }
 
-            .service-offerings {
+            /* Service Cards with Hover Effect */
+            .service-grid {
                 display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                 gap: 2rem;
                 margin: 2rem 0;
             }
 
-            .service-type {
+            .service-card {
                 background: var(--bg-secondary);
                 padding: 2rem;
-                border-radius: 8px;
-                border-left: 4px solid var(--primary-color);
+                border-radius: 12px;
+                border: 1px solid var(--border-color);
+                position: relative;
+                overflow: hidden;
+                transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             }
 
-            .service-type h3 {
+            .service-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                transform: scaleX(0);
+                transform-origin: left;
+                transition: transform 0.3s ease;
+            }
+
+            .service-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+                border-color: #667eea;
+            }
+
+            .service-card:hover::before {
+                transform: scaleX(1);
+            }
+
+            .service-card h3 {
                 color: var(--primary-color);
                 margin-bottom: 1rem;
+                font-size: 1.35rem;
             }
 
-            .service-type p {
+            .service-card p {
                 line-height: 1.7;
                 color: var(--text-primary);
             }
@@ -1003,5 +1178,7 @@
                 }
             }
         </style>
+        
+        <script src="/js/claude-terminal.js"></script>
     `
 }) %>

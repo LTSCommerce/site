@@ -48,6 +48,7 @@ export default defineConfig({
         'js/contact': resolve(__dirname, 'private_html/js/contact.js'),
         'js/author': resolve(__dirname, 'private_html/js/author.js'),
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
+        'js/claude-terminal': resolve(__dirname, 'private_html/js/claude-terminal.js'),
         // Article JavaScript entry points
         'js/articles/llm-overfitting-trap': resolve(__dirname, 'private_html/js/articles/llm-overfitting-trap.js'),
         'js/articles/understanding-llm-context-management': resolve(__dirname, 'private_html/js/articles/understanding-llm-context-management.js'),

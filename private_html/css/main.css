@@ -733,3 +733,116 @@ h3 {
 .cta-section pre {
     margin-top: 1rem;
 }
+
+/* Latest Articles Section */
+.latest-articles {
+    padding: 4rem 0;
+    background: var(--background);
+}
+
+.latest-articles .section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: var(--text);
+}
+
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.article-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 2rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+
+.article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary);
+}
+
+.article-category {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    width: fit-content;
+}
+
+.article-category.php {
+    background: rgba(147, 51, 234, 0.1);
+    color: #9333ea;
+}
+
+.article-category.infrastructure {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+
+.article-category.database {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.article-category.ai {
+    background: rgba(251, 146, 60, 0.1);
+    color: #fb923c;
+}
+
+.article-category.typescript {
+    background: rgba(6, 182, 212, 0.1);
+    color: #06b6d4;
+}
+
+.article-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.article-title a {
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.article-title a:hover {
+    color: var(--primary);
+}
+
+.article-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.articles-cta {
+    text-align: center;
+}
+
+.articles-cta .btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+}

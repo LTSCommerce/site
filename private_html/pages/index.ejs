@@ -77,6 +77,39 @@
         </div>
     </section>
 
+    <section class="latest-articles">
+        <div class="container">
+            <h2 class="section-title">Latest Articles</h2>
+            <div class="articles-grid">
+                ${(() => {
+                    // Get the latest 3 articles sorted by date
+                    const latestArticles = articles
+                        .sort((a, b) => new Date(b.date) - new Date(a.date))
+                        .slice(0, 3);
+                    
+                    return latestArticles.map(article => `
+                        <article class="article-card">
+                            <div class="article-category ${article.category}">
+                                ${categories[article.category]?.label || article.category}
+                            </div>
+                            <h3 class="article-title">
+                                <a href="${article.url}">${article.title}</a>
+                            </h3>
+                            <p class="article-excerpt">${article.description}</p>
+                            <div class="article-meta">
+                                <time class="article-date">${formatDate(article.date)}</time>
+                                <span class="article-reading-time">${article.readingTime} min read</span>
+                            </div>
+                        </article>
+                    `).join('');
+                })()}
+            </div>
+            <div class="articles-cta">
+                <a href="/articles.html" class="btn btn-secondary">View All Articles</a>
+            </div>
+        </div>
+    </section>
+
     <section class="recent-work">
         <div class="container">
             <h2 class="section-title">Published Author</h2>
