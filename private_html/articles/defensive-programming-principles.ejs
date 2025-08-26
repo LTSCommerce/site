@@ -7,11 +7,10 @@
     articleContent: `
 <div class="intro">
     <p class="lead">
-        Defensive programming isn't just about handling edge cases—it's about designing systems that prevent 
-        entire classes of bugs from existing in the first place. Three fundamental principles stand out as 
-        particularly powerful: YAGNI (You Aren't Gonna Need It), making invalid states unrepresentable, 
-        and maintaining domain object purity. These principles, when applied consistently, create codebases 
-        that are not only more reliable but also more maintainable and easier to reason about.
+        Defensive programming isn't just about handling edge cases. It's about designing systems that prevent 
+        entire classes of bugs from existing in the first place. Three fundamental principles stand out: YAGNI 
+        (You Aren't Gonna Need It), making invalid states unrepresentable, and maintaining domain object purity. 
+        These principles create codebases that are more reliable, more maintainable, and easier to reason about.
     </p>
 </div>
 
@@ -30,7 +29,7 @@
     </ul>
     
     <p>
-        These aren't theoretical concepts—they're practical techniques with immediate benefits for any codebase, 
+        These aren't theoretical concepts. They're practical techniques with immediate benefits for any codebase, 
         from small PHP applications to large-scale TypeScript systems.
     </p>
 </section>
@@ -39,9 +38,9 @@
     <h2>YAGNI: Rejecting Unnecessary Complexity</h2>
     <p>
         YAGNI, coined by <a href="https://martinfowler.com/bliki/Yagni.html">Martin Fowler</a> and rooted in 
-        Extreme Programming, states that you should not add functionality until you actually need it. This 
-        principle directly combats over-engineering—the tendency to build "flexible" solutions for problems 
-        that don't exist.
+        Extreme Programming, states that you shouldn't add functionality until you actually need it. This 
+        principle directly combats over-engineering. You know, the tendency to build "flexible" solutions for 
+        problems that don't exist.
     </p>
     
     <h3>Understanding YAGNI Through Pseudocode</h3>
@@ -70,7 +69,7 @@
 
     <p>
         This represents months of development time invested in abstract base classes, multiple implementations, 
-        factory patterns, and configuration systems—all for a simple session storage need.
+        factory patterns, and configuration systems. All for a simple session storage need.
     </p>
     
     <p>
@@ -83,7 +82,7 @@
     <p>
         This simple implementation solves the immediate need without unnecessary abstraction. The key insight 
         from <a href="https://www.techtarget.com/whatis/definition/You-arent-gonna-need-it">YAGNI's definition</a> 
-        is that when additional caching features are actually needed, refactoring this code is straightforward—and 
+        is that when additional caching features are actually needed, refactoring this code is straightforward. And 
         you'll have concrete requirements to guide the design.
     </p>
     
@@ -97,8 +96,8 @@
 
     <p>
         The "flexible" playbook introduces complexity for deployment strategies, database types, and 
-        monitoring systems that aren't currently needed. The simple version accomplishes the actual 
-        goal with clear, maintainable code.
+        monitoring systems that aren't currently needed. The simple version accomplishes what you actually need 
+        with clear, maintainable code.
     </p>
     
     <h3>When YAGNI Doesn't Apply</h3>
@@ -119,7 +118,7 @@
     <h2>Make Invalid States Unrepresentable</h2>
     <p>
         This principle, <a href="https://www.improving.com/thoughts/make-invalid-states-unrepresentable/">popularized in functional programming</a>, 
-        uses type systems to prevent invalid data from being represented in your program. When implemented 
+        uses type systems to prevent invalid data from being represented in your program. When you implement it 
         correctly, the compiler prevents entire classes of runtime errors.
     </p>
     
@@ -135,7 +134,7 @@
     <p>
         This pseudocode demonstrates the fundamental shift from runtime validation to compile-time safety. 
         When invalid states are unrepresentable in the type system, entire categories of bugs become impossible. 
-        Business logic becomes simpler because it doesn't need defensive validation—the types guarantee data integrity.
+        Business logic becomes simpler because it doesn't need defensive validation. The types guarantee data integrity.
     </p>
     
     <h3>PHP 8.4: Type-Safe Domain Modeling</h3>
@@ -147,7 +146,7 @@
 </code></pre>
 
     <p>
-        This code has multiple problems: the status field accepts any string, passwords might not be hashed, 
+        This code has multiple problems. The status field accepts any string, passwords might not be hashed, 
         and the business logic must handle all possible invalid combinations. Every method that uses a User 
         object must include defensive checks for malformed data.
     </p>
@@ -161,7 +160,7 @@
 
     <p>
         Now invalid states are literally impossible to construct. The enum restricts status values, constructor 
-        validation ensures data integrity, readonly properties prevent mutation, and the match expression ensures 
+        validation ensures data integrity, and readonly properties prevent mutation. The match expression ensures 
         exhaustive handling of all cases. This approach eliminates an entire category of bugs at compile time.
     </p>
     
@@ -206,8 +205,8 @@ $price = new Money(1000, 'usd'); // Currency normalized to 'USD'
 
     <p>
         Property hooks eliminate the need for separate validation methods or complex constructor logic. 
-        The validation is <em>part of the property definition</em>, making it impossible to bypass and 
-        reducing the surface area for bugs.
+        The validation is <em>part of the property definition</em>. This makes it impossible to bypass and 
+        reduces the surface area for bugs.
     </p>
     
     <h3>Asymmetric Visibility for Immutable Public APIs</h3>
@@ -257,8 +256,8 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 </code></pre>
 
     <p>
-        This pattern prevents the common mistake of accidentally mutating objects that should be immutable,
-        while providing a clean, readable public API. The computed properties also demonstrate how property 
+        This pattern prevents the common mistake of accidentally mutating objects that should be immutable. 
+        It provides a clean, readable public API. The computed properties also demonstrate how property 
         hooks can create derived values without exposing internal state management complexity.
     </p>
     
@@ -272,7 +271,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 
     <p>
         The branded types and union types prevent invalid states while maintaining TypeScript's ergonomics. 
-        Smart constructors ensure validation happens at object creation, not throughout the application.
+        Smart constructors ensure validation happens at object creation, not scattered throughout the application.
     </p>
     
     <h3>Benefits in Practice</h3>
@@ -292,8 +291,8 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 <section>
     <h2>Domain Object Purity</h2>
     <p>
-        Domain object purity, a cornerstone of <a href="https://enterprisecraftsmanship.com/posts/domain-model-purity-completeness/">Domain-Driven Design</a>, 
-        keeps business logic separate from infrastructure concerns. Pure domain objects depend only on other 
+        Domain object purity is a cornerstone of <a href="https://enterprisecraftsmanship.com/posts/domain-model-purity-completeness/">Domain-Driven Design</a>. 
+        It keeps business logic separate from infrastructure concerns. Pure domain objects depend only on other 
         domain objects and primitive types, never on external systems like databases, APIs, or frameworks.
     </p>
     
@@ -309,14 +308,13 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     <p>
         This pseudocode illustrates the core principle: domain objects should contain only business logic and 
         state transitions. Infrastructure concerns like database access, external APIs, and side effects are 
-        handled by application services. This separation makes code testable, maintainable, and adaptable to 
-        infrastructure changes.
+        handled by application services. This separation makes code testable, maintainable, and adaptable.
     </p>
     
     <h3>PHP Example: From Impure to Pure Domain Objects</h3>
     <p>
-        Many applications suffer from domain objects that are tightly coupled to infrastructure. Here's a 
-        typical violation of domain purity:
+        Many applications suffer from domain objects that are tightly coupled to infrastructure. Here's how 
+        this typically looks:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/domain-purity-bad.php}}
@@ -325,7 +323,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     <p>
         This Order class violates domain purity by depending on four external services. The business logic 
         is scattered across database queries, payment processing, and email sending. Testing requires 
-        mocking multiple services, and changes to infrastructure affect domain logic.
+        mocking multiple services. Changes to infrastructure affect domain logic.
     </p>
     
     <p>
@@ -337,7 +335,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 
     <p>
         The pure Order object contains only business logic and state transitions. It returns domain events 
-        that describe what happened, allowing application services to handle infrastructure concerns. This 
+        that describe what happened. This allows application services to handle infrastructure concerns. This 
         separation, as described in <a href="https://khorikov.org/posts/2021-05-17-domain-model-purity/">Vladimir Khorikov's analysis</a>, 
         makes the code easier to test, understand, and modify.
     </p>
@@ -371,8 +369,8 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 <section>
     <h2>Cross-Language Application</h2>
     <p>
-        These principles aren't language-specific. While we've focused on pseudocode and PHP examples 
-        to demonstrate the core concepts, the same defensive patterns apply across different technologies. 
+        These principles aren't language-specific. We've focused on pseudocode and PHP examples 
+        to demonstrate the core concepts, but the same defensive patterns apply across different technologies. 
         Here's how to implement these principles in other environments.
     </p>
     
@@ -386,9 +384,9 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 </code></pre>
 
     <p>
-        Notice how even in a shell script, we validate inputs early, handle errors explicitly with proper 
-        exit codes, and structure functions to have single responsibilities. The YAGNI principle applies 
-        here too—this script does exactly what's needed without unnecessary complexity.
+        Notice how even in a shell script, we validate inputs early and handle errors explicitly with proper 
+        exit codes. We structure functions to have single responsibilities. The YAGNI principle applies 
+        here too. This script does exactly what's needed without unnecessary complexity.
     </p>
     
     <h3>Complete Reference: All Principles in Pseudocode</h3>
@@ -402,7 +400,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 
     <p>
         This extended pseudocode reference demonstrates how YAGNI, invalid state prevention, and domain 
-        purity work together in any language that supports appropriate abstractions. Use this as a 
+        purity work together in any language that supports appropriate abstractions. Use it as a 
         template when implementing these patterns in your preferred programming language.
     </p>
 </section>
@@ -451,9 +449,9 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     
     <h3>YAGNI Misapplications</h3>
     <p>
-        YAGNI doesn't mean writing poor code. <a href="https://martinfowler.com/bliki/Yagni.html">As Martin Fowler emphasizes</a>, 
-        activities that make code more modifiable—like refactoring, clean coding practices, and good 
-        architecture—are not YAGNI violations. The principle targets <em>features</em> built for presumptive 
+        YAGNI doesn't mean writing poor code. <a href="https://martinfowler.com/bliki/Yagni.html">Martin Fowler emphasizes</a> 
+        that activities making code more modifiable aren't YAGNI violations. Refactoring, clean coding practices, 
+        and good architecture are fine. The principle targets <em>features</em> built for presumptive 
         needs, not code quality improvements.
     </p>
     
@@ -461,17 +459,17 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     <p>
         Some developers worry that type-safe domain modeling hurts performance. In reality, modern PHP 8.4 and 
         TypeScript engines optimize value object creation effectively. PHP 8.4's property hooks are particularly 
-        efficient because validation logic is compiled directly into the property access pattern. The performance 
-        cost of additional objects is typically negligible compared to the bugs prevented and the development 
-        speed gained through better tooling support.
+        efficient because validation logic compiles directly into the property access pattern. The performance 
+        cost of additional objects is typically negligible compared to the bugs you prevent and the development 
+        speed you gain through better tooling support.
     </p>
     
     <h3>Purity vs. Completeness Trade-off</h3>
     <p>
         The <a href="https://enterprisecraftsmanship.com/posts/domain-model-purity-completeness/">DDD trilemma</a> 
-        shows you can't have domain model purity, completeness, and performance simultaneously. In most cases, 
+        shows you can't have domain model purity, completeness, and performance all at once. In most cases, 
         choose purity over completeness. Split complex operations between pure domain logic and application 
-        services rather than polluting domain objects with infrastructure concerns.
+        services. Don't pollute domain objects with infrastructure concerns.
     </p>
 </section>
 
@@ -506,7 +504,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
         Static type checking fits naturally into continuous integration. Tools like 
         <a href="https://phpstan.org/">PHPStan</a> for PHP and <a href="https://www.typescriptlang.org/">TypeScript's compiler</a> 
         catch type-related issues before deployment. Combined with automated testing, this creates 
-        multiple layers of validation that complement defensive programming principles.
+        multiple layers of validation.
     </p>
     
     <h3>Domain-Driven Design Alignment</h3>
@@ -551,7 +549,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     
     <h3>Team Education and Buy-in</h3>
     <p>
-        Cultural adoption is as important as technical implementation:
+        Cultural adoption is just as important as technical implementation:
     </p>
     
     <ul>
@@ -565,21 +563,21 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 <section>
     <h2>Conclusion: Building Antifragile Code</h2>
     <p>
-        These three defensive programming principles work synergistically to create what Nassim Taleb calls 
-        "antifragile" systems—code that becomes stronger under stress rather than breaking. YAGNI prevents 
+        These three defensive programming principles work together to create what Nassim Taleb calls 
+        "antifragile" systems. Code that becomes stronger under stress rather than breaking. YAGNI prevents 
         unnecessary complexity that would make systems brittle. Type safety eliminates entire classes of 
         failures. Domain purity creates clear boundaries that limit the blast radius of changes.
     </p>
     
     <p>
         The investment in learning and applying these principles pays dividends throughout a system's lifetime. 
-        Code becomes not just more reliable, but more enjoyable to work with. Debugging sessions become less 
-        frequent. Feature development becomes more predictable. System complexity remains manageable as 
+        Code becomes more reliable and more enjoyable to work with. Debugging sessions become less 
+        frequent. Feature development becomes more predictable. System complexity stays manageable as 
         applications grow.
     </p>
     
     <p>
-        Start small—apply one principle to one feature—and experience the difference defensive design makes. 
+        Start small. Apply one principle to one feature and experience the difference defensive design makes. 
         Your future self (and your teammates) will thank you for building systems that fail less often and 
         change more easily.
     </p>

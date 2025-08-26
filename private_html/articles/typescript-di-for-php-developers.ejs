@@ -10,7 +10,7 @@
         As a PHP developer, you're likely accustomed to mature DI containers like 
         <a href="https://symfony.com/doc/current/service_container.html" target="_blank" rel="noopener">Symfony's Service Container</a> or 
         <a href="https://php-di.org/" target="_blank" rel="noopener">PHP-DI</a>. TypeScript's approach to dependency injection 
-        is fundamentally different—not just in implementation, but in philosophy. Let's explore why.
+        is fundamentally different. It's not just the implementation that changes, but the entire philosophy. Let's explore why.
     </p>
 </div>
 
@@ -22,7 +22,7 @@
     
     <h3>PHP: Nominal Typing</h3>
     <p>
-        PHP uses <strong><a href="https://www.php.net/manual/en/language.types.type-system.php" target="_blank" rel="noopener">nominal typing</a></strong>—types are based on explicit declarations. A class must explicitly 
+        PHP uses <strong><a href="https://www.php.net/manual/en/language.types.type-system.php" target="_blank" rel="noopener">nominal typing</a></strong>. Types are based on explicit declarations. A class must explicitly 
         <a href="https://www.php.net/manual/en/language.oop5.interfaces.php#language.oop5.interfaces.implements" target="_blank" rel="noopener">implement</a> an interface or extend a class to be considered compatible:
     </p>
     
@@ -31,7 +31,7 @@
 
     <h3>TypeScript: Structural Typing</h3>
     <p>
-        TypeScript uses <strong><a href="https://www.typescriptlang.org/docs/handbook/type-compatibility.html#structural-typing" target="_blank" rel="noopener">structural typing</a></strong> (also called "<a href="https://en.wikipedia.org/wiki/Duck_typing" target="_blank" rel="noopener">duck typing</a>")—if it walks like a duck 
+        TypeScript uses <strong><a href="https://www.typescriptlang.org/docs/handbook/type-compatibility.html#structural-typing" target="_blank" rel="noopener">structural typing</a></strong> (also called "<a href="https://en.wikipedia.org/wiki/Duck_typing" target="_blank" rel="noopener">duck typing</a>"). If it walks like a duck 
         and quacks like a duck, it's a duck:
     </p>
     
@@ -61,7 +61,7 @@
 </code></pre>
 
     <p>
-        This is both liberating and dangerous. While it makes testing easier, it also means you can't enforce 
+        This is both liberating and dangerous. It makes testing easier, but you can't enforce 
         certain architectural boundaries through the <a href="https://www.typescriptlang.org/docs/handbook/2/types-from-types.html" target="_blank" rel="noopener">type system</a> alone.
     </p>
 </section>
@@ -69,8 +69,8 @@
 <section>
     <h2>The Fragmented Landscape: No Standard DI</h2>
     <p>
-        PHP has converged around <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11 Container Interface</a>, 
-        with most frameworks implementing compatible containers. TypeScript? It's the Wild West.
+        PHP has converged around <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11 Container Interface</a>. Most frameworks implement compatible containers. 
+        TypeScript? It's the Wild West.
     </p>
 
     <h3>Popular TypeScript DI Libraries (as of July 2025)</h3>
@@ -99,7 +99,7 @@
 
     <h4>Manual DI / Pure Functions</h4>
     <p>
-        Many TypeScript developers skip DI containers entirely, preferring manual dependency injection 
+        Many TypeScript developers skip DI containers entirely. They prefer manual dependency injection 
         or functional approaches:
     </p>
     
@@ -117,7 +117,7 @@
 </code></pre>
 
     <p>
-        TypeScript interfaces <strong>don't exist at runtime</strong>—they're compile-time only. This creates 
+        TypeScript interfaces <strong>don't exist at runtime</strong>. They're compile-time only. This creates 
         challenges for DI containers:
     </p>
     
@@ -128,9 +128,9 @@
         This is why TypeScript DI libraries rely heavily on:
     </p>
     <ul>
-        <li><strong><a href="https://www.typescriptlang.org/docs/handbook/decorators.html" target="_blank" rel="noopener">Decorators</a></strong> - To add metadata at runtime</li>
-        <li><strong>Injection tokens</strong> - <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol" target="_blank" rel="noopener">Symbols</a> or strings to identify dependencies</li>
-        <li><strong><a href="https://github.com/rbuckton/reflect-metadata" target="_blank" rel="noopener">reflect-metadata</a></strong> - To preserve type information</li>
+        <li><strong><a href="https://www.typescriptlang.org/docs/handbook/decorators.html" target="_blank" rel="noopener">Decorators</a></strong> to add metadata at runtime</li>
+        <li><strong>Injection tokens</strong> (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol" target="_blank" rel="noopener">Symbols</a> or strings) to identify dependencies</li>
+        <li><strong><a href="https://github.com/rbuckton/reflect-metadata" target="_blank" rel="noopener">reflect-metadata</a></strong> to preserve type information</li>
     </ul>
 </section>
 
@@ -158,7 +158,7 @@ yarn add reflect-metadata inversify</code></pre>
 </code></pre>
 
     <p>
-        Compare this to PHP where DI typically "just works" with minimal configuration.
+        Compare this to PHP, where DI typically "just works" with minimal configuration.
     </p>
 </section>
 
@@ -167,9 +167,9 @@ yarn add reflect-metadata inversify</code></pre>
     
     <h3>The Good: Ultimate Flexibility</h3>
     <p>
-        TypeScript's structural typing makes creating test doubles trivial. With testing frameworks like 
+        TypeScript's structural typing makes creating test doubles trivial. Testing frameworks like 
         <a href="https://jestjs.io/" target="_blank" rel="noopener">Jest</a>, <a href="https://mochajs.org/" target="_blank" rel="noopener">Mocha</a>, 
-        or <a href="https://vitest.dev/" target="_blank" rel="noopener">Vitest</a>, mocking becomes incredibly simple:
+        or <a href="https://vitest.dev/" target="_blank" rel="noopener">Vitest</a> make mocking incredibly simple:
     </p>
     
     <pre><code class="language-typescript">{{SNIPPET:typescript-di/testing-good.ts}}
@@ -198,7 +198,7 @@ yarn add reflect-metadata inversify</code></pre>
         Since TypeScript types disappear at runtime, you might need libraries like 
         <a href="https://github.com/colinhacks/zod" target="_blank" rel="noopener">Zod</a> or 
         <a href="https://github.com/ianstormtaylor/superstruct" target="_blank" rel="noopener">Superstruct</a> 
-        for runtime validation—something PHP handles natively.
+        for runtime validation. PHP handles this natively.
     </p>
 
     <h3>3. Framework Lock-in</h3>
@@ -219,7 +219,7 @@ yarn add reflect-metadata inversify</code></pre>
     
     <h4>1. Start Simple</h4>
     <p>
-        Don't immediately reach for a DI container. TypeScript's module system and manual DI might be sufficient:
+        Don't immediately reach for a DI container. TypeScript's module system and manual DI are often sufficient:
     </p>
     
     <pre><code class="language-typescript">{{SNIPPET:typescript-di/start-simple.ts}}
@@ -235,7 +235,7 @@ yarn add reflect-metadata inversify</code></pre>
 
     <h4>3. Use Injection Tokens Wisely</h4>
     <p>
-        When you do use a DI container, prefer symbols over strings:
+        When you do need a DI container, prefer symbols over strings:
     </p>
     
     <pre><code class="language-typescript">{{SNIPPET:typescript-di/injection-tokens.ts}}
@@ -244,7 +244,7 @@ yarn add reflect-metadata inversify</code></pre>
     <h4>4. Don't Over-Engineer</h4>
     <p>
         The <a href="https://en.wikipedia.org/wiki/JavaScript" target="_blank" rel="noopener">JavaScript ecosystem</a> values simplicity. A 500-line DI configuration might be normal in 
-        <a href="https://symfony.com/" target="_blank" rel="noopener">Symfony</a> but is a <a href="https://martinfowler.com/bliki/CodeSmell.html" target="_blank" rel="noopener">code smell</a> in TypeScript.
+        <a href="https://symfony.com/" target="_blank" rel="noopener">Symfony</a>, but it's a <a href="https://martinfowler.com/bliki/CodeSmell.html" target="_blank" rel="noopener">code smell</a> in TypeScript.
     </p>
 </section>
 
@@ -290,18 +290,18 @@ yarn add reflect-metadata inversify</code></pre>
     <h2>Conclusion</h2>
     <p>
         Coming from PHP, TypeScript's approach to dependency injection can feel chaotic and underdeveloped. 
-        There's no <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11</a> equivalent, no standard container interface, and the whole concept of "final" doesn't exist.
+        There's no <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11</a> equivalent. No standard container interface. And the whole concept of "final" doesn't exist.
     </p>
     
     <p>
-        But this isn't necessarily worse—it's different. TypeScript's structural typing and flexibility enable 
-        patterns that would be impossible in PHP. The lack of standardization has led to innovation, with each 
-        library exploring different approaches.
+        But this isn't necessarily worse. It's just different. TypeScript's structural typing and flexibility enable 
+        patterns that would be impossible in PHP. The lack of standardization has led to innovation. Each 
+        library explores different approaches.
     </p>
     
     <p>
-        The key is to embrace these differences rather than fight them. Start simple, leverage structural typing, 
-        and only add DI complexity when you genuinely need it. Remember: in TypeScript, the best dependency 
+        The key is to embrace these differences rather than fight them. Start simple. Leverage structural typing. 
+        And only add DI complexity when you genuinely need it. Remember: in TypeScript, the best dependency 
         injection might be no dependency injection framework at all.
     </p>
 </section>
