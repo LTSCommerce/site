@@ -49,6 +49,7 @@ export default defineConfig({
         'js/author': resolve(__dirname, 'private_html/js/author.js'),
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         // Article JavaScript entry points
+        'js/articles/llm-overfitting-trap': resolve(__dirname, 'private_html/js/articles/llm-overfitting-trap.js'),
         'js/articles/understanding-llm-context-management': resolve(__dirname, 'private_html/js/articles/understanding-llm-context-management.js'),
         'js/articles/mysql-legacy-to-modern-upgrade': resolve(__dirname, 'private_html/js/articles/mysql-legacy-to-modern-upgrade.js'),
         'js/articles/unix-philosophy-strategic-guide': resolve(__dirname, 'private_html/js/articles/unix-philosophy-strategic-guide.js'),

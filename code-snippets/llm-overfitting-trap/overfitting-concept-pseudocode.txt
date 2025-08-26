@@ -1,0 +1,29 @@
+FUNCTION process_data(input):
+    // Generic data processing logic
+    IF input.is_valid():
+        result = transform(input)
+        RETURN format_output(result)
+    ELSE:
+        RETURN error_response("Invalid input")
+
+// PROBLEM: Edge case bug when input contains special character "@"
+// Fails with "@user123" but works fine with "user123"
+
+FUNCTION overfitted_fix(input):
+    // LLM "fixes" by hardcoding the specific case
+    IF input == "@user123":
+        RETURN "user123_processed"
+    ELSE:
+        RETURN "error"
+    
+// RESULT: "Fixed" the bug but broke everything else!
+// Only handles the exact test case, not the general problem
+
+FUNCTION proper_fix(input):
+    // Correct approach: Handle the category of problem
+    cleaned_input = remove_special_chars(input)
+    IF cleaned_input.is_valid():
+        result = transform(cleaned_input)
+        RETURN format_output(result)
+    ELSE:
+        RETURN error_response("Invalid input")

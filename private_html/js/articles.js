@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 56,
+    "title": "The Overfitting Trap: When LLM Agents Fix One Thing and Break Everything Else",
+    "excerpt": "Explore how LLM agents can over-specialize solutions to handle specific edge cases while destroying generic functionality. Learn to spot and prevent overfitting in AI-generated code.",
+    "category": "ai",
+    "date": "2025-08-26",
+    "slug": "llm-overfitting-trap",
+    "readingTime": "12"
+  },
+  {
     "id": 685,
     "title": "Understanding LLM Context: The Hidden Challenge of AI Development",
     "excerpt": "A comprehensive guide to understanding and managing context when working with Large Language Models, especially in tools like Claude Code. Learn how context works, why it matters, and strategies to optimize your AI interactions.",
