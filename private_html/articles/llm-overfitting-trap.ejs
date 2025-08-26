@@ -7,7 +7,7 @@
     articleContent: `
         <div class="intro">
             <p class="lead">
-                You report a bug to <a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a>: "The username validation fails for @john_doe." The AI agent quickly analyzes the problem, writes a fix, and confidently reports success. Your specific test case now passes. But when you deploy to production, everything breaks. What happened? You've fallen into the overfitting trap—where LLM agents create hyper-specific solutions that solve one problem while breaking the entire system.
+                You report a bug to <a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a>: "The username validation fails for @john_doe." The AI agent quickly analyzes the problem, writes a fix, and confidently reports success. Your specific test case now passes. But when you deploy to production, everything breaks. What happened? You've fallen into the overfitting trap, where LLM agents create hyper-specific solutions that solve one problem while breaking the entire system.
             </p>
         </div>
 
@@ -15,11 +15,11 @@
             <h2>Understanding Overfitting in LLM Code Generation</h2>
             
             <p>
-                In machine learning, <a href="https://en.wikipedia.org/wiki/Overfitting" target="_blank" rel="noopener">overfitting</a> occurs when a model learns training data too specifically, failing to generalize. In <a href="https://arxiv.org/html/2411.01414v1" target="_blank" rel="noopener">LLM code generation</a>, overfitting manifests differently: agents create solutions that handle only the exact reported scenario, abandoning the generic logic that made the original function useful.
+                In machine learning, <a href="https://en.wikipedia.org/wiki/Overfitting" target="_blank" rel="noopener">overfitting</a> occurs when a model learns training data too specifically, failing to generalize. In <a href="https://arxiv.org/html/2411.01414v1" target="_blank" rel="noopener">LLM code generation</a>, overfitting works differently. Agents create solutions that handle only the exact reported scenario. They abandon the generic logic that made the original function useful.
             </p>
             
             <p>
-                <a href="https://www.latent.space/p/2025-papers" target="_blank" rel="noopener">Recent research in 2025</a> reveals that LLMs suffer from "demonstration bias"—they optimize for the most visible test cases rather than understanding the underlying problem space. When you report "@john_doe doesn't validate properly," the agent doesn't think "how should I handle usernames with special characters?" Instead, it thinks "how do I make @john_doe specifically work?"
+                <a href="https://www.latent.space/p/2025-papers" target="_blank" rel="noopener">Recent research in 2025</a> reveals that LLMs suffer from "demonstration bias." They optimize for the most visible test cases rather than understanding the underlying problem space. When you report "@john_doe doesn't validate properly," the agent doesn't think "how should I handle usernames with special characters?" Instead, it thinks "how do I make @john_doe specifically work?"
             </p>
 
             <h3>The Anatomy of Overfitting</h3>
@@ -88,7 +88,7 @@
 </code></pre>
             
             <p>
-                In this <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener">JavaScript</a> example, the overfitted fix creates a function that only works for one specific input combination, while the proper fix addresses the general problem of calculating totals from objects with multiple numeric properties.
+                In this <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener">JavaScript</a> example, the overfitted fix creates a function that only works for one specific input combination. The proper fix addresses the general problem of calculating totals from objects with multiple numeric properties.
             </p>
 
             <h3>TypeScript: Service Layer Overfitting</h3>
@@ -106,7 +106,7 @@
 </code></pre>
             
             <p>
-                Even database queries suffer from overfitting. Instead of addressing <a href="https://dev.mysql.com/doc/refman/8.0/en/working-with-null.html" target="_blank" rel="noopener">NULL value handling</a> generically, overfitted fixes hardcode specific data values, making queries fragile and unmaintainable.
+                Even database queries suffer from overfitting. Instead of addressing <a href="https://dev.mysql.com/doc/refman/8.0/en/working-with-null.html" target="_blank" rel="noopener">NULL value handling</a> generically, overfitted fixes hardcode specific data values. This makes queries fragile and unmaintainable.
             </p>
 
             <h3>Bash: Shell Script Overfitting</h3>
@@ -115,7 +115,7 @@
 </code></pre>
             
             <p>
-                <a href="https://www.gnu.org/software/bash/" target="_blank" rel="noopener">Bash scripting</a> overfitting is particularly dangerous because shell scripts often handle critical system operations. An overfitted fix might work for one specific directory structure while failing catastrophically in production environments.
+                <a href="https://www.gnu.org/software/bash/" target="_blank" rel="noopener">Bash scripting</a> overfitting is particularly dangerous because shell scripts often handle critical system operations. An overfitted fix might work for one specific directory structure. But it fails catastrophically in production environments.
             </p>
         </section>
 
@@ -123,7 +123,7 @@
             <h2>The Human Common Sense Gap</h2>
             
             <p>
-                Why do <a href="https://www.superannotate.com/blog/llm-agents" target="_blank" rel="noopener">LLM agents</a> fall into the overfitting trap so consistently? The answer lies in what we might call the "human common sense gap"—the intuitive understanding that separates human problem-solving from pattern-based AI responses.
+                Why do <a href="https://www.superannotate.com/blog/llm-agents" target="_blank" rel="noopener">LLM agents</a> fall into the overfitting trap so consistently? The answer lies in what we might call the "human common sense gap." This is the intuitive understanding that separates human problem-solving from pattern-based AI responses.
             </p>
 
             <h3>Missing Contextual Understanding</h3>
@@ -135,13 +135,13 @@
             <h3>The Demonstration Bias Problem</h3>
             
             <p>
-                <a href="https://arxiv.org/html/2407.06153v1" target="_blank" rel="noopener">Research shows</a> that LLMs exhibit "demonstration bias"—they weight visible examples much more heavily than underlying patterns. When you provide a failing test case, the agent treats it as the primary specification rather than one example of a broader problem class.
+                <a href="https://arxiv.org/html/2407.06153v1" target="_blank" rel="noopener">Research shows</a> that LLMs exhibit "demonstration bias." They weight visible examples much more heavily than underlying patterns. When you provide a failing test case, the agent treats it as the primary specification rather than one example of a broader problem class.
             </p>
 
             <h3>Lack of Architectural Intuition</h3>
             
             <p>
-                Experienced developers instinctively preserve architectural patterns. They understand that a generic validation function should remain generic, that hardcoding breaks maintainability, and that edge cases usually represent categories of problems. LLMs lack this architectural intuition.
+                Experienced developers instinctively preserve architectural patterns. They understand that a generic validation function should remain generic. They know that hardcoding breaks maintainability. They recognize that edge cases usually represent categories of problems. LLMs lack this architectural intuition.
             </p>
         </section>
 
@@ -163,7 +163,7 @@
             
             <p>
                 <strong>Red flag:</strong> Solution only works for the precise input you provided<br>
-                <strong>Test:</strong> Try variations of the input—similar but not identical cases
+                <strong>Test:</strong> Try variations of the input (similar but not identical cases)
             </p>
 
             <h3>3. Removal of Generic Logic</h3>
@@ -242,7 +242,7 @@
             <h3>4. Use the "Think Hard" Keywords</h3>
             
             <p>
-                <a href="https://minusx.ai/blog/decoding-claude-code/" target="_blank" rel="noopener">Research on Claude Code</a> reveals that specific phrases trigger deeper reasoning: "think," "think hard," "think harder," and "ultrathink" progressively allocate more computational budget for analysis.
+                <a href="https://minusx.ai/blog/decoding-claude-code/" target="_blank" rel="noopener">Research on Claude Code</a> reveals that specific phrases trigger deeper reasoning. "Think," "think hard," "think harder," and "ultrathink" progressively allocate more computational budget for analysis.
             </p>
 
             <h3>5. Demand Architectural Preservation</h3>
@@ -351,13 +351,13 @@
             <h3>Adversarial Testing Integration</h3>
             
             <p>
-                <a href="https://medium.com/@adnanmasood/code-generation-with-llms-practical-challenges-gotchas-and-nuances-7b51d394f588" target="_blank" rel="noopener">Advanced agents</a> now construct adversarial test cases for each possible program intention, helping avoid overfitting by forcing consideration of edge cases during generation rather than after failure.
+                <a href="https://medium.com/@adnanmasood/code-generation-with-llms-practical-challenges-gotchas-and-nuances-7b51d394f588" target="_blank" rel="noopener">Advanced agents</a> now construct adversarial test cases for each possible program intention. This helps avoid overfitting by forcing consideration of edge cases during generation rather than after failure.
             </p>
 
             <h3>Self-Critique Mechanisms</h3>
             
             <p>
-                <a href="https://simonwillison.net/2025/Mar/2/hallucinations-in-code/" target="_blank" rel="noopener">Training-free iterative methods</a> enable LLMs to critique and correct their own generated code based on bug types and compiler feedback, with experimental results showing up to 29.2% improvement in passing rates.
+                <a href="https://simonwillison.net/2025/Mar/2/hallucinations-in-code/" target="_blank" rel="noopener">Training-free iterative methods</a> enable LLMs to critique and correct their own generated code based on bug types and compiler feedback. Experimental results show up to 29.2% improvement in passing rates.
             </p>
         </section>
 
@@ -365,7 +365,7 @@
             <h2>Conclusion</h2>
             
             <p>
-                The overfitting trap represents one of the most insidious challenges in <a href="https://medium.com/google-cloud/building-software-in-2025-llms-agents-ai-and-a-real-world-workflow-85f809fe6b74" target="_blank" rel="noopener">LLM-assisted software development</a>. When an agent "fixes" your specific bug by hardcoding the exact case you reported, it creates a dangerous illusion of success while destroying the generic functionality that made your code valuable in the first place.
+                The overfitting trap represents one of the most insidious challenges in <a href="https://medium.com/google-cloud/building-software-in-2025-llms-agents-ai-and-a-real-world-workflow-85f809fe6b74" target="_blank" rel="noopener">LLM-assisted software development</a>. When an agent "fixes" your specific bug by hardcoding the exact case you reported, it creates a dangerous illusion of success. But it destroys the generic functionality that made your code valuable in the first place.
             </p>
             
             <p>
@@ -373,15 +373,15 @@
             </p>
             
             <p>
-                More importantly, adjust how you interact with LLM agents. Provide multiple examples, frame problems as categories rather than specific instances, and explicitly request preservation of architectural patterns. Use prompt engineering techniques that force agents to consider the broader problem space rather than optimizing for your specific demonstration.
+                More importantly, adjust how you interact with LLM agents. Provide multiple examples. Frame problems as categories rather than specific instances. Explicitly request preservation of architectural patterns. Use prompt engineering techniques that force agents to consider the broader problem space rather than optimizing for your specific demonstration.
             </p>
             
             <p>
-                As <a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a> and similar tools become more sophisticated, the industry is developing better approaches to prevent overfitting through complexity-aware feedback, adversarial testing, and self-critique mechanisms. But until these advances mature, the responsibility lies with us as developers to recognize overfitting patterns and guide our AI assistants toward truly generic solutions.
+                As <a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a> and similar tools become more sophisticated, the industry is developing better approaches to prevent overfitting. These include complexity-aware feedback, adversarial testing, and self-critique mechanisms. But until these advances mature, the responsibility lies with us as developers to recognize overfitting patterns and guide our AI assistants toward truly generic solutions.
             </p>
             
             <p>
-                The goal isn't to avoid LLM agents—they're incredibly powerful tools when used correctly. The goal is to collaborate with them in ways that leverage their strengths while compensating for their weaknesses. By understanding the overfitting trap and implementing the prevention strategies outlined here, you can harness the power of AI-assisted coding without sacrificing the architectural integrity that makes software maintainable and robust.
+                The goal isn't to avoid LLM agents. They're incredibly powerful tools when used correctly. The goal is to collaborate with them in ways that leverage their strengths while compensating for their weaknesses. By understanding the overfitting trap and implementing the prevention strategies outlined here, you can harness the power of AI-assisted coding without sacrificing the architectural integrity that makes software maintainable and robust.
             </p>
 
             <h3>Additional Resources</h3>
