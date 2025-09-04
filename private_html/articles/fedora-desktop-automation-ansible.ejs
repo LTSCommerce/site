@@ -117,8 +117,10 @@
                 helps you adapt the approach to your own needs.
             </p>
 
-            <pre><code class="language-yaml">{{SNIPPET:fedora-desktop-automation-ansible/main-playbook.yml}}
-</code></pre>
+            <p>
+                The repository uses a modular approach with <a href="https://github.com/LongTermSupport/fedora-desktop/tree/F42/playbooks/imports/optional" target="_blank" rel="noopener">optional playbooks</a> 
+                that can be run individually as needed.
+            </p>
 
             <h3>Automatic Core Configurations</h3>
             
@@ -133,12 +135,18 @@
 
             <h4>Development Tools</h4>
             <p>
-                The automation installs a comprehensive development toolkit spanning multiple 
-                programming languages and platforms:
+                Based on the <a href="https://github.com/LongTermSupport/fedora-desktop/blob/F42/README.md" target="_blank" rel="noopener">repository documentation</a>, 
+                the automation installs a comprehensive development toolkit:
             </p>
-
-            <pre><code class="language-yaml">{{SNIPPET:fedora-desktop-automation-ansible/development-tools.yml}}
-</code></pre>
+            
+            <ul>
+                <li><strong>Core Tools</strong>: Git, ripgrep, GitHub CLI</li>
+                <li><strong>Node.js</strong>: Managed via NVM for version flexibility</li>
+                <li><strong>Claude Code CLI</strong>: AI-powered development assistance</li>
+                <li><strong>JetBrains Toolbox</strong>: IDE management platform</li>
+                <li><strong>Container Support</strong>: LXC containers for development isolation</li>
+                <li><strong>Fonts</strong>: Microsoft fonts for better compatibility</li>
+            </ul>
 
             <h4>Version Control and Collaboration</h4>
             <ul>
@@ -221,10 +229,11 @@
                 <a href="https://flatpak.org/" target="_blank" rel="noopener">Flatpak</a> has become 
                 the preferred application distribution method for Linux desktops, offering sandboxed 
                 applications with consistent dependencies. The repository includes an optional playbook 
-                for Flatpak application installation:
+                for Flatpak application installation via the 
+                <a href="https://github.com/LongTermSupport/fedora-desktop/blob/F42/playbooks/imports/optional/common/play-install-flatpaks.yml" target="_blank" rel="noopener">play-install-flatpaks.yml</a> playbook:
             </p>
 
-            <pre><code class="language-bash">ansible-playbook ./playbooks/imports/play-install-flatpaks.yml</code></pre>
+            <pre><code class="language-bash">ansible-playbook ./playbooks/imports/optional/common/play-install-flatpaks.yml</code></pre>
 
             <h3>Creating Custom Playbooks</h3>
             
