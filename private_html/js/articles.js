@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 346,
+    "title": "Automating Fedora 42 Desktop Development: Open Source Infrastructure as Code",
+    "excerpt": "Comprehensive guide to transforming a fresh Fedora 42 installation into a fully configured development environment using Ansible automation, exploring the LongTermSupport/fedora-desktop repository and the philosophy of infrastructure-as-code for personal workstations.",
+    "category": "infrastructure",
+    "date": "2025-09-03",
+    "slug": "fedora-desktop-automation-ansible",
+    "readingTime": "12"
+  },
+  {
     "id": 56,
     "title": "The Overfitting Trap: When LLM Agents Fix One Thing and Break Everything Else",
     "excerpt": "Explore how LLM agents can over-specialize solutions to handle specific edge cases while destroying generic functionality. Learn to spot and prevent overfitting in AI-generated code.",

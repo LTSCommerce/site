@@ -1,0 +1,102 @@
+---
+# Git configuration with multiple account support
+# Demonstrates GitHub CLI multi-account setup automation
+- name: "Configure Git global settings"
+  community.general.git_config:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    scope: global
+  loop:
+    - { name: "init.defaultBranch", value: "main" }
+    - { name: "pull.rebase", value: "false" }
+    - { name: "core.autocrlf", value: "input" }
+    - { name: "core.safecrlf", value: "true" }
+  tags: ['git', 'configuration']
+
+- name: "Set up SSH key for GitHub authentication"
+  block:
+    - name: "Generate SSH key for GitHub (if not exists)"
+      community.crypto.openssh_keypair:
+        path: "{{ user_home }}/.ssh/id_ed25519"
+        type: ed25519
+        comment: "{{ ansible_user_id }}@{{ ansible_hostname }}-github"
+        force: no
+      register: ssh_key_result
+      
+    - name: "Display SSH public key for GitHub setup"
+      ansible.builtin.debug:
+        msg: 
+          - "🔑 SSH Key Generated!"
+          - "Add this public key to your GitHub account:"
+          - "{{ ssh_key_result.public_key }}"
+      when: ssh_key_result.changed
+  tags: ['ssh', 'github']
+
+- name: "Configure GitHub CLI for multiple accounts"
+  block:
+    - name: "Check if GitHub CLI is authenticated"
+      ansible.builtin.command: gh auth status
+      register: gh_auth_status
+      failed_when: false
+      changed_when: false
+      
+    - name: "Display GitHub CLI setup instructions"
+      ansible.builtin.debug:
+        msg:
+          - "🐙 GitHub CLI Multi-Account Setup:"
+          - "1. Authenticate work account:"
+          - "   gh auth login --hostname github.com --git-protocol ssh"
+          - "2. Authenticate personal account:" 
+          - "   gh auth login --hostname github.com --git-protocol ssh"
+          - "3. Switch between accounts:"
+          - "   gh auth switch --user your-work-username"
+          - "   gh auth switch --user your-personal-username"
+          - "4. Check current status:"
+          - "   gh auth status"
+      when: gh_auth_status.rc != 0
+  tags: ['github', 'authentication']
+
+- name: "Create Git aliases for common workflows"
+  community.general.git_config:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    scope: global
+  loop:
+    - { name: "alias.st", value: "status" }
+    - { name: "alias.co", value: "checkout" }
+    - { name: "alias.br", value: "branch" }
+    - { name: "alias.ci", value: "commit" }
+    - { name: "alias.df", value: "diff" }
+    - { name: "alias.lg", value: "log --oneline --graph --decorate" }
+    - { name: "alias.unstage", value: "reset HEAD --" }
+    - { name: "alias.last", value: "log -1 HEAD" }
+  tags: ['git', 'aliases']
+
+- name: "Set up Git hooks directory"
+  ansible.builtin.file:
+    path: "{{ user_home }}/.config/git/hooks"
+    state: directory
+    mode: '0755'
+  tags: ['git', 'hooks']
+
+- name: "Install pre-commit hook template"
+  ansible.builtin.copy:
+    dest: "{{ user_home }}/.config/git/hooks/pre-commit"
+    mode: '0755'
+    content: |
+      #!/bin/bash
+      # Pre-commit hook template
+      # Add your pre-commit checks here
+      
+      # Example: Check for large files
+      if git diff --cached --name-only | xargs -I {} find {} -size +10M 2>/dev/null | grep -q .; then
+          echo "Error: Large files detected. Please use Git LFS."
+          exit 1
+      fi
+      
+      # Example: Run linting (uncomment as needed)
+      # eslint $(git diff --cached --name-only --diff-filter=ACM | grep '\.js$')
+      # black --check $(git diff --cached --name-only --diff-filter=ACM | grep '\.py$')
+      
+      exit 0
+  tags: ['git', 'hooks']
