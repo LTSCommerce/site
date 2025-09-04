@@ -316,65 +316,83 @@
         </section>
 
         <section>
-            <h2>Extending the Automation: Real-World Customization</h2>
+            <h2>The Baseline Philosophy: Foundation for Project-Specific Automation</h2>
             
             <p>
-                The true power of the infrastructure-as-code approach emerges when you extend 
-                the base automation to meet your specific needs. Here are practical examples 
-                of how organizations and individuals can build upon the foundation.
+                The true power of the fedora-desktop repository lies not in trying to be everything 
+                to everyone, but in providing a solid, known baseline that other automation can 
+                reliably build upon. Rather than cramming every possible development stack into 
+                one monolithic playbook, the repository establishes a foundation of essential tools 
+                and configurations that project-specific automation can assume will be present.
             </p>
 
-            <h3>Team-Specific Extensions</h3>
+            <h3>Separation of Concerns: Desktop vs. Project Stacks</h3>
             
             <p>
-                Development teams can fork the repository and add company-specific configurations:
+                The fedora-desktop repository handles universal needs—system packages, shell 
+                configuration, Git setup, container support, and development fundamentals. 
+                Project-specific technology stacks are intentionally left to separate Ansible 
+                projects that can provision <a href="https://linuxcontainers.org/lxc/" target="_blank" rel="noopener">LXC</a> 
+                or <a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a> 
+                infrastructure as required.
             </p>
-
-            <ul>
-                <li><strong>Corporate VPN clients</strong>: <a href="https://www.cisco.com/c/en/us/products/security/anyconnect-secure-mobility-client/" target="_blank" rel="noopener">Cisco AnyConnect</a>, <a href="https://openvpn.net/" target="_blank" rel="noopener">OpenVPN</a></li>
-                <li><strong>Internal tooling</strong>: Company-specific CLIs, monitoring agents</li>
-                <li><strong>Compliance tools</strong>: Security scanners, audit agents</li>
-                <li><strong>Development stack</strong>: Specific language versions, frameworks, databases</li>
-            </ul>
-
-            <h3>Language-Specific Development Stacks</h3>
             
             <p>
-                Different development focuses require different tool chains. The modular approach 
-                supports creating focused playbooks for specific technology stacks:
+                This architectural decision means that when you need a 
+                <a href="https://www.php.net/" target="_blank" rel="noopener">PHP development environment</a> 
+                with <a href="https://www.mysql.com/" target="_blank" rel="noopener">MySQL</a>, 
+                <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a>, and 
+                <a href="https://nginx.org/" target="_blank" rel="noopener">Nginx</a>, you create 
+                a separate Ansible project that:
             </p>
-
-            <h4>PHP Development Stack</h4>
+            
             <ul>
-                <li><strong><a href="https://www.php.net/" target="_blank" rel="noopener">PHP 8.4</a></strong> with <a href="https://xdebug.org/" target="_blank" rel="noopener">Xdebug</a></li>
-                <li><strong><a href="https://getcomposer.org/" target="_blank" rel="noopener">Composer</a></strong> for dependency management</li>
-                <li><strong><a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a></strong> for testing</li>
-                <li><strong><a href="https://github.com/squizlabs/PHP_CodeSniffer" target="_blank" rel="noopener">PHP_CodeSniffer</a></strong> for code quality</li>
+                <li><strong>Assumes the baseline exists</strong>: Git, Docker/LXC, GitHub CLI already configured</li>
+                <li><strong>Provisions containers</strong>: Creates isolated environments for the tech stack</li>
+                <li><strong>Handles project-specific configs</strong>: Database schemas, application configs, networking</li>
+                <li><strong>Manages lifecycle</strong>: Start/stop services, backup data, handle updates</li>
             </ul>
 
-            <h4>Node.js/JavaScript Stack</h4>
-            <ul>
-                <li><strong><a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> LTS</strong> via <a href="https://github.com/nvm-sh/nvm" target="_blank" rel="noopener">nvm</a></li>
-                <li><strong><a href="https://yarnpkg.com/" target="_blank" rel="noopener">Yarn</a></strong> or <a href="https://pnpm.io/" target="_blank" rel="noopener">pnpm</a> package managers</li>
-                <li><strong><a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a></strong> for type safety</li>
-                <li><strong><a href="https://eslint.org/" target="_blank" rel="noopener">ESLint</a></strong> and <a href="https://prettier.io/" target="_blank" rel="noopener">Prettier</a> for code quality</li>
-            </ul>
-
-            <h3>Infrastructure and DevOps Extensions</h3>
+            <h3>The Power of Forking</h3>
             
             <p>
-                For infrastructure engineers and DevOps practitioners, additional tools can be 
-                integrated seamlessly:
+                Forking the fedora-desktop repository makes tremendous sense for personalization 
+                and organizational customization. Your fork becomes your organization's 
+                "known good desktop state"—a guaranteed foundation that all team members share. 
+                From this common base, project-specific automation can make reliable assumptions 
+                about available tools and configurations.
             </p>
-
+            
+            <p>
+                <strong>Example organizational fork customizations:</strong>
+            </p>
+            
             <ul>
-                <li><strong><a href="https://www.terraform.io/" target="_blank" rel="noopener">Terraform</a></strong>: Infrastructure as Code for cloud resources</li>
-                <li><strong><a href="https://kubernetes.io/docs/tasks/tools/" target="_blank" rel="noopener">kubectl</a></strong>: Kubernetes cluster management</li>
-                <li><strong><a href="https://helm.sh/" target="_blank" rel="noopener">Helm</a></strong>: Kubernetes package management</li>
-                <li><strong><a href="https://www.ansible.com/" target="_blank" rel="noopener">Ansible AWX/Tower</a></strong>: Enterprise Ansible management</li>
-                <li><strong><a href="https://www.packer.io/" target="_blank" rel="noopener">Packer</a></strong>: Machine image creation</li>
-                <li><strong><a href="https://www.vagrantup.com/" target="_blank" rel="noopener">Vagrant</a></strong>: Development environment virtualization</li>
+                <li><strong>Corporate identity</strong>: Company VPN clients, SSL certificates, internal DNS</li>
+                <li><strong>Security policies</strong>: Endpoint monitoring, compliance tools, audit agents</li>
+                <li><strong>Development standards</strong>: Preferred IDEs, code formatters, Git hooks</li>
+                <li><strong>Infrastructure tooling</strong>: Cloud CLI tools, Kubernetes clients, monitoring dashboards</li>
             </ul>
+
+            <h3>Container-First Project Development</h3>
+            
+            <p>
+                With the baseline providing robust container support through LXC and Docker, 
+                project-specific stacks become much more manageable. Instead of polluting the 
+                host system with multiple language versions and conflicting dependencies, 
+                each project gets its own containerized environment.
+            </p>
+            
+            <p>
+                A typical project automation workflow:
+            </p>
+            
+            <ol>
+                <li><strong>Clone project repository</strong>: Use the configured GitHub CLI</li>
+                <li><strong>Run project's Ansible playbook</strong>: Provisions containers and dependencies</li>
+                <li><strong>Development isolation</strong>: Each project runs in its own environment</li>
+                <li><strong>Reproducible deployments</strong>: Container configs match production</li>
+            </ol>
         </section>
 
         <section>
@@ -532,52 +550,110 @@
         </section>
 
         <section>
-            <h2>Future Directions and Emerging Trends</h2>
+            <h2>Roadmap: Advancing Desktop Automation</h2>
             
             <p>
-                Desktop automation continues evolving as new technologies and practices emerge. 
-                Several trends point toward even more sophisticated infrastructure-as-code approaches 
-                for personal computing environments.
+                While the fedora-desktop repository provides an excellent foundation, there are 
+                numerous areas for enhancement and expansion. The roadmap for advanced desktop 
+                automation includes both immediate practical improvements and exploratory investigations 
+                into emerging technologies.
             </p>
 
-            <h3>Immutable Desktop Operating Systems</h3>
+            <h3>Browser Automation and Configuration</h3>
+            
+            <p>
+                Modern web development requires multiple browsers with comprehensive configuration. 
+                A fully automated browser setup would install and configure:
+            </p>
+            
+            <ul>
+                <li><strong><a href="https://www.mozilla.org/firefox/" target="_blank" rel="noopener">Firefox</a></strong>: Developer tools, extensions, bookmark sync</li>
+                <li><strong><a href="https://www.chromium.org/" target="_blank" rel="noopener">Chromium</a></strong>: Open-source Chrome alternative with privacy configurations</li>
+                <li><strong><a href="https://www.google.com/chrome/" target="_blank" rel="noopener">Google Chrome</a></strong>: Full feature set with development extensions</li>
+                <li><strong>Security hardening</strong>: Disable internal password managers, configure secure defaults</li>
+                <li><strong>Developer extensions</strong>: React DevTools, Vue DevTools, lighthouse, accessibility tools</li>
+                <li><strong>Bookmark synchronization</strong>: Import bookmarks, configure sync services</li>
+            </ul>
+            
+            <p>
+                Browser automation presents unique challenges due to the need to handle user profiles, 
+                extension APIs, and varying configuration formats across different browsers.
+            </p>
+
+            <h3>SELinux Integration: Security Without Compromise</h3>
+            
+            <p>
+                Currently, the repository disables <a href="https://selinuxproject.org/" target="_blank" rel="noopener">SELinux</a> 
+                to avoid configuration complexity, but this represents a significant security compromise. 
+                A more sophisticated approach would:
+            </p>
+            
+            <ul>
+                <li><strong>Maintain SELinux enforcement</strong>: Keep security protections active</li>
+                <li><strong>Create custom policies</strong>: Handle development tools and containers properly</li>
+                <li><strong>Automated policy debugging</strong>: Tools to identify and resolve policy violations</li>
+                <li><strong>Container integration</strong>: Proper SELinux contexts for Docker/LXC environments</li>
+                <li><strong>Developer-friendly workflows</strong>: Seamless development without security compromises</li>
+            </ul>
+
+            <h3>System Optimization and Pruning</h3>
+            
+            <p>
+                Beyond adding applications, sophisticated desktop automation should optimize 
+                system performance through intelligent pruning:
+            </p>
+            
+            <ul>
+                <li><strong>Service analysis</strong>: Identify and disable unnecessary systemd services</li>
+                <li><strong>Boot optimization</strong>: Minimize startup time through selective service management</li>
+                <li><strong>Package removal</strong>: Remove unused applications and libraries</li>
+                <li><strong>Kernel tuning</strong>: Optimize kernel parameters for desktop workloads</li>
+                <li><strong>Performance monitoring</strong>: Track boot times and resource usage over time</li>
+            </ul>
+
+            <h3>Exploring Immutable Desktop Paradigms</h3>
             
             <p>
                 <a href="https://fedoraproject.org/silverblue/" target="_blank" rel="noopener">Fedora Silverblue</a> 
-                and <a href="https://fedoraproject.org/kinoite/" target="_blank" rel="noopener">Fedora Kinoite</a> 
-                represent immutable desktop approaches where the base system is read-only and 
-                applications run in containers. This paradigm could simplify desktop automation 
-                by focusing on container orchestration rather than system-level configuration.
+                represents a compelling evolution toward immutable desktop systems. Investigation 
+                areas include:
             </p>
+            
+            <ul>
+                <li><strong>Container-first development</strong>: All development work in Toolbox/Distrobox containers</li>
+                <li><strong>Layered customizations</strong>: rpm-ostree layering for system modifications</li>
+                <li><strong>Atomic updates</strong>: Rollback capabilities for failed configurations</li>
+                <li><strong>Reproducible desktops</strong>: Exact system state reproduction across machines</li>
+                <li><strong>Security benefits</strong>: Read-only root filesystem with enhanced security</li>
+            </ul>
 
-            <h3>Declarative Desktop Environments</h3>
+            <h3>Advanced System Tuning</h3>
             
             <p>
-                Projects like <a href="https://nixos.org/" target="_blank" rel="noopener">NixOS</a> 
-                and <a href="https://guix.gnu.org/" target="_blank" rel="noopener">GNU Guix</a> 
-                take declarative system configuration to its logical conclusion, where the entire 
-                system state is defined in configuration files. While complex, these approaches 
-                offer ultimate reproducibility.
+                Performance enthusiasts want maximum responsiveness from their development machines:
             </p>
+            
+            <ul>
+                <li><strong>Boot time analysis</strong>: systemd-analyze integration for performance profiling</li>
+                <li><strong>Memory optimization</strong>: Swap configuration, memory compression, caching strategies</li>
+                <li><strong>I/O scheduling</strong>: Storage optimization for development workloads</li>
+                <li><strong>Power management</strong>: Laptop optimization without compromising performance</li>
+                <li><strong>Hardware-specific tuning</strong>: GPU drivers, firmware optimization</li>
+            </ul>
 
-            <h3>Cloud-Native Development Environments</h3>
+            <h3>AI-Assisted Configuration Evolution</h3>
             
             <p>
-                Tools like <a href="https://code.visualstudio.com/docs/remote/containers" target="_blank" rel="noopener">VS Code Dev Containers</a>, 
-                <a href="https://github.com/features/codespaces" target="_blank" rel="noopener">GitHub Codespaces</a>, 
-                and <a href="https://www.gitpod.io/" target="_blank" rel="noopener">Gitpod</a> 
-                are pushing development environments into the cloud. Desktop automation may 
-                increasingly focus on orchestrating these cloud-native workflows rather than 
-                local tool installation.
+                Future desktop automation may incorporate <a href="https://www.anthropic.com/" target="_blank" rel="noopener">AI assistance</a> 
+                for intelligent configuration management:
             </p>
-
-            <h3>AI-Assisted Configuration</h3>
             
-            <p>
-                As <a href="https://www.anthropic.com/" target="_blank" rel="noopener">AI assistants</a> 
-                become more sophisticated, they may help generate, optimize, and maintain desktop 
-                automation configurations based on usage patterns and best practices.
-            </p>
+            <ul>
+                <li><strong>Usage pattern analysis</strong>: Automatically optimize configurations based on actual usage</li>
+                <li><strong>Performance regression detection</strong>: AI-powered monitoring of system performance changes</li>
+                <li><strong>Configuration drift prevention</strong>: Automated detection and correction of configuration changes</li>
+                <li><strong>Predictive maintenance</strong>: Proactive identification of potential issues</li>
+            </ul>
         </section>
 
         <section>
