@@ -1,0 +1,62 @@
+---
+# Main Ansible playbook for Fedora desktop automation
+# Based on LongTermSupport/fedora-desktop repository structure
+- name: "Fedora Desktop Automation - Complete Development Environment Setup"
+  hosts: localhost
+  become: yes
+  connection: local
+  gather_facts: yes
+  
+  vars:
+    user_home: "{{ ansible_env.HOME }}"
+    projects_dir: "{{ user_home }}/Projects"
+    
+  pre_tasks:
+    - name: "Preflight - Verify Fedora distribution"
+      ansible.builtin.fail:
+        msg: "This playbook is designed for Fedora systems only"
+      when: ansible_distribution != "Fedora"
+      
+    - name: "Preflight - Check minimum Fedora version"
+      ansible.builtin.fail:
+        msg: "Fedora 40 or higher required"
+      when: ansible_distribution_version|int < 40
+
+  tasks:
+    - name: "Import core system configuration"
+      ansible.builtin.import_tasks: tasks/system-basics.yml
+      tags: ['system', 'basics']
+      
+    - name: "Import development tools installation"
+      ansible.builtin.import_tasks: tasks/development-tools.yml
+      tags: ['dev', 'tools']
+      
+    - name: "Import Git and version control setup"
+      ansible.builtin.import_tasks: tasks/git-configuration.yml
+      tags: ['git', 'vcs']
+      
+    - name: "Import container tools (LXC, Docker, Podman)"
+      ansible.builtin.import_tasks: tasks/container-tools.yml
+      tags: ['containers', 'docker']
+      
+    - name: "Import multimedia and fonts"
+      ansible.builtin.import_tasks: tasks/multimedia-fonts.yml
+      tags: ['multimedia', 'fonts']
+      
+    - name: "Import security hardening"
+      ansible.builtin.import_tasks: tasks/security-hardening.yml
+      tags: ['security', 'hardening']
+
+  post_tasks:
+    - name: "Verify installation completion"
+      ansible.builtin.debug:
+        msg: "Fedora desktop automation completed successfully!"
+        
+    - name: "Display next steps"
+      ansible.builtin.debug:
+        msg: 
+          - "🚀 Your development environment is ready!"
+          - "📂 Projects directory: {{ projects_dir }}"
+          - "🔧 To run optional playbooks:"
+          - "   ansible-playbook playbooks/imports/play-install-flatpaks.yml"
+          - "🔐 Remember to configure your SSH keys and GitHub authentication"
