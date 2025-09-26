@@ -1,0 +1,1083 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'PHP Stream Wrappers: Mastering I/O Abstraction and Custom Protocols',
+    articleDescription: 'Comprehensive guide to PHP stream wrappers, from built-in protocols like file://, http://, and data:// to implementing custom stream handlers for advanced I/O operations',
+    articleDate: '2025-09-26',
+    articleCategory: 'php',
+    articleReadingTime: '9',
+    articleContent: `
+<div class="intro">
+    <p class="lead">
+        PHP's stream wrapper system provides a powerful abstraction layer for I/O operations, enabling consistent
+        access to files, URLs, compressed data, and custom protocols through familiar functions like
+        <a href="https://www.php.net/manual/en/function.fopen.php" target="_blank" rel="noopener">fopen()</a> and
+        <a href="https://www.php.net/manual/en/function.file-get-contents.php" target="_blank" rel="noopener">file_get_contents()</a>.
+        This guide explores built-in wrappers, their practical applications, and how to implement custom stream handlers
+        for specialized data sources.
+    </p>
+</div>
+
+<section>
+    <h2>Understanding Stream Wrappers</h2>
+    <p>
+        <a href="https://www.php.net/manual/en/intro.stream.php" target="_blank" rel="noopener">PHP streams</a> provide
+        a unified interface for various I/O operations. Each stream is identified by a scheme and target:
+        <code>scheme://target</code>. The scheme determines which wrapper handles the stream, while the target
+        specifies what to access.
+    </p>
+
+    <pre><code class="language-php"><?php
+// Built-in wrapper examples
+$fileHandle = fopen('file:///path/to/file.txt', 'r');
+$webContent = file_get_contents('https://api.example.com/data');
+$tempStream = fopen('php://temp', 'w+');
+$dataStream = fopen('data://text/plain;base64,SGVsbG8gV29ybGQ=', 'r');
+
+// List all registered wrappers
+$wrappers = stream_get_wrappers();
+print_r($wrappers);
+?></code></pre>
+
+    <p>
+        The <a href="https://www.php.net/manual/en/function.stream-get-wrappers.php" target="_blank" rel="noopener">stream_get_wrappers()</a>
+        function reveals all available protocols, typically including: <code>file</code>, <code>http</code>,
+        <code>https</code>, <code>ftp</code>, <code>php</code>, <code>zlib</code>, <code>data</code>,
+        <code>phar</code>, and <code>zip</code>.
+    </p>
+</section>
+
+<section>
+    <h2>File System Wrapper (file://)</h2>
+    <p>
+        The <a href="https://www.php.net/manual/en/wrappers.file.php" target="_blank" rel="noopener">file:// wrapper</a>
+        is the default handler for local filesystem access. When no scheme is specified, PHP assumes <code>file://</code>.
+        It supports all standard filesystem operations and metadata retrieval.
+    </p>
+
+    <pre><code class="language-php"><?php
+// These are equivalent
+$handle1 = fopen('/var/log/app.log', 'r');
+$handle2 = fopen('file:///var/log/app.log', 'r');
+
+// Reading with context options for large files
+$context = stream_context_create([
+    'file' => [
+        'chunk_size' => 8192  // Read in 8KB chunks
+    ]
+]);
+
+$logData = file_get_contents('/var/log/app.log', false, $context);
+
+// Checking file permissions before access
+if (is_readable('/etc/passwd')) {
+    $passwd = file('/etc/passwd', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($passwd as $line) {
+        $parts = explode(':', $line);
+        echo "User: {$parts[0]}, Shell: " . end($parts) . PHP_EOL;
+    }
+}
+?></code></pre>
+
+    <p>
+        File wrapper operations respect standard Unix permissions and can work with special files like
+        <code>/dev/null</code> or named pipes (FIFOs).
+    </p>
+</section>
+
+<section>
+    <h2>HTTP/HTTPS Wrappers</h2>
+    <p>
+        The <a href="https://www.php.net/manual/en/wrappers.http.php" target="_blank" rel="noopener">HTTP wrappers</a>
+        enable web resource access with full HTTP protocol support. They handle redirects, authentication,
+        custom headers, and different HTTP methods through
+        <a href="https://www.php.net/manual/en/context.http.php" target="_blank" rel="noopener">stream contexts</a>.
+    </p>
+
+    <pre><code class="language-php"><?php
+// Simple GET request
+$apiResponse = file_get_contents('https://api.github.com/users/octocat');
+$userData = json_decode($apiResponse, true);
+
+// Advanced HTTP request with context
+$postData = json_encode(['name' => 'test', 'value' => 42]);
+
+$context = stream_context_create([
+    'http' => [
+        'method' => 'POST',
+        'header' => [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiToken,
+            'User-Agent: MyApp/1.0'
+        ],
+        'content' => $postData,
+        'timeout' => 30,
+        'ignore_errors' => true  // Don't throw on HTTP errors
+    ]
+]);
+
+$response = file_get_contents('https://api.example.com/data', false, $context);
+
+// Check response status from $http_response_header
+if (isset($http_response_header[0])) {
+    preg_match('/HTTP\/\d\.\d\s+(\d+)/', $http_response_header[0], $matches);
+    $statusCode = (int) ($matches[1] ?? 0);
+
+    if ($statusCode >= 200 && $statusCode < 300) {
+        echo "Success: " . $response;
+    } else {
+        echo "HTTP Error {$statusCode}: " . $response;
+    }
+}
+?></code></pre>
+
+    <p>
+        The <code>$http_response_header</code> variable automatically contains response headers, enabling
+        status code checks and header parsing. Setting <code>ignore_errors</code> prevents exceptions
+        on HTTP error status codes.
+    </p>
+</section>
+
+<section>
+    <h2>PHP I/O Streams (php://)</h2>
+    <p>
+        The <a href="https://www.php.net/manual/en/wrappers.php.php" target="_blank" rel="noopener">php:// wrapper</a>
+        provides access to PHP's input/output streams and memory-based storage. These are essential for
+        processing raw request data and creating temporary storage.
+    </p>
+
+    <h3>Standard I/O Streams</h3>
+    <pre><code class="language-php"><?php
+// Read raw POST data (useful for APIs)
+$rawInput = file_get_contents('php://input');
+$jsonData = json_decode($rawInput, true);
+
+// Write to error log
+$errorLog = fopen('php://stderr', 'w');
+fwrite($errorLog, "Critical error occurred at " . date('c') . PHP_EOL);
+fclose($errorLog);
+
+// Read from command line (CLI only)
+if (php_sapi_name() === 'cli') {
+    $stdin = fopen('php://stdin', 'r');
+    echo "Enter your name: ";
+    $name = trim(fgets($stdin));
+    echo "Hello, {$name}!" . PHP_EOL;
+    fclose($stdin);
+}
+?></code></pre>
+
+    <h3>Memory and Temporary Streams</h3>
+    <pre><code class="language-php"><?php
+// Create in-memory stream (faster for small data)
+$memory = fopen('php://memory', 'r+');
+fwrite($memory, "Temporary data");
+rewind($memory);
+$data = fread($memory, 1024);
+fclose($memory);
+
+// Create temporary file stream (better for large data)
+$temp = fopen('php://temp/maxmemory:1048576', 'r+'); // 1MB memory limit
+fwrite($temp, str_repeat('Large data chunk ', 1000));
+
+// Stream automatically switches to filesystem when memory limit exceeded
+echo "Stream metadata: ";
+var_dump(stream_get_meta_data($temp));
+fclose($temp);
+
+// Using php://temp for CSV processing
+function processLargeCsv(array $data): string
+{
+    $temp = fopen('php://temp', 'r+');
+
+    foreach ($data as $row) {
+        fputcsv($temp, $row);
+    }
+
+    rewind($temp);
+    $csvContent = stream_get_contents($temp);
+    fclose($temp);
+
+    return $csvContent;
+}
+?></code></pre>
+</section>
+
+<section>
+    <h2>Data URI Scheme (data://)</h2>
+    <p>
+        The <a href="https://www.php.net/manual/en/wrappers.data.php" target="_blank" rel="noopener">data:// wrapper</a>
+        implements <a href="https://tools.ietf.org/rfc/rfc2397.txt" target="_blank" rel="noopener">RFC 2397</a>
+        for embedding data directly in URLs. Note that <code>data://</code> and <code>data:</code> are
+        interchangeable - both refer to the same data URI scheme.
+    </p>
+
+    <pre><code class="language-php"><?php
+// Plain text data
+$textData = file_get_contents('data://text/plain;charset=utf-8,Hello%20World');
+echo $textData; // Outputs: Hello World
+
+// Base64 encoded data
+$base64Data = 'data://text/plain;base64,SGVsbG8gUEhQIERldmVsb3BlcnM=';
+$decoded = file_get_contents($base64Data);
+echo $decoded; // Outputs: Hello PHP Developers
+
+// Binary data (image example)
+$imageData = 'data://image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==';
+$pngContent = file_get_contents($imageData);
+
+// Save embedded image to file
+file_put_contents('/tmp/tiny.png', $pngContent);
+
+// JSON data embedded in data URI
+$jsonUri = 'data://application/json;charset=utf-8,' . urlencode(json_encode([
+    'users' => ['alice', 'bob', 'charlie'],
+    'timestamp' => time()
+]));
+
+$jsonData = json_decode(file_get_contents($jsonUri), true);
+print_r($jsonData);
+
+// Creating dynamic data URIs
+function createDataUri(string $content, string $mimeType = 'text/plain', bool $base64 = false): string
+{
+    if ($base64) {
+        return "data://{$mimeType};base64," . base64_encode($content);
+    }
+
+    return "data://{$mimeType}," . urlencode($content);
+}
+
+$csvData = "Name,Age\nJohn,30\nJane,25";
+$csvUri = createDataUri($csvData, 'text/csv');
+$rows = file($csvUri, FILE_IGNORE_NEW_LINES);
+?></code></pre>
+
+    <p>
+        Data URIs are particularly useful for testing, embedding small resources, and creating self-contained
+        applications that don't depend on external files.
+    </p>
+</section>
+
+<section>
+    <h2>Compression Wrappers</h2>
+    <p>
+        PHP provides <a href="https://www.php.net/manual/en/wrappers.compression.php" target="_blank" rel="noopener">compression wrappers</a>
+        for transparent handling of compressed data. The most common are <code>zlib://</code> and
+        <code>compress.zlib://</code> for gzip compression.
+    </p>
+
+    <pre><code class="language-php"><?php
+// Reading compressed files
+$compressedLog = file_get_contents('compress.zlib:///var/log/app.log.gz');
+$logLines = explode("\n", $compressedLog);
+
+// Writing compressed data
+$data = str_repeat("Log entry " . date('c') . "\n", 1000);
+file_put_contents('compress.zlib:///tmp/output.gz', $data);
+
+// Compressing streaming data
+$input = fopen('php://input', 'r');
+$output = fopen('compress.zlib://php://output', 'w');
+
+while (!feof($input)) {
+    $chunk = fread($input, 8192);
+    fwrite($output, $chunk);
+}
+
+fclose($input);
+fclose($output);
+
+// Using compression filters directly
+$originalSize = strlen($data);
+$compressed = gzencode($data);
+$compressedSize = strlen($compressed);
+
+echo "Compression ratio: " . round(($originalSize - $compressedSize) / $originalSize * 100, 2) . "%\n";
+
+// Decompressing with error handling
+function safeDecompress(string $filePath): ?string
+{
+    if (!file_exists($filePath)) {
+        return null;
+    }
+
+    $handle = fopen("compress.zlib://{$filePath}", 'r');
+    if ($handle === false) {
+        return null;
+    }
+
+    $content = stream_get_contents($handle);
+    fclose($handle);
+
+    return $content !== false ? $content : null;
+}
+?></code></pre>
+</section>
+
+<section>
+    <h2>Implementing Custom Stream Wrappers</h2>
+    <p>
+        Custom stream wrappers enable access to specialized data sources through PHP's standard file functions.
+        Use <a href="https://www.php.net/manual/en/function.stream-wrapper-register.php" target="_blank" rel="noopener">stream_wrapper_register()</a>
+        to register custom protocols.
+    </p>
+
+    <h3>Basic Stream Wrapper Class</h3>
+    <pre><code class="language-php"><?php
+class MemoryCache
+{
+    private static array $cache = [];
+
+    public static function set(string $key, mixed $value): void
+    {
+        self::$cache[$key] = serialize($value);
+    }
+
+    public static function get(string $key): mixed
+    {
+        return isset(self::$cache[$key]) ? unserialize(self::$cache[$key]) : null;
+    }
+
+    public static function exists(string $key): bool
+    {
+        return isset(self::$cache[$key]);
+    }
+
+    public static function delete(string $key): void
+    {
+        unset(self::$cache[$key]);
+    }
+}
+
+class CacheStreamWrapper
+{
+    private mixed $position = 0;
+    private string $data = '';
+    private string $key = '';
+    private string $mode = '';
+
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
+    {
+        $url = parse_url($path);
+        $this->key = ltrim($url['path'], '/');
+        $this->mode = $mode;
+        $this->position = 0;
+
+        if (str_contains($mode, 'r')) {
+            // Reading mode
+            $this->data = MemoryCache::get($this->key) ?? '';
+            return true;
+        } elseif (str_contains($mode, 'w') || str_contains($mode, 'a')) {
+            // Writing mode
+            $this->data = str_contains($mode, 'a') ? (MemoryCache::get($this->key) ?? '') : '';
+            return true;
+        }
+
+        return false;
+    }
+
+    public function stream_read(int $count): string
+    {
+        $ret = substr($this->data, $this->position, $count);
+        $this->position += strlen($ret);
+        return $ret;
+    }
+
+    public function stream_write(string $data): int
+    {
+        $left = substr($this->data, 0, $this->position);
+        $right = substr($this->data, $this->position + strlen($data));
+        $this->data = $left . $data . $right;
+        $this->position += strlen($data);
+        return strlen($data);
+    }
+
+    public function stream_tell(): int
+    {
+        return $this->position;
+    }
+
+    public function stream_eof(): bool
+    {
+        return $this->position >= strlen($this->data);
+    }
+
+    public function stream_seek(int $offset, int $whence = SEEK_SET): bool
+    {
+        switch ($whence) {
+            case SEEK_SET:
+                $this->position = $offset;
+                break;
+            case SEEK_CUR:
+                $this->position += $offset;
+                break;
+            case SEEK_END:
+                $this->position = strlen($this->data) + $offset;
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    public function stream_close(): void
+    {
+        if (str_contains($this->mode, 'w') || str_contains($this->mode, 'a')) {
+            MemoryCache::set($this->key, $this->data);
+        }
+    }
+
+    public function stream_stat(): array
+    {
+        return [
+            'dev' => 0,
+            'ino' => 0,
+            'mode' => 0100644, // Regular file, readable/writable
+            'nlink' => 1,
+            'uid' => 0,
+            'gid' => 0,
+            'rdev' => 0,
+            'size' => strlen($this->data),
+            'atime' => time(),
+            'mtime' => time(),
+            'ctime' => time(),
+            'blksize' => -1,
+            'blocks' => -1,
+        ];
+    }
+
+    public function url_stat(string $path, int $flags): array
+    {
+        $url = parse_url($path);
+        $key = ltrim($url['path'], '/');
+
+        if (!MemoryCache::exists($key)) {
+            return [];
+        }
+
+        $data = MemoryCache::get($key) ?? '';
+        return [
+            'dev' => 0,
+            'ino' => 0,
+            'mode' => 0100644,
+            'nlink' => 1,
+            'uid' => 0,
+            'gid' => 0,
+            'rdev' => 0,
+            'size' => strlen($data),
+            'atime' => time(),
+            'mtime' => time(),
+            'ctime' => time(),
+            'blksize' => -1,
+            'blocks' => -1,
+        ];
+    }
+}
+
+// Register the custom wrapper
+stream_wrapper_register('cache', CacheStreamWrapper::class);
+?></code></pre>
+
+    <h3>Using the Custom Stream Wrapper</h3>
+    <pre><code class="language-php"><?php
+// Write data to cache
+$handle = fopen('cache://user:123', 'w');
+fwrite($handle, json_encode(['name' => 'John', 'email' => 'john@example.com']));
+fclose($handle);
+
+// Read data from cache
+$userData = file_get_contents('cache://user:123');
+$user = json_decode($userData, true);
+echo "User: {$user['name']} ({$user['email']})\n";
+
+// Check if cache entry exists
+if (file_exists('cache://user:123')) {
+    echo "Cache entry found\n";
+    $stats = stat('cache://user:123');
+    echo "Size: {$stats['size']} bytes\n";
+}
+
+// Append to cache entry
+$handle = fopen('cache://user:123', 'a');
+fwrite($handle, " - Updated at " . date('c'));
+fclose($handle);
+
+// Advanced usage with JSON files
+function saveCachedJson(string $key, array $data): void
+{
+    file_put_contents("cache://{$key}", json_encode($data, JSON_PRETTY_PRINT));
+}
+
+function loadCachedJson(string $key): ?array
+{
+    if (!file_exists("cache://{$key}")) {
+        return null;
+    }
+
+    $content = file_get_contents("cache://{$key}");
+    return json_decode($content, true);
+}
+
+// Usage
+saveCachedJson('config', ['debug' => true, 'timeout' => 30]);
+$config = loadCachedJson('config');
+var_dump($config);
+?></code></pre>
+</section>
+
+<section>
+    <h2>Advanced Stream Wrapper Features</h2>
+    <p>
+        Stream wrappers can implement additional methods for directory operations, metadata handling,
+        and advanced file operations like locking and truncation.
+    </p>
+
+    <pre><code class="language-php"><?php
+class LogStreamWrapper
+{
+    private $handle;
+    private string $logFile;
+
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
+    {
+        $url = parse_url($path);
+        $logLevel = $url['host'] ?? 'info';
+        $this->logFile = "/var/log/app-{$logLevel}.log";
+
+        // Add timestamp prefix to all writes
+        if (str_contains($mode, 'w') || str_contains($mode, 'a')) {
+            $this->handle = fopen($this->logFile, $mode);
+            return $this->handle !== false;
+        }
+
+        return false;
+    }
+
+    public function stream_write(string $data): int
+    {
+        $timestamp = date('[Y-m-d H:i:s] ');
+        $logEntry = $timestamp . $data;
+
+        // Ensure newline ending
+        if (!str_ends_with($logEntry, "\n")) {
+            $logEntry .= "\n";
+        }
+
+        return fwrite($this->handle, $logEntry);
+    }
+
+    public function stream_close(): void
+    {
+        if ($this->handle) {
+            fclose($this->handle);
+        }
+    }
+
+    // Implement other required methods...
+    public function stream_eof(): bool { return feof($this->handle); }
+    public function stream_read(int $count): string { return fread($this->handle, $count); }
+    public function stream_seek(int $offset, int $whence = SEEK_SET): bool { return fseek($this->handle, $offset, $whence) === 0; }
+    public function stream_tell(): int { return ftell($this->handle); }
+
+    public function stream_lock(int $operation): bool
+    {
+        return flock($this->handle, $operation);
+    }
+
+    public function stream_truncate(int $new_size): bool
+    {
+        return ftruncate($this->handle, $new_size);
+    }
+}
+
+stream_wrapper_register('log', LogStreamWrapper::class);
+
+// Usage
+$errorLog = fopen('log://error/application', 'a');
+fwrite($errorLog, 'Database connection failed');
+flock($errorLog, LOCK_EX);
+fwrite($errorLog, 'Critical error in payment processing');
+flock($errorLog, LOCK_UN);
+fclose($errorLog);
+
+// Reading logs with automatic timestamping
+$debugHandle = fopen('log://debug/application', 'w');
+fwrite($debugHandle, 'User login attempt');
+fwrite($debugHandle, 'Session created successfully');
+fclose($debugHandle);
+?></code></pre>
+</section>
+
+<section>
+    <h2>Stream Filters and Contexts</h2>
+    <p>
+        <a href="https://www.php.net/manual/en/function.stream-filter-append.php" target="_blank" rel="noopener">Stream filters</a>
+        provide data transformation during read/write operations, while
+        <a href="https://www.php.net/manual/en/function.stream-context-create.php" target="_blank" rel="noopener">stream contexts</a>
+        configure wrapper behavior.
+    </p>
+
+    <pre><code class="language-php"><?php
+// Using filters with streams
+$data = "The quick brown fox jumps over the lazy dog.";
+
+// ROT13 encoding
+$encoded = fopen('php://memory', 'r+');
+stream_filter_append($encoded, 'string.rot13');
+fwrite($encoded, $data);
+rewind($encoded);
+$rot13Data = stream_get_contents($encoded);
+fclose($encoded);
+
+echo "Original: {$data}\n";
+echo "ROT13: {$rot13Data}\n";
+
+// Base64 encoding filter
+$base64Stream = fopen('php://memory', 'r+');
+stream_filter_append($base64Stream, 'convert.base64-encode');
+fwrite($base64Stream, $data);
+rewind($base64Stream);
+$base64Data = stream_get_contents($base64Stream);
+fclose($base64Stream);
+
+echo "Base64: {$base64Data}\n";
+
+// HTTP context with custom options
+$httpContext = stream_context_create([
+    'http' => [
+        'method' => 'GET',
+        'header' => 'Accept: application/json',
+        'timeout' => 10,
+        'follow_location' => true,
+        'max_redirects' => 3,
+        'protocol_version' => 1.1,
+    ]
+]);
+
+$response = file_get_contents('https://httpbin.org/json', false, $httpContext);
+
+// SSL context for secure connections
+$sslContext = stream_context_create([
+    'ssl' => [
+        'verify_peer' => true,
+        'verify_peer_name' => true,
+        'cafile' => '/etc/ssl/certs/ca-certificates.crt',
+        'ciphers' => 'HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA'
+    ]
+]);
+
+$secureData = file_get_contents('https://secure-api.example.com/data', false, $sslContext);
+?></code></pre>
+</section>
+
+<section>
+    <h2>Performance Considerations</h2>
+    <p>
+        Stream wrappers introduce abstraction overhead. Understanding performance characteristics helps
+        choose appropriate implementations for different use cases.
+    </p>
+
+    <pre><code class="language-php"><?php
+// Benchmarking different stream approaches
+function benchmarkStreams(string $data, int $iterations = 1000): array
+{
+    $results = [];
+
+    // File wrapper
+    $start = microtime(true);
+    for ($i = 0; $i < $iterations; $i++) {
+        file_put_contents('/tmp/benchmark.txt', $data);
+        $read = file_get_contents('/tmp/benchmark.txt');
+    }
+    $results['file'] = microtime(true) - $start;
+
+    // Memory stream
+    $start = microtime(true);
+    for ($i = 0; $i < $iterations; $i++) {
+        $memory = fopen('php://memory', 'r+');
+        fwrite($memory, $data);
+        rewind($memory);
+        $read = stream_get_contents($memory);
+        fclose($memory);
+    }
+    $results['memory'] = microtime(true) - $start;
+
+    // Temp stream
+    $start = microtime(true);
+    for ($i = 0; $i < $iterations; $i++) {
+        $temp = fopen('php://temp', 'r+');
+        fwrite($temp, $data);
+        rewind($temp);
+        $read = stream_get_contents($temp);
+        fclose($temp);
+    }
+    $results['temp'] = microtime(true) - $start;
+
+    return $results;
+}
+
+$testData = str_repeat('Performance test data ', 100);
+$benchmarks = benchmarkStreams($testData);
+
+foreach ($benchmarks as $method => $time) {
+    echo "{$method}: " . round($time * 1000, 2) . "ms\n";
+}
+
+// Memory usage monitoring
+function monitorStreamMemory(callable $streamOperation): array
+{
+    $memoryBefore = memory_get_usage(true);
+    $peakBefore = memory_get_peak_usage(true);
+
+    $streamOperation();
+
+    $memoryAfter = memory_get_usage(true);
+    $peakAfter = memory_get_peak_usage(true);
+
+    return [
+        'memory_delta' => $memoryAfter - $memoryBefore,
+        'peak_delta' => $peakAfter - $peakBefore,
+    ];
+}
+
+// Monitor custom wrapper memory usage
+$memoryStats = monitorStreamMemory(function() {
+    $cache = fopen('cache://large-data', 'w');
+    for ($i = 0; $i < 10000; $i++) {
+        fwrite($cache, "Data chunk {$i}\n");
+    }
+    fclose($cache);
+});
+
+echo "Memory used: " . number_format($memoryStats['memory_delta']) . " bytes\n";
+echo "Peak memory: " . number_format($memoryStats['peak_delta']) . " bytes\n";
+?></code></pre>
+</section>
+
+<section>
+    <h2>Security Considerations</h2>
+    <p>
+        Stream wrappers can introduce security vulnerabilities if not properly validated. Always sanitize
+        input and implement appropriate access controls.
+    </p>
+
+    <pre><code class="language-php"><?php
+class SecureFileWrapper
+{
+    private array $allowedPaths = [
+        '/var/www/uploads/',
+        '/tmp/app/',
+    ];
+
+    private $handle;
+    private string $realPath;
+
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
+    {
+        $url = parse_url($path);
+        $requestedPath = $url['path'] ?? '';
+
+        // Resolve real path to prevent directory traversal
+        $this->realPath = realpath(dirname($requestedPath)) . '/' . basename($requestedPath);
+
+        // Check if path is within allowed directories
+        foreach ($this->allowedPaths as $allowedPath) {
+            if (str_starts_with($this->realPath, realpath($allowedPath))) {
+                $this->handle = fopen($this->realPath, $mode);
+                return $this->handle !== false;
+            }
+        }
+
+        // Log security violation
+        error_log("Security violation: Attempted access to {$requestedPath}");
+        return false;
+    }
+
+    public function stream_read(int $count): string
+    {
+        return fread($this->handle, $count);
+    }
+
+    public function stream_write(string $data): int
+    {
+        // Filter dangerous content
+        $data = $this->sanitizeContent($data);
+        return fwrite($this->handle, $data);
+    }
+
+    private function sanitizeContent(string $content): string
+    {
+        // Remove null bytes
+        $content = str_replace("\0", '', $content);
+
+        // Basic XSS prevention for text files
+        if (str_ends_with($this->realPath, '.txt') || str_ends_with($this->realPath, '.log')) {
+            $content = htmlspecialchars($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
+
+        return $content;
+    }
+
+    // Implement other required methods...
+    public function stream_close(): void { if ($this->handle) fclose($this->handle); }
+    public function stream_eof(): bool { return feof($this->handle); }
+    public function stream_seek(int $offset, int $whence = SEEK_SET): bool { return fseek($this->handle, $offset, $whence) === 0; }
+    public function stream_tell(): int { return ftell($this->handle); }
+}
+
+stream_wrapper_register('secure', SecureFileWrapper::class);
+
+// Safe usage
+try {
+    $handle = fopen('secure:///var/www/uploads/user-data.txt', 'w');
+    if ($handle) {
+        fwrite($handle, "Safe content");
+        fclose($handle);
+    }
+} catch (Exception $e) {
+    echo "Access denied: " . $e->getMessage();
+}
+
+// This will fail due to path traversal attempt
+$maliciousHandle = fopen('secure:///var/www/uploads/../../../etc/passwd', 'r');
+// Returns false and logs security violation
+?></code></pre>
+</section>
+
+<section>
+    <h2>Real-World Applications</h2>
+    <p>
+        Stream wrappers excel in scenarios requiring abstraction over data sources, protocol translation,
+        or transparent data transformation. Here are practical implementations:
+    </p>
+
+    <h3>Configuration Management</h3>
+    <pre><code class="language-php"><?php
+class ConfigStreamWrapper
+{
+    private static array $config = [];
+    private string $data = '';
+    private int $position = 0;
+
+    public static function setConfig(array $config): void
+    {
+        self::$config = $config;
+    }
+
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
+    {
+        $url = parse_url($path);
+        $configPath = ltrim($url['path'], '/');
+
+        // Navigate nested config using dot notation
+        $value = self::$config;
+        foreach (explode('.', $configPath) as $key) {
+            if (!isset($value[$key])) {
+                return false;
+            }
+            $value = $value[$key];
+        }
+
+        $this->data = is_string($value) ? $value : json_encode($value, JSON_PRETTY_PRINT);
+        $this->position = 0;
+
+        return true;
+    }
+
+    public function stream_read(int $count): string
+    {
+        $ret = substr($this->data, $this->position, $count);
+        $this->position += strlen($ret);
+        return $ret;
+    }
+
+    public function stream_eof(): bool
+    {
+        return $this->position >= strlen($this->data);
+    }
+
+    public function stream_tell(): int { return $this->position; }
+    public function stream_seek(int $offset, int $whence = SEEK_SET): bool { /* Implementation */ return true; }
+}
+
+stream_wrapper_register('config', ConfigStreamWrapper::class);
+
+// Setup configuration
+ConfigStreamWrapper::setConfig([
+    'database' => [
+        'host' => 'localhost',
+        'port' => 3306,
+        'credentials' => [
+            'username' => 'app_user',
+            'password' => 'secure_password'
+        ]
+    ],
+    'cache' => [
+        'driver' => 'redis',
+        'ttl' => 3600
+    ]
+]);
+
+// Access nested configuration values
+$dbHost = file_get_contents('config://database.host');
+$credentials = json_decode(file_get_contents('config://database.credentials'), true);
+$cacheConfig = json_decode(file_get_contents('config://cache'), true);
+
+echo "Database: {$dbHost}:{$credentials['username']}\n";
+echo "Cache TTL: {$cacheConfig['ttl']} seconds\n";
+?></code></pre>
+</section>
+
+<section>
+    <h2>Debugging and Troubleshooting</h2>
+    <p>
+        Effective debugging of stream operations requires understanding metadata, error handling,
+        and logging techniques.
+    </p>
+
+    <pre><code class="language-php"><?php
+// Comprehensive stream debugging
+function debugStream(string $streamUrl): array
+{
+    $info = [];
+
+    // Basic stream information
+    $info['wrappers'] = stream_get_wrappers();
+    $info['url_components'] = parse_url($streamUrl);
+
+    // Test stream accessibility
+    $context = stream_context_create();
+    $handle = @fopen($streamUrl, 'r', false, $context);
+
+    if ($handle === false) {
+        $info['status'] = 'failed';
+        $info['error'] = error_get_last();
+        return $info;
+    }
+
+    // Stream metadata
+    $info['status'] = 'success';
+    $info['metadata'] = stream_get_meta_data($handle);
+
+    // Read capabilities
+    $info['can_read'] = !feof($handle);
+    $info['position'] = ftell($handle);
+
+    // Try to read first 100 bytes
+    $preview = fread($handle, 100);
+    $info['preview'] = bin2hex($preview);
+    $info['preview_text'] = mb_convert_encoding($preview, 'UTF-8', 'auto');
+
+    fclose($handle);
+    return $info;
+}
+
+// Test different streams
+$streams = [
+    'file:///etc/hostname',
+    'php://memory',
+    'data://text/plain;base64,SGVsbG8gV29ybGQ=',
+    'https://httpbin.org/json'
+];
+
+foreach ($streams as $stream) {
+    echo "Testing {$stream}:\n";
+    $debug = debugStream($stream);
+    echo json_encode($debug, JSON_PRETTY_PRINT) . "\n\n";
+}
+
+// Error handling for custom wrappers
+class DiagnosticStreamWrapper
+{
+    private static array $logs = [];
+
+    public static function getLogs(): array
+    {
+        return self::$logs;
+    }
+
+    public static function clearLogs(): void
+    {
+        self::$logs = [];
+    }
+
+    private function log(string $method, array $args = []): void
+    {
+        self::$logs[] = [
+            'timestamp' => microtime(true),
+            'method' => $method,
+            'args' => $args,
+            'memory' => memory_get_usage()
+        ];
+    }
+
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
+    {
+        $this->log(__FUNCTION__, ['path' => $path, 'mode' => $mode]);
+        return true;
+    }
+
+    public function stream_read(int $count): string
+    {
+        $this->log(__FUNCTION__, ['count' => $count]);
+        return str_repeat('X', min($count, 10)); // Return dummy data
+    }
+
+    public function stream_write(string $data): int
+    {
+        $this->log(__FUNCTION__, ['length' => strlen($data)]);
+        return strlen($data);
+    }
+
+    public function stream_eof(): bool
+    {
+        $this->log(__FUNCTION__);
+        return false;
+    }
+
+    public function stream_close(): void
+    {
+        $this->log(__FUNCTION__);
+    }
+
+    public function stream_tell(): int { return 0; }
+    public function stream_seek(int $offset, int $whence = SEEK_SET): bool { return true; }
+}
+
+stream_wrapper_register('debug', DiagnosticStreamWrapper::class);
+
+// Test diagnostic wrapper
+$handle = fopen('debug://test', 'r+');
+fread($handle, 50);
+fwrite($handle, 'test data');
+fclose($handle);
+
+// Review diagnostic logs
+$logs = DiagnosticStreamWrapper::getLogs();
+foreach ($logs as $log) {
+    echo sprintf("[%.4f] %s: %s\n",
+        $log['timestamp'],
+        $log['method'],
+        json_encode($log['args'])
+    );
+}
+?></code></pre>
+</section>
+
+<section>
+    <h2>Conclusion</h2>
+    <p>
+        PHP stream wrappers provide a powerful abstraction for I/O operations, enabling consistent access
+        to diverse data sources through familiar file functions. Built-in wrappers handle common protocols
+        like HTTP and data URIs, while custom implementations enable specialized data handling for caching,
+        logging, and secure file access.
+    </p>
+
+    <p>
+        The key to effective stream wrapper usage lies in understanding the abstraction's strengths:
+        protocol independence, transparent data transformation, and seamless integration with existing
+        code. Whether accessing remote APIs, handling compressed data, or implementing custom protocols,
+        stream wrappers offer a clean, standardized approach to I/O operations in PHP applications.
+    </p>
+</section>
+    `
+}) %>
