@@ -104,8 +104,8 @@
             <p>This pattern enforces:</p>
             <ul>
                 <li><strong>Anchored start/end</strong> (<code>^...$</code>) - no extra garbage</li>
-                <li><strong>Valid MIME type format</strong> (<code>type/subtype</code>) - or none at all</li>
-                <li><strong>Proper parameter syntax</strong> (<code>;key=value</code> or <code>;key="quoted"</code>)</li>
+                <li><strong>Required MIME type</strong> (<code>type/subtype</code>) - must be present</li>
+                <li><strong>Optional parameters</strong> (<code>;key=value</code> or <code>;key="quoted"</code>)</li>
                 <li><strong>Required ";base64," marker</strong> - no ambiguity</li>
                 <li><strong>Valid Base64 padding</strong> - strict encoding rules</li>
             </ul>

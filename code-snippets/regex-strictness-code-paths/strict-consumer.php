@@ -4,9 +4,9 @@ function processAttachment(string $dataUri): void {
     }
 
     // Pattern matched - we KNOW it's valid
-    // Extract MIME type (or default if missing)
-    preg_match('%^data:([^;]+)?;base64,%', $dataUri, $matches);
-    $mimeType = $matches[1] ?? 'application/octet-stream';
+    // Extract MIME type (guaranteed to exist)
+    preg_match('%^data:([^;]+);base64,%', $dataUri, $matches);
+    $mimeType = $matches[1];
 
     // Extract Base64 data (we KNOW it's valid)
     $base64Data = substr($dataUri, strpos($dataUri, 'base64,') + 7);
