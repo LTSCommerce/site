@@ -16,7 +16,7 @@ $context = stream_context_create([
         ],
         'content' => $postData,
         'timeout' => 30,
-        'ignore_errors' => true  // Don't throw on HTTP errors
+        'ignore_errors' => true  // Do not throw on HTTP errors
     ]
 ]);
 
