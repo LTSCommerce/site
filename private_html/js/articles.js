@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 955,
+    "title": "PHP Stream Wrappers: Mastering I/O Abstraction and Custom Protocols",
+    "excerpt": "Comprehensive guide to PHP stream wrappers, from built-in protocols like file://, http://, and data:// to implementing custom stream handlers for advanced I/O operations",
+    "category": "php",
+    "date": "2025-09-26",
+    "slug": "php-stream-wrappers",
+    "readingTime": "9"
+  },
+  {
     "id": 346,
     "title": "Automating Fedora 42 Desktop Development: Open Source Infrastructure as Code",
     "excerpt": "Comprehensive guide to transforming a fresh Fedora 42 installation into a fully configured development environment using Ansible automation, exploring the LongTermSupport/fedora-desktop repository and the philosophy of infrastructure-as-code for personal workstations.",
