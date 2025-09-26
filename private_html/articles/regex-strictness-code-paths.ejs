@@ -112,47 +112,34 @@
                 <li><strong>Valid Base64 padding</strong> - strict encoding rules</li>
             </ul>
 
-            <h3>Even Stricter: Eliminate ALL Optional Elements</h3>
-            <p>But wait—we still have optional parameters. Each optional element is a code path. Let's eliminate them entirely:</p>
+            <h3>Even Stricter: Eliminate ALL Optional Elements and Consolidate Validation</h3>
+            <p>But wait - we still have optional parameters. And we're validating filename separately from the data URI. Let's consolidate everything into one pattern:</p>
 
             <pre><code class="language-php">{{SNIPPET:regex-strictness-code-paths/stricter-regex.php}}
 </code></pre>
 
             <p>Now we have:</p>
             <ul>
-                <li><strong>Zero optional elements</strong> - MIME type required, no parameters allowed</li>
+                <li><strong>Single validation point</strong> - filename and data URI in one pattern</li>
+                <li><strong>Zero optional elements</strong> - everything required, no parameters allowed</li>
                 <li><strong>Required padding</strong> - Base64 must be properly padded</li>
-                <li><strong>Canonical format only</strong> - exactly one valid representation</li>
+                <li><strong>Filename security</strong> - no hidden files, path traversal, or spaces</li>
+                <li><strong>Named capture groups</strong> - extract all data directly from matches</li>
             </ul>
 
-            <p>This is the ultimate fail-fast pattern: <strong>one format, zero ambiguity, zero code paths to handle variations</strong>.</p>
+            <p>This is the ultimate fail-fast pattern: <strong>one regex, one validation, zero ambiguity, zero code paths to handle variations</strong>.</p>
         </section>
 
         <section>
             <h2>The Payoff: Simplified Consumers</h2>
-            <p>With strict validation, consumer code becomes trivial:</p>
+            <p>With strict validation and named capture groups, consumer code becomes trivial:</p>
 
-            <pre><code class="language-php">{{SNIPPET:regex-strictness-code-paths/strict-consumer.php}}
+            <pre><code class="language-php">{{SNIPPET:regex-strictness-code-paths/stricter-consumer.php}}
 </code></pre>
 
-            <p><strong>No defensive checks. No edge case handling. No duplicated validation logic.</strong></p>
-        </section>
+            <p><strong>No defensive checks. No edge case handling. No duplicated validation logic. No substring manipulation. Everything extracted in one pass.</strong></p>
 
-        <section>
-            <h2>Filename Validation: Another Example</h2>
-            <p>Compare these two patterns:</p>
-
-            <pre><code class="language-php">{{SNIPPET:regex-strictness-code-paths/filename-comparison.php}}
-</code></pre>
-
-            <p>The lenient pattern allows:</p>
-            <ul>
-                <li><code>.hidden.txt</code> - hidden file (security risk)</li>
-                <li><code>../../etc/passwd</code> - path traversal (security risk)</li>
-                <li><code>my file.pdf</code> - spaces (handling complexity)</li>
-            </ul>
-
-            <p>The strict pattern rejects these <strong>immediately</strong>, eliminating entire attack vectors and code paths.</p>
+            <p>Named capture groups (<code>(?&lt;name&gt;...)</code>) let you extract data directly from the <code>$matches</code> array using readable keys instead of numeric indices or additional parsing. By consolidating filename and data URI validation into a single pattern, we eliminate an entire validation step.</p>
         </section>
 
         <section>

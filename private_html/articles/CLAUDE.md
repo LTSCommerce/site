@@ -293,9 +293,17 @@ Examples of well-linked content:
 
 #### Tone and Voice
 - **Professional** but approachable
-- **Confident** without being arrogant  
+- **Confident** without being arrogant
 - **Instructive** rather than prescriptive
 - **Evidence-based** claims only
+- **Natural prose** - avoid LLM telltales:
+  - **NO em dashes (—)** - use regular dashes (-), parentheses, or periods instead
+  - **NO "delve"** - use explore, examine, investigate
+  - **NO "leverage"** as a verb - use use, utilize, employ
+  - **NO "robust"** - use strong, reliable, solid
+  - **NO "seamless"** - use smooth, integrated, straightforward
+  - **NO "it's worth noting"** - just state the fact
+  - **NO "in conclusion"** - just conclude
 
 #### Formatting Standards
 - **Links**: All external links must include `target="_blank" rel="noopener"`
