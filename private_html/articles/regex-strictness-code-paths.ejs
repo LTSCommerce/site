@@ -111,6 +111,21 @@
                 <li><strong>Required ";base64," marker</strong> - no ambiguity</li>
                 <li><strong>Valid Base64 padding</strong> - strict encoding rules</li>
             </ul>
+
+            <h3>Even Stricter: Eliminate ALL Optional Elements</h3>
+            <p>But wait—we still have optional parameters. Each optional element is a code path. Let's eliminate them entirely:</p>
+
+            <pre><code class="language-php">{{SNIPPET:regex-strictness-code-paths/stricter-regex.php}}
+</code></pre>
+
+            <p>Now we have:</p>
+            <ul>
+                <li><strong>Zero optional elements</strong> - MIME type required, no parameters allowed</li>
+                <li><strong>Required padding</strong> - Base64 must be properly padded</li>
+                <li><strong>Canonical format only</strong> - exactly one valid representation</li>
+            </ul>
+
+            <p>This is the ultimate fail-fast pattern: <strong>one format, zero ambiguity, zero code paths to handle variations</strong>.</p>
         </section>
 
         <section>
