@@ -1,0 +1,6 @@
+validate($dataUri)
+    ├─ Matches strict pattern?
+    │   ├─ YES → Extract data (guaranteed valid format)
+    │   │         └─ Process attachment
+    │   └─ NO  → Reject immediately
+    │             └─ throw InvalidArgumentException

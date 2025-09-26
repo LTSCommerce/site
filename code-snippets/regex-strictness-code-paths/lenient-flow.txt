@@ -1,0 +1,32 @@
+validate($dataUri)
+    ├─ Has MIME type?
+    │   ├─ YES → Has parameters?
+    │   │   ├─ YES → Has charset?
+    │   │   │   ├─ YES → Has encoding?
+    │   │   │   │   ├─ YES → Path 1 (handle all 4)
+    │   │   │   │   └─ NO  → Path 2 (handle 3, default encoding)
+    │   │   │   └─ NO  → Has encoding?
+    │   │   │       ├─ YES → Path 3 (handle 3, default charset)
+    │   │   │       └─ NO  → Path 4 (handle 2, default charset + encoding)
+    │   │   └─ NO  → Has charset?
+    │   │       ├─ YES → Has encoding?
+    │   │       │   ├─ YES → Path 5 (handle 3, default parameters)
+    │   │       │   └─ NO  → Path 6 (handle 2, default parameters + encoding)
+    │   │       └─ NO  → Has encoding?
+    │   │           ├─ YES → Path 7 (handle 2, default parameters + charset)
+    │   │           └─ NO  → Path 8 (handle 1, default all 3)
+    │   └─ NO  → Has parameters?
+    │       ├─ YES → Has charset?
+    │       │   ├─ YES → Has encoding?
+    │       │   │   ├─ YES → Path 9 (handle 3, default MIME)
+    │       │   │   └─ NO  → Path 10 (handle 2, default MIME + encoding)
+    │       │   └─ NO  → Has encoding?
+    │       │       ├─ YES → Path 11 (handle 2, default MIME + charset)
+    │       │       └─ NO  → Path 12 (handle 1, default MIME + charset + encoding)
+    │       └─ NO  → Has charset?
+    │           ├─ YES → Has encoding?
+    │           │   ├─ YES → Path 13 (handle 2, default MIME + parameters)
+    │           │   └─ NO  → Path 14 (handle 1, default MIME + parameters + encoding)
+    │           └─ NO  → Has encoding?
+    │               ├─ YES → Path 15 (handle 1, default MIME + parameters + charset)
+    │               └─ NO  → Path 16 (default everything)
