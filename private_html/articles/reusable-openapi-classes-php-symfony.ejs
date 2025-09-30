@@ -420,6 +420,18 @@ final class SuccessResponseTest extends TestCase
     }
 }
 </code></pre>
+
+    <h3>Runtime Validation</h3>
+    <p>
+        Beyond generating documentation, you can validate actual HTTP requests and responses against your OpenAPI specification
+        using <a href="https://github.com/thephpleague/openapi-psr7-validator" target="_blank" rel="noopener">league/openapi-psr7-validator</a>.
+        This library validates PSR-7 messages against your generated OpenAPI spec, catching mismatches between documentation and implementation.
+    </p>
+    <p>
+        This is particularly valuable in testing environments where you can assert that your actual API responses match the
+        documented schemas. When combined with reusable OpenAPI classes, you get compile-time type safety for documentation
+        structure and runtime validation that responses conform to those documented contracts.
+    </p>
 </section>
 
 <section>
