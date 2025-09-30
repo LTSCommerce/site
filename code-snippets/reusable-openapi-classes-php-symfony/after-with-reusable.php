@@ -15,25 +15,41 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
-class UserController
+final class UserController
 {
+    #[OA\Get(
+        path: '/api/users/{id}',
+        summary: 'Get user by ID',
+        tags: ['Users'],
+        parameters: [
+            new IdParameter()
+        ],
+        responses: [
+            new SuccessResponse(UserDto::class),
+            new NotFoundResponse('User'),
+            new BadRequestResponse()
+        ]
+    )]
     #[Route('/api/users/{id}', methods: ['GET'])]
-    #[OA\Get(path: '/api/users/{id}', summary: 'Get user by ID', tags: ['Users'])]
-    #[IdParameter]
-    #[SuccessResponse(UserDto::class)]
-    #[BadRequestResponse]
-    #[NotFoundResponse('User')]
     public function getUser(int $id): JsonResponse
     {
         // Implementation
     }
 
+    #[OA\Get(
+        path: '/api/users',
+        summary: 'List users',
+        tags: ['Users'],
+        parameters: [
+            new PageParameter(),
+            new LimitParameter()
+        ],
+        responses: [
+            new SuccessResponse(UserDto::class, 'List of users'),
+            new BadRequestResponse()
+        ]
+    )]
     #[Route('/api/users', methods: ['GET'])]
-    #[OA\Get(path: '/api/users', summary: 'List users', tags: ['Users'])]
-    #[PageParameter]
-    #[LimitParameter]
-    #[SuccessResponse(UserDto::class, 'List of users')]
-    #[BadRequestResponse]
     public function listUsers(): JsonResponse
     {
         // Implementation
