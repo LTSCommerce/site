@@ -329,42 +329,14 @@
         Many APIs return paginated collections with metadata. Create a specialized response for this pattern:
     </p>
 
-    <pre><code class="language-php"><?php
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/paginated-response.php}}
+</code></pre>
 
-declare(strict_types=1);
+    <p>
+        Usage in a controller:
+    </p>
 
-namespace App\OpenApi\Response;
-
-use Attribute;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Attributes as OA;
-
-#[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
-final class PaginatedCollectionResponse extends OA\Response
-{
-    public function __construct(
-        string $itemClass,
-        string $description = 'Paginated collection'
-    ) {
-        parent::__construct(
-            response: 200,
-            description: $description,
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(
-                        property: 'data',
-                        type: 'array',
-                        items: new OA\Items(ref: new Model(type: $itemClass))
-                    ),
-                    new OA\Property(property: 'total', type: 'integer', example: 100),
-                    new OA\Property(property: 'page', type: 'integer', example: 1),
-                    new OA\Property(property: 'limit', type: 'integer', example: 20),
-                    new OA\Property(property: 'pages', type: 'integer', example: 5),
-                ]
-            )
-        );
-    }
-}
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/paginated-usage.php}}
 </code></pre>
 
     <h3>Security Scheme Attributes</h3>
@@ -372,58 +344,14 @@ final class PaginatedCollectionResponse extends OA\Response
         For endpoints requiring authentication, create reusable security attributes:
     </p>
 
-    <pre><code class="language-php"><?php
-
-declare(strict_types=1);
-
-namespace App\OpenApi;
-
-use Attribute;
-use OpenApi\Attributes as OA;
-
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-final class BearerAuth extends OA\SecurityScheme
-{
-    public function __construct()
-    {
-        parent::__construct(
-            securityScheme: 'bearerAuth',
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT'
-        );
-    }
-}
-
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
-final class UnauthorizedResponse extends OA\Response
-{
-    public function __construct()
-    {
-        parent::__construct(
-            response: 401,
-            description: 'Authentication required or token invalid'
-        );
-    }
-}
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/bearer-security.php}}
 </code></pre>
 
     <p>
-        Apply these to protected endpoints:
+        Usage in a protected endpoint:
     </p>
 
-    <pre><code class="language-php">#[Route('/api/users/{id}', methods: ['GET'])]
-#[OA\Get(path: '/api/users/{id}', summary: 'Get user by ID', tags: ['Users'])]
-#[OA\SecurityRequirement(name: 'bearerAuth')]
-#[IdParameter]
-#[SuccessResponse(UserDto::class)]
-#[BadRequestResponse]
-#[UnauthorizedResponse]
-#[NotFoundResponse('User')]
-public function getUser(int $id): JsonResponse
-{
-    // Implementation requires valid JWT token
-}
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/security-usage.php}}
 </code></pre>
 </section>
 
