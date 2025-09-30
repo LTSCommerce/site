@@ -20,64 +20,102 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[OA\Tag(name: 'Users', description: 'User management endpoints')]
-class UserController
+final class UserController
 {
+    #[OA\Post(
+        path: '/api/users',
+        summary: 'Create a new user',
+        tags: ['Users'],
+        requestBody: new JsonRequestBody(CreateUserDto::class, 'User creation data'),
+        responses: [
+            new SuccessResponse(UserDto::class, 'User created successfully'),
+            new BadRequestResponse(),
+            new ValidationErrorResponse()
+        ]
+    )]
     #[Route('/api/users', methods: ['POST'])]
-    #[OA\Post(path: '/api/users', summary: 'Create a new user', tags: ['Users'])]
-    #[JsonRequestBody(CreateUserDto::class, 'User creation data')]
-    #[SuccessResponse(UserDto::class, 'User created successfully')]
-    #[BadRequestResponse]
-    #[ValidationErrorResponse]
     public function createUser(): JsonResponse
     {
         // Implementation: validate input, create user, return response
         return new JsonResponse(['id' => 1, 'email' => 'user@example.com'], Response::HTTP_CREATED);
     }
 
+    #[OA\Get(
+        path: '/api/users/{id}',
+        summary: 'Get user by ID',
+        tags: ['Users'],
+        parameters: [
+            new IdParameter()
+        ],
+        responses: [
+            new SuccessResponse(UserDto::class),
+            new NotFoundResponse('User'),
+            new BadRequestResponse()
+        ]
+    )]
     #[Route('/api/users/{id}', methods: ['GET'])]
-    #[OA\Get(path: '/api/users/{id}', summary: 'Get user by ID', tags: ['Users'])]
-    #[IdParameter]
-    #[SuccessResponse(UserDto::class)]
-    #[BadRequestResponse]
-    #[NotFoundResponse('User')]
     public function getUser(int $id): JsonResponse
     {
         // Implementation: fetch user by ID
         return new JsonResponse(['id' => $id, 'email' => 'user@example.com']);
     }
 
+    #[OA\Get(
+        path: '/api/users',
+        summary: 'List all users',
+        tags: ['Users'],
+        parameters: [
+            new PageParameter(),
+            new LimitParameter(default: 25, maximum: 100)
+        ],
+        responses: [
+            new SuccessResponse(UserDto::class, 'Paginated list of users'),
+            new BadRequestResponse()
+        ]
+    )]
     #[Route('/api/users', methods: ['GET'])]
-    #[OA\Get(path: '/api/users', summary: 'List all users', tags: ['Users'])]
-    #[PageParameter]
-    #[LimitParameter(default: 25, maximum: 100)]
-    #[SuccessResponse(UserDto::class, 'Paginated list of users')]
-    #[BadRequestResponse]
     public function listUsers(): JsonResponse
     {
         // Implementation: fetch paginated users
         return new JsonResponse(['users' => [], 'total' => 0, 'page' => 1]);
     }
 
+    #[OA\Put(
+        path: '/api/users/{id}',
+        summary: 'Update user',
+        tags: ['Users'],
+        parameters: [
+            new IdParameter()
+        ],
+        requestBody: new JsonRequestBody(CreateUserDto::class, 'Updated user data'),
+        responses: [
+            new SuccessResponse(UserDto::class, 'User updated successfully'),
+            new NotFoundResponse('User'),
+            new ValidationErrorResponse(),
+            new BadRequestResponse()
+        ]
+    )]
     #[Route('/api/users/{id}', methods: ['PUT'])]
-    #[OA\Put(path: '/api/users/{id}', summary: 'Update user', tags: ['Users'])]
-    #[IdParameter]
-    #[JsonRequestBody(CreateUserDto::class, 'Updated user data')]
-    #[SuccessResponse(UserDto::class, 'User updated successfully')]
-    #[BadRequestResponse]
-    #[NotFoundResponse('User')]
-    #[ValidationErrorResponse]
     public function updateUser(int $id): JsonResponse
     {
         // Implementation: validate input, update user
         return new JsonResponse(['id' => $id, 'email' => 'updated@example.com']);
     }
 
+    #[OA\Delete(
+        path: '/api/users/{id}',
+        summary: 'Delete user',
+        tags: ['Users'],
+        parameters: [
+            new IdParameter()
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'User deleted successfully'),
+            new NotFoundResponse('User'),
+            new BadRequestResponse()
+        ]
+    )]
     #[Route('/api/users/{id}', methods: ['DELETE'])]
-    #[OA\Delete(path: '/api/users/{id}', summary: 'Delete user', tags: ['Users'])]
-    #[IdParameter]
-    #[OA\Response(response: 204, description: 'User deleted successfully')]
-    #[BadRequestResponse]
-    #[NotFoundResponse('User')]
     public function deleteUser(int $id): JsonResponse
     {
         // Implementation: delete user
