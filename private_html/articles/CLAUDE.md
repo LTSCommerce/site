@@ -68,12 +68,31 @@ The `_TEMPLATE-ARTICLE.ejs` includes:
 
 ### 3. Code Snippets
 
-For proper code formatting that preserves indentation:
+**🚨 CRITICAL RULE: NEVER EMBED CODE DIRECTLY IN ARTICLES 🚨**
+
+**ALWAYS use the snippet injection system for ALL code examples, no matter how small.**
+
+Embedding code directly in EJS templates causes catastrophic rendering failures:
+- Unescaped HTML characters (`<`, `>`, `&`, `<?php`) break page layout
+- Text after embedded code renders in monospace
+- PHP opening tags can be interpreted as HTML, corrupting the entire page
+- Makes articles completely unreadable
+
+**MANDATORY snippet workflow**:
 
 1. **Create directory structure**: `code-snippets/article-slug-name/`
-2. **Store snippets separately**: Place each code snippet in its own file within the article directory
-3. **Use full paths**: Reference snippets with the complete directory path: `{{SNIPPET:article-slug-name/filename.ext}}`
-4. **IMPORTANT**: Always put closing `</code></pre>` tags on a new line
+2. **Store ALL code snippets separately**: Every single code example must be in its own file
+3. **Use full paths**: Reference snippets with complete directory path: `{{SNIPPET:article-slug-name/filename.ext}}`
+4. **No exceptions**: Even 3-line examples must use snippets - the escaping process is critical
+5. **IMPORTANT**: Always put closing `</code></pre>` tags on a new line
+
+**Examples of what to put in separate snippet files**:
+- ✅ Complete class definitions
+- ✅ Function examples (even single functions)
+- ✅ Configuration file excerpts
+- ✅ Command-line examples
+- ✅ Short 3-5 line code samples
+- ✅ ANY code that contains `<`, `>`, `<?php`, or other special characters
 
 **Code Examples Requirements - Audience-Dependent**:
 
@@ -374,6 +393,12 @@ Before publishing, verify:
 - [ ] **Selective code examples** - 1-3 languages maximum, chosen for business relevance
 - [ ] **Focus on outcomes** - Emphasize business results over implementation details
 - [ ] **Support business narrative** - Code serves to illustrate strategic points
+
+**Code Snippet System (CRITICAL):**
+- [ ] **🚨 NO EMBEDDED CODE** - Zero code snippets embedded directly in EJS template
+- [ ] **ALL code in separate files** - Every single code example uses `{{SNIPPET:...}}` placeholder
+- [ ] **Snippet directory created** - `code-snippets/article-slug/` exists with all code files
+- [ ] **Closing tags on new lines** - All `</code></pre>` tags are on their own line
 
 **Content Quality:**
 - [ ] **Current research completed** - All version numbers and features verified through official sources
