@@ -93,9 +93,9 @@
                                 ${categories[article.category]?.label || article.category}
                             </div>
                             <h3 class="article-title">
-                                <a href="${article.url}">${article.title}</a>
+                                <a href="${articleUrl(article.slug)}">${article.title}</a>
                             </h3>
-                            <p class="article-excerpt">${article.description}</p>
+                            <p class="article-excerpt">${article.excerpt}</p>
                             <div class="article-meta">
                                 <time class="article-date">${formatDate(article.date)}</time>
                                 <span class="article-reading-time">${article.readingTime} min read</span>

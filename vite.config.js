@@ -50,7 +50,9 @@ export default defineConfig({
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         'js/claude-terminal': resolve(__dirname, 'private_html/js/claude-terminal.js'),
         // Article JavaScript entry points
+        'js/articles/reusable-openapi-classes-php-symfony': resolve(__dirname, 'private_html/js/articles/reusable-openapi-classes-php-symfony.js'),
         'js/articles/php-stream-wrappers': resolve(__dirname, 'private_html/js/articles/php-stream-wrappers.js'),
+        'js/articles/regex-strictness-code-paths': resolve(__dirname, 'private_html/js/articles/regex-strictness-code-paths.js'),
         'js/articles/fedora-desktop-automation-ansible': resolve(__dirname, 'private_html/js/articles/fedora-desktop-automation-ansible.js'),
         'js/articles/llm-overfitting-trap': resolve(__dirname, 'private_html/js/articles/llm-overfitting-trap.js'),
         'js/articles/understanding-llm-context-management': resolve(__dirname, 'private_html/js/articles/understanding-llm-context-management.js'),

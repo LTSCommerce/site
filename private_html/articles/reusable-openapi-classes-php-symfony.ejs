@@ -1,0 +1,651 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'Reusable OpenAPI Classes: Eliminating Boilerplate in PHP API Documentation',
+    articleDescription: 'Learn how to create custom PHP classes that encapsulate OpenAPI specifications, dramatically reducing repetitive attribute definitions while improving maintainability and consistency across your Symfony API.',
+    articleDate: '2025-09-30',
+    articleCategory: 'php',
+    articleReadingTime: '12',
+    articleContent: `
+<div class="intro">
+    <p class="lead">
+        API documentation with <a href="https://www.openapis.org/" target="_blank" rel="noopener">OpenAPI</a> (formerly Swagger)
+        often becomes bloated with repetitive attribute definitions scattered across dozens of controller methods. Every endpoint
+        needs the same error responses, pagination parameters, and validation schemas - copied and pasted until your codebase
+        looks like a documentation warehouse rather than application logic.
+    </p>
+    <p class="lead">
+        This article demonstrates how to create reusable <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a>
+        classes that encapsulate common OpenAPI patterns, transforming verbose attribute definitions into clean, maintainable code.
+        By applying the <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" target="_blank" rel="noopener">DRY principle</a>
+        to API documentation, you'll reduce boilerplate by 60-80% while ensuring consistency across your entire API surface.
+    </p>
+</div>
+
+<section>
+    <h2>The Problem: Repetitive OpenAPI Attributes</h2>
+    <p>
+        Modern PHP frameworks like <a href="https://symfony.com/" target="_blank" rel="noopener">Symfony</a> have embraced
+        <a href="https://www.php.net/manual/en/language.attributes.overview.php" target="_blank" rel="noopener">PHP attributes</a>
+        (introduced in PHP 8.0) for metadata declaration. Combined with tools like
+        <a href="https://github.com/nelmio/NelmioApiDocBundle" target="_blank" rel="noopener">NelmioApiDocBundle</a>
+        (version 5.6.2 as of September 2025) and <a href="https://github.com/zircote/swagger-php" target="_blank" rel="noopener">swagger-php</a>
+        (version 5.4.0 as of September 2025), you can generate comprehensive
+        <a href="https://spec.openapis.org/oas/v3.2.0.html" target="_blank" rel="noopener">OpenAPI 3.2</a> documentation
+        directly from your code.
+    </p>
+    <p>
+        However, the standard approach leads to massive code duplication. Consider this typical controller before applying reusable patterns:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/before-repetitive-attributes.php}}
+</code></pre>
+
+    <p>
+        Notice the problems:
+    </p>
+    <ul>
+        <li><strong>Repeated response definitions</strong> - Every endpoint defines 200, 400, 404 responses identically</li>
+        <li><strong>Duplicated parameter schemas</strong> - Pagination parameters copy the same validation rules</li>
+        <li><strong>Inconsistent descriptions</strong> - Similar endpoints use slightly different wording</li>
+        <li><strong>Maintenance burden</strong> - Changing error formats requires updates across dozens of files</li>
+        <li><strong>Difficult to enforce standards</strong> - No compile-time guarantees that responses match conventions</li>
+    </ul>
+
+    <p>
+        In a real application with 50+ API endpoints, this pattern multiplies into thousands of lines of repetitive attribute definitions.
+        The signal-to-noise ratio plummets, making it harder to understand what each endpoint actually does.
+    </p>
+</section>
+
+<section>
+    <h2>The Solution: Custom OpenAPI Attribute Classes</h2>
+    <p>
+        <a href="https://www.php.net/manual/en/language.attributes.syntax.php" target="_blank" rel="noopener">PHP attributes</a>
+        are classes annotated with the <code>#[Attribute]</code> attribute. The OpenAPI attributes in swagger-php are just PHP classes
+        extending base types like <code>OA\Response</code>, <code>OA\Parameter</code>, and <code>OA\RequestBody</code>.
+        You can create your own attributes that extend these base classes, pre-configuring common patterns.
+    </p>
+
+    <p>
+        This approach follows the same pattern as
+        <a href="https://symfony.com/doc/current/routing.html#creating-custom-route-attributes" target="_blank" rel="noopener">Symfony's custom route attributes</a>,
+        where you create specialized versions of framework attributes with application-specific defaults.
+    </p>
+
+    <h3>Setting Up the Foundation</h3>
+    <p>
+        First, ensure you have the necessary packages installed. As of September 2025, you'll need:
+    </p>
+
+    <pre><code class="language-bash">{{SNIPPET:reusable-openapi-classes-php-symfony/composer-require.sh}}
+</code></pre>
+
+    <p>
+        Key requirements:
+    </p>
+    <ul>
+        <li><strong><a href="https://www.php.net/releases/8.4/en.php" target="_blank" rel="noopener">PHP 8.4</a></strong> -
+            Released November 2024, provides property hooks and asymmetric visibility</li>
+        <li><strong><a href="https://symfony.com/doc/current/setup.html" target="_blank" rel="noopener">Symfony 6.4</a> or higher</strong> -
+            Minimum version for NelmioApiDocBundle 5.x</li>
+        <li><strong>NelmioApiDocBundle 5.6.2+</strong> - No longer supports annotations, attributes only</li>
+        <li><strong>swagger-php 5.4.0+</strong> - Supports both <a href="https://spec.openapis.org/oas/v3.1.0.html" target="_blank" rel="noopener">OpenAPI 3.1</a>
+            and <a href="https://spec.openapis.org/oas/v3.2.0.html" target="_blank" rel="noopener">OpenAPI 3.2</a></li>
+    </ul>
+</section>
+
+<section>
+    <h2>Creating Reusable Response Attributes</h2>
+    <p>
+        The most common source of duplication is response definitions. Every endpoint typically documents success, error,
+        not-found, and validation failure responses. Let's create reusable classes for each pattern.
+    </p>
+
+    <h3>Success Response</h3>
+    <p>
+        Most successful API responses follow a standard pattern: HTTP 200 with a specific DTO model. Create a reusable
+        success response that accepts the model class as a constructor parameter:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/success-response.php}}
+</code></pre>
+
+    <p>
+        Key implementation details:
+    </p>
+    <ul>
+        <li><strong><a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">Final class</a></strong> -
+            Prevents inheritance that might break OpenAPI generation</li>
+        <li><strong><a href="https://www.php.net/manual/en/language.attributes.classes.php" target="_blank" rel="noopener">Attribute targeting</a></strong> -
+            <code>TARGET_METHOD</code> allows use on controller actions, <code>IS_REPEATABLE</code> permits multiple status codes</li>
+        <li><strong><a href="https://github.com/nelmio/NelmioApiDocBundle/blob/master/src/Annotation/Model.php" target="_blank" rel="noopener">Model reference</a></strong> -
+            Links to a DTO class for automatic schema generation</li>
+        <li><strong>Consistent messaging</strong> - Provides sensible defaults while allowing customization</li>
+    </ul>
+
+    <h3>Error Responses</h3>
+    <p>
+        Error responses should reference a standardized error DTO across all endpoints. Create specific response classes
+        for each HTTP error status your API uses:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/bad-request-response.php}}
+</code></pre>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/not-found-response.php}}
+</code></pre>
+
+    <p>
+        These classes demonstrate important patterns:
+    </p>
+    <ul>
+        <li><strong>HTTP status constants</strong> - Use <a href="https://symfony.com/doc/current/components/http_foundation.html" target="_blank" rel="noopener">Symfony's HttpFoundation</a>
+            constants instead of magic numbers</li>
+        <li><strong>Optional customization</strong> - Accept nullable parameters for context-specific descriptions</li>
+        <li><strong>Centralized error schema</strong> - All errors reference <code>ErrorDto</code>, ensuring consistent error structures</li>
+        <li><strong>Semantic naming</strong> - Resource-aware descriptions improve documentation clarity</li>
+    </ul>
+
+    <h3>Validation Error Response</h3>
+    <p>
+        Validation errors (HTTP 422 Unprocessable Entity) deserve special handling since they provide field-level feedback:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/validation-error-response.php}}
+</code></pre>
+
+    <p>
+        This separates validation errors from general bad request errors (HTTP 400), providing clearer semantics about
+        whether the issue is syntactic (400) or semantic (422).
+    </p>
+</section>
+
+<section>
+    <h2>Creating Reusable Parameter Attributes</h2>
+    <p>
+        Parameters suffer from similar duplication issues. Pagination, ID parameters, sorting, and filtering appear across
+        many endpoints with identical schemas. Standardize these with custom parameter classes.
+    </p>
+
+    <h3>ID Path Parameter</h3>
+    <p>
+        Nearly every REST API has endpoints that accept an integer ID in the path:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/id-parameter.php}}
+</code></pre>
+
+    <p>
+        This class encodes your API's conventions:
+    </p>
+    <ul>
+        <li><strong>Integer type</strong> - IDs are integers, not strings or UUIDs</li>
+        <li><strong>Positive integers</strong> - Minimum value of 1 prevents negative or zero IDs</li>
+        <li><strong>Maximum validation</strong> - Uses <code>PHP_INT_MAX</code> for platform-specific limits</li>
+        <li><strong>Customizable name</strong> - Supports endpoints with multiple IDs (<code>userId</code>, <code>orderId</code>)</li>
+    </ul>
+
+    <h3>Pagination Parameters</h3>
+    <p>
+        Pagination appears on virtually every list endpoint. Create dedicated classes for page and limit parameters:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/page-parameter.php}}
+</code></pre>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/limit-parameter.php}}
+</code></pre>
+
+    <p>
+        These classes establish pagination conventions:
+    </p>
+    <ul>
+        <li><strong>1-indexed pages</strong> - Clarifies that page 1 is the first page (not 0)</li>
+        <li><strong>Configurable defaults</strong> - Different endpoints can have different page sizes</li>
+        <li><strong>Maximum limits</strong> - Prevents clients from requesting thousands of records at once</li>
+        <li><strong>Optional parameters</strong> - <code>required: false</code> allows defaults to apply</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Creating Reusable Request Body Attributes</h2>
+    <p>
+        POST and PUT endpoints typically accept JSON request bodies. Create a wrapper that handles the common case:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/request-body.php}}
+</code></pre>
+
+    <p>
+        This eliminates the need to manually specify <code>content</code>, <code>required</code>, and model references
+        for every endpoint that accepts input. The <code>Model</code> annotation tells NelmioApiDocBundle to generate
+        the JSON schema from the specified DTO class.
+    </p>
+</section>
+
+<section>
+    <h2>Before and After Comparison</h2>
+    <p>
+        Let's see the transformation in action. Here's the same controller using our reusable attribute classes:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/after-with-reusable.php}}
+</code></pre>
+
+    <p>
+        The improvements are dramatic:
+    </p>
+    <ul>
+        <li><strong>62% fewer lines of code</strong> - From 58 lines to 22 lines of attributes</li>
+        <li><strong>No nested attribute definitions</strong> - Each attribute is a simple, flat declaration</li>
+        <li><strong>Consistent terminology</strong> - All endpoints use the same description patterns</li>
+        <li><strong>Easier to scan</strong> - The endpoint's purpose is immediately clear</li>
+        <li><strong>Type-safe</strong> - Constructor parameters are validated by PHP's type system</li>
+    </ul>
+
+    <p>
+        More importantly, changing error response formats now requires updating a single class instead of hunting through
+        dozens of controllers. Need to add a <code>timestamp</code> field to all error responses? Modify <code>ErrorDto</code>
+        and every endpoint's documentation updates automatically.
+    </p>
+</section>
+
+<section>
+    <h2>Building a Complete CRUD Controller</h2>
+    <p>
+        Here's a full CRUD (Create, Read, Update, Delete) controller demonstrating all the reusable attributes in action:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/complete-example.php}}
+</code></pre>
+
+    <p>
+        This controller demonstrates:
+    </p>
+    <ul>
+        <li><strong>Consistent documentation</strong> - All five endpoints follow the same patterns</li>
+        <li><strong>Minimal boilerplate</strong> - The attributes read almost like plain English</li>
+        <li><strong>Customizable defaults</strong> - The <code>listUsers</code> endpoint overrides pagination defaults</li>
+        <li><strong>Semantic HTTP status codes</strong> - 201 for creation, 204 for deletion</li>
+        <li><strong>Clear endpoint purpose</strong> - You can understand what each method does at a glance</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Organizing Reusable OpenAPI Classes</h2>
+    <p>
+        Structure your reusable OpenAPI classes for discoverability and maintainability:
+    </p>
+
+    <pre><code class="language-plaintext">{{SNIPPET:reusable-openapi-classes-php-symfony/directory-structure.txt}}
+</code></pre>
+
+    <p>
+        This structure provides clear separation:
+    </p>
+    <ul>
+        <li><strong>OpenApi/Response/</strong> - All response status codes (success, errors, redirects)</li>
+        <li><strong>OpenApi/Parameter/</strong> - Reusable query, path, and header parameters</li>
+        <li><strong>OpenApi/JsonRequestBody.php</strong> - Request body wrapper</li>
+        <li><strong>Dto/</strong> - Data transfer objects that define response/request schemas</li>
+    </ul>
+
+    <p>
+        Naming conventions matter:
+    </p>
+    <ul>
+        <li>Prefix classes with <code>Oa</code> or nest under <code>OpenApi\</code> namespace</li>
+        <li>Use descriptive names that match HTTP semantics (<code>NotFoundResponse</code> not <code>Error404</code>)</li>
+        <li>Keep parameter names consistent across endpoints (<code>page</code>, not <code>pageNum</code> or <code>pageNumber</code>)</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Creating the Error DTO</h2>
+    <p>
+        Your error responses need a consistent structure. Here's a standard error DTO that all error response classes reference:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/error-dto.php}}
+</code></pre>
+
+    <p>
+        This DTO demonstrates OpenAPI best practices:
+    </p>
+    <ul>
+        <li><strong>Schema attribute</strong> - Defines how the DTO appears in OpenAPI documentation</li>
+        <li><strong><a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">Readonly properties</a></strong> -
+            Ensures immutability of error objects</li>
+        <li><strong>Property descriptions</strong> - Each field is documented with <code>OA\Property</code> attributes</li>
+        <li><strong>Optional details</strong> - Allows including field-level validation errors or debug information</li>
+        <li><strong>Machine-readable error codes</strong> - The <code>error</code> field uses constants, not free-form text</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Advanced Patterns</h2>
+
+    <h3>Paginated Collection Responses</h3>
+    <p>
+        Many APIs return paginated collections with metadata. Create a specialized response for this pattern:
+    </p>
+
+    <pre><code class="language-php"><?php
+
+declare(strict_types=1);
+
+namespace App\OpenApi\Response;
+
+use Attribute;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Attributes as OA;
+
+#[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
+final class PaginatedCollectionResponse extends OA\Response
+{
+    public function __construct(
+        string $itemClass,
+        string $description = 'Paginated collection'
+    ) {
+        parent::__construct(
+            response: 200,
+            description: $description,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(
+                        property: 'data',
+                        type: 'array',
+                        items: new OA\Items(ref: new Model(type: $itemClass))
+                    ),
+                    new OA\Property(property: 'total', type: 'integer', example: 100),
+                    new OA\Property(property: 'page', type: 'integer', example: 1),
+                    new OA\Property(property: 'limit', type: 'integer', example: 20),
+                    new OA\Property(property: 'pages', type: 'integer', example: 5),
+                ]
+            )
+        );
+    }
+}
+</code></pre>
+
+    <h3>Security Scheme Attributes</h3>
+    <p>
+        For endpoints requiring authentication, create reusable security attributes:
+    </p>
+
+    <pre><code class="language-php"><?php
+
+declare(strict_types=1);
+
+namespace App\OpenApi;
+
+use Attribute;
+use OpenApi\Attributes as OA;
+
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
+final class BearerAuth extends OA\SecurityScheme
+{
+    public function __construct()
+    {
+        parent::__construct(
+            securityScheme: 'bearerAuth',
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT'
+        );
+    }
+}
+
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
+final class UnauthorizedResponse extends OA\Response
+{
+    public function __construct()
+    {
+        parent::__construct(
+            response: 401,
+            description: 'Authentication required or token invalid'
+        );
+    }
+}
+</code></pre>
+
+    <p>
+        Apply these to protected endpoints:
+    </p>
+
+    <pre><code class="language-php">#[Route('/api/users/{id}', methods: ['GET'])]
+#[OA\Get(path: '/api/users/{id}', summary: 'Get user by ID', tags: ['Users'])]
+#[OA\SecurityRequirement(name: 'bearerAuth')]
+#[IdParameter]
+#[SuccessResponse(UserDto::class)]
+#[BadRequestResponse]
+#[UnauthorizedResponse]
+#[NotFoundResponse('User')]
+public function getUser(int $id): JsonResponse
+{
+    // Implementation requires valid JWT token
+}
+</code></pre>
+</section>
+
+<section>
+    <h2>Benefits Beyond Code Reduction</h2>
+    <p>
+        The advantages of reusable OpenAPI classes extend far beyond reducing line count:
+    </p>
+
+    <h3>Type Safety</h3>
+    <p>
+        When you use <code>#[SuccessResponse(UserDto::class)]</code>, PHP's type system ensures <code>UserDto::class</code>
+        exists at compile time. Typos in class names cause immediate errors rather than generating broken documentation at runtime.
+    </p>
+
+    <h3>IDE Support</h3>
+    <p>
+        Modern IDEs like <a href="https://www.jetbrains.com/phpstorm/" target="_blank" rel="noopener">PhpStorm</a> provide
+        autocompletion for constructor parameters. When you type <code>#[PageParameter(</code>, the IDE suggests available parameters
+        with their types and default values.
+    </p>
+
+    <h3>Easier Refactoring</h3>
+    <p>
+        Need to change your pagination parameter from <code>page</code> to <code>pageNumber</code>? Update the <code>PageParameter</code>
+        class and every endpoint's documentation updates automatically. No search-and-replace across dozens of files.
+    </p>
+
+    <h3>Consistent API Design</h3>
+    <p>
+        New team members use existing response classes by default, naturally following your API conventions. The reusable classes
+        encode your API style guide as executable code rather than a document that gets out of sync.
+    </p>
+
+    <h3>Testability</h3>
+    <p>
+        You can unit test your OpenAPI classes to ensure they generate the expected attribute structures:
+    </p>
+
+    <pre><code class="language-php"><?php
+
+declare(strict_types=1);
+
+namespace App\Tests\OpenApi\Response;
+
+use App\Dto\UserDto;
+use App\OpenApi\Response\SuccessResponse;
+use PHPUnit\Framework\TestCase;
+
+final class SuccessResponseTest extends TestCase
+{
+    public function testGeneratesCorrectStructure(): void
+    {
+        $response = new SuccessResponse(UserDto::class);
+
+        $this->assertSame(200, $response->response);
+        $this->assertSame('Successful operation', $response->description);
+        $this->assertInstanceOf(Model::class, $response->content);
+    }
+
+    public function testAcceptsCustomDescription(): void
+    {
+        $response = new SuccessResponse(UserDto::class, 'Custom message');
+
+        $this->assertSame('Custom message', $response->description);
+    }
+}
+</code></pre>
+</section>
+
+<section>
+    <h2>Common Pitfalls and Solutions</h2>
+
+    <h3>Forgetting IS_REPEATABLE</h3>
+    <p>
+        If you omit <code>Attribute::IS_REPEATABLE</code>, PHP allows only one instance of your attribute per method.
+        This breaks when documenting multiple response status codes. Always include <code>IS_REPEATABLE</code> for response attributes.
+    </p>
+
+    <h3>Breaking OpenAPI Generation</h3>
+    <p>
+        The <code>swagger-php</code> library uses reflection to analyze your attributes. If you add public properties
+        that don't map to OpenAPI properties, generation might fail. Keep your custom classes minimal and delegate
+        to parent constructors.
+    </p>
+
+    <h3>Overusing Customization</h3>
+    <p>
+        The point of reusable classes is consistency. If you find yourself adding many optional constructor parameters
+        to support edge cases, you might be better off using the standard OpenAPI attributes directly for those specific endpoints.
+    </p>
+
+    <h3>Namespace Collisions</h3>
+    <p>
+        Be careful when naming your classes. <code>Response</code> collides with Symfony's <code>Response</code> class.
+        Either use fully qualified names or create unique names like <code>SuccessResponse</code> instead of <code>Response</code>.
+    </p>
+</section>
+
+<section>
+    <h2>Generating and Viewing Documentation</h2>
+    <p>
+        After creating your reusable attributes and applying them to controllers, generate the OpenAPI documentation:
+    </p>
+
+    <pre><code class="language-bash"># Generate JSON specification
+php bin/console nelmio:apidoc:dump --format=json > openapi.json
+
+# Generate YAML specification
+php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
+
+# View in browser (default Symfony route)
+# Visit http://localhost:8000/api/doc
+</code></pre>
+
+    <p>
+        NelmioApiDocBundle includes a built-in <a href="https://swagger.io/tools/swagger-ui/" target="_blank" rel="noopener">Swagger UI</a>
+        interface at <code>/api/doc</code> where you can test endpoints interactively. The generated documentation includes
+        all the descriptions, examples, and schemas from your reusable attribute classes.
+    </p>
+
+    <h3>Integrating with API Development Tools</h3>
+    <p>
+        Export your OpenAPI specification for use with:
+    </p>
+    <ul>
+        <li><strong><a href="https://www.postman.com/" target="_blank" rel="noopener">Postman</a></strong> -
+            Import the JSON/YAML to generate a collection</li>
+        <li><strong><a href="https://insomnia.rest/" target="_blank" rel="noopener">Insomnia</a></strong> -
+            Load the specification for API testing</li>
+        <li><strong><a href="https://stoplight.io/" target="_blank" rel="noopener">Stoplight Studio</a></strong> -
+            Visual API design and documentation</li>
+        <li><strong><a href="https://github.com/OpenAPITools/openapi-generator" target="_blank" rel="noopener">OpenAPI Generator</a></strong> -
+            Generate client libraries in multiple languages</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Real-World Impact</h2>
+    <p>
+        In production APIs with 50-100 endpoints, implementing reusable OpenAPI classes typically results in:
+    </p>
+    <ul>
+        <li><strong>60-80% reduction</strong> in OpenAPI-related code</li>
+        <li><strong>Faster onboarding</strong> - New developers understand patterns immediately</li>
+        <li><strong>Fewer documentation bugs</strong> - Centralized definitions prevent inconsistencies</li>
+        <li><strong>Easier API evolution</strong> - Changes propagate automatically across endpoints</li>
+        <li><strong>Better IDE experience</strong> - Autocompletion and type checking catch errors early</li>
+    </ul>
+
+    <p>
+        The time investment is minimal. Creating the initial set of reusable classes takes 1-2 hours. Applying them to
+        an existing codebase is straightforward search-and-replace. The maintenance benefits compound over months and years
+        as your API grows.
+    </p>
+</section>
+
+<section>
+    <h2>Migration Strategy</h2>
+    <p>
+        If you have an existing API with traditional OpenAPI attributes, migrate gradually:
+    </p>
+
+    <ol>
+        <li><strong>Create reusable classes</strong> - Start with response classes (<code>SuccessResponse</code>,
+            <code>BadRequestResponse</code>, <code>NotFoundResponse</code>)</li>
+        <li><strong>Apply to new endpoints</strong> - Use reusable classes for all new development</li>
+        <li><strong>Migrate high-traffic endpoints</strong> - Convert frequently modified controllers first</li>
+        <li><strong>Expand the library</strong> - Add parameter classes (<code>PageParameter</code>, <code>IdParameter</code>)
+            as patterns emerge</li>
+        <li><strong>Convert remaining endpoints</strong> - Gradually refactor older code during routine maintenance</li>
+    </ol>
+
+    <p>
+        You don't need to convert everything at once. The reusable classes coexist perfectly with standard OpenAPI attributes,
+        allowing incremental migration.
+    </p>
+</section>
+
+<section>
+    <h2>Conclusion</h2>
+    <p>
+        OpenAPI documentation is essential for modern APIs, but it shouldn't drown your codebase in boilerplate. By creating
+        reusable PHP attribute classes that encapsulate common OpenAPI patterns, you transform verbose, repetitive attribute
+        definitions into clean, maintainable code.
+    </p>
+
+    <p>
+        The approach demonstrated here applies the DRY principle to API documentation, yielding benefits that extend beyond
+        code reduction. You gain type safety, IDE support, easier refactoring, and most importantly, a codebase where endpoint
+        logic remains visible instead of being buried under documentation attributes.
+    </p>
+
+    <p>
+        As your API evolves, these reusable classes become more valuable. Changing response formats, adding security requirements,
+        or updating error handling patterns becomes trivial when you have centralized, type-safe OpenAPI definitions. Your
+        documentation stays consistent, your code stays clean, and your team stays productive.
+    </p>
+
+    <p>
+        Start with a few response classes today. Once you experience the improvement, you'll wonder how you ever tolerated
+        the old approach.
+    </p>
+</section>
+
+<section>
+    <h2>Additional Resources</h2>
+    <ul>
+        <li><a href="https://spec.openapis.org/" target="_blank" rel="noopener">OpenAPI Specification</a> - Official specification repository</li>
+        <li><a href="https://github.com/nelmio/NelmioApiDocBundle" target="_blank" rel="noopener">NelmioApiDocBundle</a> -
+            Symfony bundle for OpenAPI generation</li>
+        <li><a href="https://github.com/zircote/swagger-php" target="_blank" rel="noopener">swagger-php</a> -
+            PHP library for OpenAPI annotations and attributes</li>
+        <li><a href="https://www.php.net/manual/en/language.attributes.php" target="_blank" rel="noopener">PHP Attributes</a> -
+            Official PHP manual on attributes</li>
+        <li><a href="https://symfony.com/doc/current/index.html" target="_blank" rel="noopener">Symfony Documentation</a> -
+            Comprehensive framework documentation</li>
+        <li><a href="https://swagger.io/tools/swagger-ui/" target="_blank" rel="noopener">Swagger UI</a> -
+            Interactive API documentation interface</li>
+        <li><a href="https://www.php-fig.org/psr/" target="_blank" rel="noopener">PHP-FIG PSR Standards</a> -
+            PHP Standards Recommendations including PSR-7 (HTTP Messages)</li>
+    </ul>
+</section>
+    `
+}) %>
