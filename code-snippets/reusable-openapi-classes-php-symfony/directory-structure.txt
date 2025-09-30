@@ -1,0 +1,24 @@
+src/
+├── Controller/
+│   └── Api/
+│       ├── UserController.php
+│       ├── ProductController.php
+│       └── OrderController.php
+├── Dto/
+│   ├── UserDto.php
+│   ├── CreateUserDto.php
+│   ├── ErrorDto.php
+│   └── ValidationErrorDto.php
+└── OpenApi/
+    ├── JsonRequestBody.php
+    ├── Parameter/
+    │   ├── IdParameter.php
+    │   ├── PageParameter.php
+    │   ├── LimitParameter.php
+    │   └── SortParameter.php
+    └── Response/
+        ├── SuccessResponse.php
+        ├── BadRequestResponse.php
+        ├── NotFoundResponse.php
+        ├── ValidationErrorResponse.php
+        └── UnauthorizedResponse.php

@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 647,
+    "title": "Reusable OpenAPI Classes: Eliminating Boilerplate in PHP API Documentation",
+    "excerpt": "Learn how to create custom PHP classes that encapsulate OpenAPI specifications, dramatically reducing repetitive attribute definitions while improving maintainability and consistency across your Symfony API.",
+    "category": "php",
+    "date": "2025-09-30",
+    "slug": "reusable-openapi-classes-php-symfony",
+    "readingTime": "12"
+  },
+  {
     "id": 955,
     "title": "PHP Stream Wrappers: Mastering I/O Abstraction and Custom Protocols",
     "excerpt": "Comprehensive guide to PHP stream wrappers, from built-in protocols like file://, http://, and data:// to implementing custom stream handlers for advanced I/O operations",
@@ -14,6 +23,15 @@ const articles = [
     "date": "2025-09-26",
     "slug": "php-stream-wrappers",
     "readingTime": "9"
+  },
+  {
+    "id": 736,
+    "title": "How Lenient Regex Patterns Explode Your Code Paths",
+    "excerpt": "Why optional regex patterns create exponential complexity and how strict validation reduces maintenance burden through fail-fast principles.",
+    "category": "php",
+    "date": "2025-09-26",
+    "slug": "regex-strictness-code-paths",
+    "readingTime": "7"
   },
   {
     "id": 346,
