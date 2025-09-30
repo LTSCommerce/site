@@ -17,8 +17,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class UserController
 {
+    // Route constants prevent duplicated magic strings across Route and OpenAPI attributes
+    private const string ROUTE_USER_GET = '/api/users/{id}';
+    private const string ROUTE_USERS_LIST = '/api/users';
+
     #[OA\Get(
-        path: '/api/users/{id}',
+        path: self::ROUTE_USER_GET,
         summary: 'Get user by ID',
         tags: ['Users'],
         parameters: [
@@ -30,14 +34,14 @@ final class UserController
             new BadRequestResponse()
         ]
     )]
-    #[Route('/api/users/{id}', methods: ['GET'])]
+    #[Route(self::ROUTE_USER_GET, methods: ['GET'])]
     public function getUser(int $id): JsonResponse
     {
         // Implementation
     }
 
     #[OA\Get(
-        path: '/api/users',
+        path: self::ROUTE_USERS_LIST,
         summary: 'List users',
         tags: ['Users'],
         parameters: [
@@ -49,7 +53,7 @@ final class UserController
             new BadRequestResponse()
         ]
     )]
-    #[Route('/api/users', methods: ['GET'])]
+    #[Route(self::ROUTE_USERS_LIST, methods: ['GET'])]
     public function listUsers(): JsonResponse
     {
         // Implementation
