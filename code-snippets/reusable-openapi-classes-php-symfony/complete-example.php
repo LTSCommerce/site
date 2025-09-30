@@ -22,8 +22,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[OA\Tag(name: 'Users', description: 'User management endpoints')]
 final class UserController
 {
+    // Route constants eliminate duplicated magic strings
+    private const string ROUTE_USERS = '/api/users';
+    private const string ROUTE_USER_ID = '/api/users/{id}';
+
     #[OA\Post(
-        path: '/api/users',
+        path: self::ROUTE_USERS,
         summary: 'Create a new user',
         tags: ['Users'],
         requestBody: new JsonRequestBody(CreateUserDto::class, 'User creation data'),
@@ -33,7 +37,7 @@ final class UserController
             new ValidationErrorResponse()
         ]
     )]
-    #[Route('/api/users', methods: ['POST'])]
+    #[Route(self::ROUTE_USERS, methods: ['POST'])]
     public function createUser(): JsonResponse
     {
         // Implementation: validate input, create user, return response
@@ -41,7 +45,7 @@ final class UserController
     }
 
     #[OA\Get(
-        path: '/api/users/{id}',
+        path: self::ROUTE_USER_ID,
         summary: 'Get user by ID',
         tags: ['Users'],
         parameters: [
@@ -53,7 +57,7 @@ final class UserController
             new BadRequestResponse()
         ]
     )]
-    #[Route('/api/users/{id}', methods: ['GET'])]
+    #[Route(self::ROUTE_USER_ID, methods: ['GET'])]
     public function getUser(int $id): JsonResponse
     {
         // Implementation: fetch user by ID
@@ -61,7 +65,7 @@ final class UserController
     }
 
     #[OA\Get(
-        path: '/api/users',
+        path: self::ROUTE_USERS,
         summary: 'List all users',
         tags: ['Users'],
         parameters: [
@@ -73,7 +77,7 @@ final class UserController
             new BadRequestResponse()
         ]
     )]
-    #[Route('/api/users', methods: ['GET'])]
+    #[Route(self::ROUTE_USERS, methods: ['GET'])]
     public function listUsers(): JsonResponse
     {
         // Implementation: fetch paginated users
@@ -81,7 +85,7 @@ final class UserController
     }
 
     #[OA\Put(
-        path: '/api/users/{id}',
+        path: self::ROUTE_USER_ID,
         summary: 'Update user',
         tags: ['Users'],
         parameters: [
@@ -95,7 +99,7 @@ final class UserController
             new BadRequestResponse()
         ]
     )]
-    #[Route('/api/users/{id}', methods: ['PUT'])]
+    #[Route(self::ROUTE_USER_ID, methods: ['PUT'])]
     public function updateUser(int $id): JsonResponse
     {
         // Implementation: validate input, update user
@@ -103,7 +107,7 @@ final class UserController
     }
 
     #[OA\Delete(
-        path: '/api/users/{id}',
+        path: self::ROUTE_USER_ID,
         summary: 'Delete user',
         tags: ['Users'],
         parameters: [
@@ -115,7 +119,7 @@ final class UserController
             new BadRequestResponse()
         ]
     )]
-    #[Route('/api/users/{id}', methods: ['DELETE'])]
+    #[Route(self::ROUTE_USER_ID, methods: ['DELETE'])]
     public function deleteUser(int $id): JsonResponse
     {
         // Implementation: delete user
