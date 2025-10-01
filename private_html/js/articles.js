@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 55,
+    "title": "Claude Code Planning and Execution Workflows: From Built-in Modes to Parallel Agents",
+    "excerpt": "A comprehensive guide to Claude Code's planning features, from built-in Plan Mode to formal planning workflows with parallel agent execution for complex development tasks",
+    "category": "ai",
+    "date": "2025-10-01",
+    "slug": "claude-code-planning-execution-workflows",
+    "readingTime": "12"
+  },
+  {
     "id": 647,
     "title": "Reusable OpenAPI Classes: Eliminating Boilerplate in PHP API Documentation",
     "excerpt": "Learn how to create custom PHP classes that encapsulate OpenAPI specifications, dramatically reducing repetitive attribute definitions while improving maintainability and consistency across your Symfony API.",
