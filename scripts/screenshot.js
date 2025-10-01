@@ -38,19 +38,66 @@ if (args[1]) config.outputPath = `var/${args[1]}`;
       await page.waitForTimeout(config.delay);
     }
     
-    // Take screenshot
-    const screenshotOptions = {
-      path: config.outputPath,
-      fullPage: !config.clip
-    };
-    
+    // Take screenshot with dimension constraints
     if (config.clip) {
-      screenshotOptions.clip = config.clip;
+      await page.screenshot({
+        path: config.outputPath,
+        clip: config.clip
+      });
+    } else {
+      // Get page dimensions and constrain to 8000px max
+      const dimensions = await page.evaluate(() => ({
+        width: document.documentElement.scrollWidth,
+        height: document.documentElement.scrollHeight
+      }));
+
+      const MAX_DIMENSION = 8000;
+      const clipWidth = Math.min(dimensions.width, MAX_DIMENSION);
+
+      if (dimensions.height > MAX_DIMENSION) {
+        // Take multiple screenshots for tall pages
+        const numScreenshots = Math.ceil(dimensions.height / MAX_DIMENSION);
+        console.log(`⚠️  Page height (${dimensions.height}px) exceeds max, taking ${numScreenshots} screenshots`);
+
+        const baseOutputPath = config.outputPath.replace(/\.png$/, '');
+
+        for (let i = 0; i < numScreenshots; i++) {
+          const yOffset = i * MAX_DIMENSION;
+          const remainingHeight = dimensions.height - yOffset;
+          const clipHeight = Math.min(remainingHeight, MAX_DIMENSION);
+
+          const screenshotPath = `${baseOutputPath}_scroll${yOffset}.png`;
+
+          // Scroll to the position first
+          await page.evaluate((offset) => {
+            window.scrollTo(0, offset);
+          }, yOffset);
+
+          // Wait a moment for any dynamic content to load
+          await page.waitForTimeout(500);
+
+          await page.screenshot({
+            path: screenshotPath,
+            fullPage: false,
+            clip: {
+              x: 0,
+              y: 0,
+              width: clipWidth,
+              height: clipHeight
+            }
+          });
+
+          console.log(`✅ Screenshot ${i + 1}/${numScreenshots} saved: ${screenshotPath} (y: ${yOffset}-${yOffset + clipHeight})`);
+        }
+      } else {
+        // Single screenshot
+        await page.screenshot({
+          path: config.outputPath,
+          fullPage: true
+        });
+        console.log(`✅ Screenshot saved: ${config.outputPath}`);
+      }
     }
-    
-    await page.screenshot(screenshotOptions);
-    
-    console.log(`✅ Screenshot saved: ${config.outputPath}`);
     
   } catch (error) {
     console.error('❌ Screenshot failed:', error.message);
