@@ -1,0 +1,694 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'Claude Code Planning and Execution Workflows: From Built-in Modes to Parallel Agents',
+    articleDescription: 'A comprehensive guide to Claude Code\'s planning features, from built-in Plan Mode to formal planning workflows with parallel agent execution for complex development tasks',
+    articleDate: '2025-10-01',
+    articleCategory: 'ai',
+    articleReadingTime: '12',
+    articleContent: `
+<div class="intro">
+    <p class="lead">
+        Effective AI-assisted development requires separating planning from execution. <a href="https://claude.com/claude-code" target="_blank" rel="noopener">Claude Code</a> version 2 (2025) provides multiple approaches to planning workflows, from simple built-in modes to sophisticated parallel agent architectures that can handle complex, multi-repository projects.
+    </p>
+</div>
+
+<section>
+    <h2>Built-in Plan Mode: The Foundation</h2>
+    <p>
+        <a href="https://docs.claude.com/en/docs/claude-code/common-workflows" target="_blank" rel="noopener">Plan Mode</a> is Claude Code's core feature for safe, read-only code analysis. It creates a deliberate boundary between research and execution, preventing accidental changes while exploring codebases.
+    </p>
+
+    <h3>Activating Plan Mode</h3>
+    <p>
+        The fastest way to enter Plan Mode is with <strong>Shift+Tab</strong>. This keyboard shortcut cycles through permission modes:
+    </p>
+    <ul>
+        <li><strong>Normal Mode</strong>: Standard tool permissions</li>
+        <li><strong>Auto-Accept Mode</strong>: Claude executes tools without prompts (Shift+Tab once)</li>
+        <li><strong>Plan Mode</strong>: Read-only analysis only (Shift+Tab twice)</li>
+    </ul>
+    <p>
+        When active, you'll see <code>⏸ plan mode on</code> at the terminal bottom.
+    </p>
+
+    <h3>Alternative Activation Methods</h3>
+    <p>
+        Start a new session directly in Plan Mode:
+    </p>
+    <pre><code class="language-bash">claude --permission-mode plan
+</code></pre>
+
+    <p>
+        Run headless planning queries without interactive sessions:
+    </p>
+    <pre><code class="language-bash">claude --permission-mode plan -p "Analyze the authentication system architecture"
+</code></pre>
+
+    <h3>Setting Plan Mode as Default</h3>
+    <p>
+        Configure Claude Code to always start in Plan Mode by editing <code>.claude/settings.json</code>:
+    </p>
+    <pre><code class="language-json">{
+  "permissions": {
+    "defaultMode": "plan"
+  }
+}
+</code></pre>
+
+    <h3>When to Use Built-in Plan Mode</h3>
+    <p>
+        Plan Mode excels at:
+    </p>
+    <ul>
+        <li><strong>Exploring unfamiliar codebases</strong>: Understanding architecture before making changes</li>
+        <li><strong>Multi-step implementation planning</strong>: Breaking down complex features into actionable steps</li>
+        <li><strong>Code review and analysis</strong>: Examining code without modification risk</li>
+        <li><strong>Security audits</strong>: Analyzing code without executing it</li>
+        <li><strong>Interactive refinement</strong>: Iterating on plans before execution</li>
+    </ul>
+
+    <h3>Limitations of Built-in Plan Mode</h3>
+    <p>
+        While powerful, built-in Plan Mode has constraints:
+    </p>
+    <ul>
+        <li><strong>No persistent artifacts</strong>: Plans exist only in the conversation</li>
+        <li><strong>Single-threaded</strong>: Cannot parallelize research across multiple areas</li>
+        <li><strong>Context mixing</strong>: Planning and execution share the same context window</li>
+        <li><strong>No structured tracking</strong>: No standardized format for progress tracking</li>
+    </ul>
+    <p>
+        These limitations become apparent in complex projects that require formal planning, team collaboration, or parallel workstreams.
+    </p>
+</section>
+
+<section>
+    <h2>Formal Planning Workflows: CLAUDE/plan Structure</h2>
+    <p>
+        For complex tasks requiring structured planning, persistent documentation, and team collaboration, a formal planning workflow provides significant advantages over built-in Plan Mode.
+    </p>
+
+    <h3>Directory Structure</h3>
+    <p>
+        Formal planning workflows use a standardized directory structure:
+    </p>
+    <pre><code class="language-bash">project/
+├── CLAUDE.md                 # Main project instructions
+├── CLAUDE/
+│   ├── PlanWorkflow.md      # Workflow documentation
+│   ├── Core/                # Core documentation
+│   │   ├── CodeStandards.md
+│   │   └── TestingStandards.md
+│   ├── Tools/               # Tool-specific docs
+│   │   └── PHPStan.md
+│   └── plan/                # Individual plan files
+│       ├── feature-auth-system.md
+│       ├── refactor-database-layer.md
+│       └── archive/         # Completed plans
+</code></pre>
+
+    <h3>The Two-Mode Workflow</h3>
+    <p>
+        Formal workflows enforce strict separation between planning and execution:
+    </p>
+
+    <h4>Planning Mode (Default)</h4>
+    <p>
+        <strong>NO CODE CHANGES</strong> are permitted. Planning mode focuses on:
+    </p>
+    <ul>
+        <li>Full research of relevant files, database tables, and dependencies</li>
+        <li>Terse but detailed plan of required actions</li>
+        <li>Code snippets for particularly relevant implementations</li>
+        <li>Verification against project documentation and standards</li>
+        <li>Creation of structured TODO lists with progress tracking</li>
+    </ul>
+
+    <h4>Execution Mode</h4>
+    <p>
+        Triggered only by explicit instruction (e.g., "execute plan", "proceed with implementation"). Execution mode:
+    </p>
+    <ul>
+        <li>Works through plan tasks systematically</li>
+        <li>Updates progress tracking as tasks complete</li>
+        <li>Runs quality tools (linters, static analysis) continuously</li>
+        <li>Resolves issues before moving to next task</li>
+        <li>Marks plan as "ALL DONE!" only when complete and validated</li>
+    </ul>
+
+    <h3>Plan Document Structure</h3>
+    <p>
+        Every plan document follows a standardized format:
+    </p>
+    <pre><code class="language-markdown"># Feature Implementation Plan
+
+Ensure all the following have been read:
+- @CLAUDE/PlanWorkflow.md
+- @CLAUDE/Core/CodeStandards.md
+- @CLAUDE/Core/TestingStandards.md
+
+## Progress
+
+[ ] Research existing implementation
+[⏳] Design new architecture
+[✓] Write unit tests
+[ ] Implement feature
+[ ] Run static analysis
+[ ] Update documentation
+
+## Summary
+
+Brief description of the task and goals.
+
+## Details
+
+### Current State
+
+Analysis of existing code and architecture...
+
+### Proposed Solution
+
+Detailed implementation approach...
+
+### Testing Strategy
+
+Test coverage and validation approach...
+</code></pre>
+
+    <h3>Task Status Symbols</h3>
+    <p>
+        Progress tracking uses three states:
+    </p>
+    <ul>
+        <li><code>[ ]</code> - Task not started</li>
+        <li><code>[⏳]</code> - Task in progress (currently being worked on)</li>
+        <li><code>[✓]</code> - Task completed and validated</li>
+    </ul>
+
+    <h3>Benefits of Formal Planning</h3>
+    <p>
+        Structured planning workflows provide significant advantages:
+    </p>
+    <ul>
+        <li><strong>Persistent documentation</strong>: Plans survive across sessions and team members</li>
+        <li><strong>Version control integration</strong>: Plans tracked in Git alongside code</li>
+        <li><strong>Progress transparency</strong>: Clear status tracking for stakeholders</li>
+        <li><strong>Knowledge preservation</strong>: Research and decisions documented for future reference</li>
+        <li><strong>Team collaboration</strong>: Multiple developers can reference and update plans</li>
+        <li><strong>Standards enforcement</strong>: Links to project standards ensure consistency</li>
+    </ul>
+
+    <h3>Linking Plan Workflows to CLAUDE.md</h3>
+    <p>
+        Reference the planning workflow in your main project documentation:
+    </p>
+    <pre><code class="language-markdown">## Planning Workflows
+
+This project uses structured planning for complex features. See [@CLAUDE/PlanWorkflow.md](CLAUDE/PlanWorkflow.md) for detailed workflow instructions.
+
+All plans are stored in \`CLAUDE/plan/\` and must follow the standardized format.
+</code></pre>
+</section>
+
+<section>
+    <h2>Parallel Agent Execution</h2>
+    <p>
+        <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">Claude Code's parallel agent architecture</a> enables sophisticated orchestration of multiple specialized agents working simultaneously. This represents a significant evolution from sequential, single-agent workflows.
+    </p>
+
+    <h3>Understanding Parallel Agents</h3>
+    <p>
+        <a href="https://docs.claude.com/en/docs/claude-code/sub-agents" target="_blank" rel="noopener">Subagents</a> operate in separate context windows, each with their own expertise and tool access. This provides:
+    </p>
+    <ul>
+        <li><strong>Context isolation</strong>: Each agent uses full context for specialized tasks</li>
+        <li><strong>Parallel execution</strong>: Multiple research or implementation streams run concurrently</li>
+        <li><strong>Specialized focus</strong>: Agents can be experts in specific domains</li>
+        <li><strong>Additive capacity</strong>: Multiple agents provide more total reasoning capacity</li>
+    </ul>
+
+    <h3>Activating Parallel Agent Execution</h3>
+    <p>
+        Tell Claude Code to execute your plan with parallel agents:
+    </p>
+    <pre><code class="language-bash"># Simple parallel execution
+"Execute plan with sub agents"
+
+# Specify parallelism level
+"Explore the codebase using 4 tasks in parallel"
+
+# Targeted parallel execution
+"Use parallel agents to research authentication, database, and API layers simultaneously"
+</code></pre>
+
+    <h3>Multi-Agent Orchestration Patterns</h3>
+
+    <h4>Pattern 1: Parallel Research</h4>
+    <p>
+        Deploy multiple agents to research different aspects of a codebase simultaneously:
+    </p>
+    <ul>
+        <li><strong>Agent 1</strong>: Database schema and query patterns</li>
+        <li><strong>Agent 2</strong>: API endpoints and routing</li>
+        <li><strong>Agent 3</strong>: Authentication and authorization</li>
+        <li><strong>Agent 4</strong>: Frontend integration points</li>
+    </ul>
+    <p>
+        Each agent produces a report, which the lead agent synthesizes into a comprehensive plan.
+    </p>
+
+    <h4>Pattern 2: Parallel Implementation</h4>
+    <p>
+        For feature development with independent components:
+    </p>
+    <ul>
+        <li><strong>Backend specialist</strong>: Implement server-side API endpoints</li>
+        <li><strong>Frontend specialist</strong>: Build client-side UI components</li>
+        <li><strong>QA specialist</strong>: Generate integration tests</li>
+        <li><strong>Documentation specialist</strong>: Draft API documentation</li>
+    </ul>
+
+    <h4>Pattern 3: Sequential Handoffs</h4>
+    <p>
+        Create an automated assembly line for complete feature implementation:
+    </p>
+    <ol>
+        <li><strong>Product manager agent</strong>: Creates detailed requirements and acceptance criteria</li>
+        <li><strong>Architect agent</strong>: Designs technical approach and data structures</li>
+        <li><strong>Implementation agent</strong>: Writes code following architecture</li>
+        <li><strong>Review agent</strong>: Analyzes code quality and suggests improvements</li>
+        <li><strong>Refinement agent</strong>: Applies review feedback</li>
+        <li><strong>QA agent</strong>: Validates implementation against requirements</li>
+    </ol>
+
+    <h3>Performance Considerations</h3>
+    <p>
+        Parallel agent architectures have trade-offs:
+    </p>
+    <ul>
+        <li><strong>Token usage</strong>: Multi-agent systems use approximately <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">15× more tokens</a> than single-agent chats</li>
+        <li><strong>Quality improvement</strong>: Multi-agent Claude Opus 4 (lead) + Sonnet 4 (subagents) outperformed single-agent Opus by <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">90.2% on internal research evaluations</a></li>
+        <li><strong>Cost vs. speed</strong>: Parallel execution completes faster but consumes more resources</li>
+        <li><strong>Non-determinism</strong>: AI behavior varies across runs; test agent prompts thoroughly</li>
+    </ul>
+
+    <h3>When to Use Parallel Agents</h3>
+    <p>
+        Parallel agent execution is most effective for:
+    </p>
+    <ul>
+        <li><strong>Large codebase exploration</strong>: Researching multiple modules simultaneously</li>
+        <li><strong>Multi-component features</strong>: Implementing backend, frontend, and tests in parallel</li>
+        <li><strong>Cross-cutting changes</strong>: Refactoring patterns across multiple files</li>
+        <li><strong>Complex investigations</strong>: Researching multiple potential solutions concurrently</li>
+    </ul>
+
+    <h3>Example: Plan Segment Execution</h3>
+    <p>
+        Given a comprehensive plan with multiple independent sections, Claude Code can execute segments in parallel. For example, given this plan:
+    </p>
+    <pre><code class="language-markdown">## Progress
+
+[ ] Research authentication system (Auth Service, JWT handling)
+[ ] Research database layer (ORM patterns, query optimization)
+[ ] Research API layer (routing, middleware, error handling)
+[ ] Research frontend integration (state management, API clients)
+[ ] Design unified architecture
+[ ] Implement changes
+</code></pre>
+
+    <p>
+        You can trigger parallel execution:
+    </p>
+    <pre><code class="language-bash">"Execute the four research tasks in parallel with sub agents"
+</code></pre>
+
+    <p>
+        Claude Code will:
+    </p>
+    <ol>
+        <li>Launch four specialized agents, each researching one area</li>
+        <li>Each agent produces a detailed research report</li>
+        <li>The lead agent synthesizes findings into a unified design</li>
+        <li>Updates the plan document with research results</li>
+        <li>Marks research tasks as complete</li>
+    </ol>
+</section>
+
+<section>
+    <h2>Custom Subagents</h2>
+    <p>
+        While built-in parallel agents are powerful, <a href="https://docs.claude.com/en/docs/claude-code/sub-agents" target="_blank" rel="noopener">custom subagents</a> provide fine-grained control over agent behavior, tool access, and specialization. This is a deep topic that warrants its own dedicated article.
+    </p>
+
+    <h3>Quick Overview</h3>
+    <p>
+        Custom subagents enable:
+    </p>
+    <ul>
+        <li><strong>Specialized system prompts</strong>: Tailored instructions for specific tasks</li>
+        <li><strong>Tool access control</strong>: Limit agents to relevant tools only</li>
+        <li><strong>Model selection</strong>: Use different models for different tasks (e.g., Opus for planning, Sonnet for implementation)</li>
+        <li><strong>Reusable configurations</strong>: Share agent definitions across projects</li>
+        <li><strong>Project-specific agents</strong>: Create agents that understand project conventions</li>
+    </ul>
+
+    <h3>Creating Custom Agents</h3>
+    <p>
+        Use the <code>/agents</code> command to create a new subagent:
+    </p>
+    <pre><code class="language-bash">/agents
+</code></pre>
+
+    <p>
+        Define the agent's characteristics:
+    </p>
+    <ul>
+        <li><strong>Name</strong>: Unique identifier (e.g., <code>code-reviewer</code>, <code>php-expert</code>)</li>
+        <li><strong>Description</strong>: Purpose and expertise area</li>
+        <li><strong>System prompt</strong>: Detailed instructions and behavioral constraints</li>
+        <li><strong>Tool access</strong>: Which tools the agent can use</li>
+        <li><strong>Model</strong>: Which Claude model to use</li>
+    </ul>
+
+    <h3>Agent Configuration Hierarchy</h3>
+    <p>
+        Subagents can be configured at three levels:
+    </p>
+    <ol>
+        <li><strong>Project-level</strong>: <code>.claude/agents/</code> (highest priority, version-controlled)</li>
+        <li><strong>User-level</strong>: <code>~/.claude/agents/</code> (personal agents across projects)</li>
+        <li><strong>CLI-based</strong>: Dynamic configuration for one-off tasks</li>
+    </ol>
+
+    <h3>Best Practices for Custom Agents</h3>
+    <p>
+        When creating custom subagents:
+    </p>
+    <ul>
+        <li><strong>Separation of concerns</strong>: One responsibility per agent</li>
+        <li><strong>Provide examples</strong>: Include positive/negative examples in system prompts</li>
+        <li><strong>Progressive tool expansion</strong>: Start with minimal tools, expand as needed</li>
+        <li><strong>Detailed system prompts</strong>: <a href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank" rel="noopener">LLMs excel at pattern recognition</a>; be specific</li>
+        <li><strong>Version control</strong>: Commit project-level agents to Git</li>
+    </ul>
+
+    <h3>Future Coverage</h3>
+    <p>
+        Custom subagents deserve comprehensive coverage, including:
+    </p>
+    <ul>
+        <li>Detailed agent configuration syntax</li>
+        <li>System prompt engineering strategies</li>
+        <li>Tool permission patterns and security considerations</li>
+        <li>Real-world agent examples (code reviewers, test generators, documentation writers)</li>
+        <li>Multi-agent coordination patterns</li>
+        <li>Debugging and iterating on agent behavior</li>
+    </ul>
+    <p>
+        This will be covered in a future dedicated article on advanced Claude Code agent architectures.
+    </p>
+</section>
+
+<section>
+    <h2>GitHub Integration for High-Level Tracking</h2>
+    <p>
+        For project management at scale, integrate Claude Code workflows with <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a> for issue tracking and PR management.
+    </p>
+
+    <h3>Issue-Driven Development</h3>
+    <p>
+        Link plan documents to GitHub issues:
+    </p>
+    <pre><code class="language-bash"># Create issue for new feature
+gh issue create --title "Implement authentication system" \\
+  --body "See CLAUDE/plan/feature-auth-system.md for detailed plan"
+
+# Reference issue in commit messages
+git commit -m "auth: implement JWT validation (#123)"
+
+# Link PR to issue
+gh pr create --title "Implement authentication" \\
+  --body "Closes #123" \\
+  --base main
+</code></pre>
+
+    <h3>PR Workflow Integration</h3>
+    <p>
+        Use Claude Code to create PRs directly from plan completion:
+    </p>
+    <pre><code class="language-bash"># After completing plan execution
+"Create a pull request for this feature implementation"
+</code></pre>
+
+    <p>
+        Claude Code will:
+    </p>
+    <ol>
+        <li>Generate a PR title from the work completed</li>
+        <li>Create a detailed PR description with summary and test plan</li>
+        <li>Push the current branch to remote</li>
+        <li>Open the PR via GitHub CLI</li>
+        <li>Return the PR URL</li>
+    </ol>
+
+    <h3>Tracking Plan Status via GitHub</h3>
+    <p>
+        Use GitHub Projects to visualize plan progress:
+    </p>
+    <ul>
+        <li><strong>Backlog</strong>: Plans not yet started</li>
+        <li><strong>Planning</strong>: Plans being researched and designed</li>
+        <li><strong>Ready</strong>: Plans approved and ready for execution</li>
+        <li><strong>In Progress</strong>: Plans currently being implemented</li>
+        <li><strong>Review</strong>: PRs open for review</li>
+        <li><strong>Done</strong>: PRs merged, plans archived</li>
+    </ul>
+
+    <h3>Cross-Repository Planning</h3>
+    <p>
+        For features spanning multiple repositories:
+    </p>
+    <pre><code class="language-bash"># Create tracking issue in each repo
+gh issue create -R org/backend --title "Auth API endpoints"
+gh issue create -R org/frontend --title "Auth UI components"
+gh issue create -R org/infrastructure --title "Auth service deployment"
+
+# Link related issues
+gh issue comment 123 --body "Related: org/frontend#456, org/infrastructure#789"
+</code></pre>
+</section>
+
+<section>
+    <h2>Extended Thinking Mode</h2>
+    <p>
+        Claude Code supports <a href="https://www.anthropic.com/news/extended-thinking" target="_blank" rel="noopener">extended thinking</a>, where Claude uses additional reasoning tokens before responding. This is particularly valuable during the planning phase.
+    </p>
+
+    <h3>Triggering Extended Thinking</h3>
+    <p>
+        Use specific phrases to request deeper reasoning:
+    </p>
+    <ul>
+        <li><code>"think"</code> - Standard extended thinking</li>
+        <li><code>"think hard"</code> - More extensive reasoning</li>
+        <li><code>"think harder"</code> - Increased reasoning budget</li>
+        <li><code>"ultrathink"</code> - Maximum reasoning capacity</li>
+    </ul>
+
+    <h3>When to Use Extended Thinking</h3>
+    <p>
+        Extended thinking is most effective for:
+    </p>
+    <ul>
+        <li><strong>Architecture decisions</strong>: Evaluating multiple design approaches</li>
+        <li><strong>Complex refactoring</strong>: Understanding interconnected code changes</li>
+        <li><strong>Security analysis</strong>: Identifying subtle vulnerabilities</li>
+        <li><strong>Performance optimization</strong>: Analyzing algorithmic complexity</li>
+    </ul>
+
+    <h3>Example: Planning with Extended Thinking</h3>
+    <pre><code class="language-bash">"Think hard about the best approach to refactor the authentication system.
+Consider security implications, backward compatibility, and migration strategy."
+</code></pre>
+
+    <p>
+        Claude will display its reasoning process before providing recommendations, helping you understand the thought process behind architectural decisions.
+    </p>
+</section>
+
+<section>
+    <h2>Practical Workflow Examples</h2>
+
+    <h3>Example 1: Simple Feature with Built-in Plan Mode</h3>
+    <pre><code class="language-bash"># Activate Plan Mode
+Shift+Tab (twice)
+
+# Research and plan
+"Analyze how the current user profile system works and create a plan
+to add avatar upload functionality"
+
+# Review plan, exit Plan Mode
+Shift+Tab
+
+# Execute
+"Implement the plan we just created"
+</code></pre>
+
+    <h3>Example 2: Complex Feature with Formal Planning</h3>
+    <pre><code class="language-bash"># Start in Planning Mode (formal)
+"Create a plan for implementing OAuth2 integration.
+Store it in CLAUDE/plan/oauth2-integration.md"
+
+# Claude researches and creates detailed plan document
+
+# Review plan, give approval
+"The plan looks good. Execute the OAuth2 integration plan."
+
+# Claude works through tasks, updating plan document as it progresses
+</code></pre>
+
+    <h3>Example 3: Multi-Repository Feature with Parallel Agents</h3>
+    <pre><code class="language-bash"># Create comprehensive plan
+"Create a plan for implementing real-time notifications across our stack.
+This will require changes to:
+- Backend API (Node.js)
+- Frontend UI (React)
+- Infrastructure (WebSocket server)
+- Database schema
+
+Store the plan in CLAUDE/plan/realtime-notifications.md"
+
+# Execute with parallel agents
+"Execute the plan using parallel agents. Have separate agents work on:
+- Backend WebSocket implementation
+- Frontend notification UI
+- Infrastructure deployment config
+- Database migrations
+
+Coordinate the changes to ensure they work together."
+
+# Create PRs for each component
+"Create a PR for each repository with the changes"
+</code></pre>
+
+    <h3>Example 4: Large Codebase Exploration</h3>
+    <pre><code class="language-bash"># Research with parallel agents
+"Use 5 parallel agents to explore this codebase. Have each agent research:
+1. Authentication and authorization patterns
+2. Database models and relationships
+3. API routes and controllers
+4. Frontend architecture and state management
+5. Testing patterns and coverage
+
+Create a comprehensive architecture document from the findings."
+</code></pre>
+</section>
+
+<section>
+    <h2>Best Practices and Anti-Patterns</h2>
+
+    <h3>Do: Separate Planning from Execution</h3>
+    <p>
+        Always complete planning before executing. Switching between modes mid-task leads to confused context and poor decisions.
+    </p>
+
+    <h3>Do: Update Plans as You Learn</h3>
+    <p>
+        Plans should evolve as implementation reveals new information. Add discovered tasks to the Progress section immediately.
+    </p>
+
+    <h3>Do: Use Parallel Agents for Independent Work</h3>
+    <p>
+        Deploy parallel agents when tasks are truly independent. Don't parallelize tightly coupled changes.
+    </p>
+
+    <h3>Don't: Mix Planning and Execution Context</h3>
+    <p>
+        Keep planning conversations separate from execution conversations. Use formal plan documents as the handoff point.
+    </p>
+
+    <h3>Don't: Parallelize Without Clear Boundaries</h3>
+    <p>
+        Parallel agents need clear, independent scopes. Overlapping responsibilities lead to conflicts and rework.
+    </p>
+
+    <h3>Don't: Skip Progress Tracking</h3>
+    <p>
+        Update task status immediately after completion. Batch updates lead to lost context and duplicate work.
+    </p>
+</section>
+
+<section>
+    <h2>Choosing Your Workflow</h2>
+    <p>
+        Select the appropriate workflow based on task complexity:
+    </p>
+
+    <h3>Built-in Plan Mode</h3>
+    <p><strong>Best for:</strong></p>
+    <ul>
+        <li>Quick explorations and investigations</li>
+        <li>Single-file or small changes</li>
+        <li>Interactive refinement of ideas</li>
+        <li>Solo developer work</li>
+    </ul>
+
+    <h3>Formal Planning (CLAUDE/plan)</h3>
+    <p><strong>Best for:</strong></p>
+    <ul>
+        <li>Multi-file refactoring</li>
+        <li>New feature implementation</li>
+        <li>Team collaboration</li>
+        <li>Long-running projects</li>
+        <li>Work requiring documentation</li>
+    </ul>
+
+    <h3>Parallel Agent Execution</h3>
+    <p><strong>Best for:</strong></p>
+    <ul>
+        <li>Large codebase exploration</li>
+        <li>Multi-component features</li>
+        <li>Complex investigations</li>
+        <li>Cross-cutting changes</li>
+        <li>Time-sensitive projects</li>
+    </ul>
+
+    <h3>Custom Subagents</h3>
+    <p><strong>Best for:</strong></p>
+    <ul>
+        <li>Repeated specialized tasks</li>
+        <li>Project-specific workflows</li>
+        <li>Enforcing coding standards</li>
+        <li>Multi-stage pipelines</li>
+        <li>Advanced orchestration</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Conclusion</h2>
+    <p>
+        Claude Code's planning capabilities range from simple built-in modes to sophisticated parallel agent architectures. The right approach depends on your project complexity, team structure, and workflow requirements.
+    </p>
+    <p>
+        Start with built-in Plan Mode for simple tasks. Graduate to formal planning workflows (CLAUDE/plan) as projects grow in complexity. Deploy parallel agents when you need speed and have independent workstreams. Create custom subagents when you have repeated, specialized needs.
+    </p>
+    <p>
+        Most importantly: <strong>always separate planning from execution</strong>. This single principle, regardless of which workflow you choose, will dramatically improve the quality and maintainability of your AI-assisted development.
+    </p>
+</section>
+
+<section>
+    <h2>Resources</h2>
+    <ul>
+        <li><a href="https://docs.claude.com/en/docs/claude-code/common-workflows" target="_blank" rel="noopener">Claude Code Common Workflows</a> - Official documentation on Plan Mode</li>
+        <li><a href="https://docs.claude.com/en/docs/claude-code/sub-agents" target="_blank" rel="noopener">Claude Code Subagents</a> - Official subagent documentation</li>
+        <li><a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">How We Built Our Multi-Agent Research System</a> - Anthropic's deep dive on parallel agents</li>
+        <li><a href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank" rel="noopener">Claude Code Best Practices</a> - Official best practices from Anthropic</li>
+        <li><a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a> - Command-line tool for GitHub integration</li>
+        <li><a href="https://www.anthropic.com/news/extended-thinking" target="_blank" rel="noopener">Extended Thinking</a> - Anthropic's announcement of extended thinking capabilities</li>
+        <li><a href="https://claudelog.com/mechanics/plan-mode/" target="_blank" rel="noopener">ClaudeLog: Plan Mode Mechanics</a> - Community guide to Plan Mode</li>
+        <li><a href="https://github.com/wshobson/agents" target="_blank" rel="noopener">Production-Ready Subagents Collection</a> - Community-created agent examples</li>
+    </ul>
+</section>
+    `
+}) %>
