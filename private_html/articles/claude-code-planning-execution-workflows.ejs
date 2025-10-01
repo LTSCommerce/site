@@ -422,20 +422,94 @@
         For project management at scale, integrate Claude Code workflows with <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a> for issue tracking and PR management.
     </p>
 
-    <h3>Issue-Driven Development</h3>
+    <h3>Issue-Driven Development Workflow</h3>
     <p>
-        Link plan documents to GitHub issues:
+        A complete workflow that integrates planning, execution, and tracking:
     </p>
+
+    <h4>1. Create Issue</h4>
     <pre><code class="language-bash"># Create issue for new feature
 gh issue create --title "Implement authentication system" \\
-  --body "See CLAUDE/plan/feature-auth-system.md for detailed plan"
+  --body "Feature request for JWT-based authentication with refresh tokens"
+</code></pre>
 
-# Reference issue in commit messages
-git commit -m "auth: implement JWT validation (#123)"
+    <h4>2. Create, Commit, and Push Plan</h4>
+    <pre><code class="language-bash"># Create plan file
+"Create a detailed plan for implementing JWT authentication in CLAUDE/plan/feature-auth-system.md"
 
-# Link PR to issue
-gh pr create --title "Implement authentication" \\
-  --body "Closes #123" \\
+# Commit the plan
+git add CLAUDE/plan/feature-auth-system.md
+git commit -m "Add plan: JWT authentication system (#123)"
+git push origin main
+</code></pre>
+
+    <h4>3. Update Issue with Plan Link</h4>
+    <pre><code class="language-bash"># Get the commit SHA
+COMMIT_SHA=$(git rev-parse HEAD)
+
+# Update issue with plan reference
+gh issue comment 123 --body "Planning complete. See [feature-auth-system.md](https://github.com/org/repo/blob/$COMMIT_SHA/CLAUDE/plan/feature-auth-system.md) for detailed plan."
+</code></pre>
+
+    <h4>4. Execute Plan</h4>
+    <pre><code class="language-bash"># Execute the plan with Claude Code
+"Execute the plan in CLAUDE/plan/feature-auth-system.md"
+</code></pre>
+
+    <h4>5. Commit Plan Execution Completion</h4>
+    <pre><code class="language-bash"># Mark plan as complete
+git add .
+git commit -m "Implement JWT authentication system (#123)
+
+- Implement token generation and validation
+- Add refresh token rotation
+- Create authentication middleware
+- Add comprehensive test coverage
+
+Plan execution complete. See CLAUDE/plan/feature-auth-system.md"
+git push origin main
+</code></pre>
+
+    <h4>6. Update Issue with Execution Summary</h4>
+    <pre><code class="language-bash"># Get the execution commit SHA
+EXEC_COMMIT=$(git rev-parse HEAD)
+
+# Update issue with execution summary
+gh issue comment 123 --body "Implementation complete in commit $EXEC_COMMIT
+
+**Summary:**
+- JWT token generation and validation implemented
+- Refresh token rotation added with security best practices
+- Authentication middleware integrated into API routes
+- 95% test coverage with unit and integration tests
+
+Ready for PR creation and review."
+</code></pre>
+
+    <h4>7. Create Pull Request</h4>
+    <pre><code class="language-bash"># Create PR with Claude Code
+"Create a pull request for this feature implementation"
+
+# Or manually with gh CLI
+gh pr create \\
+  --title "Implement JWT authentication system" \\
+  --body "Closes #123
+
+## Summary
+Implements JWT-based authentication with refresh token rotation.
+
+## Changes
+- JWT token generation and validation
+- Refresh token rotation with security best practices
+- Authentication middleware for API routes
+- Comprehensive test suite (95% coverage)
+
+## Testing
+- All unit tests passing
+- Integration tests verify token lifecycle
+- Security audit completed
+
+See CLAUDE/plan/feature-auth-system.md for complete plan." \\
   --base main
 </code></pre>
 
