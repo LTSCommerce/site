@@ -50,6 +50,7 @@ export default defineConfig({
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         'js/claude-terminal': resolve(__dirname, 'private_html/js/claude-terminal.js'),
         // Article JavaScript entry points
+        'js/articles/claude-code-planning-execution-workflows': resolve(__dirname, 'private_html/js/articles/claude-code-planning-execution-workflows.js'),
         'js/articles/reusable-openapi-classes-php-symfony': resolve(__dirname, 'private_html/js/articles/reusable-openapi-classes-php-symfony.js'),
         'js/articles/php-stream-wrappers': resolve(__dirname, 'private_html/js/articles/php-stream-wrappers.js'),
         'js/articles/regex-strictness-code-paths': resolve(__dirname, 'private_html/js/articles/regex-strictness-code-paths.js'),
