@@ -210,6 +210,11 @@
     display: flex;
     justify-content: center;
     gap: var(--spacing-sm);
+    position: sticky;
+    top: 80px;
+    z-index: 100;
+    background: var(--color-background);
+    padding: var(--spacing-md) 0;
 }
 
 .share-link {
