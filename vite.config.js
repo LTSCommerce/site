@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import copy from 'rollup-plugin-copy';
-// EJS templates are processed by scripts/process-ejs.js before build
+// EJS templates are processed by scripts/process-ejs.js after build
 
 // Plugin to remove HTML comments during build
 function removeHtmlComments() {
@@ -21,7 +21,8 @@ function removeHtmlComments() {
 
 export default defineConfig({
   plugins: [
-    // EJS processing handled by scripts/process-ejs.js before build
+    // EJS processing handled by scripts/process-ejs.js after build
+    // Sitemap generation handled by scripts/generate-sitemap.js after EJS processing
   ],
   root: '.',
   build: {
