@@ -49,7 +49,42 @@
 
         ${articleContent}
     </article>
-    
+
     <script src="${getAssetPath('/js/syntax-highlighter.js')}"></script>
+    <script>
+      // Show floating share buttons after user scrolls down
+      (function() {
+        const shareButtons = document.querySelector('.article-share');
+        let lastScrollTop = 0;
+        const scrollThreshold = 300; // Show after 300px scroll
+
+        function updateShareButtons() {
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+          if (scrollTop > scrollThreshold) {
+            shareButtons.classList.add('visible');
+          } else {
+            shareButtons.classList.remove('visible');
+          }
+
+          lastScrollTop = scrollTop;
+        }
+
+        // Initial check
+        updateShareButtons();
+
+        // Update on scroll with throttling
+        let ticking = false;
+        window.addEventListener('scroll', function() {
+          if (!ticking) {
+            window.requestAnimationFrame(function() {
+              updateShareButtons();
+              ticking = false;
+            });
+            ticking = true;
+          }
+        });
+      })();
+    </script>
   `
 }) %>
