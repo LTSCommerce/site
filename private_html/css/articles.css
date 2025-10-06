@@ -247,6 +247,18 @@
     color: #ff6600;
 }
 
+.reddit-share:hover {
+    border-color: #ff4500;
+    background: rgba(255, 69, 0, 0.1);
+    color: #ff4500;
+}
+
+.lobsters-share:hover {
+    border-color: #c00;
+    background: rgba(204, 0, 0, 0.1);
+    color: #c00;
+}
+
 .article-meta .separator {
     opacity: 0.5;
 }
