@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/auto-register-articles.js && node scripts/generate-category-styles.js && node scripts/process-ejs.js && vite",
-    "build": "node scripts/auto-register-articles.js && node scripts/generate-category-styles.js && vite build && node scripts/process-ejs.js && node scripts/generate-paginated-articles.js",
+    "build": "node scripts/auto-register-articles.js && node scripts/generate-category-styles.js && vite build && node scripts/process-ejs.js && node scripts/generate-paginated-articles.js && node scripts/generate-sitemap.js",
     "preview": "npm run build && vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
