@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 237,
+    "title": "Caching vs Memoization: Choosing the Right Optimization Strategy",
+    "excerpt": "Deep dive into caching and memoization strategies, their differences, use cases, anti-patterns, and practical implementation tips across programming languages.",
+    "category": "php",
+    "date": "2025-10-06",
+    "slug": "caching-vs-memoization",
+    "readingTime": "10"
+  },
+  {
     "id": 55,
     "title": "Claude Code Planning and Execution Workflows: From Built-in Modes to Parallel Agents",
     "excerpt": "A comprehensive guide to Claude Code's planning features, from built-in Plan Mode to formal planning workflows with parallel agent execution for complex development tasks",

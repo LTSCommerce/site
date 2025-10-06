@@ -1,0 +1,45 @@
+// Decision flow for choosing between caching and memoization
+
+FUNCTION choose_optimization_strategy(problem):
+
+    // Step 1: Is the data external or computed?
+    IF data_source == EXTERNAL (database, API, file):
+        → USE CACHING
+
+        // Step 2: Determine caching strategy
+        IF shared_across_users OR shared_across_requests:
+            → Redis or Memcached (distributed cache)
+        ELSE IF single_server AND performance_critical:
+            → APCu (local in-memory cache)
+        ELSE:
+            → File-based or simple in-memory cache
+
+    // Step 3: Is it a pure function?
+    ELSE IF data_source == COMPUTATION:
+
+        // Check function purity
+        IF function_is_pure(function):
+            → USE MEMOIZATION
+
+            // Step 4: Determine scope
+            IF same_inputs_within_single_request:
+                → Request-scoped memoization
+            ELSE IF same_inputs_across_requests:
+                → Object/class-level memoization
+            ELSE IF recursive_function:
+                → Internal memoization with local cache
+
+        ELSE:
+            WARN: "Function is impure - memoization will cause bugs"
+            → USE CACHING with explicit invalidation
+
+    // Step 5: Do you need both?
+    IF computation_is_expensive AND result_shared_across_users:
+        → USE BOTH: Memoize computation + cache final result
+
+FUNCTION function_is_pure(fn):
+    RETURN (
+        no_side_effects(fn) AND
+        no_external_dependencies(fn) AND
+        same_input_returns_same_output(fn)
+    )
