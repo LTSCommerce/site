@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '../..');
 
 const PUBLIC_DIR = join(__dirname, 'public_html');
-const HOSTNAME = 'https://ltscommerce.net';
+const HOSTNAME = 'https://ltscommerce.dev';
 
 // Files/directories to exclude from sitemap
 const EXCLUDE_PATTERNS = [
