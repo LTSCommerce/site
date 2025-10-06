@@ -17,6 +17,14 @@
                 <span class="separator">•</span>
                 <span class="article-category ${articleCategory || 'general'}">${categories[articleCategory]?.label || (articleCategory || 'general')}</span>
             </div>
+            <div class="article-share">
+                <a href="javascript:window.location='https://news.ycombinator.com/submitlink?u='+encodeURIComponent(document.location)+'&t='+encodeURIComponent(document.title)" class="share-link hn-share" title="Submit to Hacker News">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M0 0v16h16V0H0zm8.5 9.5v3.6H7.4V9.5L4.3 3.7h1.4l2.2 4.3 2.2-4.3h1.3L8.5 9.5z"/>
+                    </svg>
+                    Submit to HN
+                </a>
+            </div>
         </header>
 
         ${articleContent}
