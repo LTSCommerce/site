@@ -17,35 +17,36 @@
                 <span class="separator">•</span>
                 <span class="article-category ${articleCategory || 'general'}">${categories[articleCategory]?.label || (articleCategory || 'general')}</span>
             </div>
-            ${/* LLM INSTRUCTIONS: When creating an article, YOU must choose the most appropriate subreddit.
-                Choose based on: title keywords, category, and target audience.
-                Common subreddits: r/PHP, r/typescript, r/docker, r/selfhosted, r/Database, r/Fedora, r/LLMDevs, r/devops, r/programming
-                Set articleSubreddit parameter when including this template. */''}
-            <div class="article-share">
-                <a href="javascript:window.location='https://reddit.com/r/${articleSubreddit || 'programming'}/submit?url='+encodeURIComponent(document.location)+'&title='+encodeURIComponent(document.title)" class="share-link reddit-share" title="Submit to Reddit">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm4.5 9.5c0 1.4-1.1 2.5-2.5 2.5H6c-1.4 0-2.5-1.1-2.5-2.5V6c0-1.4 1.1-2.5 2.5-2.5h4c1.4 0 2.5 1.1 2.5 2.5v3.5z"/>
-                        <circle cx="6" cy="7" r="0.8"/>
-                        <circle cx="10" cy="7" r="0.8"/>
-                    </svg>
-                    Submit to r/${articleSubreddit || 'programming'}
-                </a>
-
-                <a href="javascript:window.location='https://news.ycombinator.com/submitlink?u='+encodeURIComponent(document.location)+'&t='+encodeURIComponent(document.title)" class="share-link hn-share" title="Submit to Hacker News">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M0 0v16h16V0H0zm8.5 9.5v3.6H7.4V9.5L4.3 3.7h1.4l2.2 4.3 2.2-4.3h1.3L8.5 9.5z"/>
-                    </svg>
-                    Submit to HN
-                </a>
-
-                <a href="javascript:window.location='https://lobste.rs/stories/new?url='+encodeURIComponent(document.location)+'&title='+encodeURIComponent(document.title)" class="share-link lobsters-share" title="Submit to Lobsters">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm2 12H6V6h4v6zm0-8H6V2h4v2z"/>
-                    </svg>
-                    Submit to Lobsters
-                </a>
-            </div>
         </header>
+
+        ${/* LLM INSTRUCTIONS: When creating an article, YOU must choose the most appropriate subreddit.
+            Choose based on: title keywords, category, and target audience.
+            Common subreddits: r/PHP, r/typescript, r/docker, r/selfhosted, r/Database, r/Fedora, r/LLMDevs, r/devops, r/programming
+            Set articleSubreddit parameter when including this template. */''}
+        <div class="article-share">
+            <a href="javascript:window.location='https://reddit.com/r/${articleSubreddit || 'programming'}/submit?url='+encodeURIComponent(document.location)+'&title='+encodeURIComponent(document.title)" class="share-link reddit-share" title="Submit to Reddit">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm4.5 9.5c0 1.4-1.1 2.5-2.5 2.5H6c-1.4 0-2.5-1.1-2.5-2.5V6c0-1.4 1.1-2.5 2.5-2.5h4c1.4 0 2.5 1.1 2.5 2.5v3.5z"/>
+                    <circle cx="6" cy="7" r="0.8"/>
+                    <circle cx="10" cy="7" r="0.8"/>
+                </svg>
+                Submit to r/${articleSubreddit || 'programming'}
+            </a>
+
+            <a href="javascript:window.location='https://news.ycombinator.com/submitlink?u='+encodeURIComponent(document.location)+'&t='+encodeURIComponent(document.title)" class="share-link hn-share" title="Submit to Hacker News">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M0 0v16h16V0H0zm8.5 9.5v3.6H7.4V9.5L4.3 3.7h1.4l2.2 4.3 2.2-4.3h1.3L8.5 9.5z"/>
+                </svg>
+                Submit to HN
+            </a>
+
+            <a href="javascript:window.location='https://lobste.rs/stories/new?url='+encodeURIComponent(document.location)+'&title='+encodeURIComponent(document.title)" class="share-link lobsters-share" title="Submit to Lobsters">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm2 12H6V6h4v6zm0-8H6V2h4v2z"/>
+                </svg>
+                Submit to Lobsters
+            </a>
+        </div>
 
         ${articleContent}
     </article>
