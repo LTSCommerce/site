@@ -4,7 +4,7 @@
  * Runs after EJS processing to ensure all HTML files are generated
  */
 
-import { readdir, writeFile } from 'fs/promises';
+import { readdir, readFile, writeFile } from 'fs/promises';
 import { join, relative } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -12,7 +12,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '../..');
 
 const PUBLIC_DIR = join(__dirname, 'public_html');
-const HOSTNAME = 'https://ltscommerce.dev';
+
+// Load site config to get base URL
+const siteConfigPath = join(__dirname, 'private_html/data/site.json');
+const siteConfig = JSON.parse(await readFile(siteConfigPath, 'utf8'));
+const HOSTNAME = siteConfig.baseUrl;
 
 // Files/directories to exclude from sitemap
 const EXCLUDE_PATTERNS = [
