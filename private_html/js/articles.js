@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 988,
+    "title": "Advanced PHP Database Patterns: Beyond ORMs for High-Performance Applications",
+    "excerpt": "Discover advanced database patterns for PHP including retry mechanisms, bulk updates, statement caching, query classes, generators for memory efficiency, and PHPStan rules for test correctness. Learn when to use PDO directly over ORMs.",
+    "category": "database",
+    "date": "2025-10-08",
+    "slug": "advanced-php-database-patterns",
+    "readingTime": "15"
+  },
+  {
     "id": 237,
     "title": "Caching vs Memoization: Choosing the Right Optimization Strategy",
     "excerpt": "Deep dive into caching and memoization strategies, their differences, use cases, anti-patterns, and practical implementation tips across programming languages.",
