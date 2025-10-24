@@ -181,8 +181,8 @@
     font-weight: 700;
     line-height: var(--golden-line-height);
     margin-bottom: var(--spacing-md);
-    background: linear-gradient(var(--gradient-angle), 
-        var(--color-text) 0%, 
+    background: linear-gradient(var(--gradient-angle),
+        var(--color-text) 0%,
         var(--color-primary-dark) 100%
     );
     -webkit-background-clip: text;
@@ -193,7 +193,7 @@
     position: relative;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
+    hyphens: none;
 }
 
 .article-meta {
@@ -434,7 +434,7 @@
     color: var(--color-text);
     font-feature-settings: "kern" 1, "liga" 1;
     text-align: justify;
-    hyphens: auto;
+    hyphens: none;
     transition: var(--transition-smooth);
 }
 
@@ -697,7 +697,7 @@
         line-height: var(--golden-line-height);
         word-wrap: break-word;
         overflow-wrap: break-word;
-        hyphens: auto;
+        hyphens: none;
     }
     
     .article-meta {
