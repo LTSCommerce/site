@@ -7,7 +7,7 @@
     articleSubreddit: 'LLMDevs',
     articleContent: `
         <div class="intro">
-            <p class="lead">Claude Code hooks are powerful automation tools that execute at specific points during AI coding sessions. While basic hooks can validate prompts or add context, advanced hooks can enforce sophisticated rules—like preventing parallel sub-agents from running test suites that share database connections.</p>
+            <p class="lead">Claude Code hooks are powerful automation tools that execute at specific points during AI coding sessions. While basic hooks can validate prompts or add context, advanced hooks can enforce sophisticated rules like preventing parallel sub-agents from running test suites that share database connections.</p>
         </div>
 
         <section>
@@ -26,7 +26,7 @@
 
         <section>
             <h2>The Problem: Parallel Execution and Shared Resources</h2>
-            <p>Claude Code's sub-agent system enables parallel task execution—multiple agents can work simultaneously on different aspects of your codebase. This is excellent for productivity, but creates challenges when those tasks share resources.</p>
+            <p>Claude Code's sub-agent system enables parallel task execution. Multiple agents can work simultaneously on different aspects of your codebase. This is excellent for productivity, but creates challenges when those tasks share resources.</p>
 
             <p>Consider a PHP project with PHPUnit tests that use a SQLite database. The test suite isn't optimized for parallel execution because:</p>
             <ul>
@@ -107,7 +107,7 @@
             <p>When a sub-agent attempts to run tests, it receives a structured JSON response explaining why the operation was blocked and what commands are allowed.</p>
 
             <h3>Fail-Safe Design</h3>
-            <p>The hook uses a "fail open" strategy—if it can't determine whether it's in a sub-agent, it allows the command. This prevents blocking legitimate operations due to hook errors.</p>
+            <p>The hook uses a "fail open" strategy. If it can't determine whether it's in a sub-agent, it allows the command. This prevents blocking legitimate operations due to hook errors.</p>
         </section>
 
         <section>
@@ -140,12 +140,12 @@
             <p>Verify your hook works correctly in both main agent and sub-agent contexts. Use <code>echo $$</code> and <code>ps</code> commands to understand the process hierarchy.</p>
 
             <h3>Keep Hooks Fast</h3>
-            <p>Hooks execute on every tool use. Keep them lightweight—this implementation completes in milliseconds.</p>
+            <p>Hooks execute on every tool use. Keep them lightweight. This implementation completes in milliseconds.</p>
         </section>
 
         <section>
             <h2>Conclusion</h2>
-            <p>Claude Code hooks unlock powerful automation capabilities beyond simple validation. By leveraging process inspection and pattern matching, you can enforce sophisticated execution policies that adapt to context—allowing parallel execution where safe, and preventing it where resources are shared.</p>
+            <p>Claude Code hooks unlock powerful automation capabilities beyond simple validation. By leveraging process inspection and pattern matching, you can enforce sophisticated execution policies that adapt to context. This allows parallel execution where safe, and prevents it where resources are shared.</p>
 
             <p>This sub-agent control pattern transforms a potential source of race conditions and lock conflicts into a well-orchestrated parallel execution system. The main agent coordinates test execution, while sub-agents handle static analysis in parallel, maximizing productivity without sacrificing reliability.</p>
 
