@@ -7,13 +7,22 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 388,
+    "title": "Advanced Claude Code Hooks: Controlling Sub-Agent Behavior",
+    "excerpt": "Learn how to use Claude Code hooks to enforce execution rules for parallel sub-agents, preventing resource conflicts in test suites and other shared-resource scenarios.",
+    "category": "ai",
+    "date": "2025-10-24",
+    "slug": "claude-code-hooks-subagent-control",
+    "readingTime": "8"
+  },
+  {
     "id": 988,
     "title": "Advanced PHP Database Patterns: Beyond ORMs for High-Performance Applications",
     "excerpt": "Discover advanced database patterns for PHP including retry mechanisms, bulk updates, statement caching, query classes, generators for memory efficiency, and PHPStan rules for test correctness. Learn when to use PDO directly over ORMs.",
     "category": "database",
     "date": "2025-10-08",
     "slug": "advanced-php-database-patterns",
-    "readingTime": "15"
+    "readingTime": "18"
   },
   {
     "id": 237,

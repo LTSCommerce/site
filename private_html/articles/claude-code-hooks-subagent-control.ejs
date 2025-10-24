@@ -1,0 +1,155 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'Advanced Claude Code Hooks: Controlling Sub-Agent Behavior',
+    articleDescription: 'Learn how to use Claude Code hooks to enforce execution rules for parallel sub-agents, preventing resource conflicts in test suites and other shared-resource scenarios.',
+    articleDate: '2025-10-24',
+    articleCategory: 'ai',
+    articleReadingTime: '8',
+    articleSubreddit: 'LLMDevs',
+    articleContent: `
+        <div class="intro">
+            <p class="lead">Claude Code hooks are powerful automation tools that execute at specific points during AI coding sessions. While basic hooks can validate prompts or add context, advanced hooks can enforce sophisticated rules—like preventing parallel sub-agents from running test suites that share database connections.</p>
+        </div>
+
+        <section>
+            <h2>Understanding Claude Code Hooks</h2>
+            <p>Hooks in Claude Code are automated scripts that intercept and control the AI's tool usage. They execute arbitrary shell commands at specific lifecycle events, enabling you to:</p>
+            <ul>
+                <li><strong>Validate tool usage</strong> before execution (PreToolUse)</li>
+                <li><strong>Add context</strong> to user prompts (UserPromptSubmit)</li>
+                <li><strong>Clean up resources</strong> when sessions end (SessionEnd)</li>
+                <li><strong>Inject environment data</strong> at session start (SessionStart)</li>
+                <li><strong>Control permissions</strong> for file operations</li>
+            </ul>
+
+            <p>The most powerful hook type is <code>PreToolUse</code>, which runs before any tool executes and can approve, deny, or request user confirmation for the operation.</p>
+        </section>
+
+        <section>
+            <h2>The Problem: Parallel Execution and Shared Resources</h2>
+            <p>Claude Code's sub-agent system enables parallel task execution—multiple agents can work simultaneously on different aspects of your codebase. This is excellent for productivity, but creates challenges when those tasks share resources.</p>
+
+            <p>Consider a PHP project with PHPUnit tests that use a SQLite database. The test suite isn't optimized for parallel execution because:</p>
+            <ul>
+                <li><strong>Database locks</strong>: SQLite allows only one writer at a time</li>
+                <li><strong>Shared state</strong>: Tests may create or modify the same fixtures</li>
+                <li><strong>Race conditions</strong>: Parallel execution causes unpredictable failures</li>
+            </ul>
+
+            <p>When Claude spawns multiple sub-agents to handle complex refactoring tasks, each might independently decide to run the test suite. The result? Database lock conflicts, failed tests, and confused AI agents.</p>
+        </section>
+
+        <section>
+            <h2>The Solution: Sub-Agent Detection and Control</h2>
+            <p>We can solve this by creating a hook that detects when it's running in a sub-agent context and blocks test execution, while still allowing other QA tools like static analysis and code style checks.</p>
+
+            <p>The key insight is that sub-agents run as child processes of the main <code>claude</code> process. By examining the parent process ID (PPID), we can determine whether we're in the main session or a sub-agent.</p>
+        </section>
+
+        <section>
+            <h2>Implementation: The PreToolUse Hook</h2>
+            <p>Here's a complete <a href="https://www.python.org/" target="_blank" rel="noopener">Python</a> hook that implements sub-agent detection and selective command blocking:</p>
+
+            <pre><code class="language-python">{{SNIPPET:claude-code-hooks-subagent-control/prevent-subagent-tests.py}}
+</code></pre>
+        </section>
+
+        <section>
+            <h2>How It Works</h2>
+
+            <h3>1. Sub-Agent Detection</h3>
+            <p>The <code>is_subagent()</code> function uses process inspection to determine context:</p>
+            <ul>
+                <li>Gets the parent process ID using <code>os.getppid()</code></li>
+                <li>Queries the parent's command name using <code>ps</code></li>
+                <li>Returns <code>True</code> if the parent is the <code>claude</code> process</li>
+                <li>Fails open (returns <code>False</code>) on errors to avoid blocking legitimate operations</li>
+            </ul>
+
+            <h3>2. Command Pattern Matching</h3>
+            <p>The hook uses regex patterns to categorize commands:</p>
+            <ul>
+                <li><strong>Test commands</strong>: PHPUnit, Infection, <code>bin/qa -t unit</code></li>
+                <li><strong>Allowed QA commands</strong>: <code>bin/qa -t allCs</code>, <code>bin/qa -t allStatic</code></li>
+                <li><strong>All other commands</strong>: Allowed without restriction</li>
+            </ul>
+
+            <h3>3. Selective Blocking</h3>
+            <p>The hook implements a whitelist/blacklist strategy:</p>
+            <ul>
+                <li>Main agent: All commands allowed</li>
+                <li>Sub-agents: Static analysis allowed, tests blocked</li>
+                <li>Error response: Structured JSON explaining the block</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Configuration</h2>
+            <p>To enable this hook, add it to your <a href="https://docs.claude.com/en/docs/claude-code/settings" target="_blank" rel="noopener">Claude Code settings file</a> (<code>~/.claude/settings.json</code> or <code>.claude/settings.json</code>):</p>
+
+            <pre><code class="language-json">{{SNIPPET:claude-code-hooks-subagent-control/settings.json}}
+</code></pre>
+
+            <p>Make the script executable:</p>
+            <pre><code class="language-bash">{{SNIPPET:claude-code-hooks-subagent-control/make-executable.sh}}
+</code></pre>
+        </section>
+
+        <section>
+            <h2>Real-World Benefits</h2>
+
+            <h3>Prevents Database Lock Conflicts</h3>
+            <p>By blocking parallel test execution, you eliminate SQLite database lock errors that would otherwise cause test failures and confuse the AI agents.</p>
+
+            <h3>Enables Parallel Static Analysis</h3>
+            <p>Sub-agents can still run code style checks (<code>allCs</code>) and static analysis (<code>allStatic</code>) in parallel, since these tools don't share resources.</p>
+
+            <h3>Clear Error Messages</h3>
+            <p>When a sub-agent attempts to run tests, it receives a structured JSON response explaining why the operation was blocked and what commands are allowed.</p>
+
+            <h3>Fail-Safe Design</h3>
+            <p>The hook uses a "fail open" strategy—if it can't determine whether it's in a sub-agent, it allows the command. This prevents blocking legitimate operations due to hook errors.</p>
+        </section>
+
+        <section>
+            <h2>Extending the Pattern</h2>
+            <p>This technique applies to any shared resource scenario:</p>
+
+            <ul>
+                <li><strong>Database migrations</strong>: Prevent parallel schema changes</li>
+                <li><strong>File system operations</strong>: Block concurrent writes to lock files</li>
+                <li><strong>External services</strong>: Rate-limit API calls across sub-agents</li>
+                <li><strong>Build artifacts</strong>: Prevent simultaneous builds that share directories</li>
+            </ul>
+
+            <p>The core pattern remains the same: detect sub-agent context via PPID, match command patterns, and selectively allow or block operations based on resource constraints.</p>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+
+            <h3>Use Specific Patterns</h3>
+            <p>Make your regex patterns as specific as possible to avoid false positives. Use word boundaries (<code>\\b</code>) and full command paths when appropriate.</p>
+
+            <h3>Fail Open for Safety</h3>
+            <p>When error handling, prefer allowing the operation over blocking it. A blocked legitimate operation is more frustrating than a rare race condition.</p>
+
+            <h3>Provide Clear Feedback</h3>
+            <p>Structure your error messages as JSON with fields explaining what was blocked, why, and what alternatives are available.</p>
+
+            <h3>Test Both Contexts</h3>
+            <p>Verify your hook works correctly in both main agent and sub-agent contexts. Use <code>echo $$</code> and <code>ps</code> commands to understand the process hierarchy.</p>
+
+            <h3>Keep Hooks Fast</h3>
+            <p>Hooks execute on every tool use. Keep them lightweight—this implementation completes in milliseconds.</p>
+        </section>
+
+        <section>
+            <h2>Conclusion</h2>
+            <p>Claude Code hooks unlock powerful automation capabilities beyond simple validation. By leveraging process inspection and pattern matching, you can enforce sophisticated execution policies that adapt to context—allowing parallel execution where safe, and preventing it where resources are shared.</p>
+
+            <p>This sub-agent control pattern transforms a potential source of race conditions and lock conflicts into a well-orchestrated parallel execution system. The main agent coordinates test execution, while sub-agents handle static analysis in parallel, maximizing productivity without sacrificing reliability.</p>
+
+            <p>Whether you're managing database locks, preventing concurrent migrations, or rate-limiting external API calls, this pattern provides a robust foundation for resource-aware parallel execution control.</p>
+        </section>
+    `
+}) %>
