@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 685,
+    "title": "Claude Code Latest Features: What's New in Fall 2025",
+    "excerpt": "Explore the groundbreaking features added to Claude Code in the last three months, including checkpoints for fearless refactoring, autonomous subagents, plugin marketplace, web interface, and more.",
+    "category": "ai",
+    "date": "2025-11-05",
+    "slug": "claude-code-latest-features",
+    "readingTime": "12"
+  },
+  {
     "id": 388,
     "title": "Advanced Claude Code Hooks: Controlling Sub-Agent Behavior",
     "excerpt": "Learn how to use Claude Code hooks to enforce execution rules for parallel sub-agents, preventing resource conflicts in test suites and other shared-resource scenarios.",

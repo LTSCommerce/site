@@ -1,0 +1,344 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'Claude Code Latest Features: What\'s New in Fall 2025',
+    articleDescription: 'Explore the groundbreaking features added to Claude Code in the last three months, including checkpoints for fearless refactoring, autonomous subagents, plugin marketplace, web interface, and more.',
+    articleDate: '2025-11-05',
+    articleCategory: 'ai',
+    articleReadingTime: '12',
+    articleSubreddit: 'LLMDevs',
+    articleContent: `
+        <div class="intro">
+            <p class="lead"><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener">Claude Code</a> has evolved dramatically in the last three months, transforming from a powerful terminal coding assistant into a comprehensive autonomous development platform. From September through November 2025, Anthropic introduced checkpoints for fearless code iteration, a plugin marketplace for sharing workflows, native VS Code integration, web and mobile interfaces, and significant model improvements with <a href="https://www.anthropic.com/news/claude-sonnet-4-5" target="_blank" rel="noopener">Claude Sonnet 4.5</a>. Let's explore what makes these updates game-changing for developers.</p>
+        </div>
+
+        <section>
+            <h2>Checkpoints: The Undo Button for AI Coding</h2>
+            <p>On September 29, 2025, Anthropic introduced <a href="https://docs.claude.com/en/docs/claude-code/checkpointing" target="_blank" rel="noopener">checkpoints</a>, arguably the most important feature for building confidence in AI-assisted development. Checkpoints automatically save your code state before each change, enabling instant rollback when experiments go wrong.</p>
+
+            <h3>How Checkpoints Work</h3>
+            <p>Every user prompt creates a new checkpoint that persists for 30 days (configurable). When you need to rewind, press <code>Esc</code> twice or use the <a href="https://docs.claude.com/en/docs/claude-code/checkpointing" target="_blank" rel="noopener"><code>/rewind</code> command</a> to access three restoration options:</p>
+            <ul>
+                <li><strong>Conversation only</strong>: Keep code changes, revert the chat history</li>
+                <li><strong>Code only</strong>: Keep conversation context, undo file modifications</li>
+                <li><strong>Both code and conversation</strong>: Complete rollback to a prior state</li>
+            </ul>
+
+            <h3>Why This Is Cool</h3>
+            <p>Checkpoints solve a fundamental problem with autonomous AI coding: fear of destructive changes. Traditional version control like <a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a> requires manual commits and discipline. Checkpoints provide instant, granular undo without ceremony. This psychological safety net enables more ambitious experimentation and delegation of complex tasks.</p>
+
+            <p>The system tracks only direct file edits through Claude's editing tools, not bash command modifications. This design prevents accidental checkpoint bloat from operations like <code>rm</code>, <code>mv</code>, or <code>npm install</code>, which should remain under explicit version control.</p>
+
+            <h3>Real-World Use Cases</h3>
+            <ul>
+                <li><strong>Refactoring experiments</strong>: Try aggressive architectural changes, knowing you can instantly revert</li>
+                <li><strong>Bug fixes</strong>: Test multiple debugging approaches in rapid succession</li>
+                <li><strong>Feature iteration</strong>: Explore alternative implementations without manual Git branching</li>
+            </ul>
+
+            <p>Checkpoints complement Git rather than replacing it. Use checkpoints for session-level experimentation, Git for permanent history and collaboration.</p>
+        </section>
+
+        <section>
+            <h2>Claude Sonnet 4.5: The Engine Behind Autonomy</h2>
+            <p>On September 29, 2025, Anthropic launched <a href="https://www.anthropic.com/news/claude-sonnet-4-5" target="_blank" rel="noopener">Claude Sonnet 4.5</a> as the new default model for Claude Code, calling it "the best coding model in the world." This isn't marketing hyperbole. Sonnet 4.5 demonstrates the ability to maintain focus for more than 30 hours on complex, multi-step development tasks.</p>
+
+            <h3>Key Improvements</h3>
+            <ul>
+                <li><strong>Extended reasoning</strong>: Handles significantly longer task sequences without losing context</li>
+                <li><strong>Agent capabilities</strong>: Better at breaking down complex problems into actionable steps</li>
+                <li><strong>Computer use</strong>: Enhanced ability to interact with tools and interfaces</li>
+                <li><strong>Math and logic</strong>: Substantial gains in analytical reasoning</li>
+            </ul>
+
+            <h3>Pricing and Availability</h3>
+            <p>Sonnet 4.5 maintains the same pricing as its predecessor: $3 input / $15 output per million tokens. Access it via the <a href="https://docs.anthropic.com/en/api/getting-started" target="_blank" rel="noopener">Claude API</a> using the model ID <code>claude-sonnet-4-5</code>. The model is also available in <a href="https://github.blog/changelog/2025-10-13-anthropics-claude-sonnet-4-5-is-now-generally-available-in-github-copilot/" target="_blank" rel="noopener">GitHub Copilot</a> as of October 13, 2025.</p>
+
+            <h3>Impact on Claude Code</h3>
+            <p>The model upgrade enables the autonomous features discussed throughout this article. Checkpoints, subagents, and extended sessions all benefit from Sonnet 4.5's improved reasoning and task persistence.</p>
+        </section>
+
+        <section>
+            <h2>Subagents: Parallel Development Workflows</h2>
+            <p><a href="https://docs.claude.com/en/docs/claude-code/sub-agents" target="_blank" rel="noopener">Subagents</a> are specialized AI assistants that handle specific task types with their own context windows and tool permissions. Announced in late summer 2025 and refined through September, subagents enable true parallel development workflows.</p>
+
+            <h3>How Subagents Work</h3>
+            <p>Each subagent operates in an isolated context window with a custom system prompt and specific tool permissions. When Claude encounters work matching a subagent's expertise, it delegates the task to the specialized agent. This provides three key advantages:</p>
+            <ul>
+                <li><strong>Context preservation</strong>: Main conversation doesn't get cluttered with specialized task details</li>
+                <li><strong>Specialized expertise</strong>: Agents can be fine-tuned with domain-specific instructions</li>
+                <li><strong>Parallel execution</strong>: Multiple subagents can work simultaneously on different aspects of your codebase</li>
+            </ul>
+
+            <h3>Creating Subagents</h3>
+            <p>Use the <code>/agents</code> command to open an interactive interface for creating project-level or user-level agents. Subagents are stored as <a href="https://daringfireball.net/projects/markdown/" target="_blank" rel="noopener">Markdown</a> files with <a href="https://yaml.org/" target="_blank" rel="noopener">YAML</a> frontmatter in <code>.claude/agents/</code> (project) or <code>~/.claude/agents/</code> (user).</p>
+
+            <h3>Built-in Subagent Examples</h3>
+            <ul>
+                <li><strong>Code reviewer</strong>: Analyzes changes for quality, security, and maintainability</li>
+                <li><strong>Debugger</strong>: Performs root cause analysis on errors and test failures</li>
+                <li><strong>Data scientist</strong>: Handles <a href="https://www.w3schools.com/sql/" target="_blank" rel="noopener">SQL</a> queries and <a href="https://cloud.google.com/bigquery" target="_blank" rel="noopener">BigQuery</a> operations</li>
+            </ul>
+
+            <h3>Real-World Application</h3>
+            <p>Imagine building a full-stack feature. The main agent coordinates while delegating backend API development to one subagent and frontend UI implementation to another. They work in parallel, each maintaining focused context on their specialized domain.</p>
+        </section>
+
+        <section>
+            <h2>Hooks: Automated Quality Gates</h2>
+            <p>Hooks are automated triggers that execute at specific lifecycle points in Claude Code sessions. Released alongside subagents, hooks enable sophisticated workflow automation without manual intervention.</p>
+
+            <h3>Available Hook Types</h3>
+            <ul>
+                <li><strong>PreToolUse</strong>: Executes before Claude uses any tool, enabling approval/denial logic</li>
+                <li><strong>PostToolUse</strong>: Runs after successful tool execution, perfect for formatting or testing</li>
+                <li><strong>UserPromptSubmit</strong>: Intercepts user prompts to add context or metadata</li>
+                <li><strong>SessionStart</strong>: Injects environment data when sessions begin</li>
+                <li><strong>SessionEnd</strong>: Cleans up resources when sessions terminate</li>
+            </ul>
+
+            <h3>Common Hook Use Cases</h3>
+            <ul>
+                <li><strong>Auto-formatting</strong>: Run <a href="https://prettier.io/" target="_blank" rel="noopener">Prettier</a> or <a href="https://github.com/PHP-CS-Fixer/PHP-CS-Fixer" target="_blank" rel="noopener">PHP-CS-Fixer</a> after code changes</li>
+                <li><strong>Test automation</strong>: Execute <a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a> or <a href="https://jestjs.io/" target="_blank" rel="noopener">Jest</a> after modifications</li>
+                <li><strong>Linting enforcement</strong>: Block commits that violate <a href="https://eslint.org/" target="_blank" rel="noopener">ESLint</a> or <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> rules</li>
+                <li><strong>Resource management</strong>: Control parallel execution to prevent database lock conflicts</li>
+            </ul>
+
+            <h3>Hook Configuration</h3>
+            <p>Hooks are configured in <code>~/.claude/settings.json</code> or <code>.claude/settings.json</code>. Each hook specifies a script path and optional metadata. The <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener">v2.0.30 release</a> added prompt-based stop hooks, enabling even more sophisticated control patterns.</p>
+
+            <p>For a detailed example of using hooks to control subagent behavior and prevent resource conflicts, see my article on <a href="/articles/claude-code-hooks-subagent-control.html">Advanced Claude Code Hooks: Controlling Sub-Agent Behavior</a>.</p>
+        </section>
+
+        <section>
+            <h2>Plugins: Sharing Workflows Through Marketplaces</h2>
+            <p>On October 9, 2025, Anthropic launched the <a href="https://docs.claude.com/en/docs/claude-code/plugins" target="_blank" rel="noopener">Claude Code plugin system</a> in public beta. Plugins are lightweight packages that bundle slash commands, subagents, <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">MCP servers</a>, and hooks into shareable, installable units.</p>
+
+            <h3>What Plugins Include</h3>
+            <ul>
+                <li><strong>Slash commands</strong>: Custom shortcuts for frequently-used operations</li>
+                <li><strong>Subagents</strong>: Purpose-built agents for specialized development tasks</li>
+                <li><strong>MCP servers</strong>: Connect to tools and data sources through the Model Context Protocol</li>
+                <li><strong>Hooks</strong>: Customize Claude Code's behavior at key workflow points</li>
+            </ul>
+
+            <h3>Using the /plugin Command</h3>
+            <p>Install plugins with the <code>/plugin</code> command. First, add a marketplace:</p>
+            <pre><code class="language-bash">/plugin marketplace add user-or-org/repo-name</code></pre>
+
+            <p>Then browse and install plugins:</p>
+            <pre><code class="language-bash">/plugin install plugin-name@marketplace-name</code></pre>
+
+            <p>Plugins work across both terminal and <a href="https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code" target="_blank" rel="noopener">VS Code extension</a> environments, providing consistent functionality regardless of interface.</p>
+
+            <h3>Creating Plugin Marketplaces</h3>
+            <p>Any <a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a> repository can host a plugin marketplace. Create a <code>.claude-plugin/marketplace.json</code> file with properly formatted plugin metadata, then share the repository URL. This decentralized approach enables teams to create internal plugin marketplaces for company-specific workflows.</p>
+
+            <h3>Why Plugins Matter</h3>
+            <ul>
+                <li><strong>Standardization</strong>: Engineering leaders enforce consistency across teams</li>
+                <li><strong>Knowledge sharing</strong>: Open source maintainers provide best-practice workflows</li>
+                <li><strong>Tool integration</strong>: Connect internal tools through MCP without custom development</li>
+                <li><strong>Productivity patterns</strong>: Share proven debugging, testing, and deployment workflows</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Agent Skills: Progressive Disclosure of Capabilities</h2>
+            <p>On October 16, 2025, Anthropic introduced <a href="https://www.anthropic.com/news/skills" target="_blank" rel="noopener">Agent Skills</a>, a new pattern for making specialized abilities available to Claude models. Skills use a "progressive disclosure" design that loads information only when relevant, making the system both token-efficient and scalable.</p>
+
+            <h3>How Skills Work</h3>
+            <p>Skills are folders containing instructions, scripts, and resources. Each skill takes only a few dozen tokens in the agent's context, with full details loaded only when the user requests a task the skill can solve. Claude automatically determines which skills are relevant and loads them as needed.</p>
+
+            <h3>Installation and Usage</h3>
+            <p>Install skills via the <code>/plugin</code> command from the <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener">anthropics/skills marketplace</a>, or manually by adding them to <code>~/.claude/skills</code>. Skills work across <a href="https://claude.ai/" target="_blank" rel="noopener">Claude.ai</a>, Claude Code, and the <a href="https://docs.anthropic.com/en/api/getting-started" target="_blank" rel="noopener">Claude API</a>.</p>
+
+            <h3>Availability</h3>
+            <p>Skills are available on Pro, Max, Team, and Enterprise plans as of October 16, 2025.</p>
+
+            <h3>Skills vs Plugins</h3>
+            <p>While plugins bundle multiple customization types (commands, agents, hooks, MCP servers), skills focus specifically on specialized task capabilities. Think of skills as expertise modules and plugins as workflow packages.</p>
+        </section>
+
+        <section>
+            <h2>VS Code Extension: Native IDE Integration</h2>
+            <p>Announced on September 29, 2025, the native <a href="https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code" target="_blank" rel="noopener">Claude Code VS Code extension</a> brings AI-assisted development directly into the IDE with real-time visual feedback.</p>
+
+            <h3>Key Features</h3>
+            <ul>
+                <li><strong>Inline diffs</strong>: See Claude's changes in the IDE diff viewer, not just the terminal</li>
+                <li><strong>Sidebar panel</strong>: Dedicated interface for Claude interactions with full chat history</li>
+                <li><strong>Quick launch</strong>: Press <code>Cmd+Esc</code> (Mac) or <code>Ctrl+Esc</code> (Windows/Linux) to open Claude Code</li>
+                <li><strong>Context awareness</strong>: Current selection and active tab automatically shared with Claude</li>
+                <li><strong>Plugin support</strong>: All plugins installed via <code>/plugin</code> work in both terminal and VS Code</li>
+            </ul>
+
+            <h3>Checkpoint Integration</h3>
+            <p>The checkpoint system works seamlessly in VS Code. Press <code>Esc</code> twice or use <code>/rewind</code> to access the rewind menu, with changes displayed in the IDE's native diff viewer for clear visual feedback.</p>
+
+            <h3>Terminal Parity</h3>
+            <p>The extension maintains feature parity with the terminal interface. Subagents, hooks, skills, and plugins all function identically, ensuring consistent workflows across environments.</p>
+
+            <h3>Status</h3>
+            <p>The VS Code extension is currently in beta and available for download from the <a href="https://marketplace.visualstudio.com/" target="_blank" rel="noopener">VS Code Extension Marketplace</a>.</p>
+        </section>
+
+        <section>
+            <h2>Claude Code on the Web and Mobile</h2>
+            <p>On October 20, 2025, Anthropic expanded Claude Code beyond the terminal with a <a href="https://www.anthropic.com/news/claude-code-on-the-web" target="_blank" rel="noopener">web interface</a> and <a href="https://apps.apple.com/app/claude-by-anthropic/id6473753684" target="_blank" rel="noopener">iOS app integration</a>, making AI-assisted coding accessible without local development environments.</p>
+
+            <h3>Web Interface Features</h3>
+            <ul>
+                <li><strong>GitHub integration</strong>: Connect repositories directly from <a href="https://claude.com/code" target="_blank" rel="noopener">claude.com/code</a></li>
+                <li><strong>Browser-based coding</strong>: No terminal or local installation required</li>
+                <li><strong>Sandbox security</strong>: Every task runs in an isolated environment with network and filesystem restrictions</li>
+                <li><strong>Git proxy service</strong>: Secure authentication ensures Claude can only access authorized repositories</li>
+            </ul>
+
+            <h3>Mobile Support</h3>
+            <p>The iOS app enables exploratory coding on mobile devices. While not intended for production development, it allows code review, bug fixes, and prototyping from anywhere.</p>
+
+            <h3>Availability</h3>
+            <p>Claude Code on the web is in research preview for <a href="https://www.anthropic.com/pricing" target="_blank" rel="noopener">Pro and Max users</a>. Visit <a href="https://claude.com/code" target="_blank" rel="noopener">claude.com/code</a> to connect your first repository.</p>
+
+            <h3>Security Architecture</h3>
+            <p>The web interface uses isolated sandbox environments for all code execution. Network and filesystem access is restricted, and Git operations go through a secure proxy that validates repository permissions. This architecture prevents malicious code execution while maintaining full development capabilities.</p>
+
+            <h3>Performance Impact</h3>
+            <p>According to <a href="https://techcrunch.com/2025/10/20/anthropic-brings-claude-code-to-the-web/" target="_blank" rel="noopener">TechCrunch</a>, Claude Code has grown 10x in users since its broader launch in May 2025, and now accounts for more than $500 million in annualized revenue for Anthropic.</p>
+        </section>
+
+        <section>
+            <h2>Model Context Protocol (MCP) Integration</h2>
+            <p>Claude Code's support for the <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol</a> enables connections to hundreds of external tools and data sources through a standardized interface. MCP adoption accelerated dramatically in early 2025.</p>
+
+            <h3>What Is MCP?</h3>
+            <p>Think of MCP as "USB-C for AI." Just as USB-C provides a universal connection standard for devices, MCP provides a universal protocol for AI models to connect to different tools and services. Developed by Anthropic, MCP is an open-source standard that has seen rapid industry adoption.</p>
+
+            <h3>Industry Adoption Timeline</h3>
+            <ul>
+                <li><strong>March 2025</strong>: <a href="https://openai.com/" target="_blank" rel="noopener">OpenAI</a> adopted MCP across <a href="https://chat.openai.com/" target="_blank" rel="noopener">ChatGPT</a></li>
+                <li><strong>April 2025</strong>: <a href="https://www.google.com/" target="_blank" rel="noopener">Google</a> confirmed support for <a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a></li>
+                <li><strong>2025</strong>: <a href="https://www.block.xyz/" target="_blank" rel="noopener">Block</a>, <a href="https://www.apollographql.com/" target="_blank" rel="noopener">Apollo</a>, <a href="https://zed.dev/" target="_blank" rel="noopener">Zed</a>, <a href="https://replit.com/" target="_blank" rel="noopener">Replit</a>, <a href="https://codeium.com/" target="_blank" rel="noopener">Codeium</a>, and <a href="https://sourcegraph.com/" target="_blank" rel="noopener">Sourcegraph</a> all implemented MCP support</li>
+            </ul>
+
+            <h3>Available MCP Servers</h3>
+            <p>Claude Code can connect to services including <a href="https://stripe.com/" target="_blank" rel="noopener">Stripe</a>, <a href="https://www.figma.com/" target="_blank" rel="noopener">Figma</a>, <a href="https://cloudinary.com/" target="_blank" rel="noopener">Cloudinary</a>, <a href="https://www.canva.com/" target="_blank" rel="noopener">Canva</a>, <a href="https://sentry.io/" target="_blank" rel="noopener">Sentry</a>, <a href="https://jam.dev/" target="_blank" rel="noopener">Jam</a>, <a href="https://asana.com/" target="_blank" rel="noopener">Asana</a>, and <a href="https://www.atlassian.com/" target="_blank" rel="noopener">Atlassian</a> products.</p>
+
+            <h3>Claude Code as MCP Server</h3>
+            <p>Interestingly, Claude Code can run as an <a href="https://docs.claude.com/en/docs/claude-code/mcp" target="_blank" rel="noopener">MCP server itself</a> using <code>claude mcp serve</code>. This exposes Claude Code's file editing and command execution tools via the MCP protocol, enabling other AI systems to use Claude Code as a tool.</p>
+
+            <h3>Token Management</h3>
+            <p>Claude Code displays warnings when MCP tool output exceeds 10,000 tokens, with a default maximum of 25,000 tokens (configurable). This prevents context window exhaustion from verbose tool responses.</p>
+
+            <h3>Current Protocol Version</h3>
+            <p>As of November 2025, the current MCP protocol version is <code>2025-03-26</code>. The specification continues to evolve with breaking changes as it matures.</p>
+        </section>
+
+        <section>
+            <h2>Terminal Interface 2.0</h2>
+            <p>Version 2.0 of the Claude Code terminal interface, released on September 29, 2025, brings significant UX improvements for power users who prefer command-line workflows.</p>
+
+            <h3>Key Improvements</h3>
+            <ul>
+                <li><strong>Enhanced status visibility</strong>: Clear indication of current agent state and active operations</li>
+                <li><strong>Searchable prompt history</strong>: Press <code>Ctrl+R</code> to search and reuse previous prompts</li>
+                <li><strong>Improved mode switching</strong>: Windows users can now use <code>Shift+Tab</code> instead of <code>Alt+M</code> (changed in <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener">v2.0.31</a>)</li>
+                <li><strong>Better error reporting</strong>: More detailed information when operations fail</li>
+            </ul>
+
+            <h3>Background Tasks</h3>
+            <p>The updated terminal interface supports <a href="https://www.anthropic.com/news/enabling-claude-code-to-work-more-autonomously" target="_blank" rel="noopener">background tasks</a>, allowing long-running processes like development servers to remain active without blocking Claude Code's progress on other work. This enables true parallel development workflows.</p>
+
+            <h3>Native Binary Performance</h3>
+            <p>Version 2.0.33 (latest release) improved native binary installations to launch with significantly better speed, making the terminal experience even more responsive.</p>
+        </section>
+
+        <section>
+            <h2>Configuration and Customization Improvements</h2>
+            <p>Recent releases added several quality-of-life improvements for advanced users who need fine-grained control over Claude Code's behavior.</p>
+
+            <h3>Security and Sandbox Controls</h3>
+            <p>Version 2.0.30 introduced <code>allowUnsandboxedCommands</code> setting for policy-level restrictions, and <code>disallowedTools</code> field for custom agent definitions to explicitly block specific tools. These features enable organizations to enforce security policies while maintaining development flexibility.</p>
+
+            <h3>MCP Configuration</h3>
+            <ul>
+                <li><strong>SSE support</strong>: Native builds now support Server-Sent Events (SSE) MCP servers (v2.0.30)</li>
+                <li><strong>Configuration precedence</strong>: Fixed <code>--mcp-config</code> flag incorrectly overriding file-based configurations (v2.0.30)</li>
+                <li><strong>Tool compatibility</strong>: Resolved issues with MCP tools containing incompatible output schemas (v2.0.33)</li>
+            </ul>
+
+            <h3>VS Code Integration Settings</h3>
+            <p>Version 2.0.31 added <code>respectGitIgnore</code> configuration option for VS Code extension, allowing users to optionally include gitignored files in searches when needed for debugging or analysis.</p>
+
+            <h3>Company Announcements</h3>
+            <p>Version 2.0.32 introduced <code>companyAnnouncements</code> setting for displaying startup notifications, useful for enterprise deployments that need to communicate policy changes or updates to development teams.</p>
+        </section>
+
+        <section>
+            <h2>Getting Started with New Features</h2>
+            <p>Ready to explore these new capabilities? Here's how to get started with each major feature.</p>
+
+            <h3>Update Claude Code</h3>
+            <p>First, ensure you're running the latest version:</p>
+            <pre><code class="language-bash">npm update -g @anthropic-ai/claude-code</code></pre>
+
+            <h3>Try Checkpoints</h3>
+            <p>Start a coding session and make some changes. Then press <code>Esc</code> twice to open the rewind menu. Experiment with reverting code, conversation, or both to understand the workflow.</p>
+
+            <h3>Create a Subagent</h3>
+            <p>Use the <code>/agents</code> command to create a specialized agent for a common task in your workflow. For example, create a "test runner" agent that validates changes before commits.</p>
+
+            <h3>Install a Plugin</h3>
+            <p>Add the official marketplace and explore available plugins:</p>
+            <pre><code class="language-bash">/plugin marketplace add anthropics/plugins
+/plugin install your-chosen-plugin</code></pre>
+
+            <h3>Try the VS Code Extension</h3>
+            <p>Search for "Claude Code" in the VS Code Extension Marketplace and install it. Use <code>Cmd+Esc</code> (Mac) or <code>Ctrl+Esc</code> (Windows/Linux) to launch Claude in your IDE.</p>
+
+            <h3>Explore Claude Code on the Web</h3>
+            <p>Visit <a href="https://claude.com/code" target="_blank" rel="noopener">claude.com/code</a> (requires Pro or Max plan) and connect a GitHub repository. Try kicking off a coding task from your browser to experience the web interface.</p>
+
+            <h3>Set Up an MCP Server</h3>
+            <p>Browse available <a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener">MCP servers</a> and configure one relevant to your workflow. The <a href="https://docs.claude.com/en/docs/claude-code/mcp" target="_blank" rel="noopener">MCP documentation</a> provides setup instructions.</p>
+        </section>
+
+        <section>
+            <h2>What's Next for Claude Code?</h2>
+            <p>Based on the rapid pace of innovation over the last three months, several trends suggest future directions:</p>
+
+            <ul>
+                <li><strong>Extended autonomous operation</strong>: With 30-hour task persistence already demonstrated, expect longer-running development sessions with better error recovery</li>
+                <li><strong>Team collaboration features</strong>: Shared plugins, subagents, and hooks could enable team-wide consistency</li>
+                <li><strong>Enhanced mobile experience</strong>: The iOS app is just the beginning - expect more sophisticated mobile workflows</li>
+                <li><strong>Deeper IDE integrations</strong>: VS Code extension is in beta; expect stable release and potential <a href="https://www.jetbrains.com/" target="_blank" rel="noopener">JetBrains</a> integration</li>
+                <li><strong>Enterprise features</strong>: Security controls and audit logging for regulated industries</li>
+            </ul>
+
+            <p>The foundation is clear: Claude Code is evolving from a coding assistant into a comprehensive autonomous development platform that works across terminals, IDEs, web browsers, and mobile devices.</p>
+        </section>
+
+        <section>
+            <h2>Conclusion</h2>
+            <p>The last three months have fundamentally transformed Claude Code. Checkpoints eliminate fear of experimentation. Subagents enable parallel development workflows. Plugins create a sharing economy for development patterns. The VS Code extension brings AI assistance directly into the IDE. Web and mobile interfaces make coding accessible anywhere. And Claude Sonnet 4.5 provides the intelligence to make it all work reliably.</p>
+
+            <p>These aren't incremental improvements - they represent a shift in how we think about AI-assisted development. Rather than replacing developers, Claude Code augments capabilities: handle routine tasks autonomously, experiment fearlessly with instant rollback, delegate specialized work to focused agents, and maintain productivity across any environment.</p>
+
+            <p>For developers building modern applications in <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a>, <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>, <a href="https://www.python.org/" target="_blank" rel="noopener">Python</a>, <a href="https://go.dev/" target="_blank" rel="noopener">Go</a>, or any other language, Claude Code now offers a mature, extensible platform for AI-augmented development. The features are stable, the documentation is comprehensive, and the community is building plugins and sharing workflows.</p>
+
+            <p>Start with checkpoints for risk-free experimentation. Add subagents for specialized tasks. Install plugins that match your workflow. The future of development is autonomous, and it's available today.</p>
+
+            <h3>Additional Resources</h3>
+            <ul>
+                <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener">Claude Code GitHub Repository</a> - Source code, issues, and community discussions</li>
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Official Changelog</a> - Complete version history and release notes</li>
+                <li><a href="https://docs.claude.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code Documentation</a> - Comprehensive guides and API reference</li>
+                <li><a href="https://www.anthropic.com/news" target="_blank" rel="noopener">Anthropic News</a> - Official announcements and feature launches</li>
+                <li><a href="https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code" target="_blank" rel="noopener">VS Code Extension</a> - Download and install the IDE integration</li>
+                <li><a href="https://claude.com/code" target="_blank" rel="noopener">Claude Code on the Web</a> - Try the browser-based interface</li>
+                <li><a href="https://github.com/anthropics/skills" target="_blank" rel="noopener">Official Skills Marketplace</a> - Browse and install Agent Skills</li>
+                <li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol</a> - Learn about MCP and available servers</li>
+            </ul>
+        </section>
+    `
+}) %>
