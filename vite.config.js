@@ -51,6 +51,7 @@ export default defineConfig({
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         'js/claude-terminal': resolve(__dirname, 'private_html/js/claude-terminal.js'),
         // Article JavaScript entry points
+        'js/articles/claude-code-latest-features': resolve(__dirname, 'private_html/js/articles/claude-code-latest-features.js'),
         'js/articles/claude-code-hooks-subagent-control': resolve(__dirname, 'private_html/js/articles/claude-code-hooks-subagent-control.js'),
         'js/articles/advanced-php-database-patterns': resolve(__dirname, 'private_html/js/articles/advanced-php-database-patterns.js'),
         'js/articles/caching-vs-memoization': resolve(__dirname, 'private_html/js/articles/caching-vs-memoization.js'),
