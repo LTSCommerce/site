@@ -182,20 +182,14 @@ foreach ($users as $user) {
 
             <p>This rule catches code like this:</p>
 
-            <pre><code class="language-php">// ❌ VIOLATES RULE - Magic string command name
-$runner = new CommandRunner();
-$runner->execute('sync:users');  // PHPStan error! String literal
+            <pre><code class="language-php">// ❌ VIOLATES RULE
+$application->execute('sync:users');  // PHPStan error!
 </code></pre>
 
             <p>Instead, write:</p>
 
-            <pre><code class="language-php">// ✅ PASSES RULE - Type-safe constant
-final class Commands {
-    public const SYNC_USERS = 'sync:users';
-}
-
-$runner = new CommandRunner();
-$runner->execute(Commands::SYNC_USERS);  // IDE autocomplete, refactor-safe
+            <pre><code class="language-php">// ✅ PASSES RULE - use command class constant
+$application->execute(SyncUsersCommand::COMMAND_NAME);
 </code></pre>
 
             <p>
@@ -233,23 +227,31 @@ class Logger {
 
             <p>Instead, write:</p>
 
-            <pre><code class="language-php">// ✅ PASSES RULE - Explicit cleanup method
-class Logger {
+            <pre><code class="language-php">// ✅ PASSES RULE - destructor only verifies cleanup
+class FileLogger {
+    private bool $closed = false;
+
     public function close(): void {
-        $this->fileHandle->flush();  // Deterministic cleanup
-        fclose($this->fileHandle);
+        fflush($this->handle);
+        fclose($this->handle);
+        $this->closed = true;
     }
 
     public function __destruct() {
-        // Empty - destructor does nothing
+        if (!$this->closed) {
+            throw new \LogicException(
+                'FileLogger not closed. Call close() explicitly.'
+            );
+        }
     }
 }
 </code></pre>
 
             <p>
-                This architectural rule enforces a best practice: destructors should be empty. Any cleanup that requires I/O should
-                happen in explicit methods like <code>close()</code> or <code>dispose()</code>, giving developers control over when
-                resources are released.
+                This architectural rule enforces a best practice: destructors should only verify that cleanup was done, not perform the
+                cleanup itself. The rule allows throwing <a href="https://www.php.net/manual/en/class.logicexception.php" target="_blank" rel="noopener"><code>LogicException</code></a>
+                to catch missing cleanup, but any actual I/O work should happen in explicit methods like <code>close()</code> or <code>dispose()</code>,
+                giving developers control over when resources are released.
             </p>
 
             <h3>Enforcing Dependency Injection</h3>
@@ -296,7 +298,7 @@ class EmailService {
         </section>
 
         <section>
-            <h2>Real-World Example: Testing Rules</h2>
+            <h2>Real-World Example: Rules for Tests</h2>
 
             <h3>Preventing Mocks of Critical Services</h3>
             <p>
