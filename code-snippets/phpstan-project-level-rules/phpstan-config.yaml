@@ -1,0 +1,59 @@
+parameters:
+    # Analysis level (0-10, where 10 is strictest with mixed type enforcement)
+    level: 10
+
+    # Paths to analyze
+    paths:
+        - src
+        - tests
+
+    # Exclude patterns
+    excludePaths:
+        - src/Legacy/*
+        - tests/fixtures/*
+
+    # PHPStan 2.0+ features
+    treatPhpDocTypesAsCertain: false
+
+    # Report all possibly undefined variables
+    checkMaybeUndefinedVariables: true
+
+    # Check for missing type hints
+    checkMissingIterableValueType: true
+
+    # Register custom rules
+    rules:
+        # Performance rules
+        - App\PHPStan\Rules\Performance\QueryInLoopRule
+
+        # Code quality rules
+        - App\PHPStan\Rules\CodeQuality\NoMagicStringCommandsRule
+
+        # Architectural rules
+        - App\PHPStan\Rules\Architecture\NoWorkInDestructorsRule
+        - App\PHPStan\Rules\Architecture\NoDirectEnvAccessRule
+
+        # Testing rules
+        - App\PHPStan\Rules\Testing\NoMockDatabaseServiceRule
+        - App\PHPStan\Rules\Testing\NoProductionTablesInTestsRule
+
+    # Include extension config files
+    includes:
+        - phpstan-baseline.neon
+        - vendor/phpstan/phpstan-phpunit/extension.neon
+        - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+services:
+    # Register rules with constructor dependencies
+    -
+        class: App\PHPStan\Rules\Performance\QueryInLoopRule
+        tags:
+            - phpstan.rules.rule
+
+    # Example: Rule with configuration
+    -
+        class: App\PHPStan\Rules\CodeQuality\NoMagicStringCommandsRule
+        arguments:
+            allowedMethods: ['executeCommand', 'queueCommand', 'dispatchCommand']
+        tags:
+            - phpstan.rules.rule
