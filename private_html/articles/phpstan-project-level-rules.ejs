@@ -1,0 +1,656 @@
+<%- include('../templates/layouts/article', {
+    articleTitle: 'Using PHPStan to Enforce Project-Level Rules',
+    articleDescription: 'Learn how to write custom PHPStan rules to enforce performance, architectural, and testing standards across your entire codebase. Includes real-world examples and multi-language comparisons.',
+    articleDate: '2025-11-10',
+    articleCategory: 'php',
+    articleSubreddit: 'PHP',
+    articleReadingTime: '12',
+    articleContent: `
+        <div class="intro">
+            <p class="lead">
+                Your codebase is too large to fit in any <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">Large Language Model (LLM)</a> context window.
+                Even with <a href="https://www.anthropic.com/news/claude-3-5-sonnet" target="_blank" rel="noopener">Claude 3.5 Sonnet's</a> 200,000 token window or
+                <a href="https://ai.google.dev/gemini-api/docs/models/gemini" target="_blank" rel="noopener">Gemini's</a> 2 million tokens,
+                large-scale applications exceed these limits. Static analysis tools like <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a>
+                work differently - they analyse your entire codebase systematically, enforcing rules that are cheap (CPU cycles, not tokens),
+                deterministic, and comprehensive. This article explores how to write custom PHPStan rules that codify your project's unique
+                standards, making them automatic, consistent, and educational.
+            </p>
+        </div>
+
+        <section>
+            <h2>The Context Window Problem</h2>
+            <p>
+                Modern LLMs are powerful, but they have fundamental limitations when analysing large codebases. A typical enterprise
+                application contains millions of lines of code spread across thousands of files. Even with aggressive compression,
+                this exceeds any context window.
+            </p>
+            <p>
+                <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> solves this by using
+                <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree" target="_blank" rel="noopener">Abstract Syntax Trees (AST)</a>
+                and type inference. It doesn't need to "understand" your code like an LLM - it systematically checks every node in the
+                <a href="https://github.com/nikic/PHP-Parser" target="_blank" rel="noopener">PHP-Parser</a> AST against your rules. This approach:
+            </p>
+            <ul>
+                <li><strong>Scales linearly</strong> with codebase size</li>
+                <li><strong>Runs in CI/CD</strong> with consistent, reproducible results</li>
+                <li><strong>Costs pennies</strong> in compute time vs. dollars in LLM tokens</li>
+                <li><strong>Catches violations</strong> before code review</li>
+                <li><strong>Documents standards</strong> through executable rules</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Types of Project-Level Rules</h2>
+            <p>
+                Custom PHPStan rules fall into several categories, each addressing different aspects of code quality:
+            </p>
+
+            <h3>Performance Rules</h3>
+            <p>
+                Detect anti-patterns that cause performance problems. These are often subtle issues that only
+                manifest at scale, like <a href="https://stackoverflow.com/questions/97197/what-is-the-n1-selects-problem-in-orm-object-relational-mapping" target="_blank" rel="noopener">N+1 query problems</a>
+                or inefficient algorithms in hot paths.
+            </p>
+
+            <h3>Architectural Rules</h3>
+            <p>
+                Enforce design decisions and boundaries. For example, preventing business logic in
+                <a href="https://www.php.net/manual/en/language.oop5.decon.php" target="_blank" rel="noopener">destructors</a>,
+                ensuring proper <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">dependency injection (PSR-11)</a>,
+                or maintaining layered architecture boundaries.
+            </p>
+
+            <h3>Security Rules</h3>
+            <p>
+                Catch security vulnerabilities before they reach production. Examples include detecting
+                <a href="https://owasp.org/www-community/attacks/SQL_Injection" target="_blank" rel="noopener">SQL injection</a> risks,
+                unvalidated user input, or insecure cryptographic practices.
+            </p>
+
+            <h3>Testing Rules</h3>
+            <p>
+                Enforce test quality standards. Prevent brittle tests that mock critical services like databases,
+                ensure proper test isolation, and verify that tests actually exercise production code paths.
+            </p>
+
+            <h3>Code Quality Rules</h3>
+            <p>
+                Eliminate common maintainability issues. Examples include detecting
+                <a href="https://en.wikipedia.org/wiki/Magic_string" target="_blank" rel="noopener">magic strings</a>,
+                enforcing naming conventions, or requiring proper documentation.
+            </p>
+        </section>
+
+        <section>
+            <h2>Anatomy of a PHPStan Rule</h2>
+            <p>
+                Every PHPStan rule implements the <a href="https://phpstan.org/developing-extensions/rules" target="_blank" rel="noopener"><code>PHPStan\\Rules\\Rule</code></a>
+                interface with two methods:
+            </p>
+
+            <ol>
+                <li><strong><code>getNodeType()</code></strong> - Returns the <a href="https://github.com/nikic/PHP-Parser/tree/master/doc" target="_blank" rel="noopener">AST node type</a> to monitor</li>
+                <li><strong><code>processNode()</code></strong> - Analyses nodes and returns errors if violations are found</li>
+            </ol>
+
+            <p>Here's the basic structure:</p>
+
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/basic-rule-structure.php}}
+</code></pre>
+
+            <p>
+                The <code>getNodeType()</code> method tells PHPStan which <a href="https://github.com/nikic/PHP-Parser/blob/master/doc/component/Walking_the_AST.markdown" target="_blank" rel="noopener">AST nodes</a>
+                you want to examine. Common node types include:
+            </p>
+
+            <ul>
+                <li><a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/Node/Expr/New_.php" target="_blank" rel="noopener"><code>Node\\Expr\\New_</code></a> - Object instantiation (<code>new ClassName()</code>)</li>
+                <li><a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/Node/Expr/MethodCall.php" target="_blank" rel="noopener"><code>Node\\Expr\\MethodCall</code></a> - Method calls (<code>$object->method()</code>)</li>
+                <li><a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/Node/Expr/StaticCall.php" target="_blank" rel="noopener"><code>Node\\Expr\\StaticCall</code></a> - Static calls (<code>Class::method()</code>)</li>
+                <li><a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/Node/Stmt/ClassMethod.php" target="_blank" rel="noopener"><code>Node\\Stmt\\ClassMethod</code></a> - Method definitions</li>
+                <li><a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/Node/Expr/FuncCall.php" target="_blank" rel="noopener"><code>Node\\Expr\\FuncCall</code></a> - Function calls</li>
+            </ul>
+
+            <p>
+                The <code>processNode()</code> method receives each matching node along with a
+                <a href="https://phpstan.org/developing-extensions/scope" target="_blank" rel="noopener"><code>Scope</code></a> object that provides
+                rich context about the code's location, types, and surrounding structure.
+            </p>
+        </section>
+
+        <section>
+            <h2>Real-World Example: Performance Rules</h2>
+
+            <h3>Detecting Queries in Loops</h3>
+            <p>
+                One of the most common performance killers is the <a href="https://stackoverflow.com/questions/97197/what-is-the-n1-selects-problem-in-orm-object-relational-mapping" target="_blank" rel="noopener">N+1 query problem</a> -
+                executing database queries inside loops. This rule detects when <code>Query</code> objects are instantiated within
+                <a href="https://www.php.net/manual/en/control-structures.foreach.php" target="_blank" rel="noopener"><code>foreach</code></a>,
+                <a href="https://www.php.net/manual/en/control-structures.for.php" target="_blank" rel="noopener"><code>for</code></a>,
+                <a href="https://www.php.net/manual/en/control-structures.while.php" target="_blank" rel="noopener"><code>while</code></a>, or
+                <a href="https://www.php.net/manual/en/control-structures.do.while.php" target="_blank" rel="noopener"><code>do-while</code></a> loops:
+            </p>
+
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/query-in-loop-rule.php}}
+</code></pre>
+
+            <p>
+                This rule uses PHPStan's <a href="https://phpstan.org/developing-extensions/type-system" target="_blank" rel="noopener">type system</a>
+                to identify <code>Query</code> instantiations and traverses the AST upward to detect loop contexts. The error message is
+                educational, explaining the problem and providing concrete guidance on how to fix it.
+            </p>
+        </section>
+
+        <section>
+            <h2>Real-World Example: Code Quality Rules</h2>
+
+            <h3>Eliminating Magic Strings</h3>
+            <p>
+                <a href="https://en.wikipedia.org/wiki/Magic_string" target="_blank" rel="noopener">Magic strings</a> are string literals
+                embedded directly in code rather than defined as constants. They make refactoring difficult and are prone to typos.
+                This rule enforces using class constants for command names:
+            </p>
+
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-magic-string-commands-rule.php}}
+</code></pre>
+
+            <p>
+                By detecting <a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/Node/Scalar/String_.php" target="_blank" rel="noopener">string literals</a>
+                passed to command execution methods, this rule forces developers to use type-safe constants. This provides
+                <a href="https://www.jetbrains.com/help/phpstorm/auto-completing-code.html" target="_blank" rel="noopener">IDE autocomplete</a>,
+                prevents typos, and makes refactoring straightforward.
+            </p>
+        </section>
+
+        <section>
+            <h2>Real-World Example: Architectural Rules</h2>
+
+            <h3>Preventing Work in Destructors</h3>
+            <p>
+                <a href="https://www.php.net/manual/en/language.oop5.decon.php" target="_blank" rel="noopener">PHP destructors</a>
+                (<code>__destruct()</code>) are called during object cleanup, and their execution timing is unpredictable - they depend
+                on <a href="https://www.php.net/manual/en/features.gc.php" target="_blank" rel="noopener">garbage collection</a>.
+                Performing I/O or business logic in destructors leads to race conditions and unpredictable behaviour:
+            </p>
+
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-work-in-destructors-rule.php}}
+</code></pre>
+
+            <p>
+                This architectural rule enforces a best practice: destructors should be empty. Any cleanup that requires I/O should
+                happen in explicit methods like <code>close()</code> or <code>dispose()</code>, giving developers control over when
+                resources are released.
+            </p>
+
+            <h3>Enforcing Dependency Injection</h3>
+            <p>
+                Direct access to environment variables via <a href="https://www.php.net/manual/en/function.getenv.php" target="_blank" rel="noopener"><code>getenv()</code></a>
+                or <a href="https://www.php.net/manual/en/reserved.variables.environment.php" target="_blank" rel="noopener"><code>$_ENV</code></a>
+                violates <a href="https://en.wikipedia.org/wiki/Dependency_injection" target="_blank" rel="noopener">dependency injection</a> principles:
+            </p>
+
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-direct-env-access-rule.php}}
+</code></pre>
+
+            <p>
+                This rule enforces proper <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11 dependency injection</a>,
+                making dependencies explicit and code testable. Configuration should flow through
+                <a href="https://www.php.net/manual/en/language.oop5.decon.php#language.oop5.decon.constructor" target="_blank" rel="noopener">constructor injection</a>,
+                not be pulled from global state.
+            </p>
+        </section>
+
+        <section>
+            <h2>Real-World Example: Testing Rules</h2>
+
+            <h3>Preventing Mocks of Critical Services</h3>
+            <p>
+                Mocking is useful, but mocking critical infrastructure like database services produces false confidence.
+                These components should be tested against real (test) databases:
+            </p>
+
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-mock-database-service-rule.php}}
+</code></pre>
+
+            <p>
+                This rule scans test files for <a href="https://phpunit.de/manual/11.5/en/test-doubles.html#test-doubles.mock-objects" target="_blank" rel="noopener">PHPUnit mock creation</a>
+                and blocks attempts to mock <code>DatabaseServiceInterface</code>. Integration tests that use real databases catch
+                issues that mocks hide, like <a href="https://en.wikipedia.org/wiki/Database_transaction" target="_blank" rel="noopener">transaction handling</a>,
+                <a href="https://www.postgresql.org/docs/current/mvcc-intro.html" target="_blank" rel="noopener">isolation levels</a>, and
+                query performance.
+            </p>
+
+            <h3>Enforcing Test Isolation</h3>
+            <p>
+                Tests should never reference production table names directly. This couples tests to production schema details
+                and makes refactoring dangerous:
+            </p>
+
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-production-tables-in-tests-rule.php}}
+</code></pre>
+
+            <p>
+                By detecting production table names in <a href="https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/Node/Scalar/String_.php" target="_blank" rel="noopener">string literals</a>
+                within test files, this rule enforces proper fixture usage. Tests should use test-specific tables (like <code>test_users</code>)
+                that are isolated from production data and schema changes.
+            </p>
+        </section>
+
+        <section>
+            <h2>Configuration and Registration</h2>
+            <p>
+                Once you've written your rules, register them in your <a href="https://phpstan.org/config-reference" target="_blank" rel="noopener">PHPStan configuration file</a>
+                (<code>phpstan.neon</code> or <code>phpstan.yaml</code>):
+            </p>
+
+            <pre><code class="language-yaml">{{SNIPPET:phpstan-project-level-rules/phpstan-config.yaml}}
+</code></pre>
+
+            <p>
+                PHPStan 2.0 (released <a href="https://phpstan.org/blog/phpstan-2-0-released-level-10-elephpants" target="_blank" rel="noopener">31 December 2024</a>)
+                introduced <a href="https://phpstan.org/blog/phpstan-2-0-released-level-10-elephpants#level-10" target="_blank" rel="noopener">Level 10</a>,
+                which treats the <a href="https://www.php.net/manual/en/language.types.mixed.php" target="_blank" rel="noopener"><code>mixed</code> type</a>
+                strictly and reduced memory consumption by 50-70%. The current version is
+                <a href="https://packagist.org/packages/phpstan/phpstan" target="_blank" rel="noopener">2.1.31</a> (released 10 October 2025).
+            </p>
+        </section>
+
+        <section>
+            <h2>Testing Your Rules</h2>
+            <p>
+                PHPStan provides <a href="https://phpstan.org/developing-extensions/testing" target="_blank" rel="noopener"><code>PHPStan\\Testing\\RuleTestCase</code></a>
+                for testing custom rules. Here's a simple test structure:
+            </p>
+
+            <pre><code class="language-php"><?php
+
+declare(strict_types=1);
+
+namespace App\\Tests\\PHPStan\\Rules;
+
+use App\\PHPStan\\Rules\\Performance\\QueryInLoopRule;
+use PHPStan\\Rules\\Rule;
+use PHPStan\\Testing\\RuleTestCase;
+
+/**
+ * @extends RuleTestCase<QueryInLoopRule>
+ */
+final class QueryInLoopRuleTest extends RuleTestCase
+{
+    protected function getRule(): Rule
+    {
+        return new QueryInLoopRule();
+    }
+
+    public function testRule(): void
+    {
+        $this->analyse(
+            [__DIR__ . '/data/query-in-loop.php'],
+            [
+                [
+                    'Query instantiation detected inside a loop.',
+                    15, // Line number
+                ],
+            ]
+        );
+    }
+
+    public function testNoErrorsWhenQueryOutsideLoop(): void
+    {
+        $this->analyse(
+            [__DIR__ . '/data/query-outside-loop.php'],
+            [] // No errors expected
+        );
+    }
+}
+</code></pre>
+
+            <p>
+                The <a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a>-based test framework makes it easy to verify
+                your rules work correctly with both positive (should error) and negative (should pass) test cases.
+            </p>
+        </section>
+
+        <section>
+            <h2>Educational Error Messages</h2>
+            <p>
+                The most powerful aspect of custom rules is their error messages. They're not just alerts - they're teachable moments.
+                Good error messages should:
+            </p>
+
+            <ul>
+                <li><strong>Explain the problem</strong> - Why is this code flagged?</li>
+                <li><strong>Provide context</strong> - What are the consequences?</li>
+                <li><strong>Offer solutions</strong> - How should developers fix it?</li>
+                <li><strong>Link to documentation</strong> - Where can they learn more?</li>
+            </ul>
+
+            <p>
+                Using <a href="https://phpstan.org/developing-extensions/rules#building-the-error" target="_blank" rel="noopener"><code>RuleErrorBuilder</code></a>,
+                you can create rich error messages with tips and identifiers:
+            </p>
+
+            <pre><code class="language-php">RuleErrorBuilder::message(
+    'Query instantiation detected inside a loop. ' .
+    'This creates N+1 query problems and severe performance degradation.'
+)
+->identifier('app.queryInLoop')
+->line($node->getStartLine())
+->tip(
+    'Refactor to:' . PHP_EOL .
+    '1. Build a list of IDs in the loop' . PHP_EOL .
+    '2. Execute a single query with WHERE id IN (...)' . PHP_EOL .
+    '3. Map results back to the original data' . PHP_EOL .
+    'See: https://your-docs.example.com/performance/query-batching'
+)
+->build()
+</code></pre>
+
+            <p>
+                The <code>identifier()</code> method provides a machine-readable error code that can be used for
+                <a href="https://phpstan.org/user-guide/ignoring-errors#ignoring-by-error-identifier" target="_blank" rel="noopener">targeted suppression</a>
+                or reporting. The <code>tip()</code> method adds actionable guidance that appears in IDE tooltips and CI output.
+            </p>
+        </section>
+
+        <section>
+            <h2>Static Analysis in Other Languages</h2>
+            <p>
+                Custom static analysis rules aren't unique to PHP. Every mature language ecosystem provides tools for enforcing
+                project-specific standards:
+            </p>
+
+            <h3>JavaScript/TypeScript: ESLint</h3>
+            <p>
+                <a href="https://eslint.org/" target="_blank" rel="noopener">ESLint</a> allows creating
+                <a href="https://eslint.org/docs/latest/extend/custom-rules" target="_blank" rel="noopener">custom rules</a>
+                that analyse JavaScript and TypeScript code. The API uses
+                <a href="https://github.com/estree/estree" target="_blank" rel="noopener">ESTree AST</a> nodes:
+            </p>
+
+            <pre><code class="language-javascript">{{SNIPPET:phpstan-project-level-rules/eslint-custom-rule.js}}
+</code></pre>
+
+            <p>
+                For TypeScript-specific rules, <a href="https://typescript-eslint.io/" target="_blank" rel="noopener">typescript-eslint</a>
+                provides <a href="https://typescript-eslint.io/developers/custom-rules/" target="_blank" rel="noopener">enhanced APIs</a>
+                with access to <a href="https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API" target="_blank" rel="noopener">TypeScript's compiler API</a>
+                for type-aware analysis.
+            </p>
+
+            <h3>Python: Pylint</h3>
+            <p>
+                <a href="https://pylint.pycqa.org/" target="_blank" rel="noopener">Pylint</a> supports
+                <a href="https://pylint.pycqa.org/en/latest/development_guide/how_tos/custom_checkers.html" target="_blank" rel="noopener">custom checkers</a>
+                that analyse Python code using the <a href="https://github.com/pylint-dev/astroid" target="_blank" rel="noopener">astroid</a> library:
+            </p>
+
+            <pre><code class="language-python">{{SNIPPET:phpstan-project-level-rules/pylint-custom-checker.py}}
+</code></pre>
+
+            <p>
+                Pylint's checker system supports <a href="https://docs.python.org/3/library/ast.html" target="_blank" rel="noopener">AST checkers</a>,
+                raw checkers (for line-by-line analysis), and
+                <a href="https://pylint.pycqa.org/en/latest/development_guide/how_tos/custom_checkers.html#token-checkers" target="_blank" rel="noopener">token checkers</a>.
+            </p>
+
+            <h3>Go: go/analysis</h3>
+            <p>
+                Go's <a href="https://pkg.go.dev/golang.org/x/tools/go/analysis" target="_blank" rel="noopener"><code>go/analysis</code></a>
+                package provides a standard framework for building custom analysers:
+            </p>
+
+            <pre><code class="language-go">{{SNIPPET:phpstan-project-level-rules/go-custom-analyzer.go}}
+</code></pre>
+
+            <p>
+                The <code>go/analysis</code> framework integrates with <a href="https://staticcheck.io/" target="_blank" rel="noopener">staticcheck</a>,
+                <a href="https://github.com/golangci/golangci-lint" target="_blank" rel="noopener">golangci-lint</a>, and
+                <a href="https://pkg.go.dev/golang.org/x/tools/go/packages" target="_blank" rel="noopener">go/packages</a> for comprehensive analysis.
+            </p>
+
+            <h3>Rust: Clippy</h3>
+            <p>
+                <a href="https://doc.rust-lang.org/clippy/" target="_blank" rel="noopener">Clippy</a> is Rust's official linter, and you can
+                <a href="https://doc.rust-lang.org/nightly/clippy/development/adding_lints.html" target="_blank" rel="noopener">add custom lints</a>
+                using the <a href="https://doc.rust-lang.org/stable/nightly-rustc/rustc_lint/index.html" target="_blank" rel="noopener">rustc lint API</a>:
+            </p>
+
+            <pre><code class="language-rust">{{SNIPPET:phpstan-project-level-rules/clippy-custom-lint.rs}}
+</code></pre>
+
+            <p>
+                Clippy lints can be <a href="https://doc.rust-lang.org/clippy/development/defining_lints.html" target="_blank" rel="noopener">early or late pass</a>,
+                with late pass lints having access to <a href="https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/ty/index.html" target="_blank" rel="noopener">type information</a>
+                from the <a href="https://rustc-dev-guide.rust-lang.org/hir.html" target="_blank" rel="noopener">High-level Intermediate Representation (HIR)</a>.
+            </p>
+        </section>
+
+        <section>
+            <h2>CI/CD Integration</h2>
+            <p>
+                Custom rules are most effective when they run automatically in <a href="https://docs.github.com/en/actions" target="_blank" rel="noopener">CI/CD pipelines</a>.
+                Here's a <a href="https://docs.github.com/en/actions/using-workflows/about-workflows" target="_blank" rel="noopener">GitHub Actions workflow</a>
+                that runs PHPStan and other language-specific analysers:
+            </p>
+
+            <pre><code class="language-yaml">{{SNIPPET:phpstan-project-level-rules/github-actions-ci.yaml}}
+</code></pre>
+
+            <p>
+                This workflow runs multiple static analysis tools in parallel, including PHPStan, ESLint, Pylint, Go analysers, and Clippy.
+                The <a href="https://docs.github.com/en/actions/learn-github-actions/expressions#status-check-functions" target="_blank" rel="noopener"><code>--error-format=github</code></a>
+                flag makes PHPStan errors appear as
+                <a href="https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-error-message" target="_blank" rel="noopener">annotations</a>
+                in pull requests.
+            </p>
+        </section>
+
+        <section>
+            <h2>Best Practices</h2>
+
+            <h3>Start Small and Focused</h3>
+            <p>
+                Don't try to enforce everything at once. Start with one high-value rule (like queries in loops) and expand from there.
+                Each rule should address a specific, well-defined problem.
+            </p>
+
+            <h3>Make Error Messages Educational</h3>
+            <p>
+                Your error messages are documentation. They should teach developers why the rule exists and how to fix violations.
+                Include links to internal documentation, relevant <a href="https://www.php-fig.org/" target="_blank" rel="noopener">PSR standards</a>,
+                or external resources.
+            </p>
+
+            <h3>Use Baselines for Gradual Adoption</h3>
+            <p>
+                <a href="https://phpstan.org/user-guide/baseline" target="_blank" rel="noopener">PHPStan baselines</a> let you introduce
+                strict rules without requiring immediate fixes to existing violations. Generate a baseline with
+                <code>vendor/bin/phpstan analyse --generate-baseline</code>, then prevent new violations while gradually fixing old ones.
+            </p>
+
+            <h3>Test Your Rules Thoroughly</h3>
+            <p>
+                Use <a href="https://phpstan.org/developing-extensions/testing" target="_blank" rel="noopener"><code>RuleTestCase</code></a>
+                to verify your rules work correctly. Include edge cases, false positives, and complex scenarios in your test suite.
+            </p>
+
+            <h3>Version Your Rule Identifiers</h3>
+            <p>
+                Use consistent, namespaced identifiers for your rules (like <code>app.queryInLoop</code>). This makes it easy to
+                <a href="https://phpstan.org/user-guide/ignoring-errors#ignoring-by-error-identifier" target="_blank" rel="noopener">ignore specific errors</a>
+                when necessary and track which rules are causing issues.
+            </p>
+
+            <h3>Document Your Rules</h3>
+            <p>
+                Maintain internal documentation that explains each custom rule: what it checks, why it exists, and how to fix violations.
+                This is especially important for onboarding new team members.
+            </p>
+        </section>
+
+        <section>
+            <h2>Advanced Techniques</h2>
+
+            <h3>Using Collectors for Whole-Codebase Analysis</h3>
+            <p>
+                Some rules need to analyse the entire codebase, not just individual nodes.
+                <a href="https://phpstan.org/developing-extensions/collectors" target="_blank" rel="noopener">PHPStan collectors</a>
+                gather data across multiple files, enabling rules like unused code detection or cross-file dependency analysis.
+            </p>
+
+            <h3>Virtual Nodes for Special Contexts</h3>
+            <p>
+                PHPStan provides <a href="https://phpstan.org/developing-extensions/rules#virtual-nodes" target="_blank" rel="noopener">virtual nodes</a>
+                for contexts that regular AST nodes don't cover:
+            </p>
+
+            <ul>
+                <li><a href="https://github.com/phpstan/phpstan-src/blob/master/src/Node/FileNode.php" target="_blank" rel="noopener"><code>FileNode</code></a> - File-level analysis</li>
+                <li><a href="https://github.com/phpstan/phpstan-src/blob/master/src/Node/InClassNode.php" target="_blank" rel="noopener"><code>InClassNode</code></a> - Class-level context</li>
+                <li><a href="https://github.com/phpstan/phpstan-src/blob/master/src/Node/InClassMethodNode.php" target="_blank" rel="noopener"><code>InClassMethodNode</code></a> - Method-level context with reflection</li>
+                <li><a href="https://github.com/phpstan/phpstan-src/blob/master/src/Node/ClassPropertyNode.php" target="_blank" rel="noopener"><code>ClassPropertyNode</code></a> - Handles both traditional and promoted properties</li>
+            </ul>
+
+            <h3>Leveraging PHPStan Extensions</h3>
+            <p>
+                PHPStan has a rich ecosystem of extensions that enhance analysis:
+            </p>
+
+            <ul>
+                <li><a href="https://github.com/phpstan/phpstan-phpunit" target="_blank" rel="noopener">phpstan-phpunit</a> - Enhanced PHPUnit analysis</li>
+                <li><a href="https://github.com/phpstan/phpstan-doctrine" target="_blank" rel="noopener">phpstan-doctrine</a> - Doctrine ORM type inference</li>
+                <li><a href="https://github.com/phpstan/phpstan-symfony" target="_blank" rel="noopener">phpstan-symfony</a> - Symfony framework support</li>
+                <li><a href="https://github.com/phpstan/phpstan-strict-rules" target="_blank" rel="noopener">phpstan-strict-rules</a> - Additional strict checks</li>
+                <li><a href="https://github.com/phpstan/phpstan-deprecation-rules" target="_blank" rel="noopener">phpstan-deprecation-rules</a> - Detect deprecated code usage</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real-World Impact</h2>
+            <p>
+                Custom PHPStan rules provide measurable benefits:
+            </p>
+
+            <h3>Preventing Regressions</h3>
+            <p>
+                Once you've fixed a class of bugs (like N+1 queries), custom rules prevent them from reappearing.
+                The fix is encoded in a rule that runs on every commit.
+            </p>
+
+            <h3>Scaling Code Review</h3>
+            <p>
+                Reviewers can focus on business logic and architecture instead of catching style violations or common mistakes.
+                The static analyser does the tedious work.
+            </p>
+
+            <h3>Onboarding Developers</h3>
+            <p>
+                Educational error messages teach new developers your project's conventions as they code. The feedback is immediate
+                and contextual, not delayed until code review.
+            </p>
+
+            <h3>Enforcing Architecture</h3>
+            <p>
+                Architectural decisions (like "no business logic in destructors" or "always use dependency injection") become
+                automatically enforced rather than relying on documentation that developers might miss.
+            </p>
+
+            <h3>Reducing CI/CD Costs</h3>
+            <p>
+                Static analysis is cheap - it costs pennies in compute time. Compare this to the cost of running extensive test suites
+                or, worse, discovering bugs in production. Rules catch issues in seconds, not minutes or hours.
+            </p>
+        </section>
+
+        <section>
+            <h2>Complementing LLMs</h2>
+            <p>
+                Static analysis tools like PHPStan don't replace LLMs - they complement them:
+            </p>
+
+            <ul>
+                <li><strong>LLMs excel at</strong>: Generating code, explaining complex patterns, suggesting refactorings, understanding natural language requirements</li>
+                <li><strong>Static analysis excels at</strong>: Comprehensive codebase scanning, deterministic rule enforcement, fast execution, integration testing</li>
+            </ul>
+
+            <p>
+                The ideal workflow combines both: use LLMs like <a href="https://www.anthropic.com/claude" target="_blank" rel="noopener">Claude</a>
+                or <a href="https://openai.com/chatgpt" target="_blank" rel="noopener">ChatGPT</a> to generate code and explore solutions,
+                then use PHPStan to verify that the generated code follows your project's standards. The LLM generates, the static analyser validates.
+            </p>
+
+            <p>
+                For codebases too large to fit in context windows, you can use static analysis to identify problem areas (like files with
+                high cyclomatic complexity or modules with many dependencies), then feed those specific areas to an LLM for refactoring suggestions.
+            </p>
+        </section>
+
+        <section>
+            <h2>Conclusion</h2>
+            <p>
+                Custom PHPStan rules transform your project's conventions from documentation into executable, automatically enforced standards.
+                They're deterministic, comprehensive, and cheap - qualities that complement (rather than replace) AI-powered development tools.
+            </p>
+
+            <p>
+                By writing rules that detect performance problems, enforce architectural decisions, ensure test quality, and eliminate
+                common mistakes, you create a feedback loop that makes your entire team more productive. The rules catch issues in seconds,
+                provide educational guidance, and prevent regressions.
+            </p>
+
+            <p>
+                Start small: pick one high-value rule (like detecting queries in loops), implement it, measure the impact, and expand from there.
+                Your codebase will thank you.
+            </p>
+        </section>
+
+        <section>
+            <h2>Resources</h2>
+
+            <h3>PHPStan Documentation</h3>
+            <ul>
+                <li><a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan Official Website</a></li>
+                <li><a href="https://phpstan.org/developing-extensions/rules" target="_blank" rel="noopener">Writing Custom Rules</a></li>
+                <li><a href="https://phpstan.org/developing-extensions/testing" target="_blank" rel="noopener">Testing Rules</a></li>
+                <li><a href="https://phpstan.org/config-reference" target="_blank" rel="noopener">Configuration Reference</a></li>
+                <li><a href="https://phpstan.org/user-guide/baseline" target="_blank" rel="noopener">Using Baselines</a></li>
+                <li><a href="https://github.com/phpstan/phpstan" target="_blank" rel="noopener">PHPStan GitHub Repository</a></li>
+                <li><a href="https://packagist.org/packages/phpstan/phpstan" target="_blank" rel="noopener">PHPStan on Packagist</a></li>
+            </ul>
+
+            <h3>PHP-Parser (AST Library)</h3>
+            <ul>
+                <li><a href="https://github.com/nikic/PHP-Parser" target="_blank" rel="noopener">PHP-Parser GitHub Repository</a></li>
+                <li><a href="https://github.com/nikic/PHP-Parser/tree/master/doc" target="_blank" rel="noopener">PHP-Parser Documentation</a></li>
+                <li><a href="https://github.com/nikic/PHP-Parser/blob/master/doc/component/Walking_the_AST.markdown" target="_blank" rel="noopener">Walking the AST</a></li>
+            </ul>
+
+            <h3>Other Language Static Analysis Tools</h3>
+            <ul>
+                <li><a href="https://eslint.org/" target="_blank" rel="noopener">ESLint</a> - <a href="https://eslint.org/docs/latest/extend/custom-rules" target="_blank" rel="noopener">Custom Rules Guide</a></li>
+                <li><a href="https://typescript-eslint.io/" target="_blank" rel="noopener">typescript-eslint</a> - <a href="https://typescript-eslint.io/developers/custom-rules/" target="_blank" rel="noopener">Custom Rules</a></li>
+                <li><a href="https://pylint.pycqa.org/" target="_blank" rel="noopener">Pylint</a> - <a href="https://pylint.pycqa.org/en/latest/development_guide/how_tos/custom_checkers.html" target="_blank" rel="noopener">Custom Checkers</a></li>
+                <li><a href="https://pkg.go.dev/golang.org/x/tools/go/analysis" target="_blank" rel="noopener">go/analysis</a> - Go Static Analysis Framework</li>
+                <li><a href="https://doc.rust-lang.org/clippy/" target="_blank" rel="noopener">Clippy</a> - <a href="https://doc.rust-lang.org/nightly/clippy/development/adding_lints.html" target="_blank" rel="noopener">Adding Custom Lints</a></li>
+            </ul>
+
+            <h3>Related Standards and Concepts</h3>
+            <ul>
+                <li><a href="https://www.php-fig.org/" target="_blank" rel="noopener">PHP-FIG (PSR Standards)</a></li>
+                <li><a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11: Container Interface</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree" target="_blank" rel="noopener">Abstract Syntax Trees (Wikipedia)</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Dependency_injection" target="_blank" rel="noopener">Dependency Injection (Wikipedia)</a></li>
+                <li><a href="https://stackoverflow.com/questions/97197/what-is-the-n1-selects-problem-in-orm-object-relational-mapping" target="_blank" rel="noopener">N+1 Query Problem</a></li>
+            </ul>
+
+            <h3>GitHub Actions and CI/CD</h3>
+            <ul>
+                <li><a href="https://docs.github.com/en/actions" target="_blank" rel="noopener">GitHub Actions Documentation</a></li>
+                <li><a href="https://docs.github.com/en/actions/using-workflows/about-workflows" target="_blank" rel="noopener">GitHub Actions Workflows</a></li>
+                <li><a href="https://github.com/shivammathur/setup-php" target="_blank" rel="noopener">setup-php Action</a></li>
+            </ul>
+        </section>
+    `
+}) %>

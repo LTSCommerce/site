@@ -7,8 +7,17 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 752,
+    "title": "Using PHPStan to Enforce Project-Level Rules",
+    "excerpt": "Learn how to write custom PHPStan rules to enforce performance, architectural, and testing standards across your entire codebase. Includes real-world examples and multi-language comparisons.",
+    "category": "php",
+    "date": "2025-11-10",
+    "slug": "phpstan-project-level-rules",
+    "readingTime": "12"
+  },
+  {
     "id": 685,
-    "title": "Claude Code Latest Features: What's New in Fall 2025",
+    "title": "Claude Code Latest Features: What's New in Autumn 2025",
     "excerpt": "Explore the groundbreaking features added to Claude Code in the last three months, including checkpoints for fearless refactoring, autonomous subagents, plugin marketplace, web interface, and more.",
     "category": "ai",
     "date": "2025-11-05",
