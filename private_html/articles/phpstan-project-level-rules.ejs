@@ -9,8 +9,9 @@
         <div class="intro">
             <p class="lead">
                 Your codebase is too large to fit in any <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">Large Language Model (LLM)</a> context window.
-                Even with <a href="https://www.anthropic.com/news/claude-3-5-sonnet" target="_blank" rel="noopener">Claude 3.5 Sonnet's</a> 200,000 token window or
-                <a href="https://ai.google.dev/gemini-api/docs/models/gemini" target="_blank" rel="noopener">Gemini's</a> 2 million tokens,
+                Even with <a href="https://www.anthropic.com/claude/sonnet" target="_blank" rel="noopener">Claude Sonnet 4.5's</a> 200,000 token window,
+                <a href="https://ai.google.dev/gemini-api/docs/models" target="_blank" rel="noopener">Gemini 2.5 Pro's</a> 1 million tokens (expanding to 2 million), or
+                <a href="https://openai.com/index/gpt-4-1/" target="_blank" rel="noopener">GPT-4.1's</a> 1 million tokens,
                 large-scale applications exceed these limits. Static analysis tools like <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a>
                 work differently - they analyse your entire codebase systematically, enforcing rules that are cheap (CPU cycles, not tokens),
                 deterministic, and comprehensive. This article explores how to write custom PHPStan rules that codify your project's unique
@@ -135,6 +136,30 @@
             <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/query-in-loop-rule.php}}
 </code></pre>
 
+            <p>This rule catches code like this:</p>
+
+            <pre><code class="language-php">// ❌ VIOLATES RULE - Query created inside loop (N+1 problem)
+foreach ($users as $user) {
+    $query = new ProductQuery();  // PHPStan error!
+    $products = $query->where('user_id', $user->id)->execute();
+    // Process products...
+}
+</code></pre>
+
+            <p>Instead, write:</p>
+
+            <pre><code class="language-php">// ✅ PASSES RULE - Query created once, batched execution
+$userIds = array_map(fn($u) => $u->id, $users);
+$query = new ProductQuery();  // Create once before loop
+$allProducts = $query->whereIn('user_id', $userIds)->execute();
+
+// Map products back to users
+foreach ($users as $user) {
+    $userProducts = array_filter($allProducts, fn($p) => $p->user_id === $user->id);
+    // Process products...
+}
+</code></pre>
+
             <p>
                 This rule uses PHPStan's <a href="https://phpstan.org/developing-extensions/type-system" target="_blank" rel="noopener">type system</a>
                 to identify <code>Query</code> instantiations and traverses the AST upward to detect loop contexts. The error message is
@@ -153,6 +178,24 @@
             </p>
 
             <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-magic-string-commands-rule.php}}
+</code></pre>
+
+            <p>This rule catches code like this:</p>
+
+            <pre><code class="language-php">// ❌ VIOLATES RULE - Magic string command name
+$runner = new CommandRunner();
+$runner->execute('sync:users');  // PHPStan error! String literal
+</code></pre>
+
+            <p>Instead, write:</p>
+
+            <pre><code class="language-php">// ✅ PASSES RULE - Type-safe constant
+final class Commands {
+    public const SYNC_USERS = 'sync:users';
+}
+
+$runner = new CommandRunner();
+$runner->execute(Commands::SYNC_USERS);  // IDE autocomplete, refactor-safe
 </code></pre>
 
             <p>
@@ -177,6 +220,32 @@
             <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-work-in-destructors-rule.php}}
 </code></pre>
 
+            <p>This rule catches code like this:</p>
+
+            <pre><code class="language-php">// ❌ VIOLATES RULE - I/O work in destructor
+class Logger {
+    public function __destruct() {
+        $this->fileHandle->flush();  // PHPStan error!
+        fclose($this->fileHandle);   // Unpredictable timing
+    }
+}
+</code></pre>
+
+            <p>Instead, write:</p>
+
+            <pre><code class="language-php">// ✅ PASSES RULE - Explicit cleanup method
+class Logger {
+    public function close(): void {
+        $this->fileHandle->flush();  // Deterministic cleanup
+        fclose($this->fileHandle);
+    }
+
+    public function __destruct() {
+        // Empty - destructor does nothing
+    }
+}
+</code></pre>
+
             <p>
                 This architectural rule enforces a best practice: destructors should be empty. Any cleanup that requires I/O should
                 happen in explicit methods like <code>close()</code> or <code>dispose()</code>, giving developers control over when
@@ -191,6 +260,31 @@
             </p>
 
             <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-direct-env-access-rule.php}}
+</code></pre>
+
+            <p>This rule catches code like this:</p>
+
+            <pre><code class="language-php">// ❌ VIOLATES RULE - Direct environment access
+class EmailService {
+    public function send(): void {
+        $apiKey = getenv('MAILGUN_API_KEY');  // PHPStan error!
+        // Send email using $apiKey...
+    }
+}
+</code></pre>
+
+            <p>Instead, write:</p>
+
+            <pre><code class="language-php">// ✅ PASSES RULE - Constructor injection
+class EmailService {
+    public function __construct(
+        private readonly string $mailgunApiKey
+    ) {}
+
+    public function send(): void {
+        // Use $this->mailgunApiKey - testable, explicit
+    }
+}
 </code></pre>
 
             <p>
@@ -213,6 +307,35 @@
             <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-mock-database-service-rule.php}}
 </code></pre>
 
+            <p>This rule catches code like this:</p>
+
+            <pre><code class="language-php">// ❌ VIOLATES RULE - Mocking critical database service
+class UserRepositoryTest extends TestCase {
+    public function testGetUser(): void {
+        $mockDb = $this->createMock(DatabaseServiceInterface::class);  // PHPStan error!
+        $mockDb->method('query')->willReturn(['id' => 1]);
+        // False confidence - not testing real database behaviour
+    }
+}
+</code></pre>
+
+            <p>Instead, write:</p>
+
+            <pre><code class="language-php">// ✅ PASSES RULE - Real database integration test
+class UserRepositoryTest extends TestCase {
+    private DatabaseServiceInterface $db;
+
+    protected function setUp(): void {
+        $this->db = new TestDatabaseService();  // Real test database
+        $this->db->beginTransaction();
+    }
+
+    public function testGetUser(): void {
+        // Test against real database - catches transaction issues, etc.
+    }
+}
+</code></pre>
+
             <p>
                 This rule scans test files for <a href="https://phpunit.de/manual/11.5/en/test-doubles.html#test-doubles.mock-objects" target="_blank" rel="noopener">PHPUnit mock creation</a>
                 and blocks attempts to mock <code>DatabaseServiceInterface</code>. Integration tests that use real databases catch
@@ -228,6 +351,28 @@
             </p>
 
             <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/no-production-tables-in-tests-rule.php}}
+</code></pre>
+
+            <p>This rule catches code like this:</p>
+
+            <pre><code class="language-php">// ❌ VIOLATES RULE - Production table name in test
+class OrderTest extends TestCase {
+    public function testCreateOrder(): void {
+        $result = $this->db->query('SELECT * FROM orders WHERE id = ?', [1]);  // PHPStan error!
+        // Coupled to production schema
+    }
+}
+</code></pre>
+
+            <p>Instead, write:</p>
+
+            <pre><code class="language-php">// ✅ PASSES RULE - Test-specific table name
+class OrderTest extends TestCase {
+    public function testCreateOrder(): void {
+        $result = $this->db->query('SELECT * FROM test_orders WHERE id = ?', [1]);
+        // Isolated from production schema changes
+    }
+}
 </code></pre>
 
             <p>
@@ -576,8 +721,8 @@ final class QueryInLoopRuleTest extends RuleTestCase
             </ul>
 
             <p>
-                The ideal workflow combines both: use LLMs like <a href="https://www.anthropic.com/claude" target="_blank" rel="noopener">Claude</a>
-                or <a href="https://openai.com/chatgpt" target="_blank" rel="noopener">ChatGPT</a> to generate code and explore solutions,
+                The ideal workflow combines both: use LLMs like <a href="https://www.anthropic.com/claude/sonnet" target="_blank" rel="noopener">Claude Sonnet 4.5</a>
+                or <a href="https://openai.com/index/gpt-4-1/" target="_blank" rel="noopener">GPT-4.1</a> to generate code and explore solutions,
                 then use PHPStan to verify that the generated code follows your project's standards. The LLM generates, the static analyser validates.
             </p>
 
