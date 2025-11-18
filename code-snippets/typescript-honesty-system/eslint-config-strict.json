@@ -1,0 +1,61 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/strict"
+  ],
+  "rules": {
+    // Level 1: Block blatant bypasses
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-non-null-assertion": "error",
+    "@typescript-eslint/ban-ts-comment": [
+      "error",
+      {
+        "ts-expect-error": "allow-with-description",
+        "ts-ignore": true,
+        "ts-nocheck": true,
+        "minimumDescriptionLength": 20
+      }
+    ],
+
+    // Level 2: Control type assertions
+    "@typescript-eslint/consistent-type-assertions": [
+      "error",
+      {
+        "assertionStyle": "never"
+      }
+    ],
+    "@typescript-eslint/no-unsafe-type-assertion": "error",
+
+    // Level 3: Prevent 'any' contamination
+    "@typescript-eslint/no-unsafe-assignment": "error",
+    "@typescript-eslint/no-unsafe-argument": "error",
+    "@typescript-eslint/no-unsafe-member-access": "error",
+    "@typescript-eslint/no-unsafe-call": "error",
+    "@typescript-eslint/no-unsafe-return": "error",
+
+    // Level 4: Runtime escape prevention
+    "@typescript-eslint/no-implied-eval": "error",
+    "no-eval": "error",
+    "no-new-func": "error",
+
+    // Level 5: Type system integrity
+    "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    "@typescript-eslint/no-unnecessary-condition": [
+      "error",
+      {
+        "checkTypePredicates": true
+      }
+    ],
+    "@typescript-eslint/prefer-enum-initializers": "error",
+    "@typescript-eslint/prefer-literal-enum-member": "error"
+  }
+}

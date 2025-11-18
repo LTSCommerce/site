@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ES2024",
+    "lib": ["ES2024"],
+
+    /* Modules */
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    /* Type Checking - Core Strict Mode */
+    "strict": true,
+
+    /* Type Checking - Additional Strict Options */
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "alwaysStrict": true,
+
+    /* Type Checking - Extra Safety */
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": true,
+
+    /* Completeness */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+
+    /* Interop Constraints */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  }
+}

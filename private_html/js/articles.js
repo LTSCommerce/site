@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 657,
+    "title": "TypeScript's Honesty System: Why Type Safety is Optional and How to Enforce It",
+    "excerpt": "TypeScript provides zero runtime safety and can be bypassed 25+ different ways. The definitive guide to every bypass mechanism - from any to eval to recursive type limits - and how to defend against them with ESLint.",
+    "category": "typescript",
+    "date": "2025-11-18",
+    "slug": "typescript-honesty-system",
+    "readingTime": "18"
+  },
+  {
     "id": 752,
     "title": "Using PHPStan to Enforce Project-Level Rules",
     "excerpt": "Learn how to write custom PHPStan rules to enforce performance, architectural, and testing standards across your entire codebase. Includes real-world examples and multi-language comparisons.",

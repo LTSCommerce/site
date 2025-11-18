@@ -1,0 +1,43 @@
+name: TypeScript Type Safety Enforcement
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  type-safety:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript strict compilation
+        run: npm run type-check
+
+      - name: ESLint type safety rules
+        run: npm run lint -- --max-warnings=0
+
+      - name: Check for 'any' usage
+        run: |
+          if grep -r ":\s*any" src/ --include="*.ts" --include="*.tsx"; then
+            echo "Error: Found 'any' type usage in source files"
+            exit 1
+          fi
+
+      - name: Check for @ts-ignore comments
+        run: |
+          if grep -r "@ts-ignore" src/ --include="*.ts" --include="*.tsx"; then
+            echo "Error: Found @ts-ignore comments"
+            exit 1
+          fi
