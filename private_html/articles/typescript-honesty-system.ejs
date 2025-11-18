@@ -8,7 +8,7 @@
     articleContent: `
         <div class="intro">
             <p class="lead">
-                TypeScript's type system is fundamentally an honesty system. Like an honesty bucket in a car park, it asks nicely but doesn't enforce anything. It provides zero actual runtime safety and can be trivially bypassed with escape hatches scattered throughout the language. Understanding this reality—and how to defend against it—is critical for maintaining type safety in production codebases.
+                TypeScript's type system is an honesty system. Like an honesty bucket in a car park, it asks nicely but doesn't enforce anything. It provides zero actual runtime safety and can be trivially bypassed with escape hatches scattered throughout the language. Understanding this reality (and how to defend against it) is critical for maintaining type safety in production codebases.
             </p>
         </div>
 
@@ -18,17 +18,17 @@
                 Imagine a car park with an honesty bucket at the entrance. There's a sign that says "£5 per hour, please pay here." No barrier, no enforcement, no consequences for not paying. That's <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>.
             </p>
             <p>
-                TypeScript provides powerful static analysis to catch type errors at compile time, but it's ultimately built on JavaScript—a dynamically typed language. <strong>Every TypeScript file is transpiled to JavaScript, losing all type information in the process.</strong> The types exist only during development, and the compiler trusts you to be honest about them.
+                TypeScript provides powerful static analysis to catch type errors at compile time, but it's built on JavaScript, a dynamically typed language. <strong>Every TypeScript file is transpiled to JavaScript, losing all type information in the process.</strong> The types exist only during development, and the compiler trusts you to be honest about them.
             </p>
             <p>
-                This isn't a flaw—it's by design. But it means TypeScript is better understood as advanced static analysis (like <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> for PHP or <a href="https://eslint.org/" target="_blank" rel="noopener">ESLint</a> for JavaScript) rather than a true type system like you'd find in <a href="https://www.rust-lang.org/" target="_blank" rel="noopener">Rust</a> or <a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a>.
+                This isn't a flaw. It's by design. But it means TypeScript is better understood as advanced static analysis (like <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> for PHP or <a href="https://eslint.org/" target="_blank" rel="noopener">ESLint</a> for JavaScript) rather than a true type system like you'd find in <a href="https://www.rust-lang.org/" target="_blank" rel="noopener">Rust</a> or <a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a>.
             </p>
         </section>
 
         <section>
             <h2>The Complete Bypass Taxonomy: 25+ Ways to Lie to TypeScript</h2>
             <p>
-                TypeScript's type system can be bypassed in over 25 distinct ways. This comprehensive taxonomy documents every known mechanism, from obvious to obscure. Understanding these escape hatches is essential for recognising when codebases are being "dishonest" with the type system - and for defending against them.
+                TypeScript's type system can be bypassed in over 25 distinct ways. This comprehensive taxonomy documents every known mechanism, from obvious to obscure. Understanding these escape hatches is essential for recognising when codebases are being "dishonest" with the type system, and for defending against them.
             </p>
 
             <h3>Quick Reference: All Bypass Mechanisms</h3>
@@ -104,7 +104,7 @@
 </code></pre>
 
             <p>
-                The <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#any" target="_blank" rel="noopener"><code>any</code></a> type is the nuclear option—it completely disables type checking for that value. <a href="https://typescript-eslint.io/rules/ban-ts-comment/" target="_blank" rel="noopener"><code>@ts-ignore</code></a> and <code>@ts-nocheck</code> tell the compiler to stop checking entirely. These are honest about their dishonesty.
+                The <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#any" target="_blank" rel="noopener"><code>any</code></a> type is the nuclear option. It completely disables type checking for that value. <a href="https://typescript-eslint.io/rules/ban-ts-comment/" target="_blank" rel="noopener"><code>@ts-ignore</code></a> and <code>@ts-nocheck</code> tell the compiler to stop checking entirely. These are honest about their dishonesty.
             </p>
 
             <h3>Level 2: Sneaky Bypasses</h3>
@@ -128,7 +128,7 @@
 </code></pre>
 
             <p>
-                The danger is that <code>@ts-expect-error</code> <strong>becomes outdated when code changes</strong>. If the error is fixed, TypeScript won't warn that the suppression is now unnecessary. It's a time bomb in your codebase.
+                The danger is that <code>@ts-expect-error</code> <strong>becomes outdated when code changes</strong>. If the error is fixed, TypeScript won't warn that the suppression is unnecessary. It's a time bomb in your codebase.
             </p>
 
             <h4>The satisfies Operator (TypeScript 4.9+)</h4>
@@ -152,7 +152,7 @@
 </code></pre>
 
             <p>
-                <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign" target="_blank" rel="noopener"><code>Object.assign()</code></a>, spread operators, and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse" target="_blank" rel="noopener"><code>JSON.parse()</code></a> all operate at runtime on plain JavaScript objects. TypeScript can infer types at compile time, but it can't verify them at runtime. <code>JSON.parse()</code> is particularly dangerous—it returns <code>any</code> by default, creating a massive hole in type safety.
+                <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign" target="_blank" rel="noopener"><code>Object.assign()</code></a>, spread operators, and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse" target="_blank" rel="noopener"><code>JSON.parse()</code></a> all operate at runtime on plain JavaScript objects. TypeScript can infer types at compile time, but it can't verify them at runtime. <code>JSON.parse()</code> is particularly dangerous. It returns <code>any</code> by default, creating a massive hole in type safety.
             </p>
 
             <h3>Level 4: Structural Loopholes</h3>
@@ -164,7 +164,7 @@
 </code></pre>
 
             <p>
-                <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#optional-properties" target="_blank" rel="noopener">Optional properties</a> (<code>?</code>) mean a property can be missing entirely. <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures" target="_blank" rel="noopener">Index signatures</a> (<code>[key: string]: any</code>) allow arbitrary properties. TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#excess-property-checks" target="_blank" rel="noopener">excess property checking</a> can be bypassed by assigning through an intermediate variable. These aren't bugs—they're features of a flexible structural type system—but they weaken safety guarantees.
+                <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#optional-properties" target="_blank" rel="noopener">Optional properties</a> (<code>?</code>) mean a property can be missing entirely. <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures" target="_blank" rel="noopener">Index signatures</a> (<code>[key: string]: any</code>) allow arbitrary properties. TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#excess-property-checks" target="_blank" rel="noopener">excess property checking</a> can be bypassed by assigning through an intermediate variable. These aren't bugs. They're features of a flexible structural type system. But they weaken safety guarantees.
             </p>
 
             <h3>Level 5: Advanced Bypasses</h3>
@@ -193,7 +193,7 @@
 </code></pre>
 
             <p>
-                Type predicates are particularly dangerous because they <strong>combine compile-time and runtime trust</strong>. TypeScript assumes your predicate logic is correct and narrows types accordingly. If your predicate lies, runtime disasters follow.
+                Type predicates are particularly dangerous because they <strong>combine compile-time and runtime trust</strong>. TypeScript assumes your predicate logic is correct and narrows types based on it. If your predicate lies, runtime disasters follow.
             </p>
 
             <h4>Generic Type Parameters with any</h4>
@@ -241,7 +241,7 @@
 </code></pre>
 
             <p>
-                This is intentional for <a href="https://www.typescriptlang.org/docs/handbook/2/functions.html#assignability-of-functions" target="_blank" rel="noopener">function assignability</a> (e.g., passing functions that return values to <code>Array.forEach</code>), but it means <code>void</code> doesn't guarantee no return value - only that the return value is ignored by TypeScript.
+                This is intentional for <a href="https://www.typescriptlang.org/docs/handbook/2/functions.html#assignability-of-functions" target="_blank" rel="noopener">function assignability</a> (e.g., passing functions that return values to <code>Array.forEach</code>), but it means <code>void</code> doesn't guarantee no return value. It only means the return value is ignored by TypeScript.
             </p>
 
             <h4>Constructor Type Casting</h4>
@@ -289,14 +289,14 @@
 
             <h4>Recursive Type Limits</h4>
             <p>
-                TypeScript has a hard recursion limit of approximately 50 type instantiations. When hit, <strong>TypeScript effectively gives up and allows anything</strong>:
+                TypeScript has a hard recursion limit of approximately 50 type instantiations. When hit, <strong>TypeScript gives up and allows anything</strong>:
             </p>
 
             <pre><code class="language-typescript">{{SNIPPET:typescript-honesty-system/bypass-recursive-limits.ts}}
 </code></pre>
 
             <p>
-                Complex recursive types like <code>DeepPartial</code> or deeply nested JSON structures can hit this limit. There's <a href="https://github.com/microsoft/TypeScript/issues/46180" target="_blank" rel="noopener">no compiler flag</a> to increase or disable the limit - it's a hard-coded safeguard against infinite recursion.
+                Complex recursive types like <code>DeepPartial</code> or deeply nested JSON structures can hit this limit. There's <a href="https://github.com/microsoft/TypeScript/issues/46180" target="_blank" rel="noopener">no compiler flag</a> to increase or disable the limit. It's a hard-coded safeguard against infinite recursion.
             </p>
         </section>
 
@@ -333,7 +333,7 @@
             </ul>
 
             <p>
-                TypeScript isn't in this category. It's <strong>compile-time only static analysis</strong>, more akin to linters and static analysers than true type systems.
+                TypeScript isn't in this category. It's <strong>compile-time only static analysis</strong>. It has more in common with linters and static analysers than true type systems.
             </p>
         </section>
 
@@ -359,7 +359,7 @@
             </ul>
 
             <p>
-                The result? A codebase that <em>looks</em> type-safe but is riddled with holes. The type system becomes theatre—providing false confidence without actual safety.
+                The result? A codebase that <em>looks</em> type-safe but is riddled with holes. The type system becomes theatre, providing false confidence without actual safety.
             </p>
         </section>
 
@@ -413,7 +413,7 @@
 
             <h5><a href="https://typescript-eslint.io/rules/no-unsafe-assignment/" target="_blank" rel="noopener">@typescript-eslint/no-unsafe-assignment</a></h5>
             <p>
-                Prevents assigning <code>any</code> typed values to variables. Catches cases where <code>any</code> "infects" the codebase from <code>JSON.parse()</code>, third-party libraries, or type assertions.
+                Prevents assigning <code>any</code> typed values to variables. Catches cases where <code>any</code> spreads through the codebase from <code>JSON.parse()</code>, third-party libraries, or type assertions.
             </p>
 
             <h5><a href="https://typescript-eslint.io/rules/no-unsafe-argument/" target="_blank" rel="noopener">@typescript-eslint/no-unsafe-argument</a></h5>
@@ -529,7 +529,7 @@
 
             <h3>2. Runtime Validation with Type Guards</h3>
             <p>
-                TypeScript types disappear at runtime. To bridge this gap, use <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates" target="_blank" rel="noopener">type guards</a> for runtime validation:
+                TypeScript types disappear at runtime. Use <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates" target="_blank" rel="noopener">type guards</a> for runtime validation to bridge this gap:
             </p>
 
             <pre><code class="language-typescript">{{SNIPPET:typescript-honesty-system/type-guard-example.ts}}
@@ -543,7 +543,7 @@
 </code></pre>
 
             <p>
-                The beauty of Zod is that the schema is both the runtime validator <em>and</em> the compile-time type definition. You maintain a single source of truth that works at both compile time and runtime.
+                Zod is elegant because the schema is both the runtime validator <em>and</em> the compile-time type definition. You maintain a single source of truth that works at both compile time and runtime.
             </p>
 
             <h3>3. CI/CD Enforcement</h3>
@@ -601,7 +601,7 @@
         <section>
             <h2>The Philosophy: Assume Nothing, Verify Everything</h2>
             <p>
-                The core lesson is this: <strong>TypeScript types are compile-time suggestions, not runtime guarantees</strong>. True type safety requires a defence-in-depth strategy:
+                <strong>TypeScript types are compile-time suggestions, not runtime guarantees</strong>. True type safety requires a defence-in-depth strategy:
             </p>
 
             <ol>
@@ -631,7 +631,7 @@
         <section>
             <h2>Conclusion: TypeScript is Powerful, But Requires Discipline</h2>
             <p>
-                This article has documented <strong>over 25 distinct ways to bypass TypeScript's type system</strong>, from the obvious (<code>any</code>, <code>@ts-ignore</code>) to the obscure (recursive type limits, constructor casting). TypeScript's "honesty system" is both a strength and a weakness. The flexibility that makes it easy to adopt gradually also makes it easy to bypass completely.
+                This article has documented <strong>over 25 distinct ways to bypass TypeScript's type system</strong>, from the obvious (<code>any</code>, <code>@ts-ignore</code>) to the obscure (recursive type limits, constructor casting). TypeScript's "honesty system" is both a strength and a weakness. The flexibility that makes it easy to adopt gradually is the same flexibility that makes it easy to bypass completely.
             </p>
 
             <p>
@@ -648,7 +648,7 @@
             </ul>
 
             <p>
-                Without enforcement, TypeScript is just suggestions. With proper hardening - strict configuration, 15+ ESLint rules covering all 7 bypass categories, runtime validation at boundaries, and CI enforcement - it becomes a powerful tool for building maintainable, type-safe applications. But it's never foolproof, and it's never automatic.
+                Without enforcement, TypeScript is just suggestions. With proper hardening (strict configuration, 15+ ESLint rules covering all 7 bypass categories, runtime validation at boundaries, and CI enforcement), it becomes a powerful tool for building maintainable, type-safe applications. But it's never foolproof, and it's never automatic.
             </p>
 
             <p>

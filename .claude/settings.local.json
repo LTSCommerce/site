@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(mkdir:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Read(/home/joseph/Projects/fedora-desktop/**)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Read(//var/lib/lxc/bl-checkout/rootfs/var/www/vhosts/green/checkout/**)",
+      "Bash(git push:*)",
+      "Read(//home/joseph/Projects/**)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:zachwills.net)",
+      "Bash(node:*)",
+      "Bash(git commit:*)",
+      "WebFetch(domain:www.freecodecamp.org)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm install:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:phpstan.org)",
+      "Bash(echo:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/enforce-snippets.py",
+            "timeout": 2000
+          }
+        ]
+      }
+    ]
+  }
+}
