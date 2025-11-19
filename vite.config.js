@@ -51,6 +51,7 @@ export default defineConfig({
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         'js/claude-terminal': resolve(__dirname, 'private_html/js/claude-terminal.js'),
         // Article JavaScript entry points
+        'js/articles/ai-software-development-paradigm-shift': resolve(__dirname, 'private_html/js/articles/ai-software-development-paradigm-shift.js'),
         'js/articles/typescript-honesty-system': resolve(__dirname, 'private_html/js/articles/typescript-honesty-system.js'),
         'js/articles/phpstan-project-level-rules': resolve(__dirname, 'private_html/js/articles/phpstan-project-level-rules.js'),
         'js/articles/claude-code-latest-features': resolve(__dirname, 'private_html/js/articles/claude-code-latest-features.js'),

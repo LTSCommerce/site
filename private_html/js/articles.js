@@ -7,6 +7,15 @@ import '../css/articles.css';
 
 const articles = [
   {
+    "id": 824,
+    "title": "The AI Development Paradigm Shift: Managing the Firehose",
+    "excerpt": "AI coding assistants are fundamentally transforming software development productivity and economics. Understanding when to use AI versus deterministic code is now a critical strategic skill.",
+    "category": "ai",
+    "date": "2025-11-19",
+    "slug": "ai-software-development-paradigm-shift",
+    "readingTime": "14"
+  },
+  {
     "id": 657,
     "title": "TypeScript's Honesty System: Why Type Safety is Optional and How to Enforce It",
     "excerpt": "TypeScript provides zero runtime safety and can be bypassed 25+ different ways. The definitive guide to every bypass mechanism - from any to eval to recursive type limits - and how to defend against them with ESLint.",
