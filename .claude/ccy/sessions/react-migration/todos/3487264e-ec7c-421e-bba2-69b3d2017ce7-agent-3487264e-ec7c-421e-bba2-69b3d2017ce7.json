@@ -1,47 +1,37 @@
 [
   {
-    "content": "Archive legacy LTS build system to ARCHIVE/",
+    "content": "Create TypeSafety.md - Document type safety philosophy",
     "status": "completed",
-    "activeForm": "Archiving legacy build system"
+    "activeForm": "Documenting type safety philosophy"
   },
   {
-    "content": "Document what was archived in ARCHIVE/README.md",
+    "content": "Build ESLint rule: no-hardcoded-routes",
     "status": "completed",
-    "activeForm": "Documenting archive"
+    "activeForm": "Building route safety rule"
   },
   {
-    "content": "Initialize react-site-skeleton GitHub repository",
+    "content": "Build ESLint rule: no-string-link-props",
     "status": "completed",
-    "activeForm": "Creating skeleton repo"
+    "activeForm": "Building link props rule"
   },
   {
-    "content": "Bootstrap skeleton: package.json + TypeScript + Vite",
+    "content": "Build ESLint rule: use-types-not-strings",
     "status": "completed",
-    "activeForm": "Bootstrapping skeleton"
+    "activeForm": "Building type safety rule"
   },
   {
-    "content": "Skeleton: Create type-safe routing system",
+    "content": "Configure eslint.config.js with custom rules",
     "status": "in_progress",
-    "activeForm": "Creating routing system"
+    "activeForm": "Configuring ESLint"
   },
   {
-    "content": "Skeleton: Build custom ESLint rules",
+    "content": "Test ESLint rules with examples",
     "status": "pending",
-    "activeForm": "Building ESLint rules"
+    "activeForm": "Testing rules"
   },
   {
-    "content": "Skeleton: Create minimal components",
+    "content": "Update skeleton README with type safety approach",
     "status": "pending",
-    "activeForm": "Creating base components"
-  },
-  {
-    "content": "LTS: Apply skeleton foundation",
-    "status": "pending",
-    "activeForm": "Applying skeleton to LTS"
-  },
-  {
-    "content": "Commit LTS archive + skeleton bootstrap",
-    "status": "pending",
-    "activeForm": "Committing progress"
+    "activeForm": "Updating README"
   }
 ]
