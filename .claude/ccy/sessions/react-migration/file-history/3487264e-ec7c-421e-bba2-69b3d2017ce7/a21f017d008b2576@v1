@@ -1,0 +1,499 @@
+# Plan 072: React Migration & EC-Site Infrastructure Adoption
+
+**Status**: 🔄 In Progress
+**Created**: 2025-12-11
+**Owner**: Claude Code
+**Priority**: High
+**Type**: Major Migration / Infrastructure Overhaul
+
+## Overview
+
+Migrate the LTS Commerce static site from EJS/Vite architecture to React/TypeScript, adopting the comprehensive Claude Code infrastructure, workflows, and development practices from the ec-site project.
+
+This is not just a technology migration—it's adopting a battle-tested approach to AI-assisted development including:
+- **PlanWorkflow system** for structured, trackable development
+- **Hooks front controller** for enforcing code quality and preventing destructive operations
+- **Specialized agents** for domain-specific tasks
+- **Skills system** for orchestrating complex workflows
+- **Worktree workflows** for parallel development
+- **LLM-optimized tooling** for efficient AI collaboration
+
+The current LTS site is a PHP engineer's portfolio using EJS templates. The ec-site is a modern React/TypeScript consultancy site with extensive Claude Code infrastructure. We're lifting the infrastructure and adapting it to continue serving PHP-focused content in a more maintainable, scalable architecture.
+
+## Goals
+
+1. **Adopt PlanWorkflow System**: All future work follows documented plans with phase tracking
+2. **Implement Hooks Infrastructure**: Front controller pattern protecting code quality and workflow integrity
+3. **Migrate to React/TypeScript**: Convert EJS templates to type-safe React components
+4. **Enable Specialized Workflows**: Page orchestration, QA automation, screenshot testing
+5. **Maintain Content Quality**: Preserve all existing PHP-focused articles and content
+6. **British English Enforcement**: Maintain professional British English throughout content
+7. **Component-Driven Design**: Adopt reusable, tested component library approach
+
+## Non-Goals
+
+- **Not changing brand focus**: Still PHP engineer portfolio, not e-commerce consultancy
+- **Not discarding existing content**: All current articles and pages preserved
+- **Not rushing to production**: Thorough testing before deployment
+- **Not abandoning PHP roots**: Content remains focused on PHP expertise
+- **Not copying business strategy**: Infrastructure only, not business positioning
+
+## Context & Background
+
+### Current State (LTS Commerce Site)
+
+**Technology Stack:**
+- Build: Vite 5.x with custom EJS preprocessing
+- Templating: EJS (server-side templates)
+- Frontend: Vanilla JavaScript, CSS3
+- Content: Article system with syntax highlighting
+- Deployment: GitHub Actions → GitHub Pages
+
+**Limitations:**
+- No type safety (vanilla JS)
+- Template duplication across articles
+- Limited component reusability
+- Manual workflow management
+- No formal planning system
+- Limited Claude Code integration
+
+### Target State (EC-Site Infrastructure)
+
+**Technology Stack:**
+- Build: Vite with React/TypeScript
+- Frontend: React 18 + TypeScript 5
+- Routing: Type-safe route system
+- Components: Shadcn/ui + Tailwind CSS
+- Quality: ESLint + Prettier + custom rules
+- Testing: Playwright + smoke tests
+
+**Claude Code Infrastructure:**
+- **37 specialized agents** for different tasks
+- **14 skills** for workflow orchestration
+- **Hooks front controller** with 20+ handlers
+- **PlanWorkflow system** with 70+ documented plans
+- **Worktree support** for parallel development
+- **LLM-optimized commands** (llm:lint, llm:qa, etc.)
+
+### Decision Rationale
+
+**Why React/TypeScript:**
+- Type safety prevents runtime errors
+- Component reusability reduces duplication
+- Rich ecosystem of tools and libraries
+- Better AI assistant collaboration (TypeScript types help Claude)
+- Industry standard for modern web applications
+
+**Why Adopt EC-Site Infrastructure:**
+- Proven system with 70+ plans completed successfully
+- Sophisticated hooks prevent destructive operations
+- Specialized agents multiply development velocity
+- PlanWorkflow enables complex multi-phase work
+- Compaction-resilient workflows survive long sessions
+
+## Tasks
+
+### Phase 1: Foundation & Documentation - ✅ COMPLETE
+
+- [x] ✅ **Clone EC-Site Repository**: Clone into `./untracked/` for reference
+- [x] ✅ **Create Migration Branch**: `react-migration` branch for all migration work
+- [x] ✅ **Set Up Gitignore**: Ensure `./untracked/` properly ignored
+- [x] ✅ **Copy .claude Infrastructure**:
+  - [x] ✅ Hooks (front controller + handlers)
+  - [x] ✅ Agents (37 specialized agents)
+  - [x] ✅ Skills (14 workflow orchestrators)
+  - [x] ✅ Commands (build, dev)
+- [x] ✅ **Copy CLAUDE Documentation**:
+  - [x] ✅ PlanWorkflow.md (planning system)
+  - [x] ✅ Worktree.md (parallel development)
+  - [x] ✅ PageOrchestration.md (page workflows)
+  - [x] ✅ All Plan/ directory examples
+  - [x] ✅ Root CLAUDE.md (project instructions)
+- [x] ✅ **Study PlanWorkflow System**: Understand plan structure and lifecycle
+- [x] ✅ **Create This Plan**: Document migration approach
+
+### Phase 2: Adapt CLAUDE.md for LTS Commerce
+
+- [ ] ⬜ **Review Current CLAUDE.md**: Understand ec-site specific sections
+- [ ] ⬜ **Adapt Brand Context**: Replace ec-site brand with LTS Commerce PHP focus
+  - [ ] ⬜ Remove e-commerce consultancy positioning
+  - [ ] ⬜ Add PHP expertise positioning
+  - [ ] ⬜ Update target audience (CTOs looking for PHP expertise)
+  - [ ] ⬜ Keep British English requirements
+- [ ] ⬜ **Update Project Structure Section**: Document LTS site structure
+  - [ ] ⬜ Note: Will be `src/` based (React) not `private_html/`
+  - [ ] ⬜ Article system architecture
+  - [ ] ⬜ Component structure
+- [ ] ⬜ **Adapt Routing Section**: LTS site will have different routes
+  - [ ] ⬜ Home, About, Articles, Contact (not services/case studies)
+  - [ ] ⬜ Article detail pages
+  - [ ] ⬜ Keep type-safe route system concepts
+- [ ] ⬜ **Update Build Commands**: Adapt npm scripts section
+- [ ] ⬜ **Review and Keep**: Hooks, Skills, Agents sections (infrastructure agnostic)
+
+### Phase 3: Build System Migration
+
+- [ ] ⬜ **Review EC-Site vite.config.ts**: Understand multi-entry setup
+- [ ] ⬜ **Review EC-Site package.json**: Identify dependencies needed
+- [ ] ⬜ **Install React Dependencies**:
+  - [ ] ⬜ react, react-dom
+  - [ ] ⬜ @types/react, @types/react-dom
+  - [ ] ⬜ React Router (if needed)
+- [ ] ⬜ **Install TypeScript**:
+  - [ ] ⬜ typescript
+  - [ ] ⬜ @types/node
+  - [ ] ⬜ tsconfig.json configuration
+- [ ] ⬜ **Install UI Framework**:
+  - [ ] ⬜ Tailwind CSS
+  - [ ] ⬜ Shadcn/ui (optional, evaluate)
+  - [ ] ⬜ Tailwind config
+- [ ] ⬜ **Adapt Vite Config**:
+  - [ ] ⬜ Multi-entry setup for pages
+  - [ ] ⬜ TypeScript support
+  - [ ] ⬜ React plugin
+  - [ ] ⬜ Asset optimization
+  - [ ] ⬜ Remove EJS preprocessing
+- [ ] ⬜ **Configure TypeScript**:
+  - [ ] ⬜ Copy tsconfig.json from ec-site
+  - [ ] ⬜ Adapt paths for LTS structure
+  - [ ] ⬜ Configure strict mode
+- [ ] ⬜ **Update npm Scripts**:
+  - [ ] ⬜ Copy llm:* commands from ec-site
+  - [ ] ⬜ Adapt for LTS structure
+  - [ ] ⬜ Remove EJS processing scripts
+
+### Phase 4: Type-Safe Routing System
+
+- [ ] ⬜ **Copy Route System from EC-Site**:
+  - [ ] ⬜ src/routes.ts (route definitions)
+  - [ ] ⬜ src/types/routing.ts (type definitions)
+  - [ ] ⬜ Helper functions (getLinkPath, type guards)
+- [ ] ⬜ **Define LTS Routes**:
+  - [ ] ⬜ Home (/)
+  - [ ] ⬜ About (/about)
+  - [ ] ⬜ Articles (/articles)
+  - [ ] ⬜ Article Detail (/articles/:slug)
+  - [ ] ⬜ Contact (/contact)
+- [ ] ⬜ **Configure Route Types**:
+  - [ ] ⬜ StandardPageLink for most pages
+  - [ ] ⬜ ArticlePageLink for article pages (allows ExternalLink for citations)
+  - [ ] ⬜ ContactPageLink for contact page
+- [ ] ⬜ **Copy ESLint Rules**:
+  - [ ] ⬜ no-hardcoded-routes
+  - [ ] ⬜ no-string-link-props
+  - [ ] ⬜ enforce-external-link-whitelist
+
+### Phase 5: Component Structure Setup
+
+- [ ] ⬜ **Create src/ Directory Structure**:
+  ```
+  src/
+  ├── components/       # Reusable UI components
+  ├── pages/           # Page components (Home, About, etc)
+  ├── articles/        # Article content components
+  ├── types/           # TypeScript type definitions
+  ├── styles/          # Global styles
+  ├── assets/          # Images, fonts, etc
+  └── routes.ts        # Route definitions
+  ```
+- [ ] ⬜ **Set Up Component Categories**:
+  - [ ] ⬜ Layout components (Header, Footer, Navigation)
+  - [ ] ⬜ Article components (ArticleCard, ArticleContent)
+  - [ ] ⬜ UI components (Button, Card, etc)
+- [ ] ⬜ **Copy Useful EC-Site Components**:
+  - [ ] ⬜ Evaluate which components are reusable
+  - [ ] ⬜ Copy and adapt where appropriate
+  - [ ] ⬜ Document component library
+
+### Phase 6: Convert Core Templates to React
+
+- [ ] ⬜ **Convert Base Layout**:
+  - [ ] ⬜ Create Layout component (replaces base.ejs)
+  - [ ] ⬜ Navigation component
+  - [ ] ⬜ Footer component
+  - [ ] ⬜ SEO meta component
+- [ ] ⬜ **Convert Home Page**:
+  - [ ] ⬜ Hero section component
+  - [ ] ⬜ Featured articles section
+  - [ ] ⬜ Skills/expertise section
+- [ ] ⬜ **Convert Articles List Page**:
+  - [ ] ⬜ Article grid/list component
+  - [ ] ⬜ Category filter component
+  - [ ] ⬜ Article card component
+- [ ] ⬜ **Convert Article Detail Template**:
+  - [ ] ⬜ Article header component
+  - [ ] ⬜ Article content renderer
+  - [ ] ⬜ Syntax highlighting integration
+  - [ ] ⬜ Reading time display
+  - [ ] ⬜ Category badge
+- [ ] ⬜ **Convert About Page**:
+  - [ ] ⬜ About content component
+  - [ ] ⬜ Skills/expertise component
+- [ ] ⬜ **Convert Contact Page**:
+  - [ ] ⬜ Contact form component
+  - [ ] ⬜ Contact info display
+
+### Phase 7: Article System Migration
+
+- [ ] ⬜ **Design Article Data Structure**:
+  - [ ] ⬜ TypeScript interfaces for articles
+  - [ ] ⬜ Article metadata (title, date, category, excerpt)
+  - [ ] ⬜ Article content format (MDX? React components?)
+- [ ] ⬜ **Decide Article Content Strategy**:
+  - [ ] ⬜ Option A: Convert to MDX
+  - [ ] ⬜ Option B: Keep EJS, render as HTML
+  - [ ] ⬜ Option C: Pure React components
+  - [ ] ⬜ Document decision and rationale
+- [ ] ⬜ **Migrate Existing Articles**:
+  - [ ] ⬜ Convert article metadata to TypeScript
+  - [ ] ⬜ Convert/adapt article content
+  - [ ] ⬜ Preserve syntax highlighting
+  - [ ] ⬜ Test all article routes
+- [ ] ⬜ **Article Registration System**:
+  - [ ] ⬜ Auto-discover articles (similar to current system)
+  - [ ] ⬜ Generate article index
+  - [ ] ⬜ Type-safe article references
+
+### Phase 8: Styling Migration
+
+- [ ] ⬜ **Evaluate Current Styles**:
+  - [ ] ⬜ Review existing CSS
+  - [ ] ⬜ Identify reusable patterns
+  - [ ] ⬜ Note custom animations/effects
+- [ ] ⬜ **Set Up Tailwind CSS**:
+  - [ ] ⬜ Install and configure
+  - [ ] ⬜ Set up design tokens (colors, spacing, fonts)
+  - [ ] ⬜ Configure theme customization
+- [ ] ⬜ **Migrate Core Styles**:
+  - [ ] ⬜ Convert layout styles
+  - [ ] ⬜ Convert typography styles
+  - [ ] ⬜ Convert component styles
+  - [ ] ⬜ Convert article styles
+- [ ] ⬜ **Preserve Custom Features**:
+  - [ ] ⬜ Dynamic gradient headings (if applicable)
+  - [ ] ⬜ Code syntax highlighting styles
+  - [ ] ⬜ Category colors
+  - [ ] ⬜ Responsive design
+
+### Phase 9: Quality Assurance
+
+- [ ] ⬜ **Set Up Testing Infrastructure**:
+  - [ ] ⬜ Copy Playwright config from ec-site
+  - [ ] ⬜ Adapt test scenarios for LTS
+  - [ ] ⬜ Set up smoke tests
+- [ ] ⬜ **ESLint Configuration**:
+  - [ ] ⬜ Copy ec-site ESLint config
+  - [ ] ⬜ Adapt custom rules for LTS
+  - [ ] ⬜ Run llm:lint and fix violations
+- [ ] ⬜ **TypeScript Validation**:
+  - [ ] ⬜ Run llm:type-check
+  - [ ] ⬜ Fix all type errors
+  - [ ] ⬜ Ensure strict mode compliance
+- [ ] ⬜ **Visual Regression Testing**:
+  - [ ] ⬜ Take screenshots of current site
+  - [ ] ⬜ Take screenshots of new site
+  - [ ] ⬜ Compare and validate
+- [ ] ⬜ **Cross-Browser Testing**:
+  - [ ] ⬜ Test in Chrome
+  - [ ] ⬜ Test in Firefox
+  - [ ] ⬜ Test in Safari
+- [ ] ⬜ **Mobile Responsiveness**:
+  - [ ] ⬜ Test on mobile viewports
+  - [ ] ⬜ Fix any responsive issues
+  - [ ] ⬜ Verify touch interactions
+
+### Phase 10: Deployment & Launch
+
+- [ ] ⬜ **Update GitHub Actions**:
+  - [ ] ⬜ Adapt build workflow for React
+  - [ ] ⬜ Keep quality checks (lint, type-check)
+  - [ ] ⬜ Update deployment step
+- [ ] ⬜ **Production Build Testing**:
+  - [ ] ⬜ Run production build
+  - [ ] ⬜ Test built files locally
+  - [ ] ⬜ Verify all assets load
+  - [ ] ⬜ Check bundle sizes
+- [ ] ⬜ **Pre-Launch Checklist**:
+  - [ ] ⬜ All pages accessible
+  - [ ] ⬜ All articles rendering correctly
+  - [ ] ⬜ All links working
+  - [ ] ⬜ SEO meta tags correct
+  - [ ] ⬜ Performance acceptable (Lighthouse)
+- [ ] ⬜ **Deploy to Production**:
+  - [ ] ⬜ Merge to main branch
+  - [ ] ⬜ Verify GitHub Pages deployment
+  - [ ] ⬜ Test live site
+  - [ ] ⬜ Monitor for errors
+
+### Phase 11: Documentation & Cleanup
+
+- [ ] ⬜ **Update Project Documentation**:
+  - [ ] ⬜ Update README.md with new stack
+  - [ ] ⬜ Document React/TypeScript setup
+  - [ ] ⬜ Update development workflow
+  - [ ] ⬜ Document component library
+- [ ] ⬜ **Clean Up Legacy Code**:
+  - [ ] ⬜ Archive EJS templates
+  - [ ] ⬜ Remove EJS processing scripts
+  - [ ] ⬜ Clean up unused dependencies
+- [ ] ⬜ **Verify Hooks Functioning**:
+  - [ ] ⬜ Test key hooks with new structure
+  - [ ] ⬜ Verify plan workflow integration
+  - [ ] ⬜ Test British English enforcement
+- [ ] ⬜ **Create Developer Guide**:
+  - [ ] ⬜ How to add new articles
+  - [ ] ⬜ How to add new pages
+  - [ ] ⬜ How to work with components
+  - [ ] ⬜ How to use PlanWorkflow
+  - [ ] ⬜ How to use specialized agents
+
+## Dependencies
+
+- **Depends on**: EC-site repository (cloned for reference)
+- **Blocks**: Future content updates (should use new system)
+- **Related**: All future LTS Commerce development work
+
+## Technical Decisions
+
+### Decision 1: React vs Other Frameworks
+**Context**: Which modern framework to adopt for migration?
+
+**Options Considered**:
+1. React - Industry standard, extensive ecosystem, good AI tooling support
+2. Vue - Simpler learning curve, good for content sites
+3. Svelte - Smaller bundle sizes, less boilerplate
+4. Stay with vanilla JS - No framework overhead
+
+**Decision**: React + TypeScript
+- EC-site uses React (proven infrastructure compatibility)
+- Strong TypeScript integration
+- Rich component ecosystem
+- Better AI assistant collaboration
+- Industry standard skills
+
+**Date**: 2025-12-11
+
+### Decision 2: Article Content Format
+**Context**: How to store and render article content in React?
+
+**Options Considered**:
+1. **MDX** - Markdown with React components, popular for blogs
+2. **Keep EJS, render as HTML** - Minimal migration, use dangerouslySetInnerHTML
+3. **Pure React components** - Full type safety, verbose for content
+4. **Headless CMS** - Overkill for static site
+
+**Decision**: TBD - Evaluate during Phase 7
+- Will test MDX integration first
+- Fallback to HTML rendering if MDX problematic
+- Document final decision with rationale
+
+**Date**: 2025-12-11 (decision pending)
+
+### Decision 3: Component Library Adoption
+**Context**: Should we adopt EC-site's component library or build custom?
+
+**Options Considered**:
+1. **Copy EC-site components** - Fast start, proven components
+2. **Build custom from scratch** - Full control, more work
+3. **Hybrid approach** - Copy useful components, build LTS-specific ones
+
+**Decision**: Hybrid approach
+- Copy layout components (Header, Footer, Navigation)
+- Copy utility components (where applicable)
+- Build custom article-specific components
+- Adapt styling to match LTS brand
+
+**Date**: 2025-12-11
+
+### Decision 4: Deployment Strategy
+**Context**: How to transition from current site to new site?
+
+**Options Considered**:
+1. **Big bang** - Replace everything at once
+2. **Gradual migration** - Run old and new side-by-side
+3. **Feature branch preview** - Test thoroughly before main
+
+**Decision**: Feature branch with thorough testing
+- Develop completely on `react-migration` branch
+- Use GitHub Pages preview if available
+- Full QA before merging to main
+- Single deployment when ready
+
+**Date**: 2025-12-11
+
+## Success Criteria
+
+- [ ] All current pages accessible in React version
+- [ ] All existing articles migrated and rendering correctly
+- [ ] TypeScript compilation with zero errors
+- [ ] ESLint passing with zero violations
+- [ ] Playwright smoke tests passing
+- [ ] Lighthouse scores equal or better than current
+- [ ] PlanWorkflow system fully operational
+- [ ] Hooks front controller functioning correctly
+- [ ] British English enforcement working
+- [ ] GitHub Actions deployment successful
+- [ ] Mobile responsiveness maintained or improved
+
+## Risks & Mitigations
+
+| Risk | Impact | Probability | Mitigation |
+|------|--------|-------------|------------|
+| Article content rendering breaks | High | Medium | Test each article during migration, have fallback HTML rendering |
+| Hooks don't work with new structure | High | Low | Test hooks early, adapt handlers if needed |
+| Bundle size too large | Medium | Medium | Implement code splitting, monitor bundle sizes |
+| TypeScript complexity slows development | Medium | Low | Gradual adoption, allow 'any' in transition phase |
+| Styling inconsistencies | Medium | Medium | Visual regression testing, careful style migration |
+| SEO regression | High | Low | Preserve meta tags, test with Lighthouse |
+| Breaking changes during migration | High | Medium | Feature branch isolation, thorough testing |
+
+## Timeline
+
+**Note**: No specific time estimates per PlanWorkflow guidance. Work proceeds in phases, with each phase completed before moving to next.
+
+- **Phase 1**: ✅ Complete (Foundation & Documentation)
+- **Phase 2**: Pending (Adapt CLAUDE.md)
+- **Phase 3**: Pending (Build System Migration)
+- **Phase 4**: Pending (Routing System)
+- **Phase 5**: Pending (Component Structure)
+- **Phase 6**: Pending (Core Templates)
+- **Phase 7**: Pending (Article System)
+- **Phase 8**: Pending (Styling)
+- **Phase 9**: Pending (QA)
+- **Phase 10**: Pending (Deployment)
+- **Phase 11**: Pending (Documentation)
+
+**Target Completion**: When all phases complete and success criteria met
+
+## Notes & Updates
+
+### 2025-12-11 - Plan Creation
+- Phase 1 completed: Successfully cloned ec-site and copied all infrastructure
+- Discovered extensive Claude Code infrastructure in ec-site (37 agents, 14 skills, sophisticated hooks)
+- Studied PlanWorkflow system thoroughly
+- Created this plan following PlanWorkflow standards
+- Decision made to adopt React/TypeScript for better type safety and AI collaboration
+- EC-site infrastructure proven with 70+ completed plans
+- Next steps: Begin Phase 2 (adapt CLAUDE.md for LTS Commerce context)
+
+### 2025-12-11 - Infrastructure Inventory
+**Copied from EC-Site:**
+- **37 Agents**: Specialized agents for various tasks (page-implementer, qa-fixer, content-editor, etc.)
+- **14 Skills**: Workflow orchestrators (qa, page-orchestration, screenshots, etc.)
+- **Hooks Front Controller**: Sophisticated hook system with 20+ handlers
+- **Documentation**: Complete CLAUDE/ folder with workflows, plans, research
+- **PlanWorkflow**: Full planning system with 70+ example plans
+
+**Key Infrastructure Files:**
+- `.claude/hooks/controller/front_controller.py` - Main hook entry point
+- `.claude/hooks/controller/handlers/` - 20+ specialized handlers
+- `.claude/hooks/CLAUDE.md` - Hook documentation
+- `CLAUDE/PlanWorkflow.md` - Planning workflow guide
+- `CLAUDE/Worktree.md` - Parallel development guide
+- `CLAUDE/PageOrchestration.md` - Page workflow system
+
+---
+
+**Maintained by**: Joseph (LTS Commerce)
+**Last Updated**: 2025-12-11
+**Plan Status**: 🔄 In Progress (Phase 1 Complete)

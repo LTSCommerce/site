@@ -1,0 +1,47 @@
+[
+  {
+    "content": "Create react-migration branch",
+    "status": "completed",
+    "activeForm": "Creating react-migration branch"
+  },
+  {
+    "content": "Set up gitignore for untracked directory",
+    "status": "completed",
+    "activeForm": "Setting up gitignore"
+  },
+  {
+    "content": "Copy PlanWorkflow documentation",
+    "status": "completed",
+    "activeForm": "Copying PlanWorkflow docs"
+  },
+  {
+    "content": "Create CLAUDE/Plan directory structure",
+    "status": "completed",
+    "activeForm": "Creating Plan directory"
+  },
+  {
+    "content": "Copy Worktree documentation",
+    "status": "completed",
+    "activeForm": "Copying Worktree docs"
+  },
+  {
+    "content": "Copy hooks documentation (not implementation)",
+    "status": "completed",
+    "activeForm": "Copying hooks docs"
+  },
+  {
+    "content": "Create Plan 001",
+    "status": "completed",
+    "activeForm": "Creating Plan 001"
+  },
+  {
+    "content": "Create Plan README",
+    "status": "completed",
+    "activeForm": "Creating Plan README"
+  },
+  {
+    "content": "Commit selective infrastructure",
+    "status": "in_progress",
+    "activeForm": "Committing changes"
+  }
+]

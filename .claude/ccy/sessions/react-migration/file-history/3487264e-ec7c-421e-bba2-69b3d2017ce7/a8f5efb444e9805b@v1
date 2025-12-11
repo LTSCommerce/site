@@ -1,0 +1,47 @@
+# Plans Index
+
+This directory contains all project plans following the Planning Workflow (see `CLAUDE/PlanWorkflow.md`).
+
+## Active Plans
+- [072: React Migration & EC-Site Infrastructure Adoption](072-react-migration-adoption/PLAN.md) - 🔄 In Progress - **High Priority** - Migrate LTS Commerce site from EJS/Vite to React/TypeScript, adopt complete Claude Code infrastructure from ec-site
+- [070: Prettier Check Log Level Bug](070-prettier-check-log-level-bug/PLAN.md) - ⬜ Not Started - **High Priority** - Fix `llm:format:check` false positives caused by `--log-level error` suppressing Prettier warnings
+- [069: Shader Performance Monitoring](069-shader-performance-monitoring/PLAN.md) - ⬜ Not Started - **Medium Priority** - Add GPU detection, FPS tracking, and DEV mode stats overlay to ShaderBackground component
+- [066: Workflow Compaction Persistence](066-workflow-compaction-persistence/PLAN.md) - ⬜ Not Started - **High Priority** - Persist workflow state across conversation compaction using state file + hook
+- [062: Staged Page Rendering](062-staged-page-rendering/PLAN.md) - ⬜ Not Started - Controlled sequential page reveal (background → header → content)
+- [057: Bundle Optimization](057-bundle-optimization/PLAN.md) - 🟡 Not Started - Reduce 6MB vendor bundle to <500KB gzipped
+- [056: Page Type Interfaces](056-page-type-interfaces/PLAN.md) - Status TBD
+- [055: Hooks Front Controller Completion](055-hooks-front-controller-completion/PLAN.md) - Status TBD
+- [054: Prompt Library System](054-prompt-library-system/PLAN.md) - Status TBD
+- [051: Hooks Front Controller](051-hooks-front-controller/PLAN.md) - Status TBD
+- [050: Tech and Case Study Pages](050-tech-and-case-study-pages/PLAN.md) - Status TBD
+- [049: QA Cleanup Orchestration](049-qa-cleanup-orchestration/PLAN.md) - Status TBD
+- [048: Citation System Refactor](048-citation-system-refactor/PLAN.md) - Status TBD
+- [047: Easter Egg on 404](047-easter-egg-on-404/PLAN.md) - Status TBD
+- [045: Customer Audiences Registry](045-customer-audiences-registry/PLAN.md) - Status TBD
+- [044: Page Orchestration System Update](044-page-orchestration-system-update/PLAN.md) - Status TBD
+- [041: Customer Focus Landing Hero](041-customer-focus-landing-hero/PLAN.md) - Status TBD
+- [040: Ultimate Contact Form](040-ultimate-contact-form/PLAN.md) - Status TBD
+- [039: Case Studies Implementation](039-case-studies-implementation/PLAN.md) - Status TBD
+- [037: Mobile Optimization Assessment](037-mobile-optimization-assessment/PLAN.md) - Status TBD
+- [036: Link Validation System](036-link-validation-system/PLAN.md) - Status TBD
+- [033: Citation Rollout POC to Parallel](033-citation-rollout-poc-to-parallel/PLAN.md) - Status TBD
+- [027: Citation Research](027-citation-research/PLAN.md) - Status TBD
+- [019: Component Data Naming Convention](019-component-data-naming-convention/PLAN.md) - Status TBD
+
+## Completed Plans
+
+- [067: Research Claims Code-Splitting](Completed/067-research-claims-code-splitting/PLAN.md) - 🟢 Complete - Eliminated Vite code-splitting warnings by moving claims to `-exports.ts` files. Renamed 223 archetype files, migrated 37 research pages, added ESLint enforcement. 322 files changed, improved bundle organization.
+- [068: Tech Icon Alt Text Fix](068-tech-icon-alt-text-fix/PLAN.md) - 🟢 Complete - Fixed Lighthouse redundant alt text warnings via decorative prop system (pending manual browser testing)
+- [065: ESLint Scalar Prevention](Completed/065-eslint-scalar-prevention/PLAN.md) - 🟢 Complete (100%) - Implemented `use-types-not-strings` ESLint rule with type-aware detection, eliminated all 2,314 violations through whitelist expansion and `as const` pattern
+
+## Blocked Plans
+
+None currently.
+
+## Cancelled Plans
+
+None currently.
+
+---
+
+**Note**: Plan statuses should be updated as work progresses. See `CLAUDE/PlanWorkflow.md` for status definitions and workflow.
