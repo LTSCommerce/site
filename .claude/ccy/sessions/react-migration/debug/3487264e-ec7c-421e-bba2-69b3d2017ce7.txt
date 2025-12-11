@@ -2795,3 +2795,18 @@
 2025-12-11T12:45:51.959Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
 2025-12-11T12:45:52.175Z [DEBUG] Stream started - received first chunk
 2025-12-11T12:45:54.559Z [DEBUG] Stream started - received first chunk
+2025-12-11T12:46:06.482Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T12:46:06.487Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T12:46:06.487Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T12:46:06.487Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T12:46:06.569Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T12:46:06.569Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T12:46:06.569Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T12:46:06.583Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T12:46:06.583Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T12:46:06.583Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T12:46:06.583Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T12:46:06.583Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T12:46:06.583Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T12:46:07.179Z [DEBUG] Stream started - received first chunk
+2025-12-11T12:46:11.734Z [DEBUG] Stream started - received first chunk
