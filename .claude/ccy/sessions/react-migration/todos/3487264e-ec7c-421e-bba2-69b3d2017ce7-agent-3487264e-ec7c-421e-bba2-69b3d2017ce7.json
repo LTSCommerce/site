@@ -1,47 +1,47 @@
 [
   {
-    "content": "Create Plan 002 for react-site-skeleton repo",
+    "content": "Archive legacy LTS build system to ARCHIVE/",
     "status": "completed",
-    "activeForm": "Creating Plan 002"
-  },
-  {
-    "content": "Update Plan 001 to reference skeleton approach",
-    "status": "completed",
-    "activeForm": "Updating Plan 001"
-  },
-  {
-    "content": "Update Plan README with both plans",
-    "status": "completed",
-    "activeForm": "Updating Plan README"
-  },
-  {
-    "content": "Commit Plan 002 and Plan 001 updates",
-    "status": "in_progress",
-    "activeForm": "Committing changes"
-  },
-  {
-    "content": "Archive current LTS site build stuff to ARCHIVE/",
-    "status": "pending",
     "activeForm": "Archiving legacy build system"
   },
   {
-    "content": "Initialize react-site-skeleton repository",
-    "status": "pending",
-    "activeForm": "Initializing skeleton repo"
+    "content": "Document what was archived in ARCHIVE/README.md",
+    "status": "completed",
+    "activeForm": "Documenting archive"
   },
   {
-    "content": "Build skeleton: Type-safe architecture",
-    "status": "pending",
-    "activeForm": "Building type-safe skeleton"
+    "content": "Initialize react-site-skeleton GitHub repository",
+    "status": "completed",
+    "activeForm": "Creating skeleton repo"
   },
   {
-    "content": "Build skeleton: ESLint + static analysis",
-    "status": "pending",
-    "activeForm": "Setting up ESLint rules"
+    "content": "Bootstrap skeleton: package.json + TypeScript + Vite",
+    "status": "completed",
+    "activeForm": "Bootstrapping skeleton"
   },
   {
-    "content": "Build skeleton: Generic Claude infrastructure",
+    "content": "Skeleton: Create type-safe routing system",
+    "status": "in_progress",
+    "activeForm": "Creating routing system"
+  },
+  {
+    "content": "Skeleton: Build custom ESLint rules",
     "status": "pending",
-    "activeForm": "Creating generic Claude docs/hooks/agents"
+    "activeForm": "Building ESLint rules"
+  },
+  {
+    "content": "Skeleton: Create minimal components",
+    "status": "pending",
+    "activeForm": "Creating base components"
+  },
+  {
+    "content": "LTS: Apply skeleton foundation",
+    "status": "pending",
+    "activeForm": "Applying skeleton to LTS"
+  },
+  {
+    "content": "Commit LTS archive + skeleton bootstrap",
+    "status": "pending",
+    "activeForm": "Committing progress"
   }
 ]
