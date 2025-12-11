@@ -64,6 +64,20 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 - **Worktree support** for parallel development
 - **Type-safe architecture** throughout
 
+### Skeleton Approach (Plan 002)
+
+**Strategy**: Use `react-site-skeleton` repository as foundation
+- **Plan 002** builds the generic skeleton concurrently
+- Skeleton provides: Type-safe routing, ESLint rules, minimal components, Claude infrastructure
+- **This plan** applies skeleton and builds LTS-specific components/content
+- **Archive legacy**: Current build system moved to ARCHIVE/ for reference
+
+**Benefits**:
+- Proven patterns from skeleton
+- Avoid copying ec-site design
+- LTS site gets bespoke components
+- Skeleton reusable for future projects
+
 ## Tasks
 
 ### Phase 1: Foundation & Documentation - 🔄 IN PROGRESS
@@ -76,9 +90,18 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
   - [x] ✅ Worktree.md (parallel development)
   - [x] ✅ HooksFrontController.md (hooks documentation)
   - [x] ✅ Plan/CLAUDE.md (plan numbering instructions)
-- [ ] ⬜ **Create This Plan**: Document migration approach
-- [ ] ⬜ **Create Plan README**: Index of all plans
-- [ ] ⬜ **Commit Foundation**: Commit selective infrastructure
+- [x] ✅ **Create Plan 001**: Document migration approach
+- [x] ✅ **Create Plan 002**: Document skeleton repo approach (concurrent plan)
+- [x] ✅ **Create Plan README**: Index of all plans
+- [x] ✅ **Commit Foundation**: Commit selective infrastructure
+- [ ] ⬜ **Archive Legacy Build System**:
+  - [ ] ⬜ Create ARCHIVE/ directory
+  - [ ] ⬜ Move private_html/ to ARCHIVE/
+  - [ ] ⬜ Move scripts/ to ARCHIVE/
+  - [ ] ⬜ Move current vite.config.js to ARCHIVE/
+  - [ ] ⬜ Move current package.json to ARCHIVE/
+  - [ ] ⬜ Document what was archived
+- [ ] ⬜ **Wait for Skeleton Phase 4**: Type-safe routing and ESLint from Plan 002
 
 ### Phase 2: Build System Migration
 
@@ -231,9 +254,13 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 
 ## Dependencies
 
-- **Depends on**: EC-site repository (cloned for reference)
+- **Depends on**:
+  - EC-site repository (cloned for reference)
+  - Plan 002 (react-site-skeleton) - Phase 2+ blocked until skeleton Phase 4 complete
 - **Blocks**: Future content updates
-- **Related**: All future LTS Commerce development
+- **Related**:
+  - Plan 002 (react-site-skeleton) - concurrent development
+  - All future LTS Commerce development
 
 ## Technical Decisions
 

@@ -1,47 +1,47 @@
 [
   {
-    "content": "Create react-migration branch",
+    "content": "Create Plan 002 for react-site-skeleton repo",
     "status": "completed",
-    "activeForm": "Creating react-migration branch"
+    "activeForm": "Creating Plan 002"
   },
   {
-    "content": "Set up gitignore for untracked directory",
+    "content": "Update Plan 001 to reference skeleton approach",
     "status": "completed",
-    "activeForm": "Setting up gitignore"
+    "activeForm": "Updating Plan 001"
   },
   {
-    "content": "Copy PlanWorkflow documentation",
+    "content": "Update Plan README with both plans",
     "status": "completed",
-    "activeForm": "Copying PlanWorkflow docs"
+    "activeForm": "Updating Plan README"
   },
   {
-    "content": "Create CLAUDE/Plan directory structure",
-    "status": "completed",
-    "activeForm": "Creating Plan directory"
-  },
-  {
-    "content": "Copy Worktree documentation",
-    "status": "completed",
-    "activeForm": "Copying Worktree docs"
-  },
-  {
-    "content": "Copy hooks documentation (not implementation)",
-    "status": "completed",
-    "activeForm": "Copying hooks docs"
-  },
-  {
-    "content": "Create Plan 001",
-    "status": "completed",
-    "activeForm": "Creating Plan 001"
-  },
-  {
-    "content": "Create Plan README",
-    "status": "completed",
-    "activeForm": "Creating Plan README"
-  },
-  {
-    "content": "Commit selective infrastructure",
+    "content": "Commit Plan 002 and Plan 001 updates",
     "status": "in_progress",
     "activeForm": "Committing changes"
+  },
+  {
+    "content": "Archive current LTS site build stuff to ARCHIVE/",
+    "status": "pending",
+    "activeForm": "Archiving legacy build system"
+  },
+  {
+    "content": "Initialize react-site-skeleton repository",
+    "status": "pending",
+    "activeForm": "Initializing skeleton repo"
+  },
+  {
+    "content": "Build skeleton: Type-safe architecture",
+    "status": "pending",
+    "activeForm": "Building type-safe skeleton"
+  },
+  {
+    "content": "Build skeleton: ESLint + static analysis",
+    "status": "pending",
+    "activeForm": "Setting up ESLint rules"
+  },
+  {
+    "content": "Build skeleton: Generic Claude infrastructure",
+    "status": "pending",
+    "activeForm": "Creating generic Claude docs/hooks/agents"
   }
 ]
