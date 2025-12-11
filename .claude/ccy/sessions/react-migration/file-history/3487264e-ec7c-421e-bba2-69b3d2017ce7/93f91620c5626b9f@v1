@@ -1,0 +1,28 @@
+# Claude Code Hooks
+
+This skeleton includes minimal hook infrastructure. Sites can add more hooks as needed.
+
+## What Are Hooks?
+
+Hooks are scripts that run at specific points in Claude Code's workflow:
+- **pre-tool-use**: Before a tool executes
+- **post-tool-use**: After a tool executes
+- **session-start**: When Claude Code starts
+- **session-end**: When Claude Code ends
+
+## Skeleton Hooks
+
+The skeleton intentionally keeps hooks minimal. See ec-site for advanced hook examples.
+
+Sites typically add:
+- British English enforcement
+- Prevent destructive git operations
+- Project-specific validation
+
+## How to Add Hooks
+
+1. Create hook file in `.claude/hooks/` (e.g., `pre-tool-use`)
+2. Make it executable: `chmod +x .claude/hooks/pre-tool-use`
+3. Return JSON with decision: `allow`, `deny`, or `ask`
+
+See Claude Code documentation for full hook API.

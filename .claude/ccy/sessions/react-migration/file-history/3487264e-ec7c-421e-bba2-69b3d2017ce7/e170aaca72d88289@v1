@@ -71,8 +71,8 @@ export function Hero({ title, subtitle, cta }: HeroProps) {
       )}
 
       {cta && (
-        <Link
-          to={getLinkPath(cta.link)}
+        <a
+          href={getLinkPath(cta.link)}
           style={{
             display: 'inline-block',
             padding: 'var(--space-3) var(--space-6)',
@@ -84,7 +84,7 @@ export function Hero({ title, subtitle, cta }: HeroProps) {
           }}
         >
           {cta.text}
-        </Link>
+        </a>
       )}
     </section>
   );

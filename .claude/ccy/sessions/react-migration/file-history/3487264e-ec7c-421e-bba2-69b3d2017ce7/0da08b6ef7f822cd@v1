@@ -1,0 +1,348 @@
+# React Site Skeleton
+
+**Type-safe, component-driven foundation for modern React sites**
+
+A minimal but robust React/TypeScript skeleton that enforces type safety through custom ESLint rules and provides proven patterns for building static sites with AI assistance.
+
+## Philosophy
+
+**Strings should only be strings, not data references.**
+
+Magic strings like `"php"` or `"/about"` compile successfully even with typos, leading to runtime errors. This skeleton enforces typed objects like `CATEGORIES.php.id` or `ROUTES.about.path` that catch errors at compile time.
+
+**If it compiles, it works.**
+
+## Features
+
+- ✅ **Total Type Safety** - TypeScript strict mode + custom ESLint rules
+- ✅ **Zero Magic Strings** - All data as typed objects, enforced by ESLint
+- ✅ **Type-Safe Routing** - No hardcoded route strings allowed
+- ✅ **Component-Driven** - Minimal but extensible component library
+- ✅ **Claude Code Ready** - PlanWorkflow, agents, and skills included
+- ✅ **Production Build** - Vite with optimization and code splitting
+
+## Quick Start
+
+### 1. Clone & Install
+
+```bash
+git clone https://github.com/LongTermSupport/react-site-skeleton.git my-site
+cd my-site
+npm install
+```
+
+### 2. Run Development Server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173)
+
+### 3. Build for Production
+
+```bash
+npm run build
+npm run preview
+```
+
+## Architecture
+
+### Type Safety
+
+See [CLAUDE/TypeSafety.md](./CLAUDE/TypeSafety.md) for complete philosophy.
+
+**Core Principle**: Every piece of data (routes, categories, status values) must be a typed object, not a string literal.
+
+```tsx
+// ❌ WRONG - Magic strings
+<Link to="/about">About</Link>
+const category = "php";
+
+// ✅ CORRECT - Typed objects
+<Link to={ROUTES.about.path}>About</Link>
+const category = CATEGORIES.php.id;
+```
+
+### Custom ESLint Rules
+
+Three custom rules enforce type safety:
+
+1. **no-hardcoded-routes** - Prevents `"/about"`, requires `ROUTES.about.path`
+2. **no-string-link-props** - Prevents `link: string`, requires `link: RouteEntry`
+3. **use-types-not-strings** - Configurable rule for magic string prevention
+
+These rules catch typos and data reference errors at compile time.
+
+### Directory Structure
+
+```
+src/
+├── components/
+│   ├── layout/         # Page, Container, Section
+│   ├── content/        # Hero, Prose
+│   └── ui/             # (add your own)
+├── pages/              # Home, About, Contact
+├── types/              # routing.ts (type system)
+├── routes.ts           # ROUTES object (type-safe routes)
+├── styles/             # global.css
+└── main.tsx            # App entry point
+
+.claude/
+├── agents/             # typescript-specialist, component-builder
+├── hooks/              # (minimal - add as needed)
+└── skills/             # planning
+
+CLAUDE/
+├── PlanWorkflow.md     # Planning workflow guide
+├── TypeSafety.md       # Type safety philosophy
+└── Worktree.md         # Parallel development guide
+
+eslint-rules/           # Custom ESLint rules
+├── no-hardcoded-routes.js
+├── no-string-link-props.js
+└── use-types-not-strings.js
+```
+
+## Usage Patterns
+
+### Adding Routes
+
+**1. Define route in `src/routes.ts`:**
+
+```tsx
+export const ROUTES = {
+  home: { path: '/', label: 'Home' },
+  about: { path: '/about', label: 'About' },
+  blog: { path: '/blog', label: 'Blog' },  // NEW
+} as const satisfies Record<string, RouteEntry>;
+```
+
+**2. Use in components:**
+
+```tsx
+<Link to={ROUTES.blog.path}>{ROUTES.blog.label}</Link>
+```
+
+TypeScript autocompletes, typos caught at compile time!
+
+### Adding Data Objects
+
+For categories, tags, or any enumerated data:
+
+**1. Create typed const object:**
+
+```tsx
+// src/data/categories.ts
+export const CATEGORIES = {
+  php: { id: 'php' as const, label: 'PHP', color: '#8B5CF6' },
+  javascript: { id: 'javascript' as const, label: 'JavaScript', color: '#F7DF1E' },
+} as const;
+
+export type CategoryId = typeof CATEGORIES[keyof typeof CATEGORIES]['id'];
+```
+
+**2. Configure ESLint to enforce usage:**
+
+```js
+// eslint.config.js
+'custom/use-types-not-strings': ['error', {
+  patterns: [
+    { match: /^(php|javascript)$/, type: 'CATEGORIES', import: '@/data/categories' }
+  ]
+}]
+```
+
+**3. Use typed object:**
+
+```tsx
+const category: CategoryId = CATEGORIES.php.id;  // Type-safe!
+const color = CATEGORIES[category].color;
+```
+
+### Creating Components
+
+**Always use typed props, never magic strings:**
+
+```tsx
+// ❌ WRONG
+interface ButtonProps {
+  variant: string;  // What values are valid?
+}
+
+// ✅ CORRECT
+type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+
+interface ButtonProps {
+  variant: ButtonVariant;  // TypeScript knows valid values
+}
+```
+
+**Component with typed route prop:**
+
+```tsx
+import type { RouteEntry } from '@/types/routing';
+
+interface NavItemProps {
+  label: string;
+  link: RouteEntry;  // NOT string!
+}
+
+function NavItem({ label, link }: NavItemProps) {
+  return <a href={link.path}>{label}</a>;
+}
+
+// Usage
+<NavItem label="About" link={ROUTES.about} />
+```
+
+## Claude Code Integration
+
+This skeleton includes Claude Code infrastructure:
+
+### PlanWorkflow
+
+For complex multi-phase work:
+
+```bash
+# Create new plan
+mkdir -p CLAUDE/Plan/XXX-my-feature
+# Follow template in CLAUDE/PlanWorkflow.md
+```
+
+Plans track tasks with status icons (⬜ ✅ 🔄 🚫).
+
+### Agents
+
+- **typescript-specialist**: TypeScript expert for complex type issues
+- **component-builder**: React component design and implementation
+
+Use: `@typescript-specialist` in conversations
+
+### Skills
+
+- **planning**: Helps create/update plans using PlanWorkflow
+
+Use: `/planning` command
+
+## npm Scripts
+
+### Development
+- `npm run dev` - Start dev server
+- `npm run build` - Production build
+- `npm run preview` - Preview production build
+
+### Quality Assurance
+- `npm run lint` - Run ESLint
+- `npm run type-check` - TypeScript type checking
+- `npm run llm:lint` - ESLint with JSON output (AI-friendly)
+- `npm run llm:type-check` - Type check with JSON output (AI-friendly)
+- `npm run llm:qa` - Run all QA checks
+
+## Customization
+
+### 1. Update Branding
+
+- Edit `index.html` (title, meta tags)
+- Update `src/styles/global.css` (colors, fonts)
+- Replace favicon
+
+### 2. Add Your Components
+
+Build in `src/components/`:
+- Layout components (Header, Footer, Navigation)
+- Content components (specific to your site)
+- UI components (Button, Card, etc.)
+
+### 3. Configure ESLint for Your Data
+
+Add patterns to `eslint.config.js`:
+
+```js
+'custom/use-types-not-strings': ['error', {
+  patterns: [
+    { match: /^(your|data|values)$/, type: 'YOUR_CONST', import: '@/data/your-const' }
+  ]
+}]
+```
+
+### 4. Add Your Routes
+
+Extend `src/routes.ts` with your site's routes.
+
+### 5. Build Your Pages
+
+Create pages in `src/pages/` using the component patterns.
+
+## Type Safety Best Practices
+
+### ✅ DO
+
+- Create `as const` objects for all enumerated data
+- Use `satisfies` to ensure structure while preserving types
+- Extract types from const objects using `typeof`
+- Use union types for component props (`'small' | 'medium' | 'large'`)
+- Configure `use-types-not-strings` for your data objects
+
+### ❌ DON'T
+
+- Use string literals for data references
+- Use string enums (use const objects instead)
+- Define types separately from data (they drift apart)
+- Allow `any` (use `unknown` if needed)
+
+## Migration from Vanilla JavaScript
+
+1. **Identify magic strings** (find repeated string literals)
+2. **Create typed const object** with `as const`
+3. **Extract type** using `typeof`
+4. **Replace usages** with object references
+5. **Configure ESLint** to prevent regression
+
+See [CLAUDE/TypeSafety.md](./CLAUDE/TypeSafety.md) for detailed migration guide.
+
+## What This Skeleton Includes
+
+**Minimal but Complete:**
+- Type-safe routing system
+- 3 layout components (Page, Container, Section)
+- 2 content components (Hero, Prose)
+- 3 example pages (Home, About, Contact)
+- 3 custom ESLint rules
+- Claude Code infrastructure
+
+**What You Add:**
+- Your site-specific components
+- Your data objects (categories, tags, etc.)
+- Your styling system (Tailwind/CSS Modules/etc.)
+- Your content
+
+## What This Skeleton Does NOT Include
+
+- Specific design/styling (you choose Tailwind/CSS Modules/etc.)
+- Exhaustive component library (add what you need)
+- Backend/API integration (static site focused)
+- Testing setup (add Jest/Vitest/Playwright as needed)
+
+## Contributing
+
+This is a foundation skeleton. Improvements welcome!
+
+- Custom ESLint rules
+- Type safety patterns
+- Component patterns
+- Documentation
+
+## License
+
+MIT - See [LICENSE](./LICENSE)
+
+## Credits
+
+Built by [Long Term Support Ltd](https://github.com/LongTermSupport)
+
+Inspired by ec-site project - extracting the **approach**, not the **design**.
+
+---
+
+**Remember**: Clone the approach, not the design. Each site gets bespoke components but shares the robust type-safety infrastructure.

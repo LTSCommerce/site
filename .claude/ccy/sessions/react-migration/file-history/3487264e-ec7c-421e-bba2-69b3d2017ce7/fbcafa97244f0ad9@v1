@@ -38,7 +38,7 @@ interface PageProps {
  * </Page>
  * ```
  */
-export function Page({ title, description, children, showNavigation = true }: PageProps) {
+export function Page({ title, description, children }: PageProps) {
   // In a real app, you'd use react-helmet or similar for head management
   // For skeleton, we keep it simple
   if (title) {
@@ -52,31 +52,5 @@ export function Page({ title, description, children, showNavigation = true }: Pa
     }
   }
 
-  return (
-    <>
-      {showNavigation && (
-        <header
-          style={{
-            borderBottom: '1px solid #e5e7eb',
-            padding: '1rem 2rem',
-            backgroundColor: '#fff',
-          }}
-        >
-          <div
-            style={{
-              maxWidth: '1200px',
-              margin: '0 auto',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>LTS Commerce</div>
-            <Navigation />
-          </div>
-        </header>
-      )}
-      <main>{children}</main>
-    </>
-  );
+  return <main>{children}</main>;
 }

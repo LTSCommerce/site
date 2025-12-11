@@ -57,7 +57,7 @@ export type RouteKey = keyof typeof ROUTES;
 export function getArticleRoute(slug: string): RouteEntry {
   return {
     path: `/articles/${slug}`,
-    // Label omitted - typically comes from article metadata
+    label: undefined, // Label typically comes from article metadata
   };
 }
 
@@ -77,6 +77,6 @@ export function getArticleRoute(slug: string): RouteEntry {
 export function getCategoryRoute(categoryId: string): RouteEntry {
   return {
     path: `/articles/category/${categoryId}`,
-    // Label omitted - typically comes from category metadata
+    label: undefined, // Label typically comes from category metadata
   };
 }
