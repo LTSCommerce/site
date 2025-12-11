@@ -1,0 +1,68 @@
+{
+  "name": "lts-commerce-site",
+  "version": "2.0.0",
+  "description": "Professional freelance PHP engineer portfolio website - React/TypeScript edition",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "llm:lint": "eslint . --format json --output-file var/qa/eslint.json && eslint .",
+    "llm:type-check": "tsc --noEmit --pretty false 2>&1 | tee var/qa/typescript.log",
+    "llm:qa": "npm run llm:type-check && npm run llm:lint"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "vite",
+    "portfolio",
+    "php-engineer",
+    "type-safe",
+    "eslint"
+  ],
+  "author": "Joseph Edmonds <joseph@lts.ltd>",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/node": "^22.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.13.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.16.0",
+    "vite": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "quoteProps": "as-needed",
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "arrowParens": "avoid",
+    "endOfLine": "lf",
+    "htmlWhitespaceSensitivity": "css"
+  }
+}
