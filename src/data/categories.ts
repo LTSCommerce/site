@@ -5,6 +5,7 @@
  * Each category has unique ID, display label, and brand color.
  */
 
+/* eslint-disable custom/use-types-not-strings -- This file defines the category constants */
 export const CATEGORIES = {
   php: {
     id: 'php' as const,

@@ -8,12 +8,14 @@
 **Type**: Major Migration / Infrastructure Overhaul
 **Related**: Plan 002 (React Site Skeleton - Completed)
 
-## Status Update (2025-12-11)
+## Status Update (2026-01-21)
 
 ### Completed Phases:
 
 ✅ **Phase 1: Foundation & Documentation** - All infrastructure set up, legacy system archived
 ✅ **Phase 2: Build System Migration** - React Site Skeleton successfully applied
+✅ **Phase 3: Type-Safe Routing System** - Complete type-safe routing with React Router
+✅ **Phase 4: Component Structure Setup** - Full component library with article system
 
 ### Phase 1 Summary:
 - Created react-migration branch
@@ -33,9 +35,31 @@
 - Configured use-types-not-strings ESLint rule for CATEGORIES
 - All QA checks passing (type-check, build, lint)
 
+### Phase 3 Summary:
+- Fixed ESLint configuration (regex pattern as string, ignore directories)
+- Verified type-safe routing system from skeleton
+- Routes configured: Home (/), About (/about), Articles (/articles), Contact (/contact)
+- Dynamic route generators: getArticleRoute(), getCategoryRoute()
+- React Router configured with BrowserRouter
+- Type definitions: RouteEntry, LinkDestination, HashLink, ExternalLink, ContactLink
+- Helper functions: getLinkPath(), isHashLink(), isExternalLink(), isRouteEntry()
+- All QA checks passing (TypeScript: 0 errors, ESLint: 0 violations, Build: successful)
+
+### Phase 4 Summary:
+- Created missing directories: src/articles/, src/assets/, src/components/article/
+- Built Footer component with type-safe social links and navigation
+- Created Article type system: Article, ArticlePreview interfaces with type guards
+- Built ArticleCard component with category badges, date formatting, hover effects
+- Created sample article data (5 articles across all categories)
+- Built ArticleList page with responsive grid layout
+- Built ArticleDetail page with full article display and metadata
+- Updated App.tsx with article routing (/articles, /articles/:slug)
+- Integrated Footer into Page component layout
+- All QA checks passing (TypeScript: 0 errors, ESLint: 0 violations, Build: successful)
+
 ### Next Phase:
 
-**Phase 3: Type-Safe Routing System** - Extend skeleton routing for LTS article system
+**Phase 5: Convert Core Templates to React** - Migrate existing pages from archive
 
 ## Overview
 
@@ -157,40 +181,44 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
   - [ ] ⬜ build, dev, preview
   - [ ] ⬜ lint, type-check
 
-### Phase 3: Type-Safe Routing System
+### Phase 3: Type-Safe Routing System - ✅ COMPLETED
 
-- [ ] ⬜ **Design Route Structure**:
-  - [ ] ⬜ Home (/)
-  - [ ] ⬜ About (/about)
-  - [ ] ⬜ Articles (/articles)
-  - [ ] ⬜ Article Detail (/articles/:slug)
-  - [ ] ⬜ Contact (/contact)
-- [ ] ⬜ **Create Route System**:
-  - [ ] ⬜ src/routes.ts (route definitions)
-  - [ ] ⬜ src/types/routing.ts (type definitions)
-  - [ ] ⬜ Helper functions (getLinkPath, type guards)
-- [ ] ⬜ **Configure Route Types**:
-  - [ ] ⬜ StandardPageLink for most pages
-  - [ ] ⬜ ArticlePageLink for article pages
-  - [ ] ⬜ ContactPageLink for contact page
+- [x] ✅ **Design Route Structure**:
+  - [x] ✅ Home (/)
+  - [x] ✅ About (/about)
+  - [x] ✅ Articles (/articles)
+  - [x] ✅ Article Detail (/articles/:slug) - via getArticleRoute()
+  - [x] ✅ Contact (/contact)
+- [x] ✅ **Create Route System**:
+  - [x] ✅ src/routes.ts (route definitions)
+  - [x] ✅ src/types/routing.ts (type definitions)
+  - [x] ✅ Helper functions (getLinkPath, type guards)
+- [x] ✅ **Configure Route Types**:
+  - [x] ✅ RouteEntry interface (simpler than originally planned)
+  - [x] ✅ LinkDestination union (covers all link types)
+  - [x] ✅ Type guards for runtime checking
 
-### Phase 4: Component Structure Setup
+### Phase 4: Component Structure Setup - ✅ COMPLETED
 
-- [ ] ⬜ **Create src/ Directory Structure**:
+- [x] ✅ **Create src/ Directory Structure**:
   ```
   src/
   ├── components/       # Reusable UI components
-  ├── pages/           # Page components
-  ├── articles/        # Article content
-  ├── types/           # TypeScript types
+  │   ├── layout/       # Page, Container, Section, Navigation, Footer
+  │   ├── content/      # Hero, Prose, CategoryBadge
+  │   └── article/      # ArticleCard
+  ├── pages/           # Page components (Home, About, Contact, ArticleList, ArticleDetail)
+  ├── articles/        # Article content (created, ready for Phase 6)
+  ├── types/           # TypeScript types (routing.ts, article.ts)
+  ├── data/            # Data files (categories.ts, articles.ts)
   ├── styles/          # Global styles
   ├── assets/          # Static assets
   └── routes.ts        # Route definitions
   ```
-- [ ] ⬜ **Set Up Component Categories**:
-  - [ ] ⬜ Layout components (Header, Footer, Navigation)
-  - [ ] ⬜ Article components (ArticleCard, ArticleContent)
-  - [ ] ⬜ UI components (Button, Card)
+- [x] ✅ **Set Up Component Categories**:
+  - [x] ✅ Layout components (Page, Container, Section, Navigation, Footer)
+  - [x] ✅ Article components (ArticleCard, sample data)
+  - [x] ✅ Content components (Hero, Prose, CategoryBadge)
 
 ### Phase 5: Convert Core Templates to React
 
@@ -361,8 +389,12 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 
 Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, each completed before moving to next.
 
-- **Phase 1**: 🔄 In Progress (Foundation & Documentation)
-- **Phases 2-10**: Pending
+- **Phase 1**: ✅ Complete (Foundation & Documentation)
+- **Phase 2**: ✅ Complete (Build System Migration)
+- **Phase 3**: ✅ Complete (Type-Safe Routing System)
+- **Phase 4**: ✅ Complete (Component Structure Setup)
+- **Phase 5**: 🔄 Ready to Start (Convert Core Templates to React)
+- **Phases 6-10**: Pending
 
 **Target Completion**: When all phases complete and success criteria met
 

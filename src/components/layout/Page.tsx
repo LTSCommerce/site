@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navigation } from './Navigation';
+import { Footer } from './Footer';
 
 interface PageProps {
   /**
@@ -21,6 +22,11 @@ interface PageProps {
    * Show navigation? Default: true
    */
   showNavigation?: boolean;
+
+  /**
+   * Show footer? Default: true
+   */
+  showFooter?: boolean;
 }
 
 /**
@@ -38,7 +44,13 @@ interface PageProps {
  * </Page>
  * ```
  */
-export function Page({ title, description, children, showNavigation = true }: PageProps) {
+export function Page({
+  title,
+  description,
+  children,
+  showNavigation = true,
+  showFooter = true,
+}: PageProps) {
   // In a real app, you'd use react-helmet or similar for head management
   // For skeleton, we keep it simple
   if (title) {
@@ -77,6 +89,7 @@ export function Page({ title, description, children, showNavigation = true }: Pa
         </header>
       )}
       <main>{children}</main>
+      {showFooter && <Footer />}
     </>
   );
 }

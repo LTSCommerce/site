@@ -10,7 +10,7 @@ import noStringLinkProps from './eslint-rules/no-string-link-props.js';
 import useTypesNotStrings from './eslint-rules/use-types-not-strings.js';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules'] },
+  { ignores: ['dist', 'node_modules', 'code-snippets', 'untracked', 'ARCHIVE', 'var'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.strictTypeChecked],
     files: ['**/*.{ts,tsx}'],
@@ -57,7 +57,7 @@ export default tseslint.config(
         {
           patterns: [
             {
-              match: /^(php|infrastructure|database|ai|typescript)$/,
+              match: '^(php|infrastructure|database|ai|typescript)$',
               type: 'CATEGORIES',
               import: '@/data/categories',
             },
