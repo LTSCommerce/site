@@ -119,7 +119,9 @@ export function ArticleList() {
               </label>
               <div style={categoryFiltersStyle}>
                 <button
-                  onClick={() => setSelectedCategory('all')}
+                  onClick={() => {
+                    setSelectedCategory('all');
+                  }}
                   style={filterButtonStyle(selectedCategory === 'all')}
                 >
                   All Categories
@@ -127,7 +129,9 @@ export function ArticleList() {
                 {categories.map(category => (
                   <button
                     key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
+                    onClick={() => {
+                      setSelectedCategory(category.id);
+                    }}
                     style={filterButtonStyle(selectedCategory === category.id)}
                   >
                     {category.label}
@@ -155,7 +159,9 @@ export function ArticleList() {
                 type="text"
                 placeholder="Search by title or description..."
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={e => {
+                  setSearchQuery(e.target.value);
+                }}
                 style={searchInputStyle}
               />
             </div>
