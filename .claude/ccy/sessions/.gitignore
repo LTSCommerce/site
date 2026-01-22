@@ -1,0 +1,9 @@
+# CCY Session Data - Do not commit
+# Sessions contain conversation history and are specific to this machine
+# Each session is isolated and should not be shared via git
+
+# Ignore everything in this directory
+*
+
+# Except this .gitignore file itself
+!.gitignore

@@ -1,91 +1,46 @@
+/**
+ * Hero Component
+ *
+ * Minimal, clean hero section with Tailwind CSS.
+ * Features title, subtitle, and optional CTA button.
+ */
+
 import { Link } from 'react-router-dom';
-import type { RouteEntry } from '../../types/routing';
-import { getLinkPath } from '../../types/routing';
+import type { RouteEntry } from '@/types/routing';
+import { getLinkPath } from '@/types/routing';
 
 interface HeroProps {
-  /**
-   * Hero title
-   */
   title: string;
-
-  /**
-   * Optional subtitle
-   */
   subtitle?: string;
-
-  /**
-   * Optional call-to-action button
-   */
   cta?: {
     text: string;
     link: RouteEntry;
   };
 }
 
-/**
- * Hero Component
- *
- * Generic hero section with title, subtitle, and optional CTA.
- *
- * Example:
- * ```tsx
- * <Hero
- *   title="Welcome"
- *   subtitle="Build amazing things"
- *   cta={{ text: "Get Started", link: ROUTES.about }}
- * />
- * ```
- *
- * Note: CTA link MUST be a RouteEntry, not a string.
- * This is enforced by TypeScript and ESLint.
- */
 export function Hero({ title, subtitle, cta }: HeroProps) {
   return (
-    <section
-      style={{
-        padding: 'var(--space-16) var(--space-4)',
-        textAlign: 'center',
-      }}
-    >
-      <h1
-        style={{
-          fontSize: '3rem',
-          fontWeight: 'bold',
-          marginBottom: 'var(--space-4)',
-        }}
-      >
-        {title}
-      </h1>
+    <section className="py-16 md:py-24 px-4 text-center bg-gradient-to-b from-white to-gray-50">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+          {title}
+        </h1>
 
-      {subtitle && (
-        <p
-          style={{
-            fontSize: '1.25rem',
-            color: '#666',
-            maxWidth: '600px',
-            margin: '0 auto var(--space-8)',
-          }}
-        >
-          {subtitle}
-        </p>
-      )}
+        {subtitle && (
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            {subtitle}
+          </p>
+        )}
 
-      {cta && (
-        <Link
-          to={getLinkPath(cta.link)}
-          style={{
-            display: 'inline-block',
-            padding: 'var(--space-3) var(--space-6)',
-            backgroundColor: 'var(--color-primary)',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontWeight: '500',
-          }}
-        >
-          {cta.text}
-        </Link>
-      )}
+        {cta && (
+          <Link
+            to={getLinkPath(cta.link)}
+            className="inline-block px-8 py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200 shadow-sm hover:shadow-md"
+          >
+            {cta.text}
+          </Link>
+        )}
+      </div>
     </section>
   );
 }

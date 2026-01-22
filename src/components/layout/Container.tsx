@@ -1,48 +1,29 @@
-import type { ReactNode } from 'react';
-
-interface ContainerProps {
-  /**
-   * Container content
-   */
-  children: ReactNode;
-
-  /**
-   * Maximum width variant
-   * @default 'default'
-   */
-  maxWidth?: 'narrow' | 'default' | 'wide' | 'full';
-}
-
 /**
  * Container Component
  *
- * Responsive container with max-width and horizontal padding.
- * Centers content and provides consistent spacing.
- *
- * Example:
- * ```tsx
- * <Container maxWidth="narrow">
- *   <h1>Centered Content</h1>
- * </Container>
- * ```
+ * Responsive container with max-width and padding.
+ * Minimal, clean design with Tailwind CSS.
  */
-export function Container({ children, maxWidth = 'default' }: ContainerProps) {
-  const maxWidthStyles = {
-    narrow: { maxWidth: '768px' },
-    default: { maxWidth: '1200px' },
-    wide: { maxWidth: '1400px' },
-    full: { maxWidth: '100%' },
+
+import type { ReactNode } from 'react';
+
+interface ContainerProps {
+  children: ReactNode;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  className?: string;
+}
+
+export function Container({ children, size = 'lg', className }: ContainerProps) {
+  const sizeClasses = {
+    sm: 'max-w-3xl',
+    md: 'max-w-5xl',
+    lg: 'max-w-7xl',
+    xl: 'max-w-screen-2xl',
+    full: 'max-w-full',
   };
 
   return (
-    <div
-      style={{
-        width: '100%',
-        margin: '0 auto',
-        padding: '0 var(--space-4)',
-        ...maxWidthStyles[maxWidth],
-      }}
-    >
+    <div className={`${sizeClasses[size]} mx-auto px-4 sm:px-6 lg:px-8 ${className || ''}`}>
       {children}
     </div>
   );

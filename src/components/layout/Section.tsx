@@ -1,61 +1,25 @@
-import type { ReactNode } from 'react';
-
-interface SectionProps {
-  /**
-   * Section content
-   */
-  children: ReactNode;
-
-  /**
-   * Vertical spacing variant
-   * @default 'default'
-   */
-  spacing?: 'none' | 'small' | 'default' | 'large';
-
-  /**
-   * Background color
-   * @default 'transparent'
-   */
-  background?: 'transparent' | 'white' | 'gray';
-}
-
 /**
  * Section Component
  *
- * Generic section wrapper for page sections.
- * Handles vertical spacing and optional background colors.
- *
- * Example:
- * ```tsx
- * <Section spacing="large" background="gray">
- *   <Container>
- *     <h2>Section Title</h2>
- *   </Container>
- * </Section>
- * ```
+ * Vertical spacing wrapper for page sections.
+ * Minimal, clean design with Tailwind CSS.
  */
-export function Section({ children, spacing = 'default', background = 'transparent' }: SectionProps) {
-  const spacingStyles = {
-    none: { padding: '0' },
-    small: { padding: 'var(--space-8) 0' },
-    default: { padding: 'var(--space-12) 0' },
-    large: { padding: 'var(--space-16) 0' },
+
+import type { ReactNode } from 'react';
+
+interface SectionProps {
+  children: ReactNode;
+  spacing?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+}
+
+export function Section({ children, spacing = 'lg', className }: SectionProps) {
+  const spacingClasses = {
+    sm: 'py-8',
+    md: 'py-12',
+    lg: 'py-16',
+    xl: 'py-24',
   };
 
-  const backgroundStyles = {
-    transparent: { backgroundColor: 'transparent' },
-    white: { backgroundColor: 'var(--color-background)' },
-    gray: { backgroundColor: '#f5f5f5' },
-  };
-
-  return (
-    <section
-      style={{
-        ...spacingStyles[spacing],
-        ...backgroundStyles[background],
-      }}
-    >
-      {children}
-    </section>
-  );
+  return <section className={`${spacingClasses[spacing]} ${className || ''}`}>{children}</section>;
 }

@@ -4975,3 +4975,2002 @@
 2025-12-11T14:50:18.094Z [DEBUG] Hooks: Found 0 total hooks in registry
 2025-12-11T14:50:18.094Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
 2025-12-11T14:50:20.817Z [DEBUG] Stream started - received first chunk
+2025-12-11T14:50:31.418Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T14:50:31.428Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T14:50:31.428Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T14:50:31.428Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T14:50:33.261Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T14:50:33.261Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T14:50:33.261Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T14:50:33.279Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T14:50:33.279Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T14:50:33.279Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T14:50:33.279Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T14:50:33.279Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T14:50:33.279Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T14:50:34.273Z [DEBUG] Stream started - received first chunk
+2025-12-11T14:50:36.329Z [DEBUG] Stream started - received first chunk
+2025-12-11T14:50:38.510Z [DEBUG] executePreToolHooks called for tool: TodoWrite
+2025-12-11T14:50:38.513Z [DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+2025-12-11T14:50:38.513Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T14:50:38.513Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T14:50:38.527Z [DEBUG] Writing to temp file: /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765464638527
+2025-12-11T14:50:38.527Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T14:50:38.538Z [DEBUG] Temp file written successfully, size: 2 bytes
+2025-12-11T14:50:38.538Z [DEBUG] Applied original permissions to temp file
+2025-12-11T14:50:38.538Z [DEBUG] Renaming /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765464638527 to /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json
+2025-12-11T14:50:38.538Z [DEBUG] File /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json written atomically
+2025-12-11T14:50:38.548Z [DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+2025-12-11T14:50:38.548Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T14:50:38.548Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T14:50:38.565Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T14:50:38.565Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T14:50:38.565Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T14:50:38.565Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T14:50:38.565Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T14:50:38.565Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T14:50:41.990Z [DEBUG] Stream started - received first chunk
+2025-12-11T14:50:51.989Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2025-12-11T14:50:51.989Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T14:50:51.989Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-11T14:50:52.030Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765464652030
+2025-12-11T14:50:52.030Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T14:50:52.030Z [DEBUG] Temp file written successfully, size: 47181 bytes
+2025-12-11T14:50:52.030Z [DEBUG] Applied original permissions to temp file
+2025-12-11T14:50:52.030Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765464652030 to /root/.claude.json
+2025-12-11T14:50:52.030Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765464652030' -> '/root/.claude.json'
+2025-12-11T14:50:52.030Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765464652030' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at o_7 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2884:8250)
+    at m39 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2884:8329)
+    at s39 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2887:479)
+    at file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2887:43915
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-12-11T14:50:52.030Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765464652030
+2025-12-11T14:50:52.030Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T14:50:52.042Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T14:50:52.054Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765464652054
+2025-12-11T14:50:52.054Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T14:50:52.054Z [DEBUG] Temp file written successfully, size: 47203 bytes
+2025-12-11T14:50:52.054Z [DEBUG] Applied original permissions to temp file
+2025-12-11T14:50:52.054Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765464652054 to /root/.claude.json
+2025-12-11T14:50:52.054Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765464652054' -> '/root/.claude.json'
+2025-12-11T14:50:52.054Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765464652054' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at o_7 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2884:8250)
+    at m39 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2884:8329)
+    at s39 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2887:479)
+    at file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2887:43915
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-12-11T14:50:52.055Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765464652054
+2025-12-11T14:50:52.055Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T14:50:52.059Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T14:51:52.048Z [DEBUG] Getting matching hook commands for Notification with query: idle_prompt
+2025-12-11T14:51:52.048Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T14:51:52.048Z [DEBUG] Matched 0 unique hooks for query "idle_prompt" (0 before deduplication)
+2025-12-11T14:59:59.272Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T14:59:59.272Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T15:00:00.611Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765465200611
+2025-12-11T15:00:00.611Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T15:00:00.611Z [DEBUG] Temp file written successfully, size: 47203 bytes
+2025-12-11T15:00:00.611Z [DEBUG] Applied original permissions to temp file
+2025-12-11T15:00:00.611Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765465200611 to /root/.claude.json
+2025-12-11T15:00:00.611Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765465200611' -> '/root/.claude.json'
+2025-12-11T15:00:00.611Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765465200611' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T15:00:00.612Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765465200611
+2025-12-11T15:00:00.612Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T15:00:00.616Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T15:29:59.319Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T15:29:59.319Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T15:30:00.976Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765467000976
+2025-12-11T15:30:00.976Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T15:30:00.977Z [DEBUG] Temp file written successfully, size: 47203 bytes
+2025-12-11T15:30:00.977Z [DEBUG] Applied original permissions to temp file
+2025-12-11T15:30:00.977Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765467000976 to /root/.claude.json
+2025-12-11T15:30:00.977Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765467000976' -> '/root/.claude.json'
+2025-12-11T15:30:00.977Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765467000976' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T15:30:00.977Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765467000976
+2025-12-11T15:30:00.977Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T15:30:00.985Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T15:59:59.305Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T15:59:59.305Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T16:00:00.571Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765468800571
+2025-12-11T16:00:00.571Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T16:00:00.571Z [DEBUG] Temp file written successfully, size: 47203 bytes
+2025-12-11T16:00:00.571Z [DEBUG] Applied original permissions to temp file
+2025-12-11T16:00:00.571Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765468800571 to /root/.claude.json
+2025-12-11T16:00:00.571Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765468800571' -> '/root/.claude.json'
+2025-12-11T16:00:00.571Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765468800571' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T16:00:00.571Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765468800571
+2025-12-11T16:00:00.571Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T16:00:00.579Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T16:29:59.265Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T16:29:59.265Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T16:30:00.257Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765470600257
+2025-12-11T16:30:00.257Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T16:30:00.258Z [DEBUG] Temp file written successfully, size: 47203 bytes
+2025-12-11T16:30:00.258Z [DEBUG] Applied original permissions to temp file
+2025-12-11T16:30:00.258Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765470600257 to /root/.claude.json
+2025-12-11T16:30:00.258Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765470600257' -> '/root/.claude.json'
+2025-12-11T16:30:00.258Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765470600257' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T16:30:00.258Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765470600257
+2025-12-11T16:30:00.258Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T16:30:00.267Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T16:59:59.322Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T16:59:59.322Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T17:00:01.171Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765472401171
+2025-12-11T17:00:01.171Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:00:01.171Z [DEBUG] Temp file written successfully, size: 47203 bytes
+2025-12-11T17:00:01.171Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:00:01.171Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765472401171 to /root/.claude.json
+2025-12-11T17:00:01.171Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765472401171' -> '/root/.claude.json'
+2025-12-11T17:00:01.171Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765472401171' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T17:00:01.171Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765472401171
+2025-12-11T17:00:01.172Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T17:00:01.180Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T17:11:15.418Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:11:15.418Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:11:15.418Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:11:15.419Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:11:15.419Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:11:15.419Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:11:15.432Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2025-12-11T17:11:15.432Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:11:15.432Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-11T17:11:15.433Z [DEBUG] FileHistory: Making snapshot for message fb961c58-6db6-4ed9-8cf0-a2b7c1e447ed
+2025-12-11T17:11:15.433Z [DEBUG] FileHistory: Missing tracked file: CLAUDE/Plan/072-react-migration-adoption/PLAN.md
+2025-12-11T17:11:15.440Z [DEBUG] FileHistory: Added snapshot for fb961c58-6db6-4ed9-8cf0-a2b7c1e447ed, tracking 48 files
+2025-12-11T17:11:16.164Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:11:20.769Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:11:31.835Z [DEBUG] executePreToolHooks called for tool: TodoWrite
+2025-12-11T17:11:31.851Z [DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+2025-12-11T17:11:31.851Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:11:31.851Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:11:31.878Z [DEBUG] Writing to temp file: /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473091878
+2025-12-11T17:11:31.878Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:11:31.880Z [DEBUG] Temp file written successfully, size: 569 bytes
+2025-12-11T17:11:31.880Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:11:31.880Z [DEBUG] Renaming /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473091878 to /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json
+2025-12-11T17:11:31.880Z [DEBUG] File /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json written atomically
+2025-12-11T17:11:31.895Z [DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+2025-12-11T17:11:31.895Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:11:31.895Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:11:31.912Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:11:31.912Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:11:31.912Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:11:31.913Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:11:31.913Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:11:31.913Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:11:35.281Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:11:36.959Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:11:36.970Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:11:36.970Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:11:36.970Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:11:37.048Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T17:11:37.048Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:11:37.048Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:11:37.076Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:11:37.076Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:11:37.076Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:11:37.076Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:11:37.076Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:11:37.076Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:11:37.534Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:11:39.760Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:11:41.061Z [DEBUG] executePreToolHooks called for tool: Read
+2025-12-11T17:11:41.067Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2025-12-11T17:11:41.067Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:11:41.067Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:11:41.102Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2025-12-11T17:11:41.102Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:11:41.102Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:11:41.121Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:11:41.121Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:11:41.121Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:11:41.121Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:11:41.121Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:11:41.121Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:11:45.909Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:11:59.991Z [DEBUG] executePreToolHooks called for tool: Edit
+2025-12-11T17:11:59.996Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2025-12-11T17:11:59.996Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:11:59.996Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2025-12-11T17:12:00.015Z [DEBUG] Hook output does not start with {, treating as plain text
+2025-12-11T17:12:00.041Z [DEBUG] Writing to temp file: /workspace/untracked/react-site-skeleton/package.json.tmp.2.1765473120041
+2025-12-11T17:12:00.041Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:12:00.050Z [DEBUG] Temp file written successfully, size: 1561 bytes
+2025-12-11T17:12:00.050Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:12:00.050Z [DEBUG] Renaming /workspace/untracked/react-site-skeleton/package.json.tmp.2.1765473120041 to /workspace/untracked/react-site-skeleton/package.json
+2025-12-11T17:12:00.050Z [DEBUG] File /workspace/untracked/react-site-skeleton/package.json written atomically
+2025-12-11T17:12:00.074Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2025-12-11T17:12:00.074Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:12:00.074Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2025-12-11T17:12:00.100Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:12:00.100Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:12:00.100Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:12:00.100Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:12:00.100Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:12:00.100Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:12:03.605Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:07.139Z [DEBUG] executePreToolHooks called for tool: TodoWrite
+2025-12-11T17:12:07.153Z [DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+2025-12-11T17:12:07.153Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:12:07.153Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:12:07.173Z [DEBUG] Writing to temp file: /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473127173
+2025-12-11T17:12:07.173Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:12:07.183Z [DEBUG] Temp file written successfully, size: 961 bytes
+2025-12-11T17:12:07.183Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:12:07.183Z [DEBUG] Renaming /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473127173 to /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json
+2025-12-11T17:12:07.183Z [DEBUG] File /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json written atomically
+2025-12-11T17:12:07.192Z [DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+2025-12-11T17:12:07.192Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:12:07.192Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:12:07.208Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:12:07.208Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:12:07.208Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:12:07.208Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:12:07.208Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:12:07.208Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:12:09.966Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:11.420Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:12:11.427Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:12:11.427Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:12:11.427Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:12:12.648Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:12.765Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T17:12:12.765Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:12:12.765Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:12:12.780Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:12:12.780Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:12:12.780Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:12:12.780Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:12:12.780Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:12:12.780Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:12:13.258Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:16.094Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:17.165Z [DEBUG] executePreToolHooks called for tool: Read
+2025-12-11T17:12:17.171Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2025-12-11T17:12:17.171Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:12:17.171Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:12:17.206Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2025-12-11T17:12:17.206Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:12:17.206Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:12:17.223Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:12:17.223Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:12:17.223Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:12:17.223Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:12:17.223Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:12:17.223Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:12:20.295Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:25.831Z [DEBUG] executePreToolHooks called for tool: Edit
+2025-12-11T17:12:25.836Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2025-12-11T17:12:25.836Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:12:25.836Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2025-12-11T17:12:25.853Z [DEBUG] Hook output does not start with {, treating as plain text
+2025-12-11T17:12:25.881Z [DEBUG] Writing to temp file: /workspace/untracked/react-site-skeleton/src/App.tsx.tmp.2.1765473145881
+2025-12-11T17:12:25.881Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:12:25.892Z [DEBUG] Temp file written successfully, size: 911 bytes
+2025-12-11T17:12:25.892Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:12:25.892Z [DEBUG] Renaming /workspace/untracked/react-site-skeleton/src/App.tsx.tmp.2.1765473145881 to /workspace/untracked/react-site-skeleton/src/App.tsx
+2025-12-11T17:12:25.892Z [DEBUG] File /workspace/untracked/react-site-skeleton/src/App.tsx written atomically
+2025-12-11T17:12:25.909Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2025-12-11T17:12:25.909Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:12:25.909Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2025-12-11T17:12:25.933Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:12:25.933Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:12:25.933Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:12:25.933Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:12:25.933Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:12:25.933Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:12:28.962Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:31.042Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:12:31.048Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:12:31.048Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:12:31.048Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:12:31.710Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:32.016Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:37.106Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:37.390Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T17:12:37.390Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:12:37.390Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:12:37.407Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:12:37.407Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:12:37.407Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:12:37.407Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:12:37.407Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:12:37.407Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:12:38.180Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:41.056Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:42.847Z [DEBUG] executePreToolHooks called for tool: Read
+2025-12-11T17:12:42.852Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2025-12-11T17:12:42.852Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:12:42.852Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:12:42.889Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2025-12-11T17:12:42.889Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:12:42.889Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:12:42.912Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:12:42.912Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:12:42.912Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:12:42.912Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:12:42.912Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:12:42.912Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:12:46.220Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:49.833Z [DEBUG] executePreToolHooks called for tool: TodoWrite
+2025-12-11T17:12:49.838Z [DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+2025-12-11T17:12:49.838Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:12:49.838Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:12:49.865Z [DEBUG] Writing to temp file: /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473169865
+2025-12-11T17:12:49.865Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:12:49.867Z [DEBUG] Temp file written successfully, size: 970 bytes
+2025-12-11T17:12:49.867Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:12:49.867Z [DEBUG] Renaming /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473169865 to /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json
+2025-12-11T17:12:49.867Z [DEBUG] File /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json written atomically
+2025-12-11T17:12:49.880Z [DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+2025-12-11T17:12:49.880Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:12:49.880Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:12:49.898Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:12:49.898Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:12:49.898Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:12:49.898Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:12:49.899Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:12:49.899Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:12:52.833Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:54.437Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:12:54.441Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:12:54.441Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:12:54.441Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:12:55.932Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T17:12:55.932Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:12:55.932Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:12:55.948Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:12:55.948Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:12:55.948Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:12:55.948Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:12:55.948Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:12:55.948Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:12:57.131Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:12:59.104Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:00.700Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:13:00.705Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:13:00.705Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:13:00.705Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:13:01.994Z [DEBUG] Getting matching hook commands for PostToolUseFailure with query: Bash
+2025-12-11T17:13:01.994Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:13:01.994Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:13:02.021Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:13:02.021Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:13:02.021Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:13:02.021Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:13:02.021Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:13:02.021Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:13:05.915Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:08.203Z [DEBUG] executePreToolHooks called for tool: Read
+2025-12-11T17:13:08.209Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2025-12-11T17:13:08.209Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:13:08.209Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:13:08.241Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2025-12-11T17:13:08.241Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:13:08.241Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:13:08.257Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:13:08.257Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:13:08.257Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:13:08.257Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:13:08.257Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:13:08.257Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:13:12.054Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:14.927Z [DEBUG] executePreToolHooks called for tool: Edit
+2025-12-11T17:13:14.932Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2025-12-11T17:13:14.932Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:13:14.932Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2025-12-11T17:13:14.950Z [DEBUG] Hook output does not start with {, treating as plain text
+2025-12-11T17:13:14.974Z [DEBUG] Writing to temp file: /workspace/untracked/react-site-skeleton/src/components/layout/Navigation.tsx.tmp.2.1765473194974
+2025-12-11T17:13:14.974Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:13:14.983Z [DEBUG] Temp file written successfully, size: 1750 bytes
+2025-12-11T17:13:14.983Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:13:14.983Z [DEBUG] Renaming /workspace/untracked/react-site-skeleton/src/components/layout/Navigation.tsx.tmp.2.1765473194974 to /workspace/untracked/react-site-skeleton/src/components/layout/Navigation.tsx
+2025-12-11T17:13:14.983Z [DEBUG] File /workspace/untracked/react-site-skeleton/src/components/layout/Navigation.tsx written atomically
+2025-12-11T17:13:14.994Z [DEBUG] FileHistory: Tracked file modification for /workspace/untracked/react-site-skeleton/src/components/layout/Navigation.tsx
+2025-12-11T17:13:15.008Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2025-12-11T17:13:15.008Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:13:15.008Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2025-12-11T17:13:15.027Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:13:15.027Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:13:15.027Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:13:15.027Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:13:15.027Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:13:15.027Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:13:18.501Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:20.369Z [DEBUG] executePreToolHooks called for tool: Read
+2025-12-11T17:13:20.373Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2025-12-11T17:13:20.373Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:13:20.373Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:13:20.402Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2025-12-11T17:13:20.402Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:13:20.402Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:13:20.416Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:13:20.416Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:13:20.416Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:13:20.416Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:13:20.416Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:13:20.416Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:13:24.535Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:26.815Z [DEBUG] executePreToolHooks called for tool: Edit
+2025-12-11T17:13:26.821Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2025-12-11T17:13:26.821Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:13:26.821Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2025-12-11T17:13:26.845Z [DEBUG] Hook output does not start with {, treating as plain text
+2025-12-11T17:13:26.875Z [DEBUG] Writing to temp file: /workspace/untracked/react-site-skeleton/src/components/layout/Page.tsx.tmp.2.1765473206875
+2025-12-11T17:13:26.875Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:13:26.884Z [DEBUG] Temp file written successfully, size: 1738 bytes
+2025-12-11T17:13:26.884Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:13:26.884Z [DEBUG] Renaming /workspace/untracked/react-site-skeleton/src/components/layout/Page.tsx.tmp.2.1765473206875 to /workspace/untracked/react-site-skeleton/src/components/layout/Page.tsx
+2025-12-11T17:13:26.884Z [DEBUG] File /workspace/untracked/react-site-skeleton/src/components/layout/Page.tsx written atomically
+2025-12-11T17:13:26.906Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2025-12-11T17:13:26.906Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:13:26.906Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2025-12-11T17:13:26.930Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:13:26.930Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:13:26.930Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:13:26.930Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:13:26.930Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:13:26.930Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:13:29.976Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:31.397Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:13:31.403Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:13:31.403Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:13:31.403Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:13:35.090Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T17:13:35.090Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:13:35.090Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:13:35.110Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:13:35.110Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:13:35.110Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:13:35.110Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:13:35.110Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:13:35.110Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:13:36.560Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:38.327Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:41.297Z [DEBUG] executePreToolHooks called for tool: TodoWrite
+2025-12-11T17:13:41.313Z [DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+2025-12-11T17:13:41.313Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:13:41.313Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:13:41.334Z [DEBUG] Writing to temp file: /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473221334
+2025-12-11T17:13:41.334Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:13:41.343Z [DEBUG] Temp file written successfully, size: 972 bytes
+2025-12-11T17:13:41.343Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:13:41.343Z [DEBUG] Renaming /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473221334 to /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json
+2025-12-11T17:13:41.343Z [DEBUG] File /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json written atomically
+2025-12-11T17:13:41.356Z [DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+2025-12-11T17:13:41.356Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:13:41.356Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:13:41.369Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:13:41.369Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:13:41.369Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:13:41.369Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:13:41.369Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:13:41.369Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:13:44.287Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:46.165Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:13:46.171Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:13:46.171Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:13:46.171Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:13:46.249Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T17:13:46.249Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:13:46.249Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:13:46.265Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:13:46.265Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:13:46.265Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:13:46.265Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:13:46.265Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:13:46.265Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:13:46.846Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:50.680Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:13:51.757Z [DEBUG] executePreToolHooks called for tool: Read
+2025-12-11T17:13:51.762Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2025-12-11T17:13:51.762Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:13:51.762Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:13:51.791Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2025-12-11T17:13:51.791Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:13:51.791Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:13:51.805Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:13:51.805Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:13:51.805Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:13:51.805Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:13:51.805Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:13:51.805Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:13:56.954Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:01.697Z [DEBUG] executePreToolHooks called for tool: Edit
+2025-12-11T17:14:01.702Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2025-12-11T17:14:01.702Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:14:01.702Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2025-12-11T17:14:01.719Z [DEBUG] Hook output does not start with {, treating as plain text
+2025-12-11T17:14:01.747Z [DEBUG] Writing to temp file: /workspace/untracked/react-site-skeleton/README.md.tmp.2.1765473241747
+2025-12-11T17:14:01.747Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:14:01.756Z [DEBUG] Temp file written successfully, size: 8868 bytes
+2025-12-11T17:14:01.756Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:14:01.756Z [DEBUG] Renaming /workspace/untracked/react-site-skeleton/README.md.tmp.2.1765473241747 to /workspace/untracked/react-site-skeleton/README.md
+2025-12-11T17:14:01.756Z [DEBUG] File /workspace/untracked/react-site-skeleton/README.md written atomically
+2025-12-11T17:14:01.773Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2025-12-11T17:14:01.773Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:14:01.773Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2025-12-11T17:14:01.796Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:14:01.796Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:14:01.796Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:14:01.796Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:14:01.796Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:14:01.796Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:14:04.197Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:06.311Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:14:06.315Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:14:06.315Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:14:06.316Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:14:06.370Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T17:14:06.370Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:14:06.370Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:14:06.395Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:14:06.395Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:14:06.395Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:14:06.395Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:14:06.395Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:14:06.395Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:14:07.128Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:08.949Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:10.328Z [DEBUG] executePreToolHooks called for tool: Read
+2025-12-11T17:14:10.333Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2025-12-11T17:14:10.333Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:14:10.333Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:14:10.359Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2025-12-11T17:14:10.359Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:14:10.359Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2025-12-11T17:14:10.374Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:14:10.374Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:14:10.374Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:14:10.374Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:14:10.374Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:14:10.374Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:14:13.105Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:16.945Z [DEBUG] executePreToolHooks called for tool: Edit
+2025-12-11T17:14:16.949Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2025-12-11T17:14:16.949Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:14:16.949Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2025-12-11T17:14:16.971Z [DEBUG] Hook output does not start with {, treating as plain text
+2025-12-11T17:14:16.996Z [DEBUG] Writing to temp file: /workspace/untracked/react-site-skeleton/README.md.tmp.2.1765473256996
+2025-12-11T17:14:16.996Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:14:17.005Z [DEBUG] Temp file written successfully, size: 9054 bytes
+2025-12-11T17:14:17.005Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:14:17.005Z [DEBUG] Renaming /workspace/untracked/react-site-skeleton/README.md.tmp.2.1765473256996 to /workspace/untracked/react-site-skeleton/README.md
+2025-12-11T17:14:17.005Z [DEBUG] File /workspace/untracked/react-site-skeleton/README.md written atomically
+2025-12-11T17:14:17.025Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2025-12-11T17:14:17.025Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:14:17.025Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2025-12-11T17:14:17.050Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:14:17.050Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:14:17.050Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:14:17.050Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:14:17.050Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:14:17.050Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:14:20.349Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:23.147Z [DEBUG] executePreToolHooks called for tool: TodoWrite
+2025-12-11T17:14:23.165Z [DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+2025-12-11T17:14:23.165Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:14:23.165Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:14:23.198Z [DEBUG] Writing to temp file: /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473263198
+2025-12-11T17:14:23.198Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:14:23.200Z [DEBUG] Temp file written successfully, size: 279 bytes
+2025-12-11T17:14:23.200Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:14:23.200Z [DEBUG] Renaming /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473263198 to /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json
+2025-12-11T17:14:23.200Z [DEBUG] File /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json written atomically
+2025-12-11T17:14:23.215Z [DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+2025-12-11T17:14:23.215Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:14:23.215Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:14:23.236Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:14:23.236Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:14:23.236Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:14:23.236Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:14:23.236Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:14:23.236Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:14:25.603Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:35.227Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:14:35.233Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:14:35.233Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:14:35.233Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:14:36.179Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T17:14:36.179Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:14:36.179Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:14:36.202Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:14:36.202Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:14:36.202Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:14:36.202Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:14:36.202Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:14:36.202Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:14:37.962Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:39.585Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:40.714Z [DEBUG] executePreToolHooks called for tool: TodoWrite
+2025-12-11T17:14:40.721Z [DEBUG] Getting matching hook commands for PreToolUse with query: TodoWrite
+2025-12-11T17:14:40.721Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:14:40.721Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:14:40.745Z [DEBUG] Writing to temp file: /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473280745
+2025-12-11T17:14:40.745Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:14:40.754Z [DEBUG] Temp file written successfully, size: 2 bytes
+2025-12-11T17:14:40.754Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:14:40.754Z [DEBUG] Renaming /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json.tmp.2.1765473280745 to /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json
+2025-12-11T17:14:40.754Z [DEBUG] File /root/.claude/todos/3487264e-ec7c-421e-bba2-69b3d2017ce7-agent-3487264e-ec7c-421e-bba2-69b3d2017ce7.json written atomically
+2025-12-11T17:14:40.767Z [DEBUG] Getting matching hook commands for PostToolUse with query: TodoWrite
+2025-12-11T17:14:40.767Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:14:40.767Z [DEBUG] Matched 0 unique hooks for query "TodoWrite" (0 before deduplication)
+2025-12-11T17:14:40.782Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:14:40.782Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:14:40.782Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:14:40.782Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:14:40.782Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:14:40.782Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:14:44.042Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:45.561Z [DEBUG] executePreToolHooks called for tool: Bash
+2025-12-11T17:14:45.569Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2025-12-11T17:14:45.569Z [DEBUG] Found 1 hook matchers in settings
+2025-12-11T17:14:45.569Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:14:45.622Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2025-12-11T17:14:45.622Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:14:45.622Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2025-12-11T17:14:45.640Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-11T17:14:45.640Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-11T17:14:45.640Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-11T17:14:45.640Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-11T17:14:45.640Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-11T17:14:45.640Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-11T17:14:47.485Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:14:48.069Z [DEBUG] Stream started - received first chunk
+2025-12-11T17:15:01.513Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2025-12-11T17:15:01.513Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:15:01.513Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-11T17:15:01.551Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765473301551
+2025-12-11T17:15:01.551Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:15:01.551Z [DEBUG] Temp file written successfully, size: 47233 bytes
+2025-12-11T17:15:01.551Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:15:01.551Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765473301551 to /root/.claude.json
+2025-12-11T17:15:01.551Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765473301551' -> '/root/.claude.json'
+2025-12-11T17:15:01.551Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765473301551' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at o_7 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2884:8250)
+    at m39 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2884:8329)
+    at s39 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2887:479)
+    at file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2887:43915
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-12-11T17:15:01.551Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765473301551
+2025-12-11T17:15:01.551Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T17:15:01.559Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T17:15:01.570Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765473301570
+2025-12-11T17:15:01.570Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:15:01.570Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T17:15:01.570Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:15:01.570Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765473301570 to /root/.claude.json
+2025-12-11T17:15:01.570Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765473301570' -> '/root/.claude.json'
+2025-12-11T17:15:01.571Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765473301570' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at o_7 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2884:8250)
+    at m39 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2884:8329)
+    at s39 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2887:479)
+    at file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2887:43915
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-12-11T17:15:01.571Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765473301570
+2025-12-11T17:15:01.571Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T17:15:01.572Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T17:16:01.568Z [DEBUG] Getting matching hook commands for Notification with query: idle_prompt
+2025-12-11T17:16:01.568Z [DEBUG] Found 0 hook matchers in settings
+2025-12-11T17:16:01.568Z [DEBUG] Matched 0 unique hooks for query "idle_prompt" (0 before deduplication)
+2025-12-11T17:29:59.297Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T17:29:59.297Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T17:30:00.539Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765474200539
+2025-12-11T17:30:00.539Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T17:30:00.540Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T17:30:00.540Z [DEBUG] Applied original permissions to temp file
+2025-12-11T17:30:00.540Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765474200539 to /root/.claude.json
+2025-12-11T17:30:00.540Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765474200539' -> '/root/.claude.json'
+2025-12-11T17:30:00.540Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765474200539' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T17:30:00.541Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765474200539
+2025-12-11T17:30:00.541Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T17:30:00.542Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T17:59:59.348Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T17:59:59.348Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T18:00:00.931Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765476000931
+2025-12-11T18:00:00.931Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T18:00:00.932Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T18:00:00.932Z [DEBUG] Applied original permissions to temp file
+2025-12-11T18:00:00.932Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765476000931 to /root/.claude.json
+2025-12-11T18:00:00.932Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765476000931' -> '/root/.claude.json'
+2025-12-11T18:00:00.932Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765476000931' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T18:00:00.932Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765476000931
+2025-12-11T18:00:00.932Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T18:00:00.933Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T18:29:59.320Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T18:29:59.320Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T18:30:00.620Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765477800620
+2025-12-11T18:30:00.620Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T18:30:00.620Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T18:30:00.620Z [DEBUG] Applied original permissions to temp file
+2025-12-11T18:30:00.620Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765477800620 to /root/.claude.json
+2025-12-11T18:30:00.620Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765477800620' -> '/root/.claude.json'
+2025-12-11T18:30:00.620Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765477800620' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T18:30:00.621Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765477800620
+2025-12-11T18:30:00.621Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T18:30:00.627Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T18:59:59.274Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T18:59:59.274Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T19:00:00.361Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765479600361
+2025-12-11T19:00:00.361Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T19:00:00.361Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T19:00:00.361Z [DEBUG] Applied original permissions to temp file
+2025-12-11T19:00:00.361Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765479600361 to /root/.claude.json
+2025-12-11T19:00:00.361Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765479600361' -> '/root/.claude.json'
+2025-12-11T19:00:00.361Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765479600361' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T19:00:00.361Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765479600361
+2025-12-11T19:00:00.361Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T19:00:00.362Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T19:29:59.313Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T19:29:59.313Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T19:30:00.376Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765481400376
+2025-12-11T19:30:00.376Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T19:30:00.376Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T19:30:00.376Z [DEBUG] Applied original permissions to temp file
+2025-12-11T19:30:00.376Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765481400376 to /root/.claude.json
+2025-12-11T19:30:00.376Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765481400376' -> '/root/.claude.json'
+2025-12-11T19:30:00.376Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765481400376' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T19:30:00.376Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765481400376
+2025-12-11T19:30:00.376Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T19:30:00.384Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T19:59:59.312Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T19:59:59.312Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T20:00:01.070Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765483201070
+2025-12-11T20:00:01.070Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T20:00:01.070Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T20:00:01.070Z [DEBUG] Applied original permissions to temp file
+2025-12-11T20:00:01.070Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765483201070 to /root/.claude.json
+2025-12-11T20:00:01.070Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765483201070' -> '/root/.claude.json'
+2025-12-11T20:00:01.070Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765483201070' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T20:00:01.070Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765483201070
+2025-12-11T20:00:01.070Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T20:00:01.078Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T20:29:59.273Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T20:29:59.273Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T20:30:05.400Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765485005400
+2025-12-11T20:30:05.400Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T20:30:05.400Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T20:30:05.400Z [DEBUG] Applied original permissions to temp file
+2025-12-11T20:30:05.400Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765485005400 to /root/.claude.json
+2025-12-11T20:30:05.400Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765485005400' -> '/root/.claude.json'
+2025-12-11T20:30:05.400Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765485005400' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T20:30:05.400Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765485005400
+2025-12-11T20:30:05.400Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T20:30:05.409Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T20:59:59.279Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T20:59:59.279Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T21:00:05.585Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765486805585
+2025-12-11T21:00:05.585Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T21:00:05.585Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T21:00:05.585Z [DEBUG] Applied original permissions to temp file
+2025-12-11T21:00:05.585Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765486805585 to /root/.claude.json
+2025-12-11T21:00:05.585Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765486805585' -> '/root/.claude.json'
+2025-12-11T21:00:05.585Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765486805585' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T21:00:05.586Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765486805585
+2025-12-11T21:00:05.586Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T21:00:05.593Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T21:29:59.289Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T21:29:59.289Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T21:30:00.404Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765488600404
+2025-12-11T21:30:00.404Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T21:30:00.404Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T21:30:00.404Z [DEBUG] Applied original permissions to temp file
+2025-12-11T21:30:00.404Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765488600404 to /root/.claude.json
+2025-12-11T21:30:00.405Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765488600404' -> '/root/.claude.json'
+2025-12-11T21:30:00.405Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765488600404' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T21:30:00.405Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765488600404
+2025-12-11T21:30:00.405Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T21:30:00.406Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T21:59:59.287Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T21:59:59.287Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T22:00:00.367Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765490400367
+2025-12-11T22:00:00.367Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T22:00:00.368Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T22:00:00.368Z [DEBUG] Applied original permissions to temp file
+2025-12-11T22:00:00.368Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765490400367 to /root/.claude.json
+2025-12-11T22:00:00.368Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765490400367' -> '/root/.claude.json'
+2025-12-11T22:00:00.368Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765490400367' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T22:00:00.368Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765490400367
+2025-12-11T22:00:00.368Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T22:00:00.376Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T22:29:59.286Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T22:29:59.286Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T22:30:00.385Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765492200385
+2025-12-11T22:30:00.385Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T22:30:00.385Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T22:30:00.385Z [DEBUG] Applied original permissions to temp file
+2025-12-11T22:30:00.385Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765492200385 to /root/.claude.json
+2025-12-11T22:30:00.385Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765492200385' -> '/root/.claude.json'
+2025-12-11T22:30:00.385Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765492200385' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T22:30:00.386Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765492200385
+2025-12-11T22:30:00.386Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T22:30:00.393Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T22:59:59.284Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T22:59:59.284Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T23:00:00.402Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765494000402
+2025-12-11T23:00:00.402Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T23:00:00.402Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T23:00:00.402Z [DEBUG] Applied original permissions to temp file
+2025-12-11T23:00:00.402Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765494000402 to /root/.claude.json
+2025-12-11T23:00:00.402Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765494000402' -> '/root/.claude.json'
+2025-12-11T23:00:00.402Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765494000402' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T23:00:00.402Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765494000402
+2025-12-11T23:00:00.402Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T23:00:00.403Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T23:29:59.264Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T23:29:59.264Z [DEBUG] AutoUpdater: Using global update method
+2025-12-11T23:30:00.362Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765495800362
+2025-12-11T23:30:00.362Z [DEBUG] Preserving file permissions: 100600
+2025-12-11T23:30:00.362Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-11T23:30:00.362Z [DEBUG] Applied original permissions to temp file
+2025-12-11T23:30:00.362Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765495800362 to /root/.claude.json
+2025-12-11T23:30:00.362Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765495800362' -> '/root/.claude.json'
+2025-12-11T23:30:00.362Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765495800362' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-11T23:30:00.362Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765495800362
+2025-12-11T23:30:00.362Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-11T23:30:00.371Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-11T23:59:59.296Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-11T23:59:59.296Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T00:00:05.529Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765497605529
+2025-12-12T00:00:05.529Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T00:00:05.529Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T00:00:05.529Z [DEBUG] Applied original permissions to temp file
+2025-12-12T00:00:05.529Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765497605529 to /root/.claude.json
+2025-12-12T00:00:05.529Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765497605529' -> '/root/.claude.json'
+2025-12-12T00:00:05.529Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765497605529' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T00:00:05.529Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765497605529
+2025-12-12T00:00:05.529Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T00:00:05.530Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T00:29:59.257Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T00:29:59.257Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T00:30:00.296Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765499400296
+2025-12-12T00:30:00.296Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T00:30:00.296Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T00:30:00.296Z [DEBUG] Applied original permissions to temp file
+2025-12-12T00:30:00.296Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765499400296 to /root/.claude.json
+2025-12-12T00:30:00.296Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765499400296' -> '/root/.claude.json'
+2025-12-12T00:30:00.296Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765499400296' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T00:30:00.296Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765499400296
+2025-12-12T00:30:00.296Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T00:30:00.304Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T00:59:59.258Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T00:59:59.258Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T01:00:00.344Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765501200344
+2025-12-12T01:00:00.344Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T01:00:00.344Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T01:00:00.344Z [DEBUG] Applied original permissions to temp file
+2025-12-12T01:00:00.344Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765501200344 to /root/.claude.json
+2025-12-12T01:00:00.344Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765501200344' -> '/root/.claude.json'
+2025-12-12T01:00:00.344Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765501200344' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T01:00:00.344Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765501200344
+2025-12-12T01:00:00.344Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T01:00:00.352Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T01:29:59.314Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T01:29:59.314Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T01:30:00.274Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765503000274
+2025-12-12T01:30:00.274Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T01:30:00.274Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T01:30:00.274Z [DEBUG] Applied original permissions to temp file
+2025-12-12T01:30:00.274Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765503000274 to /root/.claude.json
+2025-12-12T01:30:00.274Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765503000274' -> '/root/.claude.json'
+2025-12-12T01:30:00.274Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765503000274' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T01:30:00.274Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765503000274
+2025-12-12T01:30:00.274Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T01:30:00.276Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T01:59:59.274Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T01:59:59.274Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T02:00:00.587Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765504800587
+2025-12-12T02:00:00.587Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T02:00:00.587Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T02:00:00.587Z [DEBUG] Applied original permissions to temp file
+2025-12-12T02:00:00.587Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765504800587 to /root/.claude.json
+2025-12-12T02:00:00.587Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765504800587' -> '/root/.claude.json'
+2025-12-12T02:00:00.587Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765504800587' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T02:00:00.587Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765504800587
+2025-12-12T02:00:00.587Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T02:00:00.596Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T02:29:59.262Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T02:29:59.262Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T02:30:00.452Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765506600452
+2025-12-12T02:30:00.452Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T02:30:00.452Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T02:30:00.452Z [DEBUG] Applied original permissions to temp file
+2025-12-12T02:30:00.452Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765506600452 to /root/.claude.json
+2025-12-12T02:30:00.452Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765506600452' -> '/root/.claude.json'
+2025-12-12T02:30:00.452Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765506600452' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T02:30:00.452Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765506600452
+2025-12-12T02:30:00.452Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T02:30:00.460Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T02:59:59.301Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T02:59:59.301Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T03:00:00.553Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765508400553
+2025-12-12T03:00:00.553Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T03:00:00.553Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T03:00:00.553Z [DEBUG] Applied original permissions to temp file
+2025-12-12T03:00:00.553Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765508400553 to /root/.claude.json
+2025-12-12T03:00:00.553Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765508400553' -> '/root/.claude.json'
+2025-12-12T03:00:00.553Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765508400553' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T03:00:00.554Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765508400553
+2025-12-12T03:00:00.554Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T03:00:00.561Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T03:29:59.251Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T03:29:59.251Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T03:30:00.304Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765510200304
+2025-12-12T03:30:00.304Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T03:30:00.304Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T03:30:00.304Z [DEBUG] Applied original permissions to temp file
+2025-12-12T03:30:00.304Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765510200304 to /root/.claude.json
+2025-12-12T03:30:00.304Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765510200304' -> '/root/.claude.json'
+2025-12-12T03:30:00.304Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765510200304' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T03:30:00.304Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765510200304
+2025-12-12T03:30:00.304Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T03:30:00.312Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T03:59:59.264Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T03:59:59.264Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T04:00:05.308Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765512005308
+2025-12-12T04:00:05.308Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T04:00:05.308Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T04:00:05.308Z [DEBUG] Applied original permissions to temp file
+2025-12-12T04:00:05.308Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765512005308 to /root/.claude.json
+2025-12-12T04:00:05.308Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765512005308' -> '/root/.claude.json'
+2025-12-12T04:00:05.308Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765512005308' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T04:00:05.309Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765512005308
+2025-12-12T04:00:05.309Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T04:00:05.311Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T04:29:59.265Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T04:29:59.265Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T04:30:00.253Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765513800253
+2025-12-12T04:30:00.253Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T04:30:00.253Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T04:30:00.253Z [DEBUG] Applied original permissions to temp file
+2025-12-12T04:30:00.253Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765513800253 to /root/.claude.json
+2025-12-12T04:30:00.253Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765513800253' -> '/root/.claude.json'
+2025-12-12T04:30:00.253Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765513800253' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T04:30:00.254Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765513800253
+2025-12-12T04:30:00.254Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T04:30:00.262Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T04:59:59.269Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T04:59:59.269Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T05:00:05.357Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765515605357
+2025-12-12T05:00:05.357Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T05:00:05.358Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T05:00:05.358Z [DEBUG] Applied original permissions to temp file
+2025-12-12T05:00:05.358Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765515605357 to /root/.claude.json
+2025-12-12T05:00:05.358Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765515605357' -> '/root/.claude.json'
+2025-12-12T05:00:05.358Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765515605357' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T05:00:05.358Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765515605357
+2025-12-12T05:00:05.358Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T05:00:05.367Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T05:29:59.271Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T05:29:59.271Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T05:30:00.368Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765517400368
+2025-12-12T05:30:00.368Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T05:30:00.368Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T05:30:00.368Z [DEBUG] Applied original permissions to temp file
+2025-12-12T05:30:00.368Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765517400368 to /root/.claude.json
+2025-12-12T05:30:00.368Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765517400368' -> '/root/.claude.json'
+2025-12-12T05:30:00.368Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765517400368' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T05:30:00.368Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765517400368
+2025-12-12T05:30:00.368Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T05:30:00.376Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T05:59:59.289Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T05:59:59.289Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T06:00:00.230Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765519200230
+2025-12-12T06:00:00.230Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T06:00:00.230Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T06:00:00.230Z [DEBUG] Applied original permissions to temp file
+2025-12-12T06:00:00.230Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765519200230 to /root/.claude.json
+2025-12-12T06:00:00.230Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765519200230' -> '/root/.claude.json'
+2025-12-12T06:00:00.230Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765519200230' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T06:00:00.230Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765519200230
+2025-12-12T06:00:00.230Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T06:00:00.238Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T06:29:59.253Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T06:29:59.253Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T06:30:00.830Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765521000830
+2025-12-12T06:30:00.830Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T06:30:00.830Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T06:30:00.830Z [DEBUG] Applied original permissions to temp file
+2025-12-12T06:30:00.830Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765521000830 to /root/.claude.json
+2025-12-12T06:30:00.830Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765521000830' -> '/root/.claude.json'
+2025-12-12T06:30:00.830Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765521000830' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T06:30:00.831Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765521000830
+2025-12-12T06:30:00.831Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T06:30:00.840Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T06:59:59.265Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T06:59:59.265Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T07:00:00.383Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765522800383
+2025-12-12T07:00:00.383Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T07:00:00.383Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T07:00:00.383Z [DEBUG] Applied original permissions to temp file
+2025-12-12T07:00:00.383Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765522800383 to /root/.claude.json
+2025-12-12T07:00:00.383Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765522800383' -> '/root/.claude.json'
+2025-12-12T07:00:00.383Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765522800383' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T07:00:00.384Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765522800383
+2025-12-12T07:00:00.384Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T07:00:00.392Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T07:29:59.307Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T07:29:59.307Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T07:30:00.256Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765524600256
+2025-12-12T07:30:00.256Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T07:30:00.256Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T07:30:00.256Z [DEBUG] Applied original permissions to temp file
+2025-12-12T07:30:00.256Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765524600256 to /root/.claude.json
+2025-12-12T07:30:00.256Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765524600256' -> '/root/.claude.json'
+2025-12-12T07:30:00.256Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765524600256' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T07:30:00.256Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765524600256
+2025-12-12T07:30:00.256Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T07:30:00.258Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T07:59:59.271Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T07:59:59.271Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T08:00:05.345Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765526405345
+2025-12-12T08:00:05.345Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T08:00:05.346Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T08:00:05.346Z [DEBUG] Applied original permissions to temp file
+2025-12-12T08:00:05.346Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765526405345 to /root/.claude.json
+2025-12-12T08:00:05.346Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765526405345' -> '/root/.claude.json'
+2025-12-12T08:00:05.346Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765526405345' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T08:00:05.346Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765526405345
+2025-12-12T08:00:05.346Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T08:00:05.353Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T08:29:59.277Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T08:29:59.277Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T08:30:00.336Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765528200336
+2025-12-12T08:30:00.336Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T08:30:00.337Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T08:30:00.337Z [DEBUG] Applied original permissions to temp file
+2025-12-12T08:30:00.337Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765528200336 to /root/.claude.json
+2025-12-12T08:30:00.337Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765528200336' -> '/root/.claude.json'
+2025-12-12T08:30:00.337Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765528200336' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T08:30:00.337Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765528200336
+2025-12-12T08:30:00.337Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T08:30:00.338Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T08:59:59.323Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T08:59:59.324Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T09:00:00.497Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765530000497
+2025-12-12T09:00:00.497Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T09:00:00.497Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T09:00:00.497Z [DEBUG] Applied original permissions to temp file
+2025-12-12T09:00:00.497Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765530000497 to /root/.claude.json
+2025-12-12T09:00:00.497Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765530000497' -> '/root/.claude.json'
+2025-12-12T09:00:00.497Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765530000497' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T09:00:00.497Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765530000497
+2025-12-12T09:00:00.497Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T09:00:00.505Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T09:29:59.273Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T09:29:59.273Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T09:30:10.406Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765531810406
+2025-12-12T09:30:10.406Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T09:30:10.406Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T09:30:10.406Z [DEBUG] Applied original permissions to temp file
+2025-12-12T09:30:10.406Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765531810406 to /root/.claude.json
+2025-12-12T09:30:10.406Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765531810406' -> '/root/.claude.json'
+2025-12-12T09:30:10.406Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765531810406' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T09:30:10.406Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765531810406
+2025-12-12T09:30:10.406Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T09:30:10.407Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T09:59:59.334Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T09:59:59.334Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T10:00:00.498Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765533600498
+2025-12-12T10:00:00.498Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T10:00:00.498Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T10:00:00.498Z [DEBUG] Applied original permissions to temp file
+2025-12-12T10:00:00.498Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765533600498 to /root/.claude.json
+2025-12-12T10:00:00.498Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765533600498' -> '/root/.claude.json'
+2025-12-12T10:00:00.498Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765533600498' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T10:00:00.498Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765533600498
+2025-12-12T10:00:00.498Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T10:00:00.507Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T10:29:59.277Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T10:29:59.277Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T10:30:00.330Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765535400330
+2025-12-12T10:30:00.330Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T10:30:00.330Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T10:30:00.330Z [DEBUG] Applied original permissions to temp file
+2025-12-12T10:30:00.330Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765535400330 to /root/.claude.json
+2025-12-12T10:30:00.330Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765535400330' -> '/root/.claude.json'
+2025-12-12T10:30:00.330Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765535400330' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T10:30:00.330Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765535400330
+2025-12-12T10:30:00.330Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T10:30:00.337Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T10:59:59.278Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T10:59:59.278Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T11:00:00.333Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765537200333
+2025-12-12T11:00:00.333Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T11:00:00.333Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T11:00:00.333Z [DEBUG] Applied original permissions to temp file
+2025-12-12T11:00:00.333Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765537200333 to /root/.claude.json
+2025-12-12T11:00:00.333Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765537200333' -> '/root/.claude.json'
+2025-12-12T11:00:00.333Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765537200333' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T11:00:00.334Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765537200333
+2025-12-12T11:00:00.334Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T11:00:00.335Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T11:29:59.286Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T11:29:59.286Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T11:30:00.564Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765539000564
+2025-12-12T11:30:00.564Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T11:30:00.564Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T11:30:00.564Z [DEBUG] Applied original permissions to temp file
+2025-12-12T11:30:00.564Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765539000564 to /root/.claude.json
+2025-12-12T11:30:00.564Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765539000564' -> '/root/.claude.json'
+2025-12-12T11:30:00.564Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765539000564' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T11:30:00.565Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765539000564
+2025-12-12T11:30:00.565Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T11:30:00.566Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T11:59:59.275Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T11:59:59.275Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T12:00:05.450Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765540805450
+2025-12-12T12:00:05.450Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T12:00:05.451Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T12:00:05.451Z [DEBUG] Applied original permissions to temp file
+2025-12-12T12:00:05.451Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765540805450 to /root/.claude.json
+2025-12-12T12:00:05.451Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765540805450' -> '/root/.claude.json'
+2025-12-12T12:00:05.451Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765540805450' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T12:00:05.451Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765540805450
+2025-12-12T12:00:05.451Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T12:00:05.460Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T12:29:59.279Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T12:29:59.279Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T12:30:00.369Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765542600369
+2025-12-12T12:30:00.369Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T12:30:00.369Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T12:30:00.369Z [DEBUG] Applied original permissions to temp file
+2025-12-12T12:30:00.369Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765542600369 to /root/.claude.json
+2025-12-12T12:30:00.369Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765542600369' -> '/root/.claude.json'
+2025-12-12T12:30:00.369Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765542600369' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T12:30:00.369Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765542600369
+2025-12-12T12:30:00.369Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T12:30:00.377Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T12:59:59.296Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T12:59:59.297Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T13:00:00.842Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765544400842
+2025-12-12T13:00:00.842Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T13:00:00.843Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T13:00:00.843Z [DEBUG] Applied original permissions to temp file
+2025-12-12T13:00:00.843Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765544400842 to /root/.claude.json
+2025-12-12T13:00:00.843Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765544400842' -> '/root/.claude.json'
+2025-12-12T13:00:00.843Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765544400842' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T13:00:00.843Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765544400842
+2025-12-12T13:00:00.843Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T13:00:00.844Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T13:29:59.321Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T13:29:59.321Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T13:30:00.584Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765546200584
+2025-12-12T13:30:00.584Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T13:30:00.584Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T13:30:00.584Z [DEBUG] Applied original permissions to temp file
+2025-12-12T13:30:00.584Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765546200584 to /root/.claude.json
+2025-12-12T13:30:00.584Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765546200584' -> '/root/.claude.json'
+2025-12-12T13:30:00.584Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765546200584' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T13:30:00.584Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765546200584
+2025-12-12T13:30:00.585Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T13:30:00.594Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T13:59:59.373Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T13:59:59.374Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T14:00:01.541Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765548001541
+2025-12-12T14:00:01.541Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T14:00:01.542Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T14:00:01.542Z [DEBUG] Applied original permissions to temp file
+2025-12-12T14:00:01.542Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765548001541 to /root/.claude.json
+2025-12-12T14:00:01.542Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765548001541' -> '/root/.claude.json'
+2025-12-12T14:00:01.542Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765548001541' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T14:00:01.542Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765548001541
+2025-12-12T14:00:01.542Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T14:00:01.552Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T14:29:59.381Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T14:29:59.381Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T14:30:00.687Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765549800687
+2025-12-12T14:30:00.687Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T14:30:00.687Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T14:30:00.687Z [DEBUG] Applied original permissions to temp file
+2025-12-12T14:30:00.687Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765549800687 to /root/.claude.json
+2025-12-12T14:30:00.687Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765549800687' -> '/root/.claude.json'
+2025-12-12T14:30:00.687Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765549800687' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T14:30:00.687Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765549800687
+2025-12-12T14:30:00.687Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T14:30:00.695Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T14:59:59.285Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T14:59:59.285Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T15:00:05.344Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765551605344
+2025-12-12T15:00:05.344Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T15:00:05.344Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T15:00:05.344Z [DEBUG] Applied original permissions to temp file
+2025-12-12T15:00:05.344Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765551605344 to /root/.claude.json
+2025-12-12T15:00:05.345Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765551605344' -> '/root/.claude.json'
+2025-12-12T15:00:05.345Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765551605344' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T15:00:05.345Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765551605344
+2025-12-12T15:00:05.345Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T15:00:05.354Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T15:29:59.260Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T15:29:59.260Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T15:30:00.651Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765553400651
+2025-12-12T15:30:00.651Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T15:30:00.652Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T15:30:00.652Z [DEBUG] Applied original permissions to temp file
+2025-12-12T15:30:00.652Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765553400651 to /root/.claude.json
+2025-12-12T15:30:00.652Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765553400651' -> '/root/.claude.json'
+2025-12-12T15:30:00.652Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765553400651' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T15:30:00.652Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765553400651
+2025-12-12T15:30:00.652Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T15:30:00.664Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T15:59:59.994Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T15:59:59.994Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T16:00:04.557Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765555204557
+2025-12-12T16:00:04.557Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T16:00:04.560Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T16:00:04.560Z [DEBUG] Applied original permissions to temp file
+2025-12-12T16:00:04.560Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765555204557 to /root/.claude.json
+2025-12-12T16:00:04.560Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765555204557' -> '/root/.claude.json'
+2025-12-12T16:00:04.560Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765555204557' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T16:00:04.561Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765555204557
+2025-12-12T16:00:04.561Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T16:00:04.570Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T16:29:59.825Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T16:29:59.825Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T16:30:03.053Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765557003053
+2025-12-12T16:30:03.053Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T16:30:03.054Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T16:30:03.054Z [DEBUG] Applied original permissions to temp file
+2025-12-12T16:30:03.054Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765557003053 to /root/.claude.json
+2025-12-12T16:30:03.054Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765557003053' -> '/root/.claude.json'
+2025-12-12T16:30:03.054Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765557003053' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T16:30:03.054Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765557003053
+2025-12-12T16:30:03.054Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T16:30:03.058Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T16:59:59.269Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T16:59:59.269Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T17:00:00.369Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765558800369
+2025-12-12T17:00:00.369Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T17:00:00.370Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T17:00:00.370Z [DEBUG] Applied original permissions to temp file
+2025-12-12T17:00:00.370Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765558800369 to /root/.claude.json
+2025-12-12T17:00:00.370Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765558800369' -> '/root/.claude.json'
+2025-12-12T17:00:00.370Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765558800369' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T17:00:00.370Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765558800369
+2025-12-12T17:00:00.370Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T17:00:00.377Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T17:29:59.285Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T17:29:59.285Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T17:30:00.562Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765560600562
+2025-12-12T17:30:00.562Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T17:30:00.563Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T17:30:00.563Z [DEBUG] Applied original permissions to temp file
+2025-12-12T17:30:00.563Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765560600562 to /root/.claude.json
+2025-12-12T17:30:00.563Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765560600562' -> '/root/.claude.json'
+2025-12-12T17:30:00.563Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765560600562' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T17:30:00.563Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765560600562
+2025-12-12T17:30:00.563Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T17:30:00.571Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T17:59:59.303Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T17:59:59.303Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T18:00:00.568Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765562400568
+2025-12-12T18:00:00.568Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T18:00:00.568Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T18:00:00.568Z [DEBUG] Applied original permissions to temp file
+2025-12-12T18:00:00.568Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765562400568 to /root/.claude.json
+2025-12-12T18:00:00.568Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765562400568' -> '/root/.claude.json'
+2025-12-12T18:00:00.568Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765562400568' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T18:00:00.569Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765562400568
+2025-12-12T18:00:00.569Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T18:00:00.570Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T18:29:59.307Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T18:29:59.307Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T18:30:00.497Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765564200497
+2025-12-12T18:30:00.497Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T18:30:00.497Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T18:30:00.497Z [DEBUG] Applied original permissions to temp file
+2025-12-12T18:30:00.497Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765564200497 to /root/.claude.json
+2025-12-12T18:30:00.497Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765564200497' -> '/root/.claude.json'
+2025-12-12T18:30:00.497Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765564200497' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T18:30:00.497Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765564200497
+2025-12-12T18:30:00.497Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T18:30:00.499Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T18:59:59.288Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T18:59:59.288Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T19:00:00.457Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765566000457
+2025-12-12T19:00:00.457Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T19:00:00.458Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T19:00:00.458Z [DEBUG] Applied original permissions to temp file
+2025-12-12T19:00:00.458Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765566000457 to /root/.claude.json
+2025-12-12T19:00:00.458Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765566000457' -> '/root/.claude.json'
+2025-12-12T19:00:00.458Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765566000457' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T19:00:00.458Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765566000457
+2025-12-12T19:00:00.458Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T19:00:00.462Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T19:29:59.287Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T19:29:59.287Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T19:30:00.315Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765567800315
+2025-12-12T19:30:00.315Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T19:30:00.315Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T19:30:00.315Z [DEBUG] Applied original permissions to temp file
+2025-12-12T19:30:00.315Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765567800315 to /root/.claude.json
+2025-12-12T19:30:00.315Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765567800315' -> '/root/.claude.json'
+2025-12-12T19:30:00.316Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765567800315' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T19:30:00.316Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765567800315
+2025-12-12T19:30:00.316Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T19:30:00.326Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T19:59:59.295Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T19:59:59.295Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T20:00:00.547Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765569600547
+2025-12-12T20:00:00.547Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T20:00:00.547Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T20:00:00.547Z [DEBUG] Applied original permissions to temp file
+2025-12-12T20:00:00.547Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765569600547 to /root/.claude.json
+2025-12-12T20:00:00.547Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765569600547' -> '/root/.claude.json'
+2025-12-12T20:00:00.547Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765569600547' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T20:00:00.547Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765569600547
+2025-12-12T20:00:00.547Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T20:00:00.549Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T20:29:59.297Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T20:29:59.297Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T20:30:00.248Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765571400248
+2025-12-12T20:30:00.248Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T20:30:00.248Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T20:30:00.248Z [DEBUG] Applied original permissions to temp file
+2025-12-12T20:30:00.248Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765571400248 to /root/.claude.json
+2025-12-12T20:30:00.248Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765571400248' -> '/root/.claude.json'
+2025-12-12T20:30:00.248Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765571400248' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T20:30:00.249Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765571400248
+2025-12-12T20:30:00.249Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T20:30:00.256Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T20:59:59.296Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T20:59:59.296Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T21:00:00.357Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765573200357
+2025-12-12T21:00:00.357Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T21:00:00.357Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T21:00:00.357Z [DEBUG] Applied original permissions to temp file
+2025-12-12T21:00:00.357Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765573200357 to /root/.claude.json
+2025-12-12T21:00:00.357Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765573200357' -> '/root/.claude.json'
+2025-12-12T21:00:00.357Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765573200357' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T21:00:00.357Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765573200357
+2025-12-12T21:00:00.357Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T21:00:00.365Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T21:29:59.317Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T21:29:59.317Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T21:30:00.378Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765575000378
+2025-12-12T21:30:00.378Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T21:30:00.378Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T21:30:00.378Z [DEBUG] Applied original permissions to temp file
+2025-12-12T21:30:00.378Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765575000378 to /root/.claude.json
+2025-12-12T21:30:00.378Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765575000378' -> '/root/.claude.json'
+2025-12-12T21:30:00.378Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765575000378' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T21:30:00.378Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765575000378
+2025-12-12T21:30:00.378Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T21:30:00.387Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T21:59:59.275Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T21:59:59.275Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T22:00:00.289Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765576800289
+2025-12-12T22:00:00.289Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T22:00:00.289Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T22:00:00.289Z [DEBUG] Applied original permissions to temp file
+2025-12-12T22:00:00.289Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765576800289 to /root/.claude.json
+2025-12-12T22:00:00.289Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765576800289' -> '/root/.claude.json'
+2025-12-12T22:00:00.289Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765576800289' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T22:00:00.289Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765576800289
+2025-12-12T22:00:00.289Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T22:00:00.297Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T22:29:59.292Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T22:29:59.292Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T22:30:02.132Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765578602132
+2025-12-12T22:30:02.132Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T22:30:02.132Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T22:30:02.132Z [DEBUG] Applied original permissions to temp file
+2025-12-12T22:30:02.132Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765578602132 to /root/.claude.json
+2025-12-12T22:30:02.132Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765578602132' -> '/root/.claude.json'
+2025-12-12T22:30:02.132Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765578602132' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T22:30:02.133Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765578602132
+2025-12-12T22:30:02.133Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T22:30:02.134Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T22:59:59.302Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T22:59:59.302Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T23:00:00.319Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765580400319
+2025-12-12T23:00:00.319Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T23:00:00.320Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T23:00:00.320Z [DEBUG] Applied original permissions to temp file
+2025-12-12T23:00:00.320Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765580400319 to /root/.claude.json
+2025-12-12T23:00:00.320Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765580400319' -> '/root/.claude.json'
+2025-12-12T23:00:00.320Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765580400319' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T23:00:00.320Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765580400319
+2025-12-12T23:00:00.320Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T23:00:00.328Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T23:29:59.280Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T23:29:59.280Z [DEBUG] AutoUpdater: Using global update method
+2025-12-12T23:30:00.443Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765582200443
+2025-12-12T23:30:00.443Z [DEBUG] Preserving file permissions: 100600
+2025-12-12T23:30:00.444Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-12T23:30:00.444Z [DEBUG] Applied original permissions to temp file
+2025-12-12T23:30:00.444Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765582200443 to /root/.claude.json
+2025-12-12T23:30:00.444Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765582200443' -> '/root/.claude.json'
+2025-12-12T23:30:00.444Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765582200443' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-12T23:30:00.444Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765582200443
+2025-12-12T23:30:00.444Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-12T23:30:00.452Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-12T23:59:59.338Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-12T23:59:59.338Z [DEBUG] AutoUpdater: Using global update method
+2025-12-13T00:00:00.849Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765584000849
+2025-12-13T00:00:00.849Z [DEBUG] Preserving file permissions: 100600
+2025-12-13T00:00:00.849Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-13T00:00:00.849Z [DEBUG] Applied original permissions to temp file
+2025-12-13T00:00:00.849Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765584000849 to /root/.claude.json
+2025-12-13T00:00:00.849Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765584000849' -> '/root/.claude.json'
+2025-12-13T00:00:00.849Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765584000849' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-13T00:00:00.849Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765584000849
+2025-12-13T00:00:00.849Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-13T00:00:00.858Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback
+2025-12-13T00:29:59.287Z [DEBUG] AutoUpdater: Detected installation type: npm-global
+2025-12-13T00:29:59.287Z [DEBUG] AutoUpdater: Using global update method
+2025-12-13T00:30:00.351Z [DEBUG] Writing to temp file: /root/.claude.json.tmp.2.1765585800351
+2025-12-13T00:30:00.351Z [DEBUG] Preserving file permissions: 100600
+2025-12-13T00:30:00.352Z [DEBUG] Temp file written successfully, size: 47262 bytes
+2025-12-13T00:30:00.352Z [DEBUG] Applied original permissions to temp file
+2025-12-13T00:30:00.352Z [DEBUG] Renaming /root/.claude.json.tmp.2.1765585800351 to /root/.claude.json
+2025-12-13T00:30:00.352Z [DEBUG] Failed to write file atomically: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765585800351' -> '/root/.claude.json'
+2025-12-13T00:30:00.352Z [ERROR] Error: Error: EBUSY: resource busy or locked, rename '/root/.claude.json.tmp.2.1765585800351' -> '/root/.claude.json'
+    at Module.renameSync (node:fs:1033:11)
+    at Object.renameSync (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1148)
+    at By (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:4463:773)
+    at H6B (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:8960)
+    at s0 (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:443:7021)
+    at VMA (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:1482:571)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.current (file:///usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js:2769:9760)
+2025-12-13T00:30:00.352Z [DEBUG] Cleaning up temp file: /root/.claude.json.tmp.2.1765585800351
+2025-12-13T00:30:00.352Z [DEBUG] Falling back to non-atomic write for /root/.claude.json
+2025-12-13T00:30:00.362Z [DEBUG] File /root/.claude.json written successfully with non-atomic fallback

@@ -9,3 +9,5 @@
 {"display":"do regular commits +push in the skeleton + lts react branch so we can keep granular track of what/why changes","pastedContents":{},"timestamp":1765457133751,"project":"/workspace","sessionId":"3487264e-ec7c-421e-bba2-69b3d2017ce7"}
 {"display":"ok\n\nthis does raise the point about type safety\n\nwe MUST use ts objects for all data\n\nwe must always strive the highest levels of type safety - eg strings must only be real strings - not implicit refrences to data","pastedContents":{},"timestamp":1765457206124,"project":"/workspace","sessionId":"3487264e-ec7c-421e-bba2-69b3d2017ce7"}
 {"display":"ALL OF IT","pastedContents":{},"timestamp":1765461498972,"project":"/workspace","sessionId":"3487264e-ec7c-421e-bba2-69b3d2017ce7"}
+{"display":"cotninue","pastedContents":{},"timestamp":1765464652024,"project":"/workspace","sessionId":"3487264e-ec7c-421e-bba2-69b3d2017ce7"}
+{"display":"ok skeleton package.json will need all the basic react components required adding in","pastedContents":{},"timestamp":1765473301548,"project":"/workspace","sessionId":"3487264e-ec7c-421e-bba2-69b3d2017ce7"}

@@ -1,8 +1,8 @@
 /**
  * Navigation Component
  *
+ * Minimal, clean navigation with Tailwind CSS.
  * Type-safe navigation using ROUTES object and React Router.
- * Automatically highlights active route.
  */
 
 import { Link, useLocation } from 'react-router-dom';
@@ -24,39 +24,37 @@ export function Navigation({ variant = 'horizontal' }: NavigationProps) {
   ];
 
   const isActive = (route: RouteEntry): boolean => {
-    // Exact match for home
     if (route.path === '/') {
       return location.pathname === '/';
     }
-    // Prefix match for other routes
     return location.pathname.startsWith(route.path);
   };
 
-  const containerStyle = {
-    display: 'flex',
-    flexDirection: variant === 'horizontal' ? ('row' as const) : ('column' as const),
-    gap: variant === 'horizontal' ? '2rem' : '1rem',
-    listStyle: 'none',
-    margin: 0,
-    padding: 0,
-  };
-
-  const linkStyle = (active: boolean) => ({
-    textDecoration: 'none',
-    color: active ? '#8B5CF6' : '#333',
-    fontWeight: active ? '600' : '400',
-    padding: '0.5rem',
-    borderBottom: active ? '2px solid #8B5CF6' : '2px solid transparent',
-    transition: 'all 0.2s ease',
-  });
-
   return (
-    <nav>
-      <ul style={containerStyle}>
+    <nav className={variant === 'vertical' ? 'w-full' : ''}>
+      <ul
+        className={`
+          flex list-none m-0 p-0
+          ${variant === 'horizontal' ? 'flex-row gap-8' : 'flex-col gap-4'}
+        `}
+      >
         {navItems.map(({ key, route }) => (
           <li key={key}>
-            <Link to={route.path} style={linkStyle(isActive(route))}>
+            <Link
+              to={route.path}
+              className={`
+                relative px-1 py-2 text-sm font-medium transition-colors duration-200
+                ${
+                  isActive(route)
+                    ? 'text-primary-600'
+                    : 'text-gray-700 hover:text-primary-600'
+                }
+              `}
+            >
               {route.label}
+              {isActive(route) && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600" />
+              )}
             </Link>
           </li>
         ))}

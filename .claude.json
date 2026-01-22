@@ -1,0 +1,131 @@
+{
+  "numStartups": 5,
+  "installMethod": "global",
+  "tipsHistory": {
+    "new-user-warmup": 4,
+    "plan-mode-for-complex-tasks": 1,
+    "terminal-setup": 1,
+    "memory-command": 1,
+    "theme-command": 1,
+    "status-line": 1,
+    "stickers-command": 1,
+    "prompt-queue": 1,
+    "enter-to-steer-in-relatime": 1,
+    "todo-list": 1,
+    "install-github-app": 1,
+    "install-slack-app": 2,
+    "drag-and-drop-images": 2,
+    "double-esc-code-restore": 2,
+    "continue": 3,
+    "shift-tab": 3,
+    "image-paste": 3,
+    "ultrathink-keyword": 3,
+    "web-app": 3,
+    "mobile-app": 3
+  },
+  "cachedStatsigGates": {
+    "tengu_prompt_suggestion": true
+  },
+  "cachedGrowthBookFeatures": {
+    "tengu_1p_event_batch_config": {
+      "scheduledDelayMillis": 5000,
+      "maxExportBatchSize": 200,
+      "maxQueueSize": 8192
+    },
+    "tengu_mcp_tool_search": false,
+    "tengu_scratch": false,
+    "tengu_disable_bypass_permissions_mode": false,
+    "tengu_log_segment_events": false,
+    "tengu_log_datadog_events": true,
+    "tengu_event_sampling_config": {},
+    "tengu_tool_pear": false,
+    "tengu_c4w_usage_limit_notifications_enabled": true,
+    "tengu_thinkback": false,
+    "tengu_sumi": true,
+    "tengu-top-of-feed-tip": {
+      "tip": "",
+      "color": ""
+    },
+    "tengu_react_vulnerability_warning": false,
+    "tengu_post_compact_survey": false,
+    "tengu_tool_search_unsupported_models": null,
+    "tengu_ant_attribution_header_new": true,
+    "tengu_streaming_tool_execution2": false
+  },
+  "hasCompletedOnboarding": true,
+  "userID": "9a365b1ed977436aff74f76823b1640c06d683cdffcab0ffeed2627f7acbee12",
+  "firstStartTime": "2026-01-21T11:08:03.753Z",
+  "sonnet45MigrationComplete": true,
+  "opus45MigrationComplete": true,
+  "thinkingMigrationComplete": true,
+  "githubRepoPaths": {
+    "ltscommerce/site": [
+      "/workspace"
+    ]
+  },
+  "changelogLastFetched": 1768993686869,
+  "bypassPermissionsModeAccepted": true,
+  "lastReleaseNotesSeen": "2.1.6",
+  "projects": {
+    "/workspace": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "projectOnboardingSeenCount": 0,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [
+        "articles.js",
+        "articles.css",
+        "vite.config.js",
+        "process-ejs.js",
+        "main.js"
+      ],
+      "reactVulnerabilityCache": {
+        "detected": false,
+        "package": null,
+        "packageName": null,
+        "version": null,
+        "packageManager": null
+      },
+      "exampleFilesGeneratedAt": 1768993688307,
+      "hasCompletedProjectOnboarding": true,
+      "lastCost": 2.02937175,
+      "lastAPIDuration": 598586,
+      "lastAPIDurationWithoutRetries": 598536,
+      "lastToolDuration": 36525,
+      "lastDuration": 2940753,
+      "lastLinesAdded": 861,
+      "lastLinesRemoved": 144,
+      "lastTotalInputTokens": 73878,
+      "lastTotalOutputTokens": 26995,
+      "lastTotalCacheCreationInputTokens": 275489,
+      "lastTotalCacheReadInputTokens": 1769930,
+      "lastTotalWebSearchRequests": 0,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 71340,
+          "outputTokens": 1857,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.080625
+        },
+        "claude-sonnet-4-5-20250929": {
+          "inputTokens": 2538,
+          "outputTokens": 25138,
+          "cacheReadInputTokens": 1769930,
+          "cacheCreationInputTokens": 275489,
+          "webSearchRequests": 0,
+          "costUSD": 1.9487467500000002
+        }
+      },
+      "lastSessionId": "658a9dea-b3d8-4501-a937-21bc41a1bef6"
+    }
+  },
+  "officialMarketplaceAutoInstallAttempted": true,
+  "officialMarketplaceAutoInstalled": true
+}

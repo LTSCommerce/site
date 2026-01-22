@@ -2,11 +2,7 @@
  * CategoryBadge Component
  *
  * Type-safe category badge for article classification.
- * Demonstrates proper usage of CATEGORIES data object instead of magic strings.
- *
- * Example:
- *   <CategoryBadge category={CATEGORIES.php} />
- *   <CategoryBadge category={CATEGORIES.infrastructure} size="large" />
+ * Minimal, clean design with Tailwind CSS.
  */
 
 import type { Category } from '@/data/categories';
@@ -22,38 +18,28 @@ export function CategoryBadge({
   size = 'medium',
   variant = 'filled',
 }: CategoryBadgeProps) {
-  const sizeStyles = {
-    small: { fontSize: '0.75rem', padding: '0.25rem 0.5rem' },
-    medium: { fontSize: '0.875rem', padding: '0.375rem 0.75rem' },
-    large: { fontSize: '1rem', padding: '0.5rem 1rem' },
+  const sizeClasses = {
+    small: 'text-xs px-2 py-1',
+    medium: 'text-sm px-3 py-1.5',
+    large: 'text-base px-4 py-2',
   };
 
-  const baseStyle = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    borderRadius: '0.375rem',
-    fontWeight: '600',
-    transition: 'all 0.2s ease',
-    ...sizeStyles[size],
-  };
-
-  const filledStyle = {
-    ...baseStyle,
-    backgroundColor: category.color,
-    color: '#ffffff',
-  };
-
-  const outlinedStyle = {
-    ...baseStyle,
-    backgroundColor: 'transparent',
-    color: category.color,
-    border: `2px solid ${category.color}`,
-  };
-
-  const style = variant === 'filled' ? filledStyle : outlinedStyle;
+  const baseClasses = 'inline-flex items-center rounded-md font-semibold transition-all duration-200';
 
   return (
-    <span style={style} title={category.description}>
+    <span
+      className={`${baseClasses} ${sizeClasses[size]} ${
+        variant === 'filled'
+          ? 'text-white'
+          : 'bg-transparent border-2'
+      }`}
+      style={{
+        backgroundColor: variant === 'filled' ? category.color : 'transparent',
+        borderColor: variant === 'outlined' ? category.color : undefined,
+        color: variant === 'outlined' ? category.color : undefined,
+      }}
+      title={category.description}
+    >
       {category.label}
     </span>
   );
