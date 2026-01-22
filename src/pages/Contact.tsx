@@ -1,3 +1,4 @@
+import { Button, Card, Label, Select, Textarea, TextInput } from 'flowbite-react';
 import { Page } from '../components/layout/Page';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
@@ -52,149 +53,137 @@ ${message}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <form id="contactForm" className="bg-white p-8 rounded-lg border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                      Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+              <Card>
+                <form id="contactForm" className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="name">Name *</Label>
+                      </div>
+                      <TextInput
+                        id="name"
+                        name="name"
+                        type="text"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="email">Email *</Label>
+                      </div>
+                      <TextInput
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="company">Company</Label>
+                      </div>
+                      <TextInput
+                        id="company"
+                        name="company"
+                        type="text"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="projectType">Project Type *</Label>
+                      </div>
+                      <Select id="projectType" name="projectType" required>
+                        <option value="">Select a project type</option>
+                        <option value="bespoke-php">Bespoke PHP Development</option>
+                        <option value="legacy-php">Legacy PHP Modernization</option>
+                        {/* eslint-disable-next-line custom/use-types-not-strings -- Form values, not category references */}
+                        <option value="infrastructure">Infrastructure & Automation</option>
+                        <option value="cto-services">CTO-Level Services</option>
+                        <option value="ai-development">AI-Enhanced Development</option>
+                        <option value="other">Other</option>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="budget">Budget Range</Label>
+                      </div>
+                      <Select id="budget" name="budget">
+                        <option value="">Select budget range</option>
+                        <option value="5k-10k">£5,000 - £10,000</option>
+                        <option value="10k-25k">£10,000 - £25,000</option>
+                        <option value="25k-50k">£25,000 - £50,000</option>
+                        <option value="50k+">£50,000+</option>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="timeline">Project Timeline</Label>
+                      </div>
+                      <Select id="timeline" name="timeline">
+                        <option value="">Select timeline</option>
+                        <option value="asap">ASAP</option>
+                        <option value="1month">Within 1 month</option>
+                        <option value="3months">Within 3 months</option>
+                        <option value="6months">Within 6 months</option>
+                        <option value="flexible">Flexible</option>
+                      </Select>
+                    </div>
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                      Company
-                    </label>
-                    <input
-                      type="text"
-                      id="company"
-                      name="company"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="projectType" className="block text-sm font-medium text-gray-700 mb-2">
-                      Project Type *
-                    </label>
-                    {/* eslint-disable custom/use-types-not-strings */}
-                    <select
-                      id="projectType"
-                      name="projectType"
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">Select a project type</option>
-                      <option value="bespoke-php">Bespoke PHP Development</option>
-                      <option value="legacy-php">Legacy PHP Modernization</option>
-                      <option value="infrastructure">Infrastructure & Automation</option>
-                      <option value="cto-services">CTO-Level Services</option>
-                      <option value="ai-development">AI-Enhanced Development</option>
-                      <option value="other">Other</option>
-                    </select>
-                    {/* eslint-enable custom/use-types-not-strings */}
-                  </div>
-
-                  <div>
-                    <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
-                      Budget Range
-                    </label>
-                    <select
-                      id="budget"
-                      name="budget"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">Select budget range</option>
-                      <option value="5k-10k">£5,000 - £10,000</option>
-                      <option value="10k-25k">£10,000 - £25,000</option>
-                      <option value="25k-50k">£25,000 - £50,000</option>
-                      <option value="50k+">£50,000+</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 mb-2">
-                      Project Timeline
-                    </label>
-                    <select
-                      id="timeline"
-                      name="timeline"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">Select timeline</option>
-                      <option value="asap">ASAP</option>
-                      <option value="1month">Within 1 month</option>
-                      <option value="3months">Within 3 months</option>
-                      <option value="6months">Within 6 months</option>
-                      <option value="flexible">Flexible</option>
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                      Project Details *
-                    </label>
-                    <textarea
+                    <div className="mb-2 block">
+                      <Label htmlFor="message">Project Details *</Label>
+                    </div>
+                    <Textarea
                       id="message"
                       name="message"
                       rows={6}
                       required
                       placeholder="Tell me about your project, goals, and any specific requirements..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
 
-                  <div className="md:col-span-2">
-                    <button
-                      type="button"
-                      onClick={handleSendEmail}
-                      className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
-                    >
-                      Open Email Client to Send
-                    </button>
-                  </div>
-                </div>
-              </form>
+                  <Button
+                    type="button"
+                    onClick={handleSendEmail}
+                    color="blue"
+                    size="lg"
+                    className="w-full"
+                  >
+                    Open Email Client to Send
+                  </Button>
+                </form>
+              </Card>
             </div>
 
             {/* Contact Info Sidebar */}
-            <aside className="space-y-8">
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
+            <aside className="space-y-6">
+              <Card>
                 <h2 className="text-2xl font-bold mb-4">Get in Touch</h2>
-                <p className="text-gray-700 mb-6">
+                <p className="text-gray-700">
                   I'm always interested in hearing about new projects and opportunities. Whether you
                   need a complete solution built from scratch or help with an existing system, I'm
                   here to help.
                 </p>
-              </div>
+              </Card>
 
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
+              <Card>
                 <h3 className="text-xl font-bold mb-3">Response Time</h3>
                 <p className="text-gray-700">
                   I typically respond within 24 hours during business days.
                 </p>
-              </div>
+              </Card>
 
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
+              <Card>
                 <h3 className="text-xl font-bold mb-3">Project Process</h3>
                 <ol className="list-decimal list-inside text-gray-700 space-y-2">
                   <li>Initial consultation to understand your needs</li>
@@ -203,16 +192,16 @@ ${message}
                   <li>Thorough testing and quality assurance</li>
                   <li>Deployment and ongoing support</li>
                 </ol>
-              </div>
+              </Card>
 
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
+              <Card>
                 <h3 className="text-xl font-bold mb-3">Other Ways to Connect</h3>
-                <div className="space-y-3">
+                <div className="flex flex-col gap-3">
                   <a
                     href="https://linkedin.com/in/josephltshq"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-blue-600 hover:text-blue-800 transition-colors"
                   >
                     LinkedIn
                   </a>
@@ -220,12 +209,12 @@ ${message}
                     href="https://github.com/josephltshq"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-blue-600 hover:text-blue-800 transition-colors"
                   >
                     GitHub
                   </a>
                 </div>
-              </div>
+              </Card>
             </aside>
           </div>
         </Container>

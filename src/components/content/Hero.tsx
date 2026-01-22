@@ -1,10 +1,11 @@
 /**
  * Hero Component
  *
- * Minimal, clean hero section with Tailwind CSS.
+ * Professional hero section using Flowbite React Button.
  * Features title, subtitle, and optional CTA button.
  */
 
+import { Button } from 'flowbite-react';
 import { Link } from 'react-router-dom';
 import type { RouteEntry } from '@/types/routing';
 import { getLinkPath } from '@/types/routing';
@@ -33,12 +34,14 @@ export function Hero({ title, subtitle, cta }: HeroProps) {
         )}
 
         {cta && (
-          <Link
+          <Button
+            as={Link}
             to={getLinkPath(cta.link)}
-            className="inline-block px-8 py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200 shadow-sm hover:shadow-md"
+            size="lg"
+            color="blue"
           >
             {cta.text}
-          </Link>
+          </Button>
         )}
       </div>
     </section>

@@ -1,11 +1,18 @@
 /**
  * Footer Component
  *
- * Minimal, clean footer with Tailwind CSS.
+ * Professional footer using Flowbite React Footer.
  * Type-safe routes and external links.
  */
 
-import { Link } from 'react-router-dom';
+import {
+  Footer as FlowbiteFooter,
+  FooterCopyright,
+  FooterDivider,
+  FooterLink,
+  FooterLinkGroup,
+  FooterTitle,
+} from 'flowbite-react';
 import { ROUTES } from '@/routes';
 import type { ExternalLink } from '@/types/routing';
 
@@ -22,73 +29,52 @@ export function Footer({ className }: FooterProps) {
   ];
 
   return (
-    <footer
-      className={`
-        bg-gray-50 border-t border-gray-200 mt-16 py-12
-        ${className || ''}
-      `}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center gap-8">
-          {/* Quick Navigation */}
-          <nav>
-            <ul className="flex gap-8 list-none m-0 p-0">
-              <li>
-                <Link
-                  to={ROUTES.home.path}
-                  className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-                >
-                  {ROUTES.home.label}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to={ROUTES.articles.path}
-                  className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-                >
-                  {ROUTES.articles.label}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to={ROUTES.about.path}
-                  className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-                >
-                  {ROUTES.about.label}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to={ROUTES.contact.path}
-                  className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-                >
-                  {ROUTES.contact.label}
-                </Link>
-              </li>
-            </ul>
-          </nav>
-
-          {/* Social Links */}
-          <div className="flex gap-6">
-            {socialLinks.map(link => (
-              <a
-                key={link.label}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
+    <FlowbiteFooter container className={`mt-16 ${className || ''}`}>
+      <div className="w-full">
+        <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
+          <div>
+            <a
+              href={ROUTES.home.path}
+              className="flex items-center text-2xl font-semibold text-gray-900"
+            >
+              LTS Commerce
+            </a>
           </div>
-
-          {/* Copyright */}
-          <p className="text-sm text-gray-500">
-            © {currentYear} LTS Commerce. All rights reserved.
-          </p>
+          <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
+            <div>
+              <FooterTitle title="Navigation" />
+              <FooterLinkGroup col>
+                <FooterLink href={ROUTES.home.path}>{ROUTES.home.label}</FooterLink>
+                <FooterLink href={ROUTES.articles.path}>{ROUTES.articles.label}</FooterLink>
+                <FooterLink href={ROUTES.about.path}>{ROUTES.about.label}</FooterLink>
+                <FooterLink href={ROUTES.contact.path}>{ROUTES.contact.label}</FooterLink>
+              </FooterLinkGroup>
+            </div>
+            <div>
+              <FooterTitle title="Connect" />
+              <FooterLinkGroup col>
+                {socialLinks.map(link => (
+                  <FooterLink
+                    key={link.label}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {link.label}
+                  </FooterLink>
+                ))}
+              </FooterLinkGroup>
+            </div>
+          </div>
+        </div>
+        <FooterDivider />
+        <div className="w-full sm:flex sm:items-center sm:justify-between">
+          <FooterCopyright
+            by="LTS Commerce. All rights reserved."
+            year={currentYear}
+          />
         </div>
       </div>
-    </footer>
+    </FlowbiteFooter>
   );
 }
