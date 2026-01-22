@@ -36,6 +36,9 @@ export interface Article {
 
   /** Article tags for search/filtering */
   readonly tags?: readonly string[];
+
+  /** Subreddit for social sharing (e.g., 'PHP', 'typescript', 'programming') */
+  readonly subreddit?: string;
 }
 
 /**

@@ -28,6 +28,8 @@
   "author": "Joseph Edmonds <joseph@lts.ltd>",
   "license": "MIT",
   "dependencies": {
+    "@types/highlight.js": "^9.12.4",
+    "highlight.js": "^11.11.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.10.1"
