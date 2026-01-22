@@ -1,7 +1,7 @@
 /**
  * Navigation Component
  *
- * Minimal, clean navigation with Tailwind CSS.
+ * Professional navigation with Flowbite styling.
  * Type-safe navigation using ROUTES object and React Router.
  */
 

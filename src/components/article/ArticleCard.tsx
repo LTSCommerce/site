@@ -6,6 +6,7 @@
  */
 
 import { Link } from 'react-router-dom';
+import { Card } from 'flowbite-react';
 import { CategoryBadge } from '@/components/content/CategoryBadge';
 import { getCategoryById } from '@/data/categories';
 import { getArticleRoute } from '@/routes';
@@ -36,73 +37,23 @@ function formatDate(isoDate: string): string {
 export function ArticleCard({ article, className }: ArticleCardProps) {
   const articleRoute = getArticleRoute(article.id);
 
-  const cardStyle = {
-    border: '1px solid #e0e0e0',
-    borderRadius: '8px',
-    padding: '1.5rem',
-    backgroundColor: '#fff',
-    transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-    cursor: 'pointer',
-    textDecoration: 'none',
-    color: 'inherit',
-    display: 'block',
-  };
-
-  const headerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-    marginBottom: '1rem',
-  };
-
-  const titleStyle = {
-    fontSize: '1.5rem',
-    fontWeight: '600',
-    margin: '0 0 0.75rem 0',
-    color: '#333',
-  };
-
-  const descriptionStyle = {
-    fontSize: '1rem',
-    lineHeight: '1.6',
-    color: '#666',
-    margin: '0 0 1rem 0',
-  };
-
-  const metaStyle = {
-    display: 'flex',
-    gap: '1rem',
-    fontSize: '0.875rem',
-    color: '#888',
-  };
-
   return (
-    <Link
-      to={articleRoute.path}
-      style={cardStyle}
-      className={className}
-      onMouseEnter={e => {
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-        e.currentTarget.style.transform = 'translateY(-2px)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.boxShadow = 'none';
-        e.currentTarget.style.transform = 'translateY(0)';
-      }}
-    >
-      <div style={headerStyle}>
-        <CategoryBadge category={getCategoryById(article.category)} />
-      </div>
+    <Link to={articleRoute.path} className={`block ${className || ''}`}>
+      <Card className="hover:shadow-lg transition-shadow duration-200">
+        <div className="flex items-center gap-3 mb-4">
+          <CategoryBadge category={getCategoryById(article.category)} />
+        </div>
 
-      <h3 style={titleStyle}>{article.title}</h3>
+        <h3 className="text-2xl font-semibold mb-3 text-gray-900">{article.title}</h3>
 
-      <p style={descriptionStyle}>{article.description}</p>
+        <p className="text-base leading-relaxed text-gray-600 mb-4">{article.description}</p>
 
-      <div style={metaStyle}>
-        <span>{formatDate(article.date)}</span>
-        <span>•</span>
-        <span>{article.readingTime} min read</span>
-      </div>
+        <div className="flex gap-4 text-sm text-gray-500">
+          <span>{formatDate(article.date)}</span>
+          <span>•</span>
+          <span>{article.readingTime} min read</span>
+        </div>
+      </Card>
     </Link>
   );
 }
