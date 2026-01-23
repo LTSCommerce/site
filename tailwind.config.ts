@@ -26,7 +26,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Source Sans 3', 'sans-serif'],
         heading: ['Inter', 'sans-serif'],
         mono: ['JetBrains Mono', 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', 'monospace'],
       },
