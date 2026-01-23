@@ -87,7 +87,7 @@ export function ArticleDetail() {
         <Section>
           <article className="max-w-4xl mx-auto">
             {/* Article Header */}
-            <header className="mb-8">
+            <header className="mb-8 scroll-animate">
               <CategoryBadge category={getCategoryById(article.category)} />
               <h1 className="text-4xl font-bold mt-4 mb-4">{article.title}</h1>
               <div className="flex items-center gap-3 text-sm text-gray-600">
@@ -104,7 +104,7 @@ export function ArticleDetail() {
             </header>
 
             {/* Social Sharing */}
-            <div className="flex gap-4 mb-8 pb-8 border-b border-gray-200">
+            <div className="flex gap-4 mb-8 pb-8 border-b border-gray-200 scroll-animate">
               <a
                 href={getRedditShareUrl(subreddit)}
                 target="_blank"

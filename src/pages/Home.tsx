@@ -30,8 +30,8 @@ export function Home() {
       {/* Core Expertise Section */}
       <Section spacing="xl">
         <Container>
-          <h2 className="text-3xl font-bold text-center mb-12">Core Expertise</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <h2 className="text-3xl font-bold text-center mb-12 scroll-animate">Core Expertise</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 scroll-animate">
             <article className="p-6 border border-gray-200 rounded-lg hover:shadow-lg transition-shadow">
               <div className="mb-4 text-blue-600">
                 <svg
@@ -153,8 +153,8 @@ export function Home() {
       {/* Latest Articles Section */}
       <Section spacing="xl" className="bg-gray-50">
         <Container>
-          <h2 className="text-3xl font-bold text-center mb-12">Latest Articles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          <h2 className="text-3xl font-bold text-center mb-12 scroll-animate">Latest Articles</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 scroll-animate">
             {latestArticles.map(article => (
               <ArticleCard key={article.id} article={article} />
             ))}
@@ -173,8 +173,8 @@ export function Home() {
       {/* Published Author Section */}
       <Section spacing="xl">
         <Container size="md">
-          <h2 className="text-3xl font-bold text-center mb-8">Published Author</h2>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
+          <h2 className="text-3xl font-bold text-center mb-8 scroll-animate">Published Author</h2>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center scroll-animate">
             <p className="text-lg text-gray-700 mb-6">
               I co-authored <strong>"The Art of Modern PHP 8"</strong> published by Packt
               Publishing. The book helps developers worldwide upgrade legacy PHP applications to

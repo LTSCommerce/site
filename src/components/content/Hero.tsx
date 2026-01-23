@@ -21,25 +21,22 @@ interface HeroProps {
 
 export function Hero({ title, subtitle, cta }: HeroProps) {
   return (
-    <section className="py-16 md:py-24 px-4 text-center bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-          {title}
-        </h1>
+    <section className="relative py-16 md:py-24 px-4 text-center overflow-hidden">
+      {/* Background gradient with subtle overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white to-gray-50 -z-10" />
+
+      <div className="max-w-4xl mx-auto scroll-animate">
+        {/* Dynamic gradient h1 with mouse-responsive effects */}
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">{title}</h1>
 
         {subtitle && (
-          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
             {subtitle}
           </p>
         )}
 
         {cta && (
-          <Button
-            as={Link}
-            to={getLinkPath(cta.link)}
-            size="lg"
-            color="blue"
-          >
+          <Button as={Link} to={getLinkPath(cta.link)} size="lg" color="blue">
             {cta.text}
           </Button>
         )}
