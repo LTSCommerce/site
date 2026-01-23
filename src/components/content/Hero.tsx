@@ -1,12 +1,10 @@
 /**
  * Hero Component
  *
- * Professional hero section using Flowbite React Button.
- * Features title, subtitle, and optional CTA button.
+ * Minimal hero section with pure typography.
+ * Features title, subtitle, and optional CTA.
  */
 
-import { Button } from 'flowbite-react';
-import { Link } from 'react-router-dom';
 import type { RouteEntry } from '@/types/routing';
 import { getLinkPath } from '@/types/routing';
 
@@ -21,24 +19,19 @@ interface HeroProps {
 
 export function Hero({ title, subtitle, cta }: HeroProps) {
   return (
-    <section className="relative py-16 md:py-24 px-4 text-center overflow-hidden">
-      {/* Background gradient with subtle overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white to-gray-50 -z-10" />
+    <section className="py-24 md:py-32 px-4">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="mb-8">{title}</h1>
 
-      <div className="max-w-4xl mx-auto scroll-animate">
-        {/* Dynamic gradient h1 with mouse-responsive effects */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">{title}</h1>
-
-        {subtitle && (
-          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
-            {subtitle}
-          </p>
-        )}
+        {subtitle && <p className="text-lg max-w-2xl mb-12">{subtitle}</p>}
 
         {cta && (
-          <Button as={Link} to={getLinkPath(cta.link)} size="lg" color="blue">
+          <a
+            href={getLinkPath(cta.link)}
+            className="inline-block px-8 py-3 bg-black text-white text-sm uppercase tracking-wider font-medium transition-opacity hover:opacity-80"
+          >
             {cta.text}
-          </Button>
+          </a>
         )}
       </div>
     </section>

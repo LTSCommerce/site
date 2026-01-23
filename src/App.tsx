@@ -5,23 +5,17 @@ import { Contact } from './pages/Contact';
 import { ArticleList } from './pages/ArticleList';
 import { ArticleDetail } from './pages/ArticleDetail';
 import { ROUTES } from './routes';
-import { useMouseResponsiveEffects } from './hooks/useMouseResponsiveEffects';
 import { useBodyLoaded } from './hooks/useBodyLoaded';
-import { useScrollAnimations } from './hooks/useScrollAnimations';
 
 /**
  * Main Application Component
  *
- * Sets up React Router with type-safe routes and enables global effects:
- * - Mouse-responsive gradients and shadows
- * - Smooth body fade-in on load
- * - Scroll-based animations for elements
+ * Pure, minimal design with mathematical precision.
+ * Type-safe routing with React Router.
  */
 export function App() {
-  // Enable global visual effects
-  useMouseResponsiveEffects();
+  // Simple fade-in on load
   useBodyLoaded();
-  useScrollAnimations();
 
   return (
     <BrowserRouter>

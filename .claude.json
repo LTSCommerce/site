@@ -21,7 +21,8 @@
     "image-paste": 3,
     "ultrathink-keyword": 3,
     "web-app": 3,
-    "mobile-app": 3
+    "mobile-app": 3,
+    "frontend-design-plugin": 5
   },
   "cachedStatsigGates": {
     "tengu_prompt_suggestion": true
@@ -93,37 +94,37 @@
       },
       "exampleFilesGeneratedAt": 1768993688307,
       "hasCompletedProjectOnboarding": true,
-      "lastCost": 2.02937175,
-      "lastAPIDuration": 598586,
-      "lastAPIDurationWithoutRetries": 598536,
-      "lastToolDuration": 36525,
-      "lastDuration": 2940753,
-      "lastLinesAdded": 861,
-      "lastLinesRemoved": 144,
-      "lastTotalInputTokens": 73878,
-      "lastTotalOutputTokens": 26995,
-      "lastTotalCacheCreationInputTokens": 275489,
-      "lastTotalCacheReadInputTokens": 1769930,
+      "lastCost": 5.152927049999999,
+      "lastAPIDuration": 1617837,
+      "lastAPIDurationWithoutRetries": 1617688,
+      "lastToolDuration": 356479,
+      "lastDuration": 83729503,
+      "lastLinesAdded": 666,
+      "lastLinesRemoved": 522,
+      "lastTotalInputTokens": 126695,
+      "lastTotalOutputTokens": 62405,
+      "lastTotalCacheCreationInputTokens": 755383,
+      "lastTotalCacheReadInputTokens": 4929147,
       "lastTotalWebSearchRequests": 0,
       "lastModelUsage": {
         "claude-haiku-4-5-20251001": {
-          "inputTokens": 71340,
-          "outputTokens": 1857,
-          "cacheReadInputTokens": 0,
-          "cacheCreationInputTokens": 0,
+          "inputTokens": 115976,
+          "outputTokens": 6187,
+          "cacheReadInputTokens": 250144,
+          "cacheCreationInputTokens": 52325,
           "webSearchRequests": 0,
-          "costUSD": 0.080625
+          "costUSD": 0.23733165000000003
         },
         "claude-sonnet-4-5-20250929": {
-          "inputTokens": 2538,
-          "outputTokens": 25138,
-          "cacheReadInputTokens": 1769930,
-          "cacheCreationInputTokens": 275489,
+          "inputTokens": 10719,
+          "outputTokens": 56218,
+          "cacheReadInputTokens": 4679003,
+          "cacheCreationInputTokens": 703058,
           "webSearchRequests": 0,
-          "costUSD": 1.9487467500000002
+          "costUSD": 4.9155954
         }
       },
-      "lastSessionId": "658a9dea-b3d8-4501-a937-21bc41a1bef6"
+      "lastSessionId": "57617132-7fa4-4dd0-bca6-0bc52d954d41"
     }
   },
   "officialMarketplaceAutoInstallAttempted": true,
