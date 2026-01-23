@@ -38,17 +38,19 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
   const articleRoute = getArticleRoute(article.id);
 
   return (
-    <Link to={articleRoute.path} className={`block ${className || ''}`}>
-      <Card className="hover:shadow-lg transition-shadow duration-200">
+    <Link to={articleRoute.path} className={`block h-full ${className || ''}`}>
+      <Card className="hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
         <div className="flex items-center gap-3 mb-4">
           <CategoryBadge category={getCategoryById(article.category)} />
         </div>
 
         <h3 className="text-2xl font-semibold mb-3 text-gray-900">{article.title}</h3>
 
-        <p className="text-base leading-relaxed text-gray-600 mb-4">{article.description}</p>
+        <p className="text-base leading-relaxed text-gray-600 mb-4 flex-grow">
+          {article.description}
+        </p>
 
-        <div className="flex gap-4 text-sm text-gray-500">
+        <div className="flex gap-4 text-sm text-gray-500 mt-auto">
           <span>{formatDate(article.date)}</span>
           <span>•</span>
           <span>{article.readingTime} min read</span>

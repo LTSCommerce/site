@@ -1,9 +1,17 @@
 @import 'tailwindcss';
 @import 'flowbite';
 
-/* Theme Configuration - Minimal Design System */
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Theme Configuration - Professional Design System */
 @theme {
-  /* Monochrome Palette - Pure Black and White */
+  /* Primary Brand Colors */
+  --color-primary: #0f4c81;
+  --color-primary-light: #1e6ba5;
+  --color-primary-dark: #0a3459;
+
+  /* Neutral Colors */
   --color-black: #000000;
   --color-white: #ffffff;
   --color-gray-50: #fafafa;
@@ -17,8 +25,11 @@
   --color-gray-800: #262626;
   --color-gray-900: #171717;
 
-  /* Accent - Single accent color for CTAs */
-  --color-accent: #000000;
+  /* Semantic Colors */
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+  --color-info: #0284c7;
 
   /* Perfect 8px Grid Spacing System */
   --spacing-1: 0.5rem; /* 8px - 1 unit */
@@ -30,13 +41,15 @@
   --spacing-12: 6rem; /* 96px - 12 units */
   --spacing-16: 8rem; /* 128px - 16 units */
 
-  /* Minimal Shadows - Subtle depth only */
+  /* Professional Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
 
-  /* No Border Radius - Pure rectangles */
-  --radius: 0;
+  /* Subtle Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
 }
 
 /* Mathematical Constants */
@@ -52,11 +65,11 @@
   --transition-medium: 0.25s ease-out;
 }
 
-/* Custom Base Styles - Pure and Minimal */
+/* Custom Base Styles - Professional and Clean */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
-  color: #000000;
+  color: #171717;
   background: #ffffff;
   line-height: 1.618; /* φ */
   font-size: 16px;
@@ -81,9 +94,10 @@ h3,
 h4,
 h5,
 h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-weight: 600;
-  color: #000000;
-  line-height: 1.618; /* φ */
+  color: #171717;
+  line-height: 1.3;
   margin: 0;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -94,6 +108,7 @@ h6 {
 h1 {
   font-size: 2.618rem; /* φ³ */
   margin-bottom: 1.618rem;
+  font-weight: 700;
 }
 
 /* h2: 16 × φ² = ~26.18px */
@@ -123,6 +138,7 @@ p {
   line-height: 1.618;
   margin-bottom: 1.618rem;
   max-width: 65ch; /* Optimal line length */
+  color: #525252;
 }
 
 /* Prose Styles - Minimal and Mathematical */
@@ -151,19 +167,20 @@ p {
 .prose code {
   padding: 0.125rem 0.25rem;
   background-color: #f5f5f5;
-  color: #000000;
+  color: #171717;
   font-size: 0.875em;
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+  font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
 }
 
 /* Code blocks */
 .prose pre {
   padding: 1.618rem;
-  background-color: #000000;
+  background-color: #171717;
   color: #ffffff;
   overflow-x: auto;
   margin: 2rem 0;
-  border: 1px solid #000000;
+  border: 1px solid #171717;
+  border-radius: 6px;
 }
 
 .prose pre code {
@@ -171,6 +188,7 @@ p {
   background-color: transparent;
   color: inherit;
   font-size: 0.875rem;
+  font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
 }
 
 /* Article sections */
@@ -191,25 +209,27 @@ p {
   max-width: 65ch;
 }
 
-/* Links - minimal styling */
+/* Links - brand color */
 .prose a {
-  color: #000000;
+  color: #0f4c81;
   text-decoration: underline;
-  text-decoration-color: rgba(0, 0, 0, 0.3);
+  text-decoration-color: rgba(15, 76, 129, 0.3);
   text-underline-offset: 0.15em;
-  transition: text-decoration-color 0.15s ease-out;
+  transition: all 0.15s ease-out;
 }
 
 .prose a:hover {
-  text-decoration-color: rgba(0, 0, 0, 1);
+  color: #1e6ba5;
+  text-decoration-color: rgba(30, 107, 165, 0.6);
 }
 
-/* Blockquote - simple border */
+/* Blockquote - brand accent */
 .prose blockquote {
-  border-left: 2px solid #000000;
+  border-left: 3px solid #0f4c81;
   padding-left: 1.618rem;
   margin: 2rem 0;
   font-style: italic;
+  color: #525252;
 }
 
 /* Screen Reader Only */

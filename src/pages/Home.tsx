@@ -31,8 +31,8 @@ export function Home() {
       <Section spacing="xl">
         <Container>
           <h2 className="text-center mb-16">Core Expertise</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-black">
-            <article className="p-8 bg-white">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
               <h3 className="mb-4">Bespoke PHP Development</h3>
               <p>
                 I build complex, modern PHP systems. I transform legacy code and thrive in
@@ -40,7 +40,7 @@ export function Home() {
               </p>
             </article>
 
-            <article className="p-8 bg-white">
+            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
               <h3 className="mb-4">Infrastructure & Automation</h3>
               <p>
                 I automate with Ansible, run Proxmox virtualization, and manage bare metal servers.
@@ -48,7 +48,7 @@ export function Home() {
               </p>
             </article>
 
-            <article className="p-8 bg-white">
+            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
               <h3 className="mb-4">Backend Systems</h3>
               <p>
                 I do pure backend development. No design work. I focus entirely on scalable,
@@ -56,7 +56,7 @@ export function Home() {
               </p>
             </article>
 
-            <article className="p-8 bg-white">
+            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
               <h3 className="mb-4">CTO-Level Services</h3>
               <p>
                 I provide strategic guidance, help with hiring, and train teams. I offer technical
@@ -64,7 +64,7 @@ export function Home() {
               </p>
             </article>
 
-            <article className="p-8 bg-white">
+            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
               <h3 className="mb-4">AI-Enhanced Development</h3>
               <p>
                 I use AI tools to speed up development and help businesses integrate AI into their
@@ -72,7 +72,7 @@ export function Home() {
               </p>
             </article>
 
-            <article className="p-8 bg-white">
+            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
               <h3 className="mb-4">TypeScript & Modern JavaScript</h3>
               <p>
                 I build full-stack TypeScript applications. This includes backend Node.js services,
@@ -95,7 +95,7 @@ export function Home() {
           <div className="text-center">
             <Link
               to={ROUTES.articles.path}
-              className="inline-block px-8 py-3 bg-black text-white text-sm uppercase tracking-wider font-medium transition-opacity hover:opacity-80"
+              className="inline-block px-8 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium transition-colors rounded-md"
             >
               View All Articles
             </Link>
@@ -117,7 +117,7 @@ export function Home() {
               href="https://www.packtpub.com/product/the-art-of-modern-php-8/9781800566156"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-8 py-3 bg-black text-white text-sm uppercase tracking-wider font-medium transition-opacity hover:opacity-80"
+              className="inline-block px-8 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium transition-colors rounded-md"
             >
               Learn More
             </a>

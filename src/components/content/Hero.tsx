@@ -28,7 +28,7 @@ export function Hero({ title, subtitle, cta }: HeroProps) {
         {cta && (
           <a
             href={getLinkPath(cta.link)}
-            className="inline-block px-8 py-3 bg-black text-white text-sm uppercase tracking-wider font-medium transition-opacity hover:opacity-80"
+            className="inline-block px-8 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium transition-colors rounded-md"
           >
             {cta.text}
           </a>

@@ -71,9 +71,7 @@ export function Navigation({ variant = 'horizontal' }: NavigationProps) {
     <Navbar fluid rounded className="border-none bg-transparent">
       <NavbarBrand>
         <Link to={ROUTES.home.path} className="flex items-center">
-          <span className="self-center whitespace-nowrap text-xl font-semibold text-gray-900">
-            LTS Commerce
-          </span>
+          <img src="/logo.svg" alt="LTS Commerce" className="h-10" />
         </Link>
       </NavbarBrand>
       <NavbarToggle />

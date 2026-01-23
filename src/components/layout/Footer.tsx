@@ -24,8 +24,8 @@ export function Footer({ className }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   const socialLinks: Array<{ label: string; url: ExternalLink }> = [
-    { label: 'GitHub', url: 'https://github.com/LongTermSupport' },
-    { label: 'LinkedIn', url: 'https://linkedin.com/in/joseph-edmonds' },
+    { label: '⚡ GitHub', url: 'https://github.com/LongTermSupport' },
+    { label: '💼 LinkedIn', url: 'https://linkedin.com/in/joseph-edmonds' },
   ];
 
   return (
@@ -73,6 +73,9 @@ export function Footer({ className }: FooterProps) {
             by="LTS Commerce. All rights reserved."
             year={currentYear}
           />
+          <div className="mt-4 sm:mt-0 text-gray-500 text-sm">
+            Built with 🤓 TypeScript & ⚛️ React
+          </div>
         </div>
       </div>
     </FlowbiteFooter>
