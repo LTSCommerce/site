@@ -475,10 +475,42 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 - Build: ✅ Successful (1.77s, 218KB bundle)
 - Bundle size increase: +1.75KB (filtering logic overhead - acceptable)
 
-**Phase 5 Status**: ✅ COMPLETE - All core templates converted to React with full functionality article migration
+**Phase 5 Status**: ✅ COMPLETE - All core templates converted to React with full functionality
+
+### 2026-01-23 - Typography & Branding Improvements
+**Implementation**: Professional font pairing and logo fixes
+
+**Changes**:
+- **Self-Hosted Inter Font**: Downloaded and integrated Inter font files (Regular, Medium, SemiBold, Bold)
+- **Self-Hosted Source Sans 3**: Added Source Sans 3 for body text (~48KB Latin subset)
+- **Professional Font Pairing**:
+  - Headings + Logo: Inter (sharp, modern, geometric)
+  - Body Text: Source Sans 3 (highly readable, designed for UI)
+- **Logo Fixes**:
+  - Fixed logo placement - moved from right to proper top-left position
+  - Removed duplicate "LTS Commerce" text from header
+  - Expanded SVG viewBox from 200px to 240px to show full "Commerce" text
+  - Updated logo font to use Inter for brand consistency
+  - Increased logo height from h-10 to h-12 for better visibility
+- **Navigation Cleanup**: Removed unused imports, improved component consistency
+
+**Typography Benefits**:
+- ✅ Consistent branding across all platforms and browsers
+- ✅ No external font dependencies (except JetBrains Mono for code)
+- ✅ Faster initial load (no external CSS requests for Inter/Source Sans 3)
+- ✅ Professional visual hierarchy with distinct heading/body fonts
+- ✅ Total font payload: ~500KB (Inter + Source Sans 3 woff2 files)
+
+**Pending Work**:
+- Contact form currently uses mailto: approach (opens email client)
+- **TODO (Phase 6.5)**: Implement Google Apps Script backend for contact form
+  - Reference: EC-Site `google-apps-script/Code.gs` and `README.md`
+  - Server-side validation and email sending
+  - Honeypot spam protection
+  - Proper form handling without exposing email credentials
 
 ---
 
 **Maintained by**: Joseph (LTS Commerce)
-**Last Updated**: 2026-01-22
-**Plan Status**: 🔄 In Progress (Phase 5 Complete ✅ - Ready for Phase 6)
+**Last Updated**: 2026-01-23
+**Plan Status**: 🔄 In Progress (Phase 5 Complete ✅ - Typography Enhanced ✅ - Contact Form Pending)
