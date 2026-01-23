@@ -11,7 +11,6 @@ import {
   FooterDivider,
   FooterLink,
   FooterLinkGroup,
-  FooterTitle,
 } from 'flowbite-react';
 import { ROUTES } from '@/routes';
 import type { ExternalLink } from '@/types/routing';
@@ -42,7 +41,7 @@ export function Footer({ className }: FooterProps) {
           </div>
           <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
             <div>
-              <FooterTitle title="Navigation" />
+              <h3 className="mb-4 text-sm font-semibold text-gray-900">Navigation</h3>
               <FooterLinkGroup col>
                 <FooterLink href={ROUTES.home.path}>{ROUTES.home.label}</FooterLink>
                 <FooterLink href={ROUTES.articles.path}>{ROUTES.articles.label}</FooterLink>
@@ -51,7 +50,7 @@ export function Footer({ className }: FooterProps) {
               </FooterLinkGroup>
             </div>
             <div>
-              <FooterTitle title="Connect" />
+              <h3 className="mb-4 text-sm font-semibold text-gray-900">Connect</h3>
               <FooterLinkGroup col>
                 {socialLinks.map(link => (
                   <FooterLink

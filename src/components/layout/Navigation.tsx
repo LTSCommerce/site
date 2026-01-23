@@ -9,7 +9,6 @@ import {
   Navbar,
   NavbarBrand,
   NavbarCollapse,
-  NavbarLink,
   NavbarToggle,
 } from 'flowbite-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -50,14 +49,14 @@ export function Navigation({ variant = 'horizontal' }: NavigationProps) {
                   relative px-1 py-2 text-sm font-medium transition-colors duration-200
                   ${
                     isActive(route)
-                      ? 'text-primary-600'
-                      : 'text-gray-700 hover:text-primary-600'
+                      ? 'text-primary'
+                      : 'text-gray-700 hover:text-primary'
                   }
                 `}
               >
                 {route.label}
                 {isActive(route) && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
                 )}
               </Link>
             </li>
@@ -71,15 +70,27 @@ export function Navigation({ variant = 'horizontal' }: NavigationProps) {
     <Navbar fluid rounded className="border-none bg-transparent">
       <NavbarBrand>
         <Link to={ROUTES.home.path} className="flex items-center">
-          <img src="/logo.svg" alt="LTS Commerce" className="h-10" />
+          <img src="/logo.svg" alt="LTS Commerce" className="h-12 w-auto" />
         </Link>
       </NavbarBrand>
       <NavbarToggle />
       <NavbarCollapse>
         {navItems.map(({ key, route }) => (
-          <NavbarLink key={key} href={route.path} active={isActive(route)}>
+          <Link
+            key={key}
+            to={route.path}
+            className={`
+              block py-2 px-3 md:p-0 rounded
+              ${
+                isActive(route)
+                  ? 'text-primary font-medium bg-primary-50 md:bg-transparent'
+                  : 'text-gray-700 hover:text-primary hover:bg-gray-100 md:hover:bg-transparent'
+              }
+              transition-colors duration-200
+            `}
+          >
             {route.label}
-          </NavbarLink>
+          </Link>
         ))}
       </NavbarCollapse>
     </Navbar>

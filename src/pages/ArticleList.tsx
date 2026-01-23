@@ -4,20 +4,62 @@
  * Displays all articles in a grid layout with filtering by category and search.
  */
 
-import { useState, useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Page } from '@/components/layout/Page';
 import { Container } from '@/components/layout/Container';
 import { Section } from '@/components/layout/Section';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import { getAllArticles } from '@/data/articles';
-import { getAllCategories, type CategoryId } from '@/data/categories';
+import { getAllCategories, type CategoryId, isCategoryId } from '@/data/categories';
 
 export function ArticleList() {
-  const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read filter state from URL
+  const selectedCategory = (searchParams.get('category') as CategoryId | 'all') || 'all';
+  const searchQuery = searchParams.get('search') || '';
 
   const allArticles = getAllArticles();
   const categories = getAllCategories();
+
+  // Validate category from URL
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam && categoryParam !== 'all' && !isCategoryId(categoryParam)) {
+      // Invalid category in URL, reset to 'all'
+      setSearchParams(prev => {
+        const newParams = new URLSearchParams(prev);
+        newParams.delete('category');
+        return newParams;
+      });
+    }
+  }, [searchParams, setSearchParams]);
+
+  // Update URL when filter changes
+  const handleCategoryChange = (category: CategoryId | 'all') => {
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      if (category === 'all') {
+        newParams.delete('category');
+      } else {
+        newParams.set('category', category);
+      }
+      return newParams;
+    });
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      if (query.trim() === '') {
+        newParams.delete('search');
+      } else {
+        newParams.set('search', query);
+      }
+      return newParams;
+    });
+  };
 
   // Filter articles by category and search query
   const filteredArticles = useMemo(() => {
@@ -120,7 +162,7 @@ export function ArticleList() {
               <div style={categoryFiltersStyle}>
                 <button
                   onClick={() => {
-                    setSelectedCategory('all');
+                    handleCategoryChange('all');
                   }}
                   style={filterButtonStyle(selectedCategory === 'all')}
                 >
@@ -130,7 +172,7 @@ export function ArticleList() {
                   <button
                     key={category.id}
                     onClick={() => {
-                      setSelectedCategory(category.id);
+                      handleCategoryChange(category.id);
                     }}
                     style={filterButtonStyle(selectedCategory === category.id)}
                   >
@@ -160,7 +202,7 @@ export function ArticleList() {
                 placeholder="Search by title or description..."
                 value={searchQuery}
                 onChange={e => {
-                  setSearchQuery(e.target.value);
+                  handleSearchChange(e.target.value);
                 }}
                 style={searchInputStyle}
               />
