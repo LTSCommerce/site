@@ -369,7 +369,7 @@ function validateFormData(data) {
  * @param {Object} data - The validated form data
  */
 function sendContactEmail(data) {
-  const recipient = 'hello@ltscommerce.dev';
+  const recipient = 'joseph@ltscommerce.dev';
   const subject = 'Contact Form: ' + data.subject;
   const submissionDate = new Date().toLocaleString('en-GB', {
     timeZone: 'Europe/London',
