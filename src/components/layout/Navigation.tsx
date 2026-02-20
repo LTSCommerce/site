@@ -1,103 +1,100 @@
 /**
  * Navigation Component
  *
- * Professional navigation using Flowbite React Navbar.
- * Type-safe navigation using ROUTES object and React Router.
- * Responsive behaviour via useMediaQuery (desktop breakpoint: 768px+).
+ * Clean, custom navigation — no Flowbite dependency.
+ * Logo left, nav links + CTA right, mobile hamburger.
  */
 
-import {
-  Navbar,
-  NavbarCollapse,
-  NavbarToggle,
-} from 'flowbite-react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import { ROUTES } from '@/routes';
 import type { RouteEntry } from '@/types/routing';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 
-interface NavigationProps {
-  variant?: 'horizontal' | 'vertical';
-}
-
-export function Navigation({ variant = 'horizontal' }: NavigationProps) {
+export function Navigation() {
   const location = useLocation();
-
-  // Detect desktop breakpoint (md: 768px+) for responsive nav behaviour.
-  // On desktop the hamburger toggle is hidden by Flowbite CSS, but we also
-  // use this to apply desktop-only aria attributes and styling decisions.
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems: Array<{ key: string; route: RouteEntry }> = [
-    { key: 'home', route: ROUTES.home },
     { key: 'articles', route: ROUTES.articles },
     { key: 'about', route: ROUTES.about },
-    { key: 'contact', route: ROUTES.contact },
   ];
 
   const isActive = (route: RouteEntry): boolean => {
-    if (route.path === '/') {
-      return location.pathname === '/';
-    }
+    if (route.path === '/') return location.pathname === '/';
     return location.pathname.startsWith(route.path);
   };
 
-  if (variant === 'vertical') {
-    // Keep vertical variant as custom for now (used in mobile menus)
-    return (
-      <nav className="w-full">
-        <ul className="flex flex-col gap-4 list-none m-0 p-0">
-          {navItems.map(({ key, route }) => (
-            <li key={key}>
+  return (
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to={ROUTES.home.path} className="flex items-center gap-2.5 shrink-0">
+            <img src="/logo.svg" alt="LTS Commerce" className="h-8 w-auto" />
+            <span className="font-semibold text-gray-900 text-sm tracking-tight">LTSCommerce</span>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map(({ key, route }) => (
               <Link
+                key={key}
                 to={route.path}
-                className={`
-                  relative px-1 py-2 text-sm font-medium transition-colors duration-200
-                  ${
-                    isActive(route)
-                      ? 'text-primary'
-                      : 'text-gray-700 hover:text-primary'
-                  }
-                `}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  isActive(route)
+                    ? 'text-gray-900 bg-gray-100'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                }`}
               >
                 {route.label}
-                {isActive(route) && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
-                )}
               </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    );
-  }
+            ))}
+            <Link
+              to={ROUTES.contact.path}
+              className="ml-3 px-4 py-2 text-sm font-medium bg-[#0f4c81] hover:bg-[#1e6ba5] text-white rounded-md transition-colors"
+            >
+              Hire Me
+            </Link>
+          </nav>
 
-  return (
-    <Navbar fluid rounded className="border-none bg-transparent">
-      <Link to={ROUTES.home.path} className="flex items-center mr-3">
-        <img src="/logo.svg" alt="LTS Commerce" className="h-12 w-auto" />
-      </Link>
-      {/* Only render the hamburger toggle on mobile -- hidden on desktop */}
-      {!isDesktop && <NavbarToggle />}
-      <NavbarCollapse>
-        {navItems.map(({ key, route }) => (
-          <Link
-            key={key}
-            to={route.path}
-            className={`
-              block py-2 px-3 md:p-0 rounded
-              ${
-                isActive(route)
-                  ? 'text-primary font-medium bg-primary-50 md:bg-transparent'
-                  : 'text-gray-700 hover:text-primary hover:bg-gray-100 md:hover:bg-transparent'
-              }
-              transition-colors duration-200
-            `}
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-2 text-gray-500 hover:text-gray-900"
+            onClick={() => setMobileOpen(v => !v)}
+            aria-label="Toggle menu"
           >
-            {route.label}
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="md:hidden border-t border-gray-100 bg-white px-6 py-4 flex flex-col gap-1">
+          {navItems.map(({ key, route }) => (
+            <Link
+              key={key}
+              to={route.path}
+              onClick={() => setMobileOpen(false)}
+              className={`px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
+                isActive(route)
+                  ? 'text-gray-900 bg-gray-100'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              {route.label}
+            </Link>
+          ))}
+          <Link
+            to={ROUTES.contact.path}
+            onClick={() => setMobileOpen(false)}
+            className="mt-2 px-3 py-2.5 text-sm font-medium bg-[#0f4c81] text-white rounded-md text-center"
+          >
+            Hire Me
           </Link>
-        ))}
-      </NavbarCollapse>
-    </Navbar>
+        </div>
+      )}
+    </header>
   );
 }

@@ -19,7 +19,9 @@
     "llm:type-check": "tsc --noEmit --pretty false 2>&1 | tee var/qa/typescript.log",
     "llm:test": "CI=true vitest run --reporter=json --outputFile=var/qa/vitest.json",
     "llm:qa": "npm run llm:type-check && npm run llm:lint && npm run llm:test",
-    "build:analyze": "vite build"
+    "build:analyze": "vite build",
+    "screenshots": "npx tsx scripts/generate-screenshots.ts",
+    "llm:screenshots": "npx tsx scripts/generate-screenshots.ts"
   },
   "keywords": [
     "react",
@@ -67,6 +69,7 @@
     "flowbite-react": "^0.12.16",
     "globals": "^15.13.0",
     "happy-dom": "^20.6.3",
+    "playwright": "^1.58.2",
     "postcss": "^8.5.6",
     "prettier": "^3.0.0",
     "rollup-plugin-visualizer": "^6.0.5",

@@ -1,82 +1,89 @@
 /**
  * Footer Component
  *
- * Professional footer using Flowbite React Footer.
- * Type-safe routes and external links.
+ * Dark footer — no Flowbite dependency.
+ * Brand left, nav + connect columns right, copyright bar.
  */
 
-import {
-  Footer as FlowbiteFooter,
-  FooterCopyright,
-  FooterDivider,
-  FooterLink,
-  FooterLinkGroup,
-} from 'flowbite-react';
+import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes';
-import type { ExternalLink } from '@/types/routing';
 
-interface FooterProps {
-  className?: string;
-}
-
-export function Footer({ className }: FooterProps) {
+export function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const socialLinks: Array<{ label: string; url: ExternalLink }> = [
-    { label: '⚡ GitHub', url: 'https://github.com/LongTermSupport' },
-    { label: '💼 LinkedIn', url: 'https://linkedin.com/in/joseph-edmonds' },
-  ];
-
   return (
-    <FlowbiteFooter container className={`mt-16 ${className || ''}`}>
-      <div className="w-full">
-        <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
+    <footer className="bg-[#0A0A0A] text-gray-400 border-t border-[#1a1a1a]">
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          {/* Brand */}
           <div>
-            <a
-              href={ROUTES.home.path}
-              className="flex items-center text-2xl font-semibold text-gray-900"
-            >
-              LTS Commerce
-            </a>
+            <Link to={ROUTES.home.path} className="flex items-center gap-2.5 mb-4">
+              <img src="/logo.svg" alt="LTS Commerce" className="h-8 w-auto" />
+              <span className="font-semibold text-white text-sm tracking-tight">LTSCommerce</span>
+            </Link>
+            <p className="text-sm leading-relaxed text-gray-500 max-w-xs">
+              Bespoke PHP development and infrastructure for complex, high-throughput backend
+              systems. 18+ years. No bullshit.
+            </p>
           </div>
-          <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
-            <div>
-              <h3 className="mb-4 text-sm font-semibold text-gray-900">Navigation</h3>
-              <FooterLinkGroup col>
-                <FooterLink href={ROUTES.home.path}>{ROUTES.home.label}</FooterLink>
-                <FooterLink href={ROUTES.articles.path}>{ROUTES.articles.label}</FooterLink>
-                <FooterLink href={ROUTES.about.path}>{ROUTES.about.label}</FooterLink>
-                <FooterLink href={ROUTES.contact.path}>{ROUTES.contact.label}</FooterLink>
-              </FooterLinkGroup>
-            </div>
-            <div>
-              <h3 className="mb-4 text-sm font-semibold text-gray-900">Connect</h3>
-              <FooterLinkGroup col>
-                {socialLinks.map(link => (
-                  <FooterLink
-                    key={link.label}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+
+          {/* Navigation */}
+          <div>
+            <h3 className="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-5">
+              Navigation
+            </h3>
+            <ul className="space-y-3 list-none p-0 m-0">
+              {[ROUTES.home, ROUTES.articles, ROUTES.about, ROUTES.contact].map(route => (
+                <li key={route.path}>
+                  <Link
+                    to={route.path}
+                    className="text-sm text-gray-500 hover:text-white transition-colors"
                   >
-                    {link.label}
-                  </FooterLink>
-                ))}
-              </FooterLinkGroup>
-            </div>
+                    {route.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Connect */}
+          <div>
+            <h3 className="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-5">
+              Connect
+            </h3>
+            <ul className="space-y-3 list-none p-0 m-0">
+              <li>
+                <a
+                  href="https://github.com/LongTermSupport"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-gray-500 hover:text-white transition-colors"
+                >
+                  GitHub
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://linkedin.com/in/joseph-edmonds"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-gray-500 hover:text-white transition-colors"
+                >
+                  LinkedIn
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
-        <FooterDivider />
-        <div className="w-full sm:flex sm:items-center sm:justify-between">
-          <FooterCopyright
-            by="LTS Commerce. All rights reserved."
-            year={currentYear}
-          />
-          <div className="mt-4 sm:mt-0 text-gray-500 text-sm">
-            Built with 🤓 TypeScript & ⚛️ React
-          </div>
+
+        {/* Copyright bar */}
+        <div className="border-t border-[#1a1a1a] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-gray-600">
+            &copy; {currentYear} LTS Commerce Ltd. All rights reserved.
+          </p>
+          <p className="text-xs text-gray-600">TypeScript &amp; React</p>
         </div>
       </div>
-    </FlowbiteFooter>
+    </footer>
   );
 }
