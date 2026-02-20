@@ -64,7 +64,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://linkedin.com/in/joseph-edmonds"
+                  href="https://linkedin.com/in/edmondscommerce"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-gray-500 hover:text-white transition-colors"
