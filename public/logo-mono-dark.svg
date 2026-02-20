@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" width="200" height="48">
+  <!-- Monochrome version for light backgrounds (black) -->
+
+  <!-- Logo Mark -->
+  <g id="mark">
+    <path d="M6 8 L18 8 L18 12 L10 12 L10 36 L18 36 L18 40 L6 40 L6 8 Z"
+          fill="#171717" />
+    <path d="M34 8 L46 8 L46 40 L34 40 L34 36 L42 36 L42 12 L34 12 L34 8 Z"
+          fill="#171717" />
+    <circle cx="26" cy="24" r="4" fill="#171717" />
+  </g>
+
+  <!-- Wordmark -->
+  <g id="wordmark" fill="#171717">
+    <text x="58" y="32"
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+          font-size="22"
+          font-weight="700"
+          letter-spacing="-0.02em">LTS</text>
+    <text x="100" y="32"
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+          font-size="22"
+          font-weight="400"
+          letter-spacing="-0.01em">Commerce</text>
+  </g>
+</svg>

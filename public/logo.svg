@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" width="240" height="48">
+  <defs>
+    <!-- Gradient for the mark -->
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F4C81"/>
+      <stop offset="100%" stop-color="#1E6BA5"/>
+    </linearGradient>
+    <!-- Monochrome version gradient (for dark backgrounds) -->
+    <linearGradient id="monoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Logo Mark: Stylized brackets representing code/engineering -->
+  <g id="mark">
+    <!-- Left bracket with subtle depth -->
+    <path d="M6 8 L18 8 L18 12 L10 12 L10 36 L18 36 L18 40 L6 40 L6 8 Z"
+          fill="url(#brandGradient)" />
+    <!-- Right bracket -->
+    <path d="M34 8 L46 8 L46 40 L34 40 L34 36 L42 36 L42 12 L34 12 L34 8 Z"
+          fill="url(#brandGradient)" />
+    <!-- Center dot - represents precision/focus -->
+    <circle cx="26" cy="24" r="4" fill="url(#brandGradient)" />
+  </g>
+
+  <!-- Wordmark: LTS Commerce -->
+  <g id="wordmark" fill="#171717">
+    <!-- LTS - Bold, primary -->
+    <text x="58" y="32"
+          font-family="Inter, sans-serif"
+          font-size="22"
+          font-weight="700"
+          letter-spacing="-0.02em">LTS</text>
+    <!-- Commerce - Regular weight, secondary -->
+    <text x="100" y="32"
+          font-family="Inter, sans-serif"
+          font-size="22"
+          font-weight="400"
+          letter-spacing="-0.01em">Commerce</text>
+  </g>
+</svg>

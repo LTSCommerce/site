@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F4C81"/>
+      <stop offset="100%" stop-color="#1E6BA5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Logo Mark Only: Stylized brackets representing code/engineering -->
+  <!-- Left bracket -->
+  <path d="M4 4 L18 4 L18 9 L9 9 L9 39 L18 39 L18 44 L4 44 L4 4 Z"
+        fill="url(#brandGradient)" />
+  <!-- Right bracket -->
+  <path d="M30 4 L44 4 L44 44 L30 44 L30 39 L39 39 L39 9 L30 9 L30 4 Z"
+        fill="url(#brandGradient)" />
+  <!-- Center dot -->
+  <circle cx="24" cy="24" r="5" fill="url(#brandGradient)" />
+</svg>
