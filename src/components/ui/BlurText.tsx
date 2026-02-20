@@ -58,24 +58,6 @@ export function BlurText({
     willChange: hasAnimated ? 'auto' : 'filter, opacity',
   };
 
-  // Remove will-change after animation completes to free resources
-  React.useEffect(() => {
-    if (!hasAnimated) {
-      return;
-    }
-
-    const timer = setTimeout(
-      () => {
-        setHasAnimated(true);
-      },
-      duration + delay + 100
-    );
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [hasAnimated, duration, delay]);
-
   // Early return for phones or reduced motion preference -- render instantly (after all hooks)
   if (isPhone || prefersReducedMotion) {
     return <Tag className={className}>{children}</Tag>;

@@ -20,12 +20,8 @@ import { useEffect } from 'react';
  */
 export function useBodyLoaded(): void {
   useEffect(() => {
-    // Add loaded class to trigger fade-in
+    // Add loaded class to trigger fade-in — intentionally no cleanup,
+    // the loaded state is permanent once the app has mounted.
     document.body.classList.add('loaded');
-
-    // Cleanup function to remove class on unmount
-    return () => {
-      document.body.classList.remove('loaded');
-    };
   }, []);
 }

@@ -5,6 +5,11 @@ import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    watch: {
+      ignored: ['**/.claude/**', '**/untracked/**', '**/var/**'],
+    },
+  },
   plugins: [
     react(),
     visualizer({

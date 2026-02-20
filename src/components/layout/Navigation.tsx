@@ -8,7 +8,6 @@
 
 import {
   Navbar,
-  NavbarBrand,
   NavbarCollapse,
   NavbarToggle,
 } from 'flowbite-react';
@@ -75,11 +74,9 @@ export function Navigation({ variant = 'horizontal' }: NavigationProps) {
 
   return (
     <Navbar fluid rounded className="border-none bg-transparent">
-      <NavbarBrand>
-        <Link to={ROUTES.home.path} className="flex items-center">
-          <img src="/logo.svg" alt="LTS Commerce" className="h-12 w-auto" />
-        </Link>
-      </NavbarBrand>
+      <Link to={ROUTES.home.path} className="flex items-center mr-3">
+        <img src="/logo.svg" alt="LTS Commerce" className="h-12 w-auto" />
+      </Link>
       {/* Only render the hamburger toggle on mobile -- hidden on desktop */}
       {!isDesktop && <NavbarToggle />}
       <NavbarCollapse>
