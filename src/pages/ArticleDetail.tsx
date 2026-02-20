@@ -68,7 +68,10 @@ export function ArticleDetail() {
 
   if (!article) {
     return (
-      <Page title="Article Not Found" description="The requested article could not be found">
+      <Page
+        title="Article Not Found - LTSCommerce Technical Articles"
+        description="The article you requested could not be found. Browse our technical articles on PHP development, infrastructure automation, database patterns, and AI integration."
+      >
         <Container>
           <Section>
             <h1 className="text-3xl font-bold mb-4">Article Not Found</h1>

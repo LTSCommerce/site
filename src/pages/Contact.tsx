@@ -29,13 +29,16 @@ ${message}
     `.trim();
 
     const mailtoLink = `mailto:hello@ltscommerce.dev?subject=Project Inquiry from ${name}&body=${encodeURIComponent(emailBody)}`;
-    window.location.href = mailtoLink;
+    // Open email client via anchor element - avoids window.location for SPA compliance
+    const anchor = document.createElement('a');
+    anchor.href = mailtoLink;
+    anchor.click();
   };
 
   return (
     <Page
-      title="Contact - LTSCommerce"
-      description="Contact LTSCommerce - Get in touch for bespoke PHP development projects"
+      title="Contact Joseph - Hire a PHP Expert | LTSCommerce"
+      description="Get in touch to discuss your PHP development project. Complex systems, legacy modernisation, infrastructure automation. Typically respond within 24 hours."
     >
       {/* Hero Section */}
       <Section spacing="xl">
@@ -101,7 +104,6 @@ ${message}
                         <option value="">Select a project type</option>
                         <option value="bespoke-php">Bespoke PHP Development</option>
                         <option value="legacy-php">Legacy PHP Modernization</option>
-                        {/* eslint-disable-next-line custom/use-types-not-strings -- Form values, not category references */}
                         <option value="infrastructure">Infrastructure & Automation</option>
                         <option value="cto-services">CTO-Level Services</option>
                         <option value="ai-development">AI-Enhanced Development</option>
