@@ -6,25 +6,16 @@
  */
 
 import { Link } from 'react-router-dom';
-import { Card } from 'flowbite-react';
 import { CategoryBadge } from '@/components/content/CategoryBadge';
 import { getCategoryById } from '@/data/categories';
 import { getArticleRoute } from '@/routes';
 import type { ArticlePreview } from '@/types/article';
 
 interface ArticleCardProps {
-  /** Article preview data */
   article: ArticlePreview;
-
-  /** Optional additional CSS class */
   className?: string;
 }
 
-/**
- * Format date for display
- * @param isoDate - Date in ISO 8601 format (YYYY-MM-DD)
- * @returns Formatted date string (e.g., "21 January 2026")
- */
 function formatDate(isoDate: string): string {
   const date = new Date(isoDate);
   return new Intl.DateTimeFormat('en-GB', {
@@ -38,24 +29,27 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
   const articleRoute = getArticleRoute(article.id);
 
   return (
-    <Link to={articleRoute.path} className={`block h-full ${className || ''}`}>
-      <Card className="hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
-        <div className="flex items-center gap-3 mb-4">
-          <CategoryBadge category={getCategoryById(article.category)} />
-        </div>
+    <Link
+      to={articleRoute.path}
+      className={`group block h-full bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-md transition-all duration-200 flex flex-col ${className || ''}`}
+    >
+      <div className="mb-4">
+        <CategoryBadge category={getCategoryById(article.category)} />
+      </div>
 
-        <h3 className="text-2xl font-semibold mb-3 text-gray-900">{article.title}</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-[#0f4c81] transition-colors leading-snug">
+        {article.title}
+      </h3>
 
-        <p className="text-base leading-relaxed text-gray-600 mb-4 flex-grow">
-          {article.description}
-        </p>
+      <p className="text-sm leading-relaxed text-gray-500 mb-4 flex-grow">
+        {article.description}
+      </p>
 
-        <div className="flex gap-4 text-sm text-gray-500 mt-auto">
-          <span>{formatDate(article.date)}</span>
-          <span>•</span>
-          <span>{article.readingTime} min read</span>
-        </div>
-      </Card>
+      <div className="flex gap-3 text-xs text-gray-400 mt-auto">
+        <span>{formatDate(article.date)}</span>
+        <span>·</span>
+        <span>{article.readingTime} min read</span>
+      </div>
     </Link>
   );
 }

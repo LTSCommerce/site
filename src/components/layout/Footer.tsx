@@ -17,9 +17,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand */}
           <div>
-            <Link to={ROUTES.home.path} className="flex items-center gap-2.5 mb-4">
-              <img src="/logo.svg" alt="LTS Commerce" className="h-8 w-auto" />
-              <span className="font-semibold text-white text-sm tracking-tight">LTSCommerce</span>
+            <Link to={ROUTES.home.path} className="flex items-center mb-4">
+              {/* brightness-0 invert renders the SVG fully white on dark background */}
+              <img src="/logo.svg" alt="LTS Commerce" className="h-8 w-auto brightness-0 invert" />
             </Link>
             <p className="text-sm leading-relaxed text-gray-500 max-w-xs">
               Bespoke PHP development and infrastructure for complex, high-throughput backend
@@ -29,7 +29,7 @@ export function Footer() {
 
           {/* Navigation */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-5">
+            <h3 className="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-5 mt-0">
               Navigation
             </h3>
             <ul className="space-y-3 list-none p-0 m-0">
@@ -48,7 +48,7 @@ export function Footer() {
 
           {/* Connect */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-5">
+            <h3 className="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-5 mt-0">
               Connect
             </h3>
             <ul className="space-y-3 list-none p-0 m-0">

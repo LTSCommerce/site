@@ -30,9 +30,8 @@ export function Navigation() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to={ROUTES.home.path} className="flex items-center gap-2.5 shrink-0">
+          <Link to={ROUTES.home.path} className="flex items-center shrink-0">
             <img src="/logo.svg" alt="LTS Commerce" className="h-8 w-auto" />
-            <span className="font-semibold text-gray-900 text-sm tracking-tight">LTSCommerce</span>
           </Link>
 
           {/* Desktop nav */}
