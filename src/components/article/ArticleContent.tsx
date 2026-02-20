@@ -23,7 +23,6 @@ import python from 'highlight.js/lib/languages/python';
 // Import Highlight.js theme
 import 'highlight.js/styles/github-dark.css';
 
-/* eslint-disable custom/use-types-not-strings -- Highlight.js language identifiers, not category references */
 // Language name constants (for Highlight.js, not our category system)
 const LANG_JS = 'javascript';
 const LANG_TS = 'typescript';
@@ -47,7 +46,6 @@ hljs.registerLanguage(LANG_YAML, yaml);
 hljs.registerLanguage(LANG_JSON, json);
 hljs.registerLanguage(LANG_NGINX, nginx);
 hljs.registerLanguage(LANG_PYTHON, python);
-/* eslint-enable custom/use-types-not-strings */
 
 interface ArticleContentProps {
   /** HTML content to render */

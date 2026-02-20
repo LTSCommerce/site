@@ -93,7 +93,7 @@ export function Home() {
   return (
     <Page
       title="LTSCommerce - Bespoke PHP Development"
-      description="LTSCommerce delivers bespoke PHP development and infrastructure solutions for high-complexity, large-scale systems"
+      description="LTSCommerce delivers bespoke PHP development and infrastructure solutions for high-complexity, large-scale systems. AI-enhanced workflows. No bullshit, just results."
     >
       <Hero
         title="LTSCommerce: Bespoke PHP Development for Complex Systems"

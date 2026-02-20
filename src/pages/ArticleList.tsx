@@ -17,7 +17,8 @@ export function ArticleList() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Read filter state from URL
-  const selectedCategory = (searchParams.get('category') as CategoryId | 'all') || 'all';
+  const categoryParam = searchParams.get('category');
+  const selectedCategory: CategoryId | 'all' = (categoryParam as CategoryId | null) ?? 'all';
   const searchQuery = searchParams.get('search') || '';
 
   const allArticles = getAllArticles();
@@ -131,8 +132,8 @@ export function ArticleList() {
 
   return (
     <Page
-      title="Articles - LTS Commerce"
-      description="Technical articles on PHP, infrastructure, databases, AI, and TypeScript development"
+      title="Technical Articles - PHP, Infrastructure & AI | LTSCommerce"
+      description="In-depth technical articles on PHP, infrastructure, databases, AI, and TypeScript. Expert insights from 20+ years of hands-on backend development."
     >
       <Container>
         <Section>

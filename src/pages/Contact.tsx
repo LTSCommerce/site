@@ -129,8 +129,8 @@ export function Contact() {
 
   return (
     <Page
-      title="Contact - LTSCommerce"
-      description="Contact LTSCommerce - Get in touch for bespoke PHP development projects"
+      title="Contact Joseph - Hire a PHP Expert | LTSCommerce"
+      description="Get in touch to discuss your PHP development project. Complex systems, legacy modernisation, infrastructure automation. Typically respond within 24 hours."
     >
       {/* Hero Section */}
       <Section spacing="xl">

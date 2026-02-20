@@ -2,9 +2,6 @@
  * Article Data - AUTO-MIGRATED FROM LEGACY EJS TEMPLATES
  */
 
-/* eslint-disable custom/use-types-not-strings */
-/* eslint-disable no-useless-escape */
-
 import type { Article } from '@/types/article';
 import { CATEGORIES } from './categories';
 

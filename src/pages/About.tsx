@@ -7,8 +7,8 @@ import { ROUTES } from '../routes';
 export function About() {
   return (
     <Page
-      title="About - LTSCommerce"
-      description="About Joseph - Bespoke PHP developer specializing in complex systems and infrastructure"
+      title="About Joseph - Bespoke PHP Developer | LTSCommerce"
+      description="Over 20 years building complex, high-performance PHP systems. Specialising in legacy modernisation, infrastructure automation, and large-scale backend architecture."
     >
       {/* Hero Section */}
       <Section spacing="xl">
