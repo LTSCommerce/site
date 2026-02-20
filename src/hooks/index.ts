@@ -7,3 +7,4 @@
 export { useMouseResponsiveEffects } from './useMouseResponsiveEffects';
 export { useBodyLoaded } from './useBodyLoaded';
 export { useScrollAnimations } from './useScrollAnimations';
+export { useMediaQuery } from './useMediaQuery';
