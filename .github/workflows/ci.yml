@@ -32,6 +32,8 @@ jobs:
 
       - name: Build site
         run: npm run build
+        env:
+          VITE_CONTACT_FORM_URL: ${{ vars.VITE_CONTACT_FORM_URL }}
 
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'
