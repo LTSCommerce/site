@@ -3,6 +3,7 @@
  *
  * Professional navigation using Flowbite React Navbar.
  * Type-safe navigation using ROUTES object and React Router.
+ * Responsive behaviour via useMediaQuery (desktop breakpoint: 768px+).
  */
 
 import {
@@ -14,6 +15,7 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { ROUTES } from '@/routes';
 import type { RouteEntry } from '@/types/routing';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 interface NavigationProps {
   variant?: 'horizontal' | 'vertical';
@@ -21,6 +23,11 @@ interface NavigationProps {
 
 export function Navigation({ variant = 'horizontal' }: NavigationProps) {
   const location = useLocation();
+
+  // Detect desktop breakpoint (md: 768px+) for responsive nav behaviour.
+  // On desktop the hamburger toggle is hidden by Flowbite CSS, but we also
+  // use this to apply desktop-only aria attributes and styling decisions.
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   const navItems: Array<{ key: string; route: RouteEntry }> = [
     { key: 'home', route: ROUTES.home },
@@ -73,7 +80,8 @@ export function Navigation({ variant = 'horizontal' }: NavigationProps) {
           <img src="/logo.svg" alt="LTS Commerce" className="h-12 w-auto" />
         </Link>
       </NavbarBrand>
-      <NavbarToggle />
+      {/* Only render the hamburger toggle on mobile -- hidden on desktop */}
+      {!isDesktop && <NavbarToggle />}
       <NavbarCollapse>
         {navItems.map(({ key, route }) => (
           <Link

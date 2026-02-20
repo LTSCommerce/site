@@ -6,12 +6,30 @@ import { Section } from '../components/layout/Section';
 import { ArticleCard } from '../components/article/ArticleCard';
 import { ROUTES } from '../routes';
 import { SAMPLE_ARTICLES } from '../data/articles';
+import { useInView } from '../hooks/useInView';
+
+/**
+ * Inline style helper for scroll-triggered fade-in animation.
+ * Elements start invisible and slide up; transition to visible when in view.
+ */
+function inViewStyle(isInView: boolean): React.CSSProperties {
+  return {
+    opacity: isInView ? 1 : 0,
+    transform: isInView ? 'translateY(0)' : 'translateY(24px)',
+    transition: 'opacity 0.6s ease, transform 0.6s ease',
+  };
+}
 
 export function Home() {
   // Get latest 3 articles sorted by date
   const latestArticles = [...SAMPLE_ARTICLES]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
+
+  // Scroll-triggered animation refs for each major section
+  const { ref: expertiseRef, isInView: expertiseInView } = useInView({ threshold: 0.1 });
+  const { ref: articlesRef, isInView: articlesInView } = useInView({ threshold: 0.1 });
+  const { ref: authorRef, isInView: authorInView } = useInView({ threshold: 0.2 });
 
   return (
     <Page
@@ -31,7 +49,7 @@ export function Home() {
       <Section spacing="xl">
         <Container>
           <h2 className="text-center mb-16">Core Expertise</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div ref={expertiseRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" style={inViewStyle(expertiseInView)}>
             <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
               <h3 className="mb-4">Bespoke PHP Development</h3>
               <p>
@@ -87,18 +105,20 @@ export function Home() {
       <Section spacing="xl" className="bg-gray-50">
         <Container>
           <h2 className="text-center mb-16">Latest Articles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            {latestArticles.map(article => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
-          </div>
-          <div className="text-center">
-            <Link
-              to={ROUTES.articles.path}
-              className="inline-block px-8 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium transition-colors rounded-md"
-            >
-              View All Articles
-            </Link>
+          <div ref={articlesRef} style={inViewStyle(articlesInView)}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+              {latestArticles.map(article => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+            </div>
+            <div className="text-center">
+              <Link
+                to={ROUTES.articles.path}
+                className="inline-block px-8 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium transition-colors rounded-md"
+              >
+                View All Articles
+              </Link>
+            </div>
           </div>
         </Container>
       </Section>
@@ -107,7 +127,7 @@ export function Home() {
       <Section spacing="xl">
         <Container size="md">
           <h2 className="text-center mb-12">Published Author</h2>
-          <div className="border border-black p-12 text-center">
+          <div ref={authorRef} className="border border-black p-12 text-center" style={inViewStyle(authorInView)}>
             <p className="text-lg mb-8">
               I co-authored <strong>"The Art of Modern PHP 8"</strong> published by Packt
               Publishing. The book helps developers worldwide upgrade legacy PHP applications to
