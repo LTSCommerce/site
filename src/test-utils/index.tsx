@@ -2,7 +2,9 @@
  * Test Utilities for React Component Testing
  *
  * Provides a custom render function that wraps components with necessary providers:
- * - BrowserRouter for React Router components (Link, useLocation, useNavigate)
+ * - MemoryRouter for React Router components (Link, useLocation, useNavigate)
+ *   Uses MemoryRouter instead of BrowserRouter to avoid touching window.location/
+ *   window.history, preventing test pollution between test cases.
  *
  * Usage:
  * ```typescript
@@ -12,29 +14,38 @@
  *   render(<MyComponent />);
  *   expect(screen.getByText('Hello')).toBeInTheDocument();
  * });
+ *
+ * // Test a specific route:
+ * test('renders on /about', () => {
+ *   render(<MyComponent />, { initialEntries: ['/about'] });
+ * });
  * ```
  */
 import { render, type RenderOptions } from '@testing-library/react';
 import { type ReactElement } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
-/**
- * Wraps all test components with required application providers.
- * Add additional providers here (ThemeProvider, QueryClient, etc.) as needed.
- */
-function AllTheProviders({ children }: { children: React.ReactNode }) {
-  return <BrowserRouter>{children}</BrowserRouter>;
+interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+  initialEntries?: string[];
 }
 
 /**
- * Custom render function that wraps components with BrowserRouter and other providers.
+ * Custom render function that wraps components with MemoryRouter and other providers.
  *
  * @param ui - The React component to render
- * @param options - Optional render options (excluding wrapper, which is provided automatically)
+ * @param options - Optional render options, including initialEntries for route-specific testing
  * @returns All @testing-library/react render utilities
  */
-function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
-  return render(ui, { wrapper: AllTheProviders, ...options });
+function customRender(
+  ui: ReactElement,
+  { initialEntries = ['/'], ...options }: CustomRenderOptions = {},
+) {
+  return render(ui, {
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+    ),
+    ...options,
+  });
 }
 
 // Re-export everything from @testing-library/react so tests can import from one place

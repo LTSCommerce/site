@@ -38,7 +38,10 @@
     "forceConsistentCasingInFileNames": true,
 
     /* Skip Lib Check */
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    /* Test Types */
+    "types": ["vitest/globals", "vite/client", "@testing-library/jest-dom"]
   },
   "include": ["src"]
 }
