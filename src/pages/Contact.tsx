@@ -63,10 +63,9 @@ export function Contact() {
         | undefined;
 
       if (!contactFormUrl) {
-        setStatus('error');
-        setServerError(
-          'Contact form is not configured. Please email hello@ltscommerce.dev directly.',
-        );
+        // No backend configured — open mailto as fallback
+        const mailto = `mailto:hello@ltscommerce.dev?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(`Name: ${data.name}\n\n${data.message}`)}`;
+        window.location.href = mailto;
         return;
       }
 
@@ -137,7 +136,7 @@ export function Contact() {
         <Container>
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl font-bold mb-4">Let's Work Together</h1>
-            <p className="text-xl text-gray-700">Have a project in mind? I'd love to hear about it.</p>
+            <p className="text-xl text-gray-700 mx-auto">Have a project in mind? I'd love to hear about it.</p>
           </div>
         </Container>
       </Section>
@@ -415,7 +414,7 @@ export function Contact() {
                 <h3 className="text-xl font-bold mb-3">Other Ways to Connect</h3>
                 <div className="flex flex-col gap-3">
                   <a
-                    href="https://linkedin.com/in/josephltshq"
+                    href="https://linkedin.com/in/edmondscommerce"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 transition-colors"
@@ -423,7 +422,7 @@ export function Contact() {
                     LinkedIn
                   </a>
                   <a
-                    href="https://github.com/josephltshq"
+                    href="https://github.com/LongTermSupport"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 transition-colors"

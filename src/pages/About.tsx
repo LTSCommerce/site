@@ -15,7 +15,7 @@ export function About() {
         <Container>
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl font-bold mb-6">About Joseph</h1>
-            <p className="text-xl text-gray-700 leading-relaxed">
+            <p className="text-xl text-gray-700 leading-relaxed mx-auto">
               I build complex PHP systems that actually work. I've spent over a decade turning messy
               legacy codebases into clean, high-performance systems. No bullshit, just results.
             </p>
@@ -175,11 +175,33 @@ export function About() {
                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                   <li>Published author - "The Art of Modern PHP 8"</li>
                   <li>Zend Certified Engineer</li>
-                  <li>20+ years PHP development</li>
+                  <li>18+ years PHP development</li>
                   <li>Large-scale system architecture</li>
                   <li>High-pressure environments</li>
                   <li>Tech debt management expert</li>
                 </ul>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg border border-gray-200">
+                <h3 className="text-2xl font-bold mb-4">Connect</h3>
+                <div className="flex flex-col gap-3">
+                  <a
+                    href="https://linkedin.com/in/edmondscommerce"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#0f4c81] hover:text-[#1e6ba5] transition-colors"
+                  >
+                    LinkedIn
+                  </a>
+                  <a
+                    href="https://github.com/LongTermSupport"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#0f4c81] hover:text-[#1e6ba5] transition-colors"
+                  >
+                    GitHub
+                  </a>
+                </div>
               </div>
             </aside>
           </div>
@@ -189,14 +211,14 @@ export function About() {
       {/* CTA Section */}
       <Section spacing="xl">
         <Container size="md">
-          <div className="text-center bg-gradient-to-r from-blue-50 to-indigo-50 p-12 rounded-lg border border-blue-200">
+          <div className="text-center bg-gray-50 p-12 rounded-lg border border-gray-200">
             <h2 className="text-3xl font-bold mb-4">Let's Work Together</h2>
             <p className="text-lg text-gray-700 mb-6">
               Ready to bring your project to life? I'd love to hear about your challenges and goals.
             </p>
             <Link
               to={ROUTES.contact.path}
-              className="inline-block px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+              className="inline-block px-8 py-4 bg-[#0f4c81] text-white rounded-lg hover:bg-[#1e6ba5] transition-colors font-semibold"
             >
               Start a Conversation
             </Link>

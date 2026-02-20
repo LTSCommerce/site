@@ -33,17 +33,11 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Add deployment timestamp
-        run: |
-          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          echo "<!-- Deployed: $TIMESTAMP -->" >> public_html/index.html
-          sed -i "s/DEPLOYMENT_TIMESTAMP_PLACEHOLDER/$TIMESTAMP/g" public_html/index.html
-
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public_html
+          path: ./dist
 
   deploy:
     if: github.ref == 'refs/heads/main'

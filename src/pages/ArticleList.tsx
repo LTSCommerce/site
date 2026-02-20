@@ -16,7 +16,6 @@ import { getAllCategories, type CategoryId, isCategoryId } from '@/data/categori
 export function ArticleList() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Read filter state from URL
   const categoryParam = searchParams.get('category');
   const selectedCategory: CategoryId | 'all' = (categoryParam as CategoryId | null) ?? 'all';
   const searchQuery = searchParams.get('search') || '';
@@ -24,11 +23,9 @@ export function ArticleList() {
   const allArticles = getAllArticles();
   const categories = getAllCategories();
 
-  // Validate category from URL
   useEffect(() => {
     const categoryParam = searchParams.get('category');
     if (categoryParam && categoryParam !== 'all' && !isCategoryId(categoryParam)) {
-      // Invalid category in URL, reset to 'all'
       setSearchParams(prev => {
         const newParams = new URLSearchParams(prev);
         newParams.delete('category');
@@ -37,7 +34,6 @@ export function ArticleList() {
     }
   }, [searchParams, setSearchParams]);
 
-  // Update URL when filter changes
   const handleCategoryChange = (category: CategoryId | 'all') => {
     setSearchParams(prev => {
       const newParams = new URLSearchParams(prev);
@@ -62,120 +58,63 @@ export function ArticleList() {
     });
   };
 
-  // Filter articles by category and search query
   const filteredArticles = useMemo(() => {
     return allArticles.filter(article => {
-      // Category filter
       const categoryMatch = selectedCategory === 'all' || article.category === selectedCategory;
-
-      // Search filter (case-insensitive, matches title or description)
       const searchMatch =
         searchQuery.trim() === '' ||
         article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         article.description.toLowerCase().includes(searchQuery.toLowerCase());
-
       return categoryMatch && searchMatch;
     });
   }, [allArticles, selectedCategory, searchQuery]);
 
-  // Styles
-  const headerStyle = {
-    marginBottom: '2rem',
-  };
-
-  const filtersContainerStyle = {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '1.5rem',
-    marginBottom: '2rem',
-  };
-
-  const categoryFiltersStyle = {
-    display: 'flex',
-    flexWrap: 'wrap' as const,
-    gap: '0.75rem',
-  };
-
-  const filterButtonStyle = (isActive: boolean) => ({
-    padding: '0.5rem 1rem',
-    border: '1px solid #d1d5db',
-    borderRadius: '0.375rem',
-    backgroundColor: isActive ? '#1f2937' : '#ffffff',
-    color: isActive ? '#ffffff' : '#374151',
-    cursor: 'pointer',
-    fontSize: '0.875rem',
-    fontWeight: '500',
-    transition: 'all 0.2s',
-  });
-
-  const searchInputStyle = {
-    width: '100%',
-    maxWidth: '400px',
-    padding: '0.625rem 1rem',
-    border: '1px solid #d1d5db',
-    borderRadius: '0.375rem',
-    fontSize: '0.875rem',
-  };
-
-  const countStyle = {
-    color: '#666',
-    fontSize: '1rem',
-    marginTop: '0.5rem',
-  };
-
-  const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-    gap: '2rem',
-    marginTop: '2rem',
-  };
+  const isFiltered = selectedCategory !== 'all' || searchQuery.trim() !== '';
 
   return (
     <Page
       title="Technical Articles - PHP, Infrastructure & AI | LTSCommerce"
       description="In-depth technical articles on PHP, infrastructure, databases, AI, and TypeScript. Expert insights from 20+ years of hands-on backend development."
     >
-      <Container>
-        <Section>
-          <div style={headerStyle}>
-            <h1>Technical Articles</h1>
-            <p style={countStyle}>
-              {filteredArticles.length} {filteredArticles.length === 1 ? 'article' : 'articles'}
-              {selectedCategory !== 'all' || searchQuery.trim() !== '' ? ' found' : ''}
-            </p>
-          </div>
+      {/* Page Header */}
+      <Section spacing="xl">
+        <Container>
+          <h1 className="text-4xl font-bold mb-2">Technical Articles</h1>
+          <p className="text-gray-500 text-sm mt-2">
+            {filteredArticles.length} {filteredArticles.length === 1 ? 'article' : 'articles'}
+            {isFiltered ? ' found' : ''}
+          </p>
+        </Container>
+      </Section>
 
+      {/* Filters + Grid */}
+      <Section spacing="xl" className="bg-gray-50">
+        <Container>
           {/* Filters */}
-          <div style={filtersContainerStyle}>
-            {/* Category Filters */}
+          <div className="flex flex-col gap-6 mb-10">
+            {/* Category filters */}
             <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  marginBottom: '0.5rem',
-                  color: '#374151',
-                }}
-              >
-                Filter by Category
-              </label>
-              <div style={categoryFiltersStyle}>
+              <p className="text-sm font-semibold text-gray-700 mb-3">Filter by Category</p>
+              <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => {
-                    handleCategoryChange('all');
-                  }}
-                  style={filterButtonStyle(selectedCategory === 'all')}
+                  onClick={() => handleCategoryChange('all')}
+                  className={`px-4 py-2 text-sm font-medium rounded border transition-colors ${
+                    selectedCategory === 'all'
+                      ? 'bg-[#0f4c81] text-white border-[#0f4c81]'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                  }`}
                 >
                   All Categories
                 </button>
                 {categories.map(category => (
                   <button
                     key={category.id}
-                    onClick={() => {
-                      handleCategoryChange(category.id);
-                    }}
-                    style={filterButtonStyle(selectedCategory === category.id)}
+                    onClick={() => handleCategoryChange(category.id)}
+                    className={`px-4 py-2 text-sm font-medium rounded border transition-colors ${
+                      selectedCategory === category.id
+                        ? 'bg-[#0f4c81] text-white border-[#0f4c81]'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                    }`}
                   >
                     {category.label}
                   </button>
@@ -185,16 +124,7 @@ export function ArticleList() {
 
             {/* Search */}
             <div>
-              <label
-                htmlFor="article-search"
-                style={{
-                  display: 'block',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  marginBottom: '0.5rem',
-                  color: '#374151',
-                }}
-              >
+              <label htmlFor="article-search" className="block text-sm font-semibold text-gray-700 mb-2">
                 Search Articles
               </label>
               <input
@@ -202,34 +132,27 @@ export function ArticleList() {
                 type="text"
                 placeholder="Search by title or description..."
                 value={searchQuery}
-                onChange={e => {
-                  handleSearchChange(e.target.value);
-                }}
-                style={searchInputStyle}
+                onChange={e => handleSearchChange(e.target.value)}
+                className="w-full max-w-md px-4 py-2.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#0f4c81] focus:border-transparent"
               />
             </div>
           </div>
 
           {/* Article Grid */}
-          <div style={gridStyle}>
-            {filteredArticles.map(article => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
-          </div>
-
-          {/* Empty State */}
-          {filteredArticles.length === 0 && (
-            <div style={{ textAlign: 'center', color: '#888', marginTop: '3rem' }}>
-              <p style={{ marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: '600' }}>
-                No articles found
-              </p>
-              <p style={{ fontSize: '0.875rem' }}>
-                Try adjusting your filters or search query
-              </p>
+          {filteredArticles.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredArticles.map(article => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 text-gray-500">
+              <p className="text-lg font-semibold mb-1">No articles found</p>
+              <p className="text-sm">Try adjusting your filters or search query</p>
             </div>
           )}
-        </Section>
-      </Container>
+        </Container>
+      </Section>
     </Page>
   );
 }

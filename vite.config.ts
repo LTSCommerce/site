@@ -62,8 +62,6 @@ export default defineConfig({
             return 'highlight-js';
           }
           if (
-            id.includes('node_modules/flowbite/') ||
-            id.includes('node_modules/flowbite-react/') ||
             id.includes('node_modules/react-hook-form/') ||
             id.includes('node_modules/zod/') ||
             id.includes('node_modules/@hookform/')
