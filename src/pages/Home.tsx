@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom';
+import { Code2, Server, Database, Brain, Cpu, Terminal } from 'lucide-react';
+
 import { Hero } from '../components/content/Hero';
 import { Page } from '../components/layout/Page';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
 import { ArticleCard } from '../components/article/ArticleCard';
+import { BlurText } from '../components/ui/BlurText';
+import { StatusBadge } from '../components/ui/StatusBadge';
+import { ThreeColumnFeatures } from '../components/ui/ThreeColumnFeatures';
+import type { ThreeColumnFeature } from '../components/ui/ThreeColumnFeatures';
 import { ROUTES } from '../routes';
 import { SAMPLE_ARTICLES } from '../data/articles';
 import { useInView } from '../hooks/useInView';
@@ -20,6 +26,60 @@ function inViewStyle(isInView: boolean): React.CSSProperties {
   };
 }
 
+// First row of expertise: core technical skills
+const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature] = [
+  {
+    title: 'Bespoke PHP Development',
+    description:
+      'Complex, modern PHP systems built to last. Legacy code transformation and high-pressure delivery.',
+    icon: Code2,
+    items: [
+      'Custom PHP 8.x architecture',
+      'Legacy system modernisation',
+      'High-throughput backend systems',
+    ],
+  },
+  {
+    title: 'Infrastructure & Automation',
+    description:
+      'Ansible automation, Proxmox virtualisation, and bare metal server management. Private cloud preferred.',
+    icon: Server,
+    items: ['Ansible playbooks and roles', 'Proxmox virtualisation', 'Bare metal server management'],
+  },
+  {
+    title: 'Backend Systems',
+    description:
+      'Pure backend development focused on scalable, maintainable PHP architecture. No design work.',
+    icon: Database,
+    items: ['Scalable API design', 'Database optimisation', 'Microservices architecture'],
+  },
+];
+
+// Second row of expertise: strategy and emerging tech
+const expertiseRow2: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature] = [
+  {
+    title: 'CTO-Level Services',
+    description:
+      'Strategic guidance, hiring support, and team training. Technical leadership for complex projects.',
+    icon: Brain,
+    items: ['Technical strategy', 'Team hiring and training', 'Architecture review'],
+  },
+  {
+    title: 'AI-Enhanced Development',
+    description:
+      'AI tools for faster development and business AI integration. Modern workflows with traditional reliability.',
+    icon: Cpu,
+    items: ['AI-assisted development', 'Business AI integration', 'Workflow automation'],
+  },
+  {
+    title: 'TypeScript & Modern JavaScript',
+    description:
+      'Full-stack TypeScript applications including backend Node.js services, CLI tools, and modern JS architecture.',
+    icon: Terminal,
+    items: ['Node.js backend services', 'CLI tooling', 'TypeScript architecture'],
+  },
+];
+
 export function Home() {
   // Get latest 3 articles sorted by date
   const latestArticles = [...SAMPLE_ARTICLES]
@@ -27,7 +87,6 @@ export function Home() {
     .slice(0, 3);
 
   // Scroll-triggered animation refs for each major section
-  const { ref: expertiseRef, isInView: expertiseInView } = useInView({ threshold: 0.1 });
   const { ref: articlesRef, isInView: articlesInView } = useInView({ threshold: 0.1 });
   const { ref: authorRef, isInView: authorInView } = useInView({ threshold: 0.2 });
 
@@ -48,56 +107,30 @@ export function Home() {
       {/* Core Expertise Section */}
       <Section spacing="xl">
         <Container>
-          <h2 className="text-center mb-16">Core Expertise</h2>
-          <div ref={expertiseRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" style={inViewStyle(expertiseInView)}>
-            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
-              <h3 className="mb-4">Bespoke PHP Development</h3>
-              <p>
-                I build complex, modern PHP systems. I transform legacy code and thrive in
-                high-pressure environments.
-              </p>
-            </article>
-
-            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
-              <h3 className="mb-4">Infrastructure & Automation</h3>
-              <p>
-                I automate with Ansible, run Proxmox virtualization, and manage bare metal servers.
-                I prefer private cloud over public cloud every time.
-              </p>
-            </article>
-
-            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
-              <h3 className="mb-4">Backend Systems</h3>
-              <p>
-                I do pure backend development. No design work. I focus entirely on scalable,
-                maintainable PHP architecture.
-              </p>
-            </article>
-
-            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
-              <h3 className="mb-4">CTO-Level Services</h3>
-              <p>
-                I provide strategic guidance, help with hiring, and train teams. I offer technical
-                leadership when projects get complex.
-              </p>
-            </article>
-
-            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
-              <h3 className="mb-4">AI-Enhanced Development</h3>
-              <p>
-                I use AI tools to speed up development and help businesses integrate AI into their
-                processes. Modern workflows with traditional reliability.
-              </p>
-            </article>
-
-            <article className="p-8 border border-gray-200 rounded-md hover:shadow-md transition-shadow">
-              <h3 className="mb-4">TypeScript & Modern JavaScript</h3>
-              <p>
-                I build full-stack TypeScript applications. This includes backend Node.js services,
-                CLI tools, and modern JavaScript architecture.
-              </p>
-            </article>
+          <div className="mb-16 text-center">
+            <StatusBadge text="Core Expertise" variant="primary" pulsing={true} />
+            <BlurText as="div" className="mt-2">
+              <h2>Core Expertise</h2>
+            </BlurText>
           </div>
+
+          {/* Row 1 */}
+          <div className="mb-6">
+            <ThreeColumnFeatures
+              features={expertiseRow1}
+              animationDelay={200}
+              stagger={150}
+              showHoverEffect={true}
+            />
+          </div>
+
+          {/* Row 2 */}
+          <ThreeColumnFeatures
+            features={expertiseRow2}
+            animationDelay={600}
+            stagger={150}
+            showHoverEffect={true}
+          />
         </Container>
       </Section>
 
