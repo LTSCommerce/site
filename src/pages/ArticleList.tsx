@@ -97,7 +97,7 @@ export function ArticleList() {
               <p className="text-sm font-semibold text-gray-700 mb-3">Filter by Category</p>
               <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => handleCategoryChange('all')}
+                  onClick={() => { handleCategoryChange('all'); }}
                   className={`px-4 py-2 text-sm font-medium rounded border transition-colors ${
                     selectedCategory === 'all'
                       ? 'bg-[#0f4c81] text-white border-[#0f4c81]'
@@ -109,7 +109,7 @@ export function ArticleList() {
                 {categories.map(category => (
                   <button
                     key={category.id}
-                    onClick={() => handleCategoryChange(category.id)}
+                    onClick={() => { handleCategoryChange(category.id); }}
                     className={`px-4 py-2 text-sm font-medium rounded border transition-colors ${
                       selectedCategory === category.id
                         ? 'bg-[#0f4c81] text-white border-[#0f4c81]'
@@ -132,7 +132,7 @@ export function ArticleList() {
                 type="text"
                 placeholder="Search by title or description..."
                 value={searchQuery}
-                onChange={e => handleSearchChange(e.target.value)}
+                onChange={e => { handleSearchChange(e.target.value); }}
                 className="w-full max-w-md px-4 py-2.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#0f4c81] focus:border-transparent"
               />
             </div>

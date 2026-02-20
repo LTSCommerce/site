@@ -63,9 +63,12 @@ export function Contact() {
         | undefined;
 
       if (!contactFormUrl) {
-        // No backend configured — open mailto as fallback
+        // No backend configured — open mailto as fallback via anchor click
+        // (avoids window.location.href assignment which triggers full-page reload)
         const mailto = `mailto:hello@ltscommerce.dev?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(`Name: ${data.name}\n\n${data.message}`)}`;
-        window.location.href = mailto;
+        const a = document.createElement('a');
+        a.href = mailto;
+        a.click();
         return;
       }
 

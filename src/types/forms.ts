@@ -13,8 +13,8 @@ export const contactFormSchema = z.object({
   email: z
     .string()
     .min(1, 'Email is required')
-    .email('Please enter a valid email address')
-    .max(254, 'Email is too long (max 254 characters)'),
+    .max(254, 'Email is too long (max 254 characters)')
+    .refine(val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), 'Please enter a valid email address'),
   subject: z
     .string()
     .min(5, 'Subject must be at least 5 characters')

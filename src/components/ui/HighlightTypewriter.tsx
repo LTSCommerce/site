@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ElementType } from 'react';
 
 import { Typewriter } from './Typewriter';
 
@@ -13,8 +13,7 @@ export interface HighlightTypewriterProps {
   highlightText?: string;
   /** Insert a line break immediately before the highlighted portion. */
   breakBeforeHighlight?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  as?: any;
+  as?: ElementType;
   className?: string;
   trigger?: boolean;
   delay?: number;

@@ -185,7 +185,7 @@ function CarouselDots({ api }: { api: CarouselApi | undefined }) {
     setCount(api.scrollSnapList().length);
     setCurrent(api.selectedScrollSnap());
 
-    const onSelect = () => setCurrent(api.selectedScrollSnap());
+    const onSelect = () => { setCurrent(api.selectedScrollSnap()); };
     api.on('select', onSelect);
     return () => {
       api.off('select', onSelect);

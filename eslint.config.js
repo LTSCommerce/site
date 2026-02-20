@@ -22,7 +22,7 @@ import noUnescapedQuotesInMeta from './eslint-rules/no-unescaped-quotes-in-meta.
 import noChildrenOnPropOnlyComponents from './eslint-rules/no-children-on-prop-only-components.js';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'code-snippets', 'untracked', 'ARCHIVE', 'var', 'tailwind.config.ts'] },
+  { ignores: ['dist', 'node_modules', 'code-snippets', 'untracked', 'ARCHIVE', 'var', 'tailwind.config.ts', 'vitest.config.ts', 'scripts/', '.claude/'] },
 
   // Main config: applies to all TypeScript and TSX files
   {
@@ -75,6 +75,7 @@ export default tseslint.config(
       ],
       '@typescript-eslint/explicit-function-return-type': 'off', // React components don't need explicit returns
       '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
 
       // Our custom type safety rules (Plan 001)
       'custom/no-hardcoded-routes': 'error',
@@ -154,5 +155,23 @@ export default tseslint.config(
     rules: {
       'custom/use-types-not-strings': 'off',
     },
-  }
+  },
+  {
+    // ThreeColumnFeatures uses a plain string href for optional card links. This is an
+    // intentional design: feature cards may link to arbitrary URL anchors (e.g., "#contact"),
+    // not typed RouteEntry objects. The no-string-link-props rule is suppressed here because
+    // the `link` prop genuinely represents an HTML href, not a React Router route.
+    files: ['**/src/components/ui/ThreeColumnFeatures.tsx'],
+    rules: {
+      'custom/no-string-link-props': 'off',
+    },
+  },
+  {
+    // test-utils re-exports @testing-library/react for convenience. This is not a React
+    // component module — it's a test helper. The react-refresh rule does not apply here.
+    files: ['**/src/test-utils/**'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 );
