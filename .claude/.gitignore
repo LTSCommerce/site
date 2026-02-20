@@ -1,1 +1,4 @@
 cc-commands/
+
+# Claude Code Hooks Daemon - runtime files
+hooks-daemon/untracked/
