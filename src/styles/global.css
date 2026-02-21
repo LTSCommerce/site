@@ -243,6 +243,8 @@
   color: #171717;
   font-size: 0.875em;
   font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+  font-variant-ligatures: none;
 }
 
 /* Code blocks */
@@ -262,6 +264,8 @@
   color: inherit;
   font-size: 0.875rem;
   font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+  font-variant-ligatures: none;
 }
 
 /* Article sections */
