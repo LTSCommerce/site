@@ -7,6 +7,7 @@
 
 import { useEffect, useRef } from 'react';
 import hljs from 'highlight.js/lib/core';
+import { SNIPPETS } from '@/data/snippets';
 
 // Import only the languages we need to keep bundle size down
 import javascript from 'highlight.js/lib/languages/javascript';
@@ -60,8 +61,21 @@ interface ArticleContentProps {
  * <ArticleContent content={article.content} />
  * ```
  */
+/** Replace {{SNIPPET:path}} placeholders with HTML-escaped file contents */
+function resolveSnippets(html: string): string {
+  return html.replace(/\{\{SNIPPET:([^}]+)\}\}/g, (_match, key: string) => {
+    const snippet = SNIPPETS[key.trim()];
+    if (snippet === undefined) {
+      // Visible placeholder so missing snippets are easy to spot
+      return `<span style="color:red">[MISSING SNIPPET: ${key}]</span>`;
+    }
+    return snippet;
+  });
+}
+
 export function ArticleContent({ content }: ArticleContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const resolvedContent = resolveSnippets(content);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -71,13 +85,13 @@ export function ArticleContent({ content }: ArticleContentProps) {
         hljs.highlightElement(block as HTMLElement);
       });
     }
-  }, [content]);
+  }, [resolvedContent]);
 
   return (
     <div
       ref={contentRef}
       className="prose prose-lg max-w-none"
-      dangerouslySetInnerHTML={{ __html: content }}
+      dangerouslySetInnerHTML={{ __html: resolvedContent }}
     />
   );
 }

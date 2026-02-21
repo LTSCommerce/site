@@ -3,6 +3,9 @@ public_html/
 dist/
 dist-server/
 
+# Auto-generated files (do not edit manually)
+src/data/snippets.ts
+
 # Dependencies
 node_modules/
 

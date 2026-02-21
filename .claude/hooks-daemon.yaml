@@ -42,6 +42,9 @@ handlers:
     pipe_blocker:          # Blocks dangerous pipe patterns in bash commands
       enabled: true
       priority: 15
+      options:
+        extra_whitelist:
+          - "^find\\b"   # find | wc -l, find | grep etc are safe read-only ops
 
     dangerous_permissions: # Warns about dangerous file permission changes
       enabled: true

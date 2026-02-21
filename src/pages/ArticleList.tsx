@@ -8,7 +8,6 @@ import { useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Page } from '@/components/layout/Page';
 import { Container } from '@/components/layout/Container';
-import { Section } from '@/components/layout/Section';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import { getAllArticles } from '@/data/articles';
 import { getAllCategories, type CategoryId, isCategoryId } from '@/data/categories';
@@ -18,7 +17,7 @@ export function ArticleList() {
 
   const categoryParam = searchParams.get('category');
   const selectedCategory: CategoryId | 'all' = (categoryParam as CategoryId | null) ?? 'all';
-  const searchQuery = searchParams.get('search') || '';
+  const searchQuery = searchParams.get('search') ?? '';
 
   const allArticles = getAllArticles();
   const categories = getAllCategories();
@@ -76,83 +75,88 @@ export function ArticleList() {
       title="Technical Articles - PHP, Infrastructure & AI | LTSCommerce"
       description="In-depth technical articles on PHP, infrastructure, databases, AI, and TypeScript. Expert insights from 20+ years of hands-on backend development."
     >
-      {/* Page Header */}
-      <Section spacing="xl">
+      {/* Controls bar — title, search, category filters in one compact block */}
+      <div className="border-b border-gray-200 bg-white">
         <Container>
-          <h1 className="text-4xl font-bold mb-2">Technical Articles</h1>
-          <p className="text-gray-500 text-sm mt-2">
-            {filteredArticles.length} {filteredArticles.length === 1 ? 'article' : 'articles'}
-            {isFiltered ? ' found' : ''}
-          </p>
-        </Container>
-      </Section>
-
-      {/* Filters + Grid */}
-      <Section spacing="xl" className="bg-gray-50">
-        <Container>
-          {/* Filters */}
-          <div className="flex flex-col gap-6 mb-10">
-            {/* Category filters */}
-            <div>
-              <p className="text-sm font-semibold text-gray-700 mb-3">Filter by Category</p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => { handleCategoryChange('all'); }}
-                  className={`px-4 py-2 text-sm font-medium rounded border transition-colors ${
-                    selectedCategory === 'all'
-                      ? 'bg-[#0f4c81] text-white border-[#0f4c81]'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                  }`}
-                >
-                  All Categories
-                </button>
-                {categories.map(category => (
-                  <button
-                    key={category.id}
-                    onClick={() => { handleCategoryChange(category.id); }}
-                    className={`px-4 py-2 text-sm font-medium rounded border transition-colors ${
-                      selectedCategory === category.id
-                        ? 'bg-[#0f4c81] text-white border-[#0f4c81]'
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                    }`}
-                  >
-                    {category.label}
-                  </button>
-                ))}
+          <div className="py-8">
+            {/* Title row + search */}
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-5">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Technical Articles</h1>
+                <p className="text-sm text-gray-500 mt-1">
+                  {filteredArticles.length}{' '}
+                  {filteredArticles.length === 1 ? 'article' : 'articles'}
+                  {isFiltered ? ' found' : ''}
+                </p>
+              </div>
+              <div>
+                <label htmlFor="article-search" className="sr-only">
+                  Search articles
+                </label>
+                <input
+                  id="article-search"
+                  type="search"
+                  placeholder="Search by title or description…"
+                  value={searchQuery}
+                  onChange={e => {
+                    handleSearchChange(e.target.value);
+                  }}
+                  className="w-full sm:w-80 px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0f4c81] focus:border-transparent"
+                />
               </div>
             </div>
 
-            {/* Search */}
-            <div>
-              <label htmlFor="article-search" className="block text-sm font-semibold text-gray-700 mb-2">
-                Search Articles
-              </label>
-              <input
-                id="article-search"
-                type="text"
-                placeholder="Search by title or description..."
-                value={searchQuery}
-                onChange={e => { handleSearchChange(e.target.value); }}
-                className="w-full max-w-md px-4 py-2.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#0f4c81] focus:border-transparent"
-              />
+            {/* Category pills */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => {
+                  handleCategoryChange('all');
+                }}
+                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-colors ${
+                  selectedCategory === 'all'
+                    ? 'bg-[#0f4c81] text-white border-[#0f4c81]'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-500 hover:text-gray-900'
+                }`}
+              >
+                All
+              </button>
+              {categories.map(category => (
+                <button
+                  key={category.id}
+                  onClick={() => {
+                    handleCategoryChange(category.id);
+                  }}
+                  className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-colors ${
+                    selectedCategory === category.id
+                      ? 'bg-[#0f4c81] text-white border-[#0f4c81]'
+                      : 'bg-white text-gray-600 border-gray-300 hover:border-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  {category.label}
+                </button>
+              ))}
             </div>
           </div>
+        </Container>
+      </div>
 
-          {/* Article Grid */}
+      {/* Article grid */}
+      <div className="bg-gray-50 py-10">
+        <Container>
           {filteredArticles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredArticles.map(article => (
                 <ArticleCard key={article.id} article={article} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 text-gray-500">
+            <div className="text-center py-20 text-gray-500">
               <p className="text-lg font-semibold mb-1">No articles found</p>
               <p className="text-sm">Try adjusting your filters or search query</p>
             </div>
           )}
         </Container>
-      </Section>
+      </div>
     </Page>
   );
 }
