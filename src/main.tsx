@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { App } from './App';
+import { BrowserRouter } from 'react-router-dom';
+import { AppContent } from './App';
 import './styles/global.css';
 
 const rootElement = document.getElementById('root');
@@ -9,8 +10,17 @@ if (!rootElement) {
   throw new Error('Root element not found');
 }
 
-ReactDOM.createRoot(rootElement).render(
+const app = (
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   </React.StrictMode>
 );
+
+// Use hydrateRoot when content was pre-rendered by SSG
+if (rootElement.innerHTML.trim()) {
+  ReactDOM.hydrateRoot(rootElement, app);
+} else {
+  ReactDOM.createRoot(rootElement).render(app);
+}

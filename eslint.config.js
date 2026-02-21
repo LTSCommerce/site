@@ -174,4 +174,14 @@ export default tseslint.config(
       'react-refresh/only-export-components': 'off',
     },
   },
+  {
+    // entry-server.tsx is the SSG prerender entry point, not a React component module.
+    // The `url` parameter in render(url: string) is a Node.js string — not a React prop
+    // or route reference — so no-string-link-props and react-refresh rules don't apply.
+    files: ['**/src/entry-server.tsx'],
+    rules: {
+      'custom/no-string-link-props': 'off',
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 );

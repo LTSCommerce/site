@@ -24,16 +24,16 @@ export function Page({
   showNavigation = true,
   showFooter = true,
 }: PageProps) {
-  // Update document title
-  if (title) {
-    document.title = title;
-  }
-
-  // Update meta description
-  if (description) {
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', description);
+  // Update document title and meta (browser only — no-op during SSG prerender)
+  if (typeof document !== 'undefined') {
+    if (title) {
+      document.title = title;
+    }
+    if (description) {
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', description);
+      }
     }
   }
 

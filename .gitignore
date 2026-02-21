@@ -1,6 +1,7 @@
 # Build output
 public_html/
 dist/
+dist-server/
 
 # Dependencies
 node_modules/

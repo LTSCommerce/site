@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Contact } from './pages/Contact';
@@ -17,17 +17,14 @@ function ScrollToTop() {
 }
 
 /**
- * Main Application Component
- *
- * Pure, minimal design with mathematical precision.
- * Type-safe routing with React Router.
+ * Application routes — router-agnostic.
+ * Wrapped in BrowserRouter (client) or StaticRouter (SSG prerender).
  */
-export function App() {
-  // Simple fade-in on load
+export function AppContent() {
   useBodyLoaded();
 
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
       <Routes>
         <Route path={ROUTES.home.path} element={<Home />} />
@@ -36,6 +33,6 @@ export function App() {
         <Route path={ROUTES.articles.path} element={<ArticleList />} />
         <Route path="/articles/:slug" element={<ArticleDetail />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
