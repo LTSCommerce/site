@@ -6,6 +6,504 @@ import type { Article } from '@/types/article';
 import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
+  {
+    id: 'defence-before-fix-static-analysis',
+    title: 'Defence Before Fix: Preventing Bug Classes with Static Analysis',
+    description:
+      'When you find a bug, ask whether a machine can detect this pattern automatically before asking how to fix it. A systematic approach to converting bugs into permanent static analysis defences across PHP, TypeScript, and Python.',
+    date: '2026-02-22',
+    category: CATEGORIES.qa.id,
+    readingTime: 15,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'PHP',
+    content: `<div class="intro">
+    <p class="lead">Your test suite is green. TypeScript is satisfied. PHPStan reports zero errors. CI passes. And somewhere in production, a customer's payment silently failed, their data shows blank where their name should be, or a permission check quietly granted access it should have denied. This is the most dangerous class of software bug: not the crash that triggers an alert, but the failure that keeps running while producing wrong results. The cause is almost always the same — code written to hide errors rather than handle them.</p>
+</div>
+
+<section>
+    <h2>The Error-Hiding Patterns</h2>
+
+    <p>Three patterns account for the vast majority of silent failures in PHP and TypeScript codebases. They are so common that developers write them reflexively, often without recognising the danger.</p>
+
+    <h3>Pattern 1: The Silent Default</h3>
+
+    <p>Null coalescing to a falsy value is the most pervasive form of error hiding. It looks like defensive programming. It is the opposite.</p>
+
+    <pre><code class="language-php">&lt;?php
+// Anti-pattern: converts a bug into empty data
+$customerName = $order->getCustomer()->getName() ?? '';
+$emailBody = "Dear {$customerName},\\n\\nYour order has shipped.";
+
+// When getName() returns null because of a bug:
+// "Dear ,\\n\\nYour order has shipped."
+// The email sends. The test passes. The customer is confused.
+</code></pre>
+
+    <pre><code class="language-typescript">// Anti-pattern: same problem in TypeScript
+const customerName = order.customer?.name ?? '';
+const emailBody = 'Dear ' + customerName + ', your order has shipped.';
+
+// When name is undefined due to a data mapping bug:
+// "Dear , your order has shipped."
+// TypeScript is satisfied. The test passes. The customer gets a broken email.
+</code></pre>
+
+    <p>The distinction between "this value is legitimately empty" and "this value is missing because of a bug" has been erased. A renamed API field, a failed database lookup, a wrong property path — all produce the same result: empty string. And empty string looks valid enough to pass any test that checks "does this return a string".</p>
+
+    <h3>Pattern 2: The Empty Catch</h3>
+
+    <p>Exception handling exists so that errors propagate up the call stack until something can meaningfully deal with them. An empty catch block does the opposite — it intercepts the error and discards it.</p>
+
+    <pre><code class="language-php">&lt;?php
+// Anti-pattern: the payment disappears silently
+try {
+    $this->paymentGateway->charge($order->getAmount(), $card);
+    $order->markAsPaid();
+} catch (\\Exception $e) {
+    // TODO: handle this properly
+}
+
+// markAsPaid() never runs. The exception is gone.
+// The user sees nothing unusual. No error, no retry.
+// The payment never happened.
+</code></pre>
+
+    <p>These originate as temporary scaffolding during rapid development. "I'll add proper handling later." Later never comes because the code appears to work — no uncaught exceptions, no test failures. The bomb ticks silently.</p>
+
+    <h3>Pattern 3: Implicit Type Coercion</h3>
+
+    <p>Languages that perform implicit coercion absorb type mismatches instead of raising errors. PHP without <code>strict_types</code> will convert the integer <code>42</code> to the string <code>"42"</code> rather than flagging a type error at the function boundary where they collide.</p>
+
+    <pre><code class="language-php">&lt;?php
+// Without strict_types, PHP silently coerces
+function processOrderId(string $id): void
+{
+    // $id becomes "42" even when called with the integer 42
+    // The type bug at the call site is invisible
+}
+
+processOrderId(42); // No error. No warning. Silently wrong.
+</code></pre>
+
+    <pre><code class="language-php">&lt;?php
+declare(strict_types=1);
+
+// With strict_types, the bug surfaces immediately
+processOrderId(42);
+// Fatal error: Argument 1 must be of type string, int given
+</code></pre>
+
+    <p>Strict typing turns every function signature into a validation checkpoint. Type mismatches are caught at the point where they occur, not three layers downstream when the wrong data shape finally produces unexpected behaviour.</p>
+</section>
+
+<section>
+    <h2>Why Green Tests Lie</h2>
+
+    <p>These three patterns create a compounding effect that corrupts the value of your test suite. Silent defaults hide missing data at one layer. Loose types allow the wrong data shape through the next. Empty catches swallow the exception that would have revealed the problem at the third layer.</p>
+
+    <p>The result is a system where every test passes because every error is converted into a valid-looking result. A test that checks "the API returns a string" passes whether that string is the customer's real name or an empty string caused by a renamed field. The test is technically correct and practically useless.</p>
+
+    <p>This is worse than having no tests. Untested code is obviously unverified. Code covered by error-hiding tests produces active false confidence — the conviction that "the tests pass, so it works." That conviction is what allows silent data corruption to run for weeks before a human notices something is wrong.</p>
+
+    <p>The debugging economics are brutal. Error-hiding code takes 5–10x longer to diagnose because the error and the symptom are separated by layers of silent conversions. The database returned null at layer 1. The null became empty string at layer 2. Empty string was treated as "no value configured" at layer 3. The wrong behaviour surfaced at layer 4. Tracing that chain backwards is archaeology.</p>
+</section>
+
+<section>
+    <h2>Defence Before Fix</h2>
+
+    <p>The conventional response to a discovered bug is: write a failing test, fix the code, verify the test passes. This is good practice. It is also incomplete.</p>
+
+    <p>A test catches one specific manifestation of a bug. If that bug was caused by a systemic pattern — <code>?? ''</code> used across dozens of files — fixing one instance does nothing about the others scattered through the codebase, written by different developers at different times, in code that has never been tested.</p>
+
+    <p><strong>Defence Before Fix</strong> adds one step before the test:</p>
+
+    <ol>
+        <li><strong>Analyse the pattern.</strong> What coding pattern allowed this bug to exist? Is this a one-off mistake, or is it a class of mistakes the codebase may contain more of?</li>
+        <li><strong>Defend against the class.</strong> Create a static analysis rule that catches every instance of this pattern — across the entire codebase, on every future commit, for every future developer.</li>
+        <li><strong>Then</strong> write the failing test for the specific bug.</li>
+        <li><strong>Then</strong> fix the specific bug.</li>
+    </ol>
+
+    <p>The key leverage: a static analysis rule is a force multiplier. A test catches one bug in one file. A lint rule catches every future instance of that bug pattern — including instances that already exist in untested code paths, and instances that have not been written yet.</p>
+
+    <h3>Why Static Analysis Before Tests?</h3>
+
+    <p>This is not an argument against testing. Tests are essential. But they operate at different levels:</p>
+
+    <ul>
+        <li><strong>Static analysis</strong> asks: "Does this code contain patterns known to cause bugs?"</li>
+        <li><strong>Tests</strong> ask: "Does this code produce correct output for specific inputs?"</li>
+    </ul>
+
+    <p>Static analysis is preventive medicine. Tests are diagnostic. Static analysis runs on every file in every build — it cannot miss a file because nobody thought to write a test for it. A developer who writes <code>?? ''</code> gets immediate feedback from the linter before the code is even committed. They would only get feedback from a test if someone had specifically written a test covering that null path, in which case the pattern probably would not have spread through the codebase in the first place.</p>
+</section>
+
+<section>
+    <h2>The QA Hierarchy</h2>
+
+    <p>Defence Before Fix sits within a broader quality hierarchy where each level must pass before the next is attempted:</p>
+
+    <ol>
+        <li><strong>Static analysis</strong> — Type checking, linting, custom rules</li>
+        <li><strong>Automated tests</strong> — Unit, integration, functional</li>
+        <li><strong>Build verification</strong> — Services start, dependencies resolve</li>
+        <li><strong>Human acceptance testing</strong> — Visual review, workflow validation</li>
+    </ol>
+
+    <p>This ordering prevents a common failure mode: running integration tests on code that does not type-check, or reviewing code with unresolved linting errors. Failures at lower levels produce confusing results at higher levels. A test that fails because of a type coercion issue in production code will send you debugging in the wrong direction. Run static analysis first, always.</p>
+
+    <p>In practice, this hierarchy is enforced by your CI pipeline. Static analysis runs first and blocks everything else if it fails. Tests run only when static analysis is clean. Human review happens only when CI is green.</p>
+</section>
+
+<section>
+    <h2>Your Static Analysis Arsenal</h2>
+
+    <p>Excellent static analysis tooling exists for PHP, TypeScript, and Python. The problem is that the defaults are too permissive. Getting real value requires deliberately tightening them.</p>
+
+    <h3>PHP: strict_types and PHPStan at Level Max</h3>
+
+    <p>The single highest-value change in a PHP codebase is adding <code>declare(strict_types=1)</code> to every file. Without it, PHPStan cannot provide accurate type analysis even at the highest level, because PHP's coercive type system makes every type annotation approximate.</p>
+
+    <pre><code class="language-php">&lt;?php
+declare(strict_types=1);
+</code></pre>
+
+    <p><a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> at level max (level 10 in PHPStan 2.x) enables the full suite: dead code detection, impossible type combinations, strict null analysis, and more. The <a href="https://github.com/phpstan/phpstan-strict-rules" target="_blank" rel="noopener">phpstan-strict-rules</a> extension adds further checks including enforcement of strict comparisons (<code>===</code> over <code>==</code>).</p>
+
+    <pre><code class="language-yaml"># phpstan.neon
+parameters:
+    level: max
+    paths:
+        - src
+    strictRules: true
+    checkMissingIterableValueType: true
+</code></pre>
+
+    <h3>TypeScript: Beyond strict: true</h3>
+
+    <p><code>strict: true</code> is table stakes. Additional compiler flags catch entire classes of runtime errors that base strict mode misses:</p>
+
+    <pre><code class="language-json">{
+    "compilerOptions": {
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true
+    }
+}
+</code></pre>
+
+    <p><code>noUncheckedIndexedAccess</code> makes array and object index access return <code>T | undefined</code> instead of <code>T</code>, forcing you to handle the case where the index does not exist. This catches an entire class of "cannot read property of undefined" runtime errors at compile time.</p>
+
+    <p><code>exactOptionalPropertyTypes</code> distinguishes between a property that is absent and one explicitly set to <code>undefined</code>. Without it, TypeScript treats them identically, hiding bugs in API integrations where the distinction matters.</p>
+
+    <h3>Python: mypy in Strict Mode</h3>
+
+    <p>Python's optional typing becomes a genuine static analysis tool only when <a href="https://mypy.readthedocs.io/" target="_blank" rel="noopener">mypy</a> runs in strict mode. The defaults are too permissive to catch meaningful bugs:</p>
+
+    <pre><code class="language-bash">[mypy]
+strict = true
+warn_unreachable = true
+warn_unused_ignores = true
+</code></pre>
+
+    <p><code>warn_unused_ignores</code> ensures that <code># type: ignore</code> comments which are no longer necessary get cleaned up, preventing the gradual accumulation of silenced warnings that reintroduces type unsafety over time.</p>
+</section>
+
+<section>
+    <h2>Writing Custom Rules: Where the Real Leverage Lives</h2>
+
+    <p>Off-the-shelf static analysis catches generic mistakes. But the most dangerous patterns in a codebase are often domain-specific or team-specific — patterns that general-purpose rules will never flag because they are not universally wrong, only wrong in your specific context.</p>
+
+    <p>Custom rules are where static analysis becomes genuinely powerful. Each one encodes hard-won engineering knowledge — a lesson from a production incident, a pattern identified in code review, an anti-pattern that keeps appearing despite documentation — and converts it into automation. Not through documentation that nobody reads, but through a build error that blocks the commit and explains why.</p>
+
+    <h3>PHPStan Custom Rule: Banning Null Coalescing to Empty String</h3>
+
+    <p>PHPStan custom rules implement the <code>Rule</code> interface and operate on AST nodes. Here is a rule that bans <code>$value ?? ''</code>:</p>
+
+    <pre><code class="language-php">&lt;?php
+declare(strict_types=1);
+
+namespace App\\QA\\PHPStan;
+
+use PhpParser\\Node;
+use PhpParser\\Node\\Expr\\BinaryOp\\Coalesce;
+use PHPStan\\Analyser\\Scope;
+use PHPStan\\Rules\\Rule;
+use PHPStan\\Rules\\RuleErrorBuilder;
+
+/**
+ * Bans null coalescing to empty string: $value ?? ''
+ *
+ * This pattern hides bugs by converting missing data into empty data.
+ * Handle null explicitly to surface bugs at their source.
+ *
+ * @implements Rule&lt;Coalesce&gt;
+ */
+final class NoNullCoalesceToEmptyStringRule implements Rule
+{
+    public function getNodeType(): string
+    {
+        return Coalesce::class;
+    }
+
+    public function processNode(Node $node, Scope $scope): array
+    {
+        assert($node instanceof Coalesce);
+
+        if (
+            $node->right instanceof Node\\Scalar\\String_
+            &amp;&amp; $node->right->value === ''
+        ) {
+            return [
+                RuleErrorBuilder::message(
+                    "Null coalescing to empty string (?? '') hides missing data. "
+                    . 'Handle null explicitly or use a non-empty default that signals intent.'
+                )->build(),
+            ];
+        }
+
+        return [];
+    }
+}
+</code></pre>
+
+    <p>Register it in your PHPStan configuration:</p>
+
+    <pre><code class="language-yaml"># phpstan.neon
+services:
+    -
+        class: App\\QA\\PHPStan\\NoNullCoalesceToEmptyStringRule
+        tags:
+            - phpstan.rules.rule
+</code></pre>
+
+    <h3>ESLint Custom Rule: The Same Ban in TypeScript</h3>
+
+    <p>ESLint rules operate on the JavaScript/TypeScript AST. The equivalent rule for TypeScript codebases:</p>
+
+    <pre><code class="language-javascript">/** @type {import('eslint').Rule.RuleModule} */
+module.exports = {
+    meta: {
+        type: 'problem',
+        docs: {
+            description: 'Disallow null coalescing to empty string (?? "")',
+        },
+        messages: {
+            noEmptyStringFallback:
+                'Null coalescing to empty string hides missing data. '
+                + 'Handle null explicitly or use a meaningful default.',
+        },
+        schema: [],
+    },
+    create(context) {
+        return {
+            LogicalExpression(node) {
+                if (
+                    node.operator === '??' &amp;&amp;
+                    node.right.type === 'Literal' &amp;&amp;
+                    node.right.value === ''
+                ) {
+                    context.report({ node, messageId: 'noEmptyStringFallback' });
+                }
+            },
+        };
+    },
+};
+</code></pre>
+
+    <h3>Banning Empty Catch Blocks in PHP</h3>
+
+    <p>A PHPStan rule targeting <code>Catch_</code> nodes catches empty exception handlers before they ship:</p>
+
+    <pre><code class="language-php">&lt;?php
+declare(strict_types=1);
+
+namespace App\\QA\\PHPStan;
+
+use PhpParser\\Node;
+use PhpParser\\Node\\Stmt\\Catch_;
+use PHPStan\\Analyser\\Scope;
+use PHPStan\\Rules\\Rule;
+use PHPStan\\Rules\\RuleErrorBuilder;
+
+/** @implements Rule&lt;Catch_&gt; */
+final class NoEmptyCatchRule implements Rule
+{
+    public function getNodeType(): string
+    {
+        return Catch_::class;
+    }
+
+    public function processNode(Node $node, Scope $scope): array
+    {
+        assert($node instanceof Catch_);
+
+        if (count($node->stmts) === 0) {
+            return [
+                RuleErrorBuilder::message(
+                    'Empty catch block silently swallows exceptions. '
+                    . 'Log, rethrow, or handle the exception explicitly.'
+                )->build(),
+            ];
+        }
+
+        return [];
+    }
+}
+</code></pre>
+
+    <p>For TypeScript, ESLint's built-in <code>no-empty</code> rule covers this. Set <code>allowEmptyCatch: false</code> and enable it at error level.</p>
+</section>
+
+<section>
+    <h2>The Bug-to-Rule Pipeline in Practice</h2>
+
+    <p>Defence Before Fix is a concrete process, not just a philosophy. Here is a worked example.</p>
+
+    <h3>Incident: Customer emails arriving with blank names</h3>
+
+    <p>A support ticket arrives: customers are receiving emails that begin "Dear ," — the name field is blank. You trace it to this code:</p>
+
+    <pre><code class="language-php">&lt;?php
+$name = $this->customerRepository->find($id)?->getFullName() ?? '';
+$email->setBody("Dear {$name},\\n\\n{$body}");
+</code></pre>
+
+    <p>The customer had been soft-deleted. <code>find()</code> returned null. <code>getFullName()</code> was never reached. <code>?? ''</code> converted null into empty string. The email sent successfully from the application's perspective. No exception was thrown. No test caught it.</p>
+
+    <p><strong>Step 1 — Analyse the pattern.</strong> This is not a one-off. The <code>?? ''</code> pattern appears throughout the codebase as a standard approach to nullable return values. Every instance is a potential silent failure of the same type.</p>
+
+    <p><strong>Step 2 — Defend against the class.</strong> Write the PHPStan rule above, then run it against the full codebase:</p>
+
+    <pre><code class="language-bash">vendor/bin/phpstan analyse src/
+
+ [ERROR] Found 23 errors
+
+  src/Email/OrderNotification.php:47
+  Null coalescing to empty string (?? '') hides missing data.
+
+  src/Report/CustomerSummary.php:83
+  Null coalescing to empty string (?? '') hides missing data.
+
+  ... 21 more instances
+</code></pre>
+
+    <p>23 instances. The one you found was a symptom. The other 22 are bugs waiting to surface in different contexts, reported by different customers, at different times.</p>
+
+    <p><strong>Step 3 — Write the failing test</strong> for the original bug. A deleted customer's order should throw an exception when the email is prepared, not send a blank-named message.</p>
+
+    <p><strong>Step 4 — Fix all 23 instances.</strong> Each one requires a deliberate decision: throw an exception, return a meaningful non-empty default that signals intent, or propagate null explicitly. The decision is now forced into the open rather than silently made by the language runtime.</p>
+
+    <p>After this process: one static analysis rule that prevents this class of bug permanently, one test that documents the correct behaviour, and 23 latent bugs fixed rather than one.</p>
+</section>
+
+<section>
+    <h2>Custom Rules as Institutional Memory</h2>
+
+    <p>The broader value of custom static analysis rules is that they convert institutional knowledge into automation.</p>
+
+    <p>In most engineering teams, hard-won lessons live in the heads of senior engineers, in code review comments that scroll off the screen, in post-mortems nobody re-reads, and in documentation that becomes outdated. A new developer joins six months later and makes the same mistake, because the only record of why it is wrong is buried in a GitHub thread from before they arrived.</p>
+
+    <p>A custom lint rule is different. It is always current. It runs on every commit. It reaches every developer regardless of seniority or tenure. It does not require anyone to remember to mention it in code review. When a new developer writes <code>$value ?? ''</code>, they get a build error that explains why the pattern is dangerous and what to do instead.</p>
+
+    <p>Each custom rule is a lesson that does not need to be taught again. Over time, a codebase accumulates rules that encode the team's collective experience: the external API that returns null instead of throwing on missing records, the configuration value that must never silently default for security reasons, the third-party library whose exceptions must always be re-wrapped before propagating. These rules create an environment where the mistakes of the past are structurally impossible to repeat.</p>
+
+    <p>The quality of the error message matters. A rule that says "pattern X detected" teaches nothing. A rule that explains why the pattern is dangerous and suggests a safe alternative teaches the developer something permanent. The best custom rules are opinionated documentation encoded as automation.</p>
+</section>
+
+<section>
+    <h2>Rules That Reason Across the Whole Codebase</h2>
+
+    <p>Most static analysis rules examine a single file in isolation. But some of the most valuable custom rules cross file boundaries — they check whether code is properly connected to the rest of the system, not just whether it is internally correct.</p>
+
+    <p>The sharpest illustration of why this matters: a service that is entirely correct, thoroughly tested, and never called in production.</p>
+
+    <p>On a production Symfony project processing supplier product data, a preprocessing service existed with working SQL logic and a green test suite. But it was never injected as a constructor dependency into the pipeline meant to call it. Symfony's autowiring did not wire it in automatically; the service lived in isolation. During a scheduled Christmas shutdown where stock quantities were zeroed, prices the service should have cleared stayed set — because the service was never wired in. The code was correct. The tests verified the code. The pipeline never ran it.</p>
+
+    <p>A custom PHPStan rule now catches this entire class of failure. At analysis time, it runs <code>grep</code> across the production source directory to check whether a class is actually used anywhere as a dependency:</p>
+
+    <pre><code class="language-php">&lt;?php
+// Simplified from a production PHPStan rule.
+// Detects service classes used in tests but never in production code.
+public function processNode(Node $node, Scope $scope): array
+{
+    $className = $node->getClassReflection()->getName();
+    $shortName  = $this->getShortClassName($className);
+
+    // grep production src/ for this class used as a constructor dependency
+    exec(
+        sprintf('grep -rlE "%s" src/ 2>/dev/null', $shortName),
+        $output,
+        $exitCode
+    );
+
+    $usedInProduction = (0 === $exitCode &amp;&amp; [] !== $output);
+
+    if (!$usedInProduction &amp;&amp; $this->isUsedInTests($className)) {
+        return [
+            RuleErrorBuilder::message(sprintf(
+                'Service %s is only used in tests, never in production code. '
+                . 'Ensure this class is injected into the pipeline that calls it.',
+                $shortName
+            ))->build(),
+        ];
+    }
+
+    return [];
+}
+</code></pre>
+
+    <p>This catches a type of bug that no test can reach. Tests exercise the service class directly and correctly. Only something that reasons about the full production dependency graph can detect that the service is never invoked when the application actually runs. Green tests. Working code. Zero production usage.</p>
+
+    <p>Production codebases with many rules of this type tend to develop <strong>rule clusters</strong> — a suite of complementary rules that enforce a single pattern from multiple angles. A domain-specific database access pattern, for example, might accumulate: a rule that prevents query objects being created inside loops, a companion rule that catches prepared statements also being created inside loops, a third that detects a prepared statement used only once in a method body (it should be a simpler query class instead), and a fourth that requires a performance-monitoring dependency be injected into every prepared statement class. Each rule catches a different failure mode of the same pattern. Together they make misuse structurally difficult.</p>
+
+    <p>The same cross-file analysis approach works in TypeScript. An ESLint rule can read route definitions from a separate file at lint time and validate every internal link reference against those registered routes. If a developer renames a route without updating all references, the build fails — without any test needing to cover that navigation path:</p>
+
+    <pre><code class="language-javascript">const fs   = require('fs');
+const path = require('path');
+
+// Load valid routes from the route registry at lint time
+const routeSource = fs.readFileSync(path.resolve('src/routes.ts'), 'utf8');
+const validRoutes  = parseRoutesFromSource(routeSource);
+
+module.exports = {
+    create(context) {
+        return {
+            Property(node) {
+                if (isLinkProp(node) &amp;&amp; node.value.type === 'Literal') {
+                    const href = node.value.value;
+                    if (typeof href === 'string' &amp;&amp; href.startsWith('/') &amp;&amp; !validRoutes.has(href)) {
+                        context.report({
+                            node,
+                            message: 'Link "' + href + '" points to a route that does not exist.',
+                        });
+                    }
+                }
+            },
+        };
+    },
+};
+</code></pre>
+
+    <p>Rules that grep the codebase or read external files are more expensive to write and slower to run than single-file rules. Write them for failure modes that are severe and that tests genuinely cannot reach: services disconnected from pipelines, broken internal navigation, sitemap documentation that has drifted from implemented pages. These are the bugs that slip through green test suites because tests model code in isolation — not how the full system is assembled and wired.</p>
+</section>
+
+<section>
+    <h2>The Ratchet Effect</h2>
+
+    <p>The goal is not zero bugs — that is not achievable. The goal is that every bug makes the system more resilient. Each production incident leaves behind not just a fix and a test, but a defence. The categories of bugs that can survive in the codebase shrink over time. The quality ratchet only turns one way.</p>
+
+    <p>A codebase with mature custom static analysis rules has a different character from one without. Code review focuses on logic and architecture rather than catching patterns the linter could find automatically. New developers are constrained to the team's established safe patterns from their first commit. Silent failures become structurally harder to introduce, because the patterns that cause them are banned at the tool level.</p>
+
+    <p>Start with what you have. Enable <code>strict: true</code> in TypeScript and add the additional compiler flags. Add <code>declare(strict_types=1)</code> to PHP files and enable PHPStan at max level. Enable mypy strict in Python projects. These steps alone will surface a backlog of latent bugs that exist right now in tested, passing code.</p>
+
+    <p>Then, the next time a bug reaches production — before you write the test — ask the question: what pattern allowed this to happen? Can a machine detect every future instance of this pattern automatically? If yes, and it usually is, write the rule first. Fix the bug second. Leave the codebase permanently better than you found it.</p>
+</section>
+`,
+  },
   // Migrating: advanced-php-database-patterns.ejs
   {
     id: 'advanced-php-database-patterns',

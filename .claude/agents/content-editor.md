@@ -36,7 +36,7 @@ You are a content editor specializing in humanizing AI-generated technical conte
    - Technical terms and accuracy
    - Links and references
    - Article structure and headings
-   - EJS template syntax
+   - HTML entities in code blocks (`&lt;`, `&amp;`, etc.)
 
 **EDITING WORKFLOW:**
 

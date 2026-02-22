@@ -36,6 +36,12 @@ export const CATEGORIES = {
     color: '#3178C6', // TypeScript Blue
     description: 'TypeScript development, type safety, and patterns',
   },
+  qa: {
+    id: 'qa' as const,
+    label: 'Quality Assurance',
+    color: '#EF4444', // Red
+    description: 'Static analysis, testing philosophy, code quality, and QA pipelines',
+  },
 } as const;
 
 export type CategoryId = (typeof CATEGORIES)[keyof typeof CATEGORIES]['id'];

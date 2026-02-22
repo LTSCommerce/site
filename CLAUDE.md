@@ -7,38 +7,42 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 ## Architecture
 
 ### Build System
-- **Build Tool**: Vite 5.x (modern, fast ES module bundler)
+- **Build Tool**: Vite 6.x with React plugin
 - **Package Manager**: npm with lockfile for reproducible builds
-- **Source Directory**: `private_html/` (development files)
-- **Build Output**: `public_html/` (optimized production files)
+- **Source Directory**: `src/` (React/TypeScript source)
+- **Build Output**: `dist/` (optimised production files, SSG pre-rendered)
 - **Deployment**: Automated via GitHub Actions
 
 ### Technology Stack
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Templating**: EJS (Embedded JavaScript templates) for template-driven development
-- **Build Pipeline**: Custom EJS preprocessing → Vite (ES modules, CSS processing, optimization)
-- **Syntax Highlighting**: Highlight.js (CSS, JavaScript, PHP, Bash, YAML, SQL, JSON, Nginx)
-- **Code Quality**: ESLint + Prettier + Lighthouse CI
+- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **Routing**: React Router v7
+- **Rendering**: SSG (Static Site Generation) via Vite SSR + custom prerender script
+- **Syntax Highlighting**: Highlight.js (PHP, TypeScript, JavaScript, Bash, YAML, SQL, JSON, Nginx)
+- **Code Quality**: ESLint + Prettier + TypeScript strict mode
 - **CI/CD**: GitHub Actions with automated deployment
-- **Performance**: Optimized assets, lazy loading, performance monitoring
+- **Performance**: Pre-rendered static HTML, optimised assets, code splitting
 
 ### Site Structure
 ```
-├── private_html/        # Source files (pre-build)
-│   ├── templates/       # EJS template system
-│   │   ├── layouts/     # Base layouts (base.ejs, page.ejs, article.ejs)
-│   │   ├── partials/    # Reusable components (navigation.ejs, footer.ejs)
-│   │   └── components/  # Smaller components (article-card.ejs)
-│   ├── pages/           # EJS page templates (*.ejs)
-│   ├── data/            # Template data (site.json, navigation.json)
-│   ├── css/             # Stylesheets  
-│   ├── js/              # JavaScript modules
-│   ├── images/          # Static assets
-│   └── articles/        # Article pages (EJS templates)
-├── public_html/         # Built files (production)
-├── templates/           # Legacy article templates
-├── scripts/             # Build utilities (process-ejs.js, screenshot.js)
-├── var/                 # Temporary files (gitignored except .gitignore)
+├── src/                 # React/TypeScript source
+│   ├── pages/           # Page components (Home, About, ArticleList, ArticleDetail, Contact)
+│   ├── components/      # Reusable React components
+│   ├── data/            # Site data
+│   │   ├── articles.ts  # ALL article content (single source of truth)
+│   │   ├── categories.ts# Article categories with IDs and colours
+│   │   └── snippets.ts  # Auto-generated code snippets (do not edit)
+│   ├── types/           # TypeScript type definitions
+│   ├── hooks/           # React hooks
+│   ├── styles/          # Global CSS
+│   └── routes.ts        # Type-safe route definitions
+├── code-snippets/       # External code snippet files (auto-imported)
+├── scripts/             # Build utilities
+│   ├── generate-snippets.mjs  # Generates src/data/snippets.ts
+│   └── prerender.mjs          # SSG prerender all routes
+├── dist/                # Built files (gitignored)
+├── dist-server/         # SSR build (gitignored)
+├── public/              # Static assets copied to dist/
+├── untracked/           # Local notes/scratch (gitignored)
 └── .github/workflows/   # CI/CD configuration
 ```
 
@@ -47,13 +51,13 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 ### Local Development
 ```bash
 npm install              # Install dependencies
-npm run build           # Build for production (EJS → HTML → optimized build)
-# After build, read the generated HTML files directly from public_html/
-npm run preview         # Preview built site (optional)
-node scripts/process-ejs.js  # Process EJS templates manually (optional)
+npm run build           # Full production build (snippets → tsc → vite → SSR → prerender)
+# After build, pre-rendered HTML is in dist/ — read files directly to verify output
+npm run preview         # Serve the dist/ build locally (optional)
+npm run dev             # Vite dev server with HMR (optional, not required for most tasks)
 ```
 
-**Note**: For testing changes, use `npm run build` and then read the generated HTML files directly from `public_html/`. The dev server (`npm run dev`) is optional and not required for most development tasks.
+**Note**: For testing changes, use `npm run build` and then read the generated HTML files directly from `dist/articles/<slug>/index.html`. The dev server (`npm run dev`) is optional.
 
 ### Code Quality & Formatting
 
@@ -96,204 +100,142 @@ Screenshots are saved to `var/` directory which is gitignored. The screenshot sc
 ### Deployment Process
 1. **Push to main branch** triggers GitHub Actions CI/CD pipeline
 2. **Auto-Format** - Prettier automatically formats all code and commits changes
-3. **Auto-Fix PHP** - PHP-CS-Fixer automatically fixes PHP code style issues
-4. **Quality Checks** - Linting and code style validation (deployment blocked if fails)
-5. **Article Registration** - Auto-detects and registers new EJS articles
-6. **Build** - Vite processes and optimizes all assets (CSS/JS with hashing)
-7. **EJS Processing** - Converts EJS templates to static HTML with proper asset paths
-8. **Deploy** - Built files deployed to `public_html/` and committed
-9. **GitHub Pages** - Deployment triggered only when CI succeeds
-10. **Lighthouse** - Performance and SEO auditing (post-deployment)
+3. **Quality Checks** - TypeScript + ESLint validation (deployment blocked if fails)
+4. **Build** - Vite compiles React/TypeScript, generates optimised assets
+5. **SSR Build** - Builds server-side rendering bundle for prerendering
+6. **Prerender** - All routes rendered to static HTML files in `dist/`
+7. **GitHub Pages** - Static files deployed, triggered only when CI succeeds
+8. **Lighthouse** - Performance and SEO auditing (post-deployment)
 
 ## Content Management
 
 ### Articles
-- **Location**: `private_html/articles/` (source), `public_html/articles/` (built)
-- **Format**: EJS templates with embedded metadata
-- **Syntax Highlighting**: Automatic language detection with Highlight.js for code blocks
-- **Categories**: PHP (purple), Infrastructure (green), Database (blue), AI (orange)
-- **SEO**: Proper meta tags, structured data, semantic HTML
-- **Template Processing**: EJS templates converted to static HTML during build
+- **Location**: `src/data/articles.ts` — single file, all articles as TypeScript objects
+- **Format**: TypeScript object with HTML string `content` field
+- **Syntax Highlighting**: Highlight.js applied automatically at render time via `language-*` CSS classes
+- **Categories**: PHP (purple), Infrastructure (green), Database (blue), AI (orange/amber), TypeScript (blue)
+- **SEO**: Meta tags and structured data generated automatically from article metadata
+- **Ordering**: Newest article first (top of the `SAMPLE_ARTICLES` array)
 
 ### Adding New Articles
 
-**MODERN EJS TEMPLATE SYSTEM**: Articles are now created using EJS templates with automated metadata extraction:
+**REACT/TYPESCRIPT SYSTEM**: Articles are TypeScript objects in `src/data/articles.ts`. There are no EJS files or `private_html/` for articles.
 
-#### Step 1: Create Article from Template
-```bash
-# Create new EJS article template
-cp private_html/articles/dynamic-gradient-headings.ejs private_html/articles/your-article-slug.ejs
+#### Step 1: Add the article object to src/data/articles.ts
+
+Insert a new object at the **top** of the `SAMPLE_ARTICLES` array (before the first existing entry):
+
+```typescript
+{
+  id: 'your-article-slug',           // URL: /articles/your-article-slug
+  title: 'Your Article Title',
+  description: 'SEO description and excerpt (1-2 sentences)',
+  date: 'YYYY-MM-DD',
+  category: CATEGORIES.php.id,       // php | infrastructure | database | ai | typescript
+  readingTime: 10,                   // Estimated minutes
+  author: 'Joseph Edmonds',
+  tags: [],
+  subreddit: 'PHP',
+  content: `<div class="intro">
+    <p class="lead">Opening lead paragraph.</p>
+</div>
+
+<section>
+    <h2>Section Title</h2>
+    <p>Content...</p>
+
+    <pre><code class="language-php">&lt;?php
+// PHP code here
+</code></pre>
+</section>
+`,
+},
 ```
 
-#### Step 2: Edit Article Template
-Edit the new EJS file with article metadata and content:
+#### Critical HTML Escaping in Code Blocks
 
-**EJS Template Structure:**
-```ejs
-<%- include('../templates/layouts/article', {
-    articleTitle: 'Your Article Title',
-    articleDescription: 'SEO meta description that becomes excerpt',
-    articleDate: '2025-07-21',
-    articleCategory: 'php|infrastructure|database|ai',
-    articleReadingTime: '6',
-    articleContent: `
-        <div class="intro">
-            <p class="lead">Lead paragraph...</p>
-        </div>
-        
-        <section>
-            <h2>Section Title</h2>
-            <p>Content...</p>
-            
-            <pre><code class="language-css">/* CSS code */</code></pre>
-            <pre><code class="language-javascript">// JavaScript code</code></pre>
-        </section>
-    `
-}) %>
-```
+The `content` field is a JavaScript template literal. Code inside `<pre><code>` must be HTML-encoded:
 
-**Supported Languages for Syntax Highlighting:**
-- `language-css` - CSS stylesheets
-- `language-javascript` - JavaScript code
-- `language-php` - PHP code
-- `language-bash` - Shell/terminal commands
-- `language-sql` - Database queries
-- `language-yaml` - Configuration files
-- `language-json` - JSON data
-- `language-nginx` - Nginx configuration
+| Raw | Encoded | Example |
+|-----|---------|---------|
+| `<` | `&lt;` | `<?php` → `&lt;?php` |
+| `>` | `&gt;` | `Rule<T>` → `Rule&lt;T&gt;` |
+| `&` | `&amp;` | `&&` → `&amp;&amp;` |
 
-#### Step 3: Build and Deploy (Articles Auto-Register!)
+Also escape backslashes in PHP namespaces/strings within the template literal: `App\Service` → `App\\Service`
+
+**Avoid** using backtick characters or `${...}` interpolation syntax inside code examples (they conflict with the template literal delimiter).
+
+#### Supported Code Block Languages
+
+- `language-php` — PHP code
+- `language-typescript` — TypeScript/JavaScript
+- `language-javascript` — Plain JavaScript
+- `language-bash` — Shell commands
+- `language-sql` — SQL queries
+- `language-yaml` — YAML config
+- `language-json` — JSON
+- `language-nginx` — Nginx config
+
+#### Step 2: Build and verify
+
 ```bash
-# Build locally (auto-registers articles)
 npm run build
-# Review generated HTML in public_html/articles/
+# Check: dist/articles/your-article-slug/index.html exists and renders correctly
+```
 
-# Deploy
-git add .
-git commit -m "Add new article: Your Article Title"
+#### Step 3: Deploy
+
+```bash
+git add src/data/articles.ts
+git commit -m "Add article: Your Article Title"
 git push origin main
 ```
 
-**✨ AUTOMATIC FEATURES:**
-- **No manual registration needed** - articles are automatically detected and registered from EJS templates
-- **Metadata extraction** - title, description, date extracted from EJS template parameters
-- **Auto-generated articles.js** - data array created from scanned EJS articles
-- **Auto-updated vite.config.js** - build paths added automatically
-- **Smart ID generation** - unique IDs created from article slugs
-- **Consistent ordering** - articles sorted by date (newest first)
-- **Syntax highlighting** - Automatic code highlighting with Highlight.js included in all articles
+## React Component System
 
-**EJS Template Benefits:**
-- **Template inheritance** - Consistent layout and structure across all articles
-- **Data-driven content** - Structured metadata in template parameters
-- **Clean separation** - Content logic separate from presentation
-- **Automatic asset linking** - CSS and JS assets properly linked via Vite manifest
-- **SEO optimization** - Meta tags, structured data automatically generated
-- **Category styling** - Article categories automatically get appropriate colors
+### Page Components
 
-## EJS Template System
+Pages live in `src/pages/`:
+- `Home.tsx` — Landing page
+- `About.tsx` — About page
+- `ArticleList.tsx` — Article listing with category filtering
+- `ArticleDetail.tsx` — Individual article renderer (uses `content` HTML via dangerouslySetInnerHTML)
+- `Contact.tsx` — Contact form
 
-### Overview
-The site uses a custom EJS (Embedded JavaScript) templating system for template-driven development, eliminating code duplication and enabling data-driven content.
+### Adding New Pages
 
-### Template Architecture
-- **Layouts**: Base HTML structure with template inheritance
-  - `base.ejs` - Core HTML document with navigation/footer
-  - `page.ejs` - Standard page layout with hero section
-  - `article.ejs` - Article-specific layout with metadata
-- **Partials**: Reusable components
-  - `navigation.ejs` - Site navigation with active states
-  - `footer.ejs` - Site footer with copyright/links  
-- **Components**: Smaller reusable elements
-  - `article-card.ejs` - Reusable article listing component
-
-### Template Data
-Global data available in all templates:
-```javascript
-{
-  site: {              // From private_html/data/site.json
-    title: "Site Title",
-    description: "...",
-    author: "Joseph",
-    tagline: "...",
-    social: { github, linkedin },
-    contact: { email }
-  },
-  navigation: {        // From private_html/data/navigation.json  
-    main: [{ label, path, key }, ...]
-  },
-  articles: [...],     // From auto-generated articles.js
-  
-  // Helper functions
-  currentYear: 2025,
-  formatDate: (date) => "21 July 2025",
-  isActive: (current, target) => boolean,
-  truncate: (text, length) => "...",
-  articleUrl: (slug) => "/articles/slug.html"
-}
-```
-
-### Creating New Pages
-1. Create EJS template in `private_html/pages/filename.ejs`
-2. Use template inheritance: `<%- include('../templates/layouts/base', { ... }) %>`
-3. Run `node scripts/process-ejs.js` to generate HTML
-4. Build process automatically includes EJS processing
+1. Create `src/pages/MyPage.tsx` as a React component
+2. Add a route in `src/routes.ts` using the `ROUTES` const pattern
+3. Register in `src/App.tsx`
+4. The prerender script auto-discovers routes from `ROUTES` — new routes are prerendered automatically
 
 ### Build Process
+
 ```
-1. Article Registration (scripts/auto-register-articles.js)
-   ├── Scan private_html/articles/*.ejs
-   ├── Extract metadata from EJS templates
-   └── Generate articles.js with article data
-
-2. Vite Build (vite build)
-   ├── Process CSS/JS assets with hashing
-   ├── Generate manifest.json for asset paths
-   └── Output to public_html/assets/
-
-3. EJS Processing (scripts/process-ejs.js)
-   ├── Load Vite manifest for asset paths
-   ├── Process page templates (private_html/pages/*.ejs)
-   ├── Process article templates (private_html/articles/*.ejs)
-   ├── Inject code snippets with HTML escaping
-   ├── Apply template inheritance and data injection
-   └── Generate static HTML (public_html/*.html)
+1. npm run build runs:
+   ├── scripts/generate-snippets.mjs
+   │   └── Reads code-snippets/ files → generates src/data/snippets.ts
+   ├── tsc
+   │   └── TypeScript type-checking (fails build on type errors)
+   ├── vite build
+   │   └── Bundles React app → dist/
+   ├── vite build --ssr
+   │   └── Builds SSR bundle → dist-server/
+   └── scripts/prerender.mjs
+       └── Renders all ROUTES to static HTML → dist/**
 ```
-
-### Code Snippet Best Practices
-
-**CRITICAL**: When embedding code snippets:
-
-1. **Always put closing tags on new line**:
-   ```html
-   <!-- CORRECT -->
-   <pre><code class="language-php">{{SNIPPET:example.php}}
-   </code></pre>
-   
-   <!-- WRONG - will break if last line is a comment -->
-   <pre><code class="language-php">{{SNIPPET:example.php}}</code></pre>
-   ```
-
-2. **HTML entities are auto-escaped** during build:
-   - PHP tags `<?php` become `&lt;?php`
-   - Prevents browser interpretation issues
-   - All special characters properly escaped
-
-3. **Store snippets separately** in `code-snippets/` directory:
-   - Preserves formatting and indentation
-   - Easier to maintain and update
-   - Enables syntax checking in editors
 
 ## Configuration Files
 
 - `package.json` - Dependencies and npm scripts
-- `vite.config.js` - Build configuration
+- `vite.config.ts` - Build configuration (Vite + React plugin)
+- `tsconfig.json` - TypeScript compiler options (strict mode enabled)
+- `tailwind.config.ts` - Tailwind CSS configuration
+- `eslint.config.js` - ESLint flat config with TypeScript and React rules
 - `.github/workflows/ci.yml` - Main CI/CD pipeline with quality gates
 - `.github/workflows/static.yml` - GitHub Pages deployment (triggered by CI success)
-- `qa-tools/composer.json` - PHP quality assurance tools (PHPStan, PHP-CS-Fixer)
-- `qa-tools/.php-cs-fixer.php` - PHP code style configuration
 - `lighthouserc.js` - Performance auditing
-- `.eslintrc` & `.prettierrc` - Code quality rules
 
 ## Performance Features
 
@@ -417,19 +359,19 @@ Documentation should follow clear information prioritization:
 
 ---
 
-*Last Updated: 2025-07-21*
-*Version: 3.0 - EJS Template System with Enhanced Article Management*
+*Last Updated: 2026-02-22*
+*Version: 4.0 - React/TypeScript SSG*
 
-## Recent Updates (v3.0)
+## Recent Updates (v4.0)
 
-### Article System Enhancements
-- **EJS Templates**: Converted all articles from static HTML to EJS templates
-- **Syntax Highlighting**: Integrated Highlight.js for automatic code highlighting
-- **Category Colors**: Added visual category distinctions (PHP=purple, Infrastructure=green, Database=blue, AI=orange)
-- **Template Inheritance**: Consistent article layout through template system
-- **Dynamic Gradients**: Mouse-responsive gradient effects on headings
+### React Migration
+- **Full React/TypeScript rewrite**: All pages converted from EJS/Vanilla JS to React 18 + TypeScript
+- **SSG Prerendering**: All routes pre-rendered to static HTML via Vite SSR + custom prerender script
+- **Tailwind CSS**: Styling via Tailwind v4 replacing custom CSS
+- **Type-safe routing**: All routes defined in `src/routes.ts` as typed constants
+- **Article system**: All articles now TypeScript objects in `src/data/articles.ts`
 
-### Build System Improvements
-- **Three-Stage Build**: Article registration → Vite asset processing → EJS template processing
-- **Asset Hashing**: Vite-managed asset hashing with manifest-driven path resolution
-- **Automated Deployment**: Full CI/CD pipeline with quality gates and auto-formatting
+### Build System
+- **Three-stage build**: Snippet generation → Vite client + SSR build → prerender
+- **TypeScript strict**: Full strict mode type checking as a build gate
+- **ESLint flat config**: Modern ESLint v9 flat config with TypeScript and React rules
