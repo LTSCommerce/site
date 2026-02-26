@@ -7,6 +7,870 @@ import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
+    id: 'systemd-timers-modern-cron',
+    title: 'systemd Timers: The Modern Alternative to Cron Jobs',
+    description:
+      'Cron has scheduled Linux tasks for fifty years, but systemd timers offer structured logging, dependency management, security sandboxing, and catch-up execution that cron simply cannot match. A deep dive for engineers running Red Hat, Fedora, and Rocky Linux.',
+    date: '2026-02-26',
+    category: CATEGORIES.infrastructure.id,
+    readingTime: 14,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'sysadmin',
+    content: `<div class="intro">
+    <p class="lead">Cron is one of the oldest and most reliable tools in the Unix toolkit — it has been scheduling tasks since the 1970s, and it works. But "works" is doing a lot of heavy lifting there. Cron has no structured logging, no dependency management, no built-in protection against overlapping runs, and zero security isolation. It runs your scripts as your full user with every privilege and capability you possess, with no record of what happened unless you wrote the logging yourself. systemd timers, introduced with systemd and now standard across every major enterprise Linux distribution, solve all of these problems — and on Red Hat Enterprise Linux, Rocky Linux, and Fedora, they are already running dozens of system tasks that used to live in crontabs.</p>
+</div>
+
+<section>
+    <h2>What Cron Actually Gives You</h2>
+
+    <p>Before dismissing cron unfairly, it is worth being precise about what it does well. A crontab entry is five fields of schedule followed by a command. It is universally understood, requires no service files, and can be written in thirty seconds. For a developer who needs to run a script at 3am and never thinks about it again, cron is perfectly adequate.</p>
+
+    <p>The problems emerge at scale and in production. When a cron job fails, the output goes to the local mailbox of the running user — which nobody reads — or into <code>/dev/null</code>. There is no centralised log. There is no way to query "when did this last run and what was its exit code?" without implementing that infrastructure yourself. If the server was off at 3am, the job simply did not run, with no record that it was missed. And if the job takes longer than its schedule interval, cron will cheerfully launch a second (and third) instance alongside the first.</p>
+
+    <p>systemd timers are not a drop-in replacement for cron's syntax — they require two unit files instead of one line. But what you gain is worth the ceremony.</p>
+</section>
+
+<section>
+    <h2>The Timer + Service Unit Model</h2>
+
+    <p>Every systemd timer consists of exactly two unit files: a <code>.timer</code> unit that defines <em>when</em> to run, and a <code>.service</code> unit that defines <em>what</em> to run. They are linked by name — <code>backup.timer</code> activates <code>backup.service</code> automatically. You can override this with <code>Unit=</code> in the timer if you need a different pairing.</p>
+
+    <p>The service unit is a perfectly ordinary systemd service. This is the key insight: every hardening directive, every resource limit, every dependency declaration available to long-running services is equally available to timer-activated services. You are not working with a stripped-down scheduler — you have the full systemd service model available to you.</p>
+
+    <p>A minimal example pair:</p>
+
+    <pre><code class="language-bash"># /etc/systemd/system/hello.timer
+[Unit]
+Description=Say hello every hour
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target</code></pre>
+
+    <pre><code class="language-bash"># /etc/systemd/system/hello.service
+[Unit]
+Description=Hello world service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/hello.sh</code></pre>
+
+    <p>After creating both files, activate the timer:</p>
+
+    <pre><code class="language-bash">systemctl daemon-reload
+systemctl enable --now hello.timer</code></pre>
+
+    <p>Notice that you enable and start the <em>timer</em>, not the service. The service will be started by the timer on schedule. You can also trigger it manually at any time with <code>systemctl start hello.service</code> for testing.</p>
+</section>
+
+<section>
+    <h2>Timer Types: When Things Run</h2>
+
+    <p>systemd supports two fundamentally different classes of timer, and understanding the distinction is essential before writing your first unit file.</p>
+
+    <h3>Real-time (Calendar) Timers</h3>
+
+    <p><code>OnCalendar=</code> triggers at a specific wall-clock time, the same way cron does. This is the directive you will use for the vast majority of scheduled tasks: nightly backups, weekly reports, monthly cleanup jobs.</p>
+
+    <pre><code class="language-bash">[Timer]
+# Every day at midnight
+OnCalendar=daily
+
+# Every Monday at 04:00
+OnCalendar=Mon *-*-* 04:00:00
+
+# Every 15 minutes
+OnCalendar=*:0/15
+
+# First of each month at 00:00
+OnCalendar=*-*-01 00:00:00
+
+# Weekdays at 08:30
+OnCalendar=Mon..Fri *-*-* 08:30:00</code></pre>
+
+    <h3>Monotonic Timers</h3>
+
+    <p>Monotonic timers fire relative to an event rather than a point on the clock. They are suitable for tasks that should run a fixed interval after something else happens, not at a specific time of day.</p>
+
+    <pre><code class="language-bash">[Timer]
+# 15 minutes after the system boots
+OnBootSec=15min
+
+# 1 hour after this timer itself was last activated
+OnUnitActiveSec=1h
+
+# 30 minutes after the associated service last finished
+OnUnitInactiveSec=30min
+
+# 5 minutes after this timer unit itself started
+OnActiveSec=5min</code></pre>
+
+    <p>Monotonic timers stop counting when the system is suspended. If a laptop suspends and resumes, <code>OnUnitActiveSec=1h</code> does not fire because an hour has elapsed on the wall clock — it fires one hour after the timer was last active, which resets on resume.</p>
+
+    <h3>Persistent Timers: Replacing Missed Runs</h3>
+
+    <p><code>Persistent=true</code> instructs systemd to record the last time the timer activated. On next boot, if the scheduled time was missed while the system was off, the timer fires immediately. This is the equivalent of <code>anacron</code> behaviour — and it is one line in your timer file rather than a separate tool to install and configure.</p>
+
+    <pre><code class="language-bash">[Timer]
+OnCalendar=daily
+Persistent=true</code></pre>
+
+    <p>Without <code>Persistent=true</code>, a system that is powered off at midnight every night will never run a <code>daily</code> timer. With it, the task runs shortly after boot on the next morning the system is online.</p>
+
+    <h3>RandomizedDelaySec: Avoiding the Thundering Herd</h3>
+
+    <p>On infrastructure with many machines (or many timers), having everything start simultaneously causes resource contention. <code>RandomizedDelaySec=</code> adds a random jitter up to the specified value:</p>
+
+    <pre><code class="language-bash">[Timer]
+OnCalendar=daily
+RandomizedDelaySec=1800</code></pre>
+
+    <p>This fires the timer somewhere in a 30-minute window after midnight, distributing load across machines and avoiding simultaneous database hammering. The <code>dnf-automatic</code> timer on RHEL uses exactly this pattern — it is configured with a random delay so that a fleet of servers does not all hit the update mirrors at the same second.</p>
+</section>
+
+<section>
+    <h2>OnCalendar Syntax: A Deep Dive</h2>
+
+    <p>The <code>OnCalendar=</code> syntax is more expressive than cron's five-field format. The general pattern is:</p>
+
+    <pre><code class="language-bash">DayOfWeek Year-Month-Day Hour:Minute:Second</code></pre>
+
+    <p>Any component can be an asterisk (match all), a range with <code>..</code>, a comma-separated list, or a step value with <code>/</code>. Named shorthands exist for common schedules:</p>
+
+    <pre><code class="language-bash"># Named shorthands
+hourly      # *-*-* *:00:00
+daily       # *-*-* 00:00:00
+weekly      # Mon *-*-* 00:00:00
+monthly     # *-*-01 00:00:00
+yearly      # *-01-01 00:00:00
+quarterly   # *-01,04,07,10-01 00:00:00
+semiannually # *-01,07-01 00:00:00</code></pre>
+
+    <pre><code class="language-bash"># More precise expressions
+# Every 15 minutes
+*:0/15
+
+# Every hour on the half-hour
+*:30
+
+# 2am on the 1st of January, April, July, October
+*-01,04,07,10-01 02:00:00
+
+# Weekdays between 09:00 and 17:00, every 30 minutes
+Mon..Fri *-*-* 09:00/30:00
+
+# Multiple OnCalendar lines: weekdays at 22:30, weekends at 20:00
+OnCalendar=Mon..Fri 22:30
+OnCalendar=Sat,Sun 20:00
+
+# A specific date (useful for one-off timers that self-disable)
+2026-03-01 00:00:00</code></pre>
+
+    <h3>Validating Expressions with systemd-analyze</h3>
+
+    <p>Before deploying a timer, always validate the expression. <code>systemd-analyze calendar</code> parses the expression, normalises it, and shows you the next several trigger times:</p>
+
+    <pre><code class="language-bash">$ systemd-analyze calendar "Mon..Fri *-*-* 08:30:00"
+  Original form: Mon..Fri *-*-* 08:30:00
+Normalized form: Mon..Fri *-*-* 08:30:00
+    Next elapse: Mon 2026-03-02 08:30:00 GMT
+       (in UTC): Mon 2026-03-02 08:30:00 UTC
+       From now: 3 days 21h left
+
+$ systemd-analyze calendar "*:0/15"
+  Original form: *:0/15
+Normalized form: *-*-* *:00/15:00
+    Next elapse: Thu 2026-02-26 11:15:00 GMT
+       (in UTC): Thu 2026-02-26 11:15:00 UTC
+       From now: 14min left</code></pre>
+
+    <p>The "Normalized form" output is what systemd actually interprets. If it does not match your intention, adjust your expression before committing it to a unit file. This one command prevents an entire category of "why is my timer not running?" debugging sessions.</p>
+</section>
+
+<section>
+    <h2>System-Level Timers: Running as Root</h2>
+
+    <p>System-level timer units live in <code>/etc/systemd/system/</code> (for locally created units) or <code>/usr/lib/systemd/system/</code> (for units shipped by packages). The <code>/etc/systemd/system/</code> path takes precedence over the package-supplied path, which is how you override vendor defaults without editing package files — a crucial pattern on RHEL and Rocky Linux where packages may be updated by DNF.</p>
+
+    <p>The full lifecycle for a system timer:</p>
+
+    <pre><code class="language-bash"># After creating or editing unit files
+systemctl daemon-reload
+
+# Enable (start at boot) and start immediately
+systemctl enable --now mytask.timer
+
+# Check timer status and next trigger time
+systemctl status mytask.timer
+
+# List all active timers with next/last run times
+systemctl list-timers
+
+# List ALL timers including inactive ones
+systemctl list-timers --all
+
+# Trigger the service immediately without waiting for the timer
+systemctl start mytask.service
+
+# View logs for the service
+journalctl -u mytask.service
+
+# Follow logs in real time
+journalctl -u mytask.service -f
+
+# Show logs from the last run only
+journalctl -u mytask.service --since today</code></pre>
+
+    <p>The <code>systemctl list-timers</code> output is one of the most immediately useful commands when inheriting a server. It shows every timer, when it last fired, when it will next fire, and what service it triggers — information that is simply not available with <code>crontab -l</code>.</p>
+</section>
+
+<section>
+    <h2>User-Level Timers: Running Without Root</h2>
+
+    <p>systemd has a full per-user instance that runs independently of the system manager. User timers live in <code>~/.config/systemd/user/</code> and are managed with the <code>--user</code> flag on <code>systemctl</code>. They run as the owning user with no elevated privileges required.</p>
+
+    <pre><code class="language-bash"># ~/.config/systemd/user/sync-files.timer
+[Unit]
+Description=Sync files every 6 hours
+
+[Timer]
+OnCalendar=*-*-* 00,06,12,18:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target</code></pre>
+
+    <pre><code class="language-bash"># ~/.config/systemd/user/sync-files.service
+[Unit]
+Description=Sync files to remote
+
+[Service]
+Type=oneshot
+ExecStart=/home/deploy/bin/sync-files.sh</code></pre>
+
+    <pre><code class="language-bash"># Reload and enable the user timer
+systemctl --user daemon-reload
+systemctl --user enable --now sync-files.timer
+
+# Check status
+systemctl --user status sync-files.timer
+
+# View logs
+journalctl --user -u sync-files.service</code></pre>
+
+    <h3>loginctl enable-linger: The Critical Server Setting</h3>
+
+    <p>By default, the systemd user instance for a given user only runs while that user has an active login session. Log out and your user timers stop. On a server where you deploy an application as a non-root service account, this makes user timers seemingly useless — the deploy user has no interactive session.</p>
+
+    <p>The solution is <code>loginctl enable-linger</code>. This instructs systemd to start the user instance at boot and keep it running indefinitely, regardless of whether the user is logged in:</p>
+
+    <pre><code class="language-bash"># Enable lingering for a specific user (run as root)
+loginctl enable-linger deploy
+
+# Verify lingering is enabled
+loginctl show-user deploy | grep Linger
+# Linger=yes
+
+# Or check the linger directory directly
+ls /var/lib/systemd/linger/
+# deploy</code></pre>
+
+    <p>Once linger is enabled for the <code>deploy</code> user, that user's timers in <code>~/.config/systemd/user/</code> will run on schedule even when nobody is logged in. This is the correct way to run application-level scheduled tasks as a non-root service account on a server — not by adding entries to root's crontab or using <code>sudo</code>.</p>
+
+    <p>One important caveat: the user systemd instance does not inherit environment variables from <code>.bashrc</code> or <code>.profile</code>. Set any required environment variables explicitly in the <code>[Service]</code> section with <code>Environment=</code> or <code>EnvironmentFile=</code>.</p>
+</section>
+
+<section>
+    <h2>Security Hardening: Where systemd Leaves Cron Behind</h2>
+
+    <p>This is the section that should convert any engineer who manages production infrastructure. Cron runs your job as your user. That is it. No isolation, no restrictions, no sandboxing. If your backup script is compromised, the attacker has every capability and every file permission you have. systemd services support an extensive set of hardening directives that provide genuine defence-in-depth.</p>
+
+    <h3>Privilege Dropping</h3>
+
+    <p>The most basic hardening is running the service as a dedicated, unprivileged user rather than root:</p>
+
+    <pre><code class="language-bash">[Service]
+Type=oneshot
+User=backup
+Group=backup
+ExecStart=/usr/local/bin/run-backup.sh</code></pre>
+
+    <p>For tasks that need no persistent user identity at all, <code>DynamicUser=yes</code> creates an ephemeral user at service start and discards it when the service exits. The UID is allocated from a reserved range and never reused concurrently — but it may differ between runs, so it is unsuitable for services that write persistent data owned by a specific UID:</p>
+
+    <pre><code class="language-bash">[Service]
+Type=oneshot
+DynamicUser=yes
+ExecStart=/usr/local/bin/generate-report.sh</code></pre>
+
+    <h3>Filesystem Isolation</h3>
+
+    <pre><code class="language-bash">[Service]
+# Mount the entire filesystem hierarchy read-only
+ProtectSystem=strict
+
+# Make /home, /root, and /run/user inaccessible
+ProtectHome=true
+
+# Give the service its own private /tmp (not shared with other processes)
+PrivateTmp=true
+
+# Whitelist specific paths that need to be writable
+ReadWritePaths=/var/backups /var/log/myapp</code></pre>
+
+    <p><code>ProtectSystem=strict</code> is the most aggressive option: the entire filesystem is read-only except for <code>/dev</code>, <code>/proc</code>, and <code>/sys</code>. The service cannot modify anything on disk unless you explicitly list it in <code>ReadWritePaths=</code>. A compromised backup script cannot write to <code>/etc</code>, install binaries in <code>/usr/local/bin</code>, or tamper with other services' data.</p>
+
+    <h3>Capability Restrictions</h3>
+
+    <pre><code class="language-bash">[Service]
+# Prevent the process from gaining new privileges via setuid/setgid
+NoNewPrivileges=true
+
+# Drop all capabilities (empty bounding set)
+CapabilityBoundingSet=
+
+# If specific capabilities are needed, add only those:
+# CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+# AmbientCapabilities=CAP_NET_BIND_SERVICE</code></pre>
+
+    <p><code>NoNewPrivileges=true</code> is the single most important hardening directive for any service that does not need to escalate privileges. It prevents <code>execve()</code> from granting new capabilities via setuid bits on executables — even if the script calls a setuid binary, it cannot gain root through it.</p>
+
+    <h3>Namespace and Kernel Restrictions</h3>
+
+    <pre><code class="language-bash">[Service]
+# Prevent creating new namespaces (network, mount, pid, etc.)
+RestrictNamespaces=true
+
+# Prevent changing the process execution domain (personality syscall)
+LockPersonality=true
+
+# Prevent memory mappings that are both writable and executable
+MemoryDenyWriteExecute=true
+
+# Restrict to native system call ABI only (important with SystemCallFilter)
+SystemCallArchitectures=native</code></pre>
+
+    <h3>System Call Filtering with seccomp</h3>
+
+    <p><code>SystemCallFilter=</code> uses the kernel's seccomp mechanism to restrict which system calls the service is permitted to make. systemd ships with named call groups that cover common service categories:</p>
+
+    <pre><code class="language-bash">[Service]
+# Allow only system calls in the @system-service group
+# (covers the calls needed by most well-behaved services)
+SystemCallFilter=@system-service
+
+# Deny specific dangerous groups while allowing everything else
+# (prefix with ~ to deny rather than allow)
+SystemCallFilter=~@debug @mount @reboot @swap @privileged</code></pre>
+
+    <p>Common named groups include <code>@system-service</code>, <code>@network-io</code>, <code>@file-system</code>, <code>@basic-io</code>, <code>@process</code>, <code>@privileged</code>, and <code>@debug</code>. Run <code>systemd-analyze syscall-filter</code> to see what each group contains.</p>
+
+    <h3>Network Restriction</h3>
+
+    <pre><code class="language-bash">[Service]
+# Block all network access (for offline tasks like local backups)
+IPAddressDeny=any
+
+# Or allow only specific addresses
+IPAddressAllow=10.0.0.0/8
+IPAddressDeny=any</code></pre>
+
+    <h3>A Fully Hardened Service Example</h3>
+
+    <pre><code class="language-bash">[Service]
+Type=oneshot
+User=backup
+Group=backup
+
+# Filesystem isolation
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/backups
+
+# Privilege restrictions
+NoNewPrivileges=true
+CapabilityBoundingSet=
+
+# Kernel hardening
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+
+# No network access needed
+IPAddressDeny=any</code></pre>
+
+    <p>Run <code>systemd-analyze security myservice.service</code> to get a scored security report showing which directives are set and which gaps remain. The output assigns an exposure score (0 is fully hardened, higher is less hardened) and explains exactly what each missing directive would protect against.</p>
+</section>
+
+<section>
+    <h2>Red Hat, Fedora, and Rocky Linux: The Native Ecosystem</h2>
+
+    <p>On RHEL-family systems, systemd timers are not a curiosity — they are the standard. Several core system functions ship as timer units out of the box, and understanding them is useful both as documentation of the pattern and as a source of real-world examples to learn from.</p>
+
+    <h3>Timers That Ship with RHEL 9 / Rocky Linux 9</h3>
+
+    <pre><code class="language-bash"># List all installed timers, including inactive ones
+systemctl list-timers --all
+
+# Key system timers you will find on a fresh RHEL/Rocky install:</code></pre>
+
+    <p><strong>fstrim.timer</strong> — Runs <code>fstrim -av</code> weekly to discard unused blocks on SSD filesystems. Enabled by default on Rocky Linux 9. The timer uses <code>ConditionVirtualization=!container</code> to skip TRIM inside containers where it has no meaning, and <code>RandomizedDelaySec=6000</code> to spread load across a fleet.</p>
+
+    <p><strong>dnf-makecache.timer</strong> — Refreshes DNF package metadata periodically. Runs as a system timer, keeping the package cache warm so <code>dnf install</code> commands are fast.</p>
+
+    <p><strong>logrotate.timer</strong> — Replaces the traditional <code>/etc/cron.daily/logrotate</code> cron entry. Runs daily with a randomised delay. On RHEL 8 this was still a cron job; RHEL 9 ships it as a timer unit.</p>
+
+    <p><strong>updatedb.timer</strong> — Rebuilds the <code>mlocate</code>/<code>plocate</code> database daily so <code>locate</code> commands stay current.</p>
+
+    <p><strong>systemd-tmpfiles-clean.timer</strong> — Cleans temporary files per the rules in <code>/etc/tmpfiles.d/</code> and <code>/usr/lib/tmpfiles.d/</code>. Runs daily and on boot. This replaces the old <code>tmpwatch</code> cron job from RHEL 6.</p>
+
+    <h3>dnf-automatic: Automated Security Updates</h3>
+
+    <p>The <code>dnf-automatic</code> package is the RHEL-idiomatic way to automate security updates, and it is a good example of the systemd timer pattern done well. It ships four separate timer units for different update behaviours:</p>
+
+    <pre><code class="language-bash">dnf install dnf-automatic
+
+# Four timer variants — enable exactly one:
+# Downloads AND installs security updates
+systemctl enable --now dnf-automatic-install.timer
+
+# Downloads updates only, sends notification
+systemctl enable --now dnf-automatic-download.timer
+
+# No downloads, sends notification only
+systemctl enable --now dnf-automatic-notifyonly.timer
+
+# Installs ALL updates (not just security)
+systemctl enable --now dnf-automatic.timer</code></pre>
+
+    <p>To customise the schedule without editing the package-owned unit file, use a drop-in override (the RHEL-correct approach that survives package updates):</p>
+
+    <pre><code class="language-bash">systemctl edit dnf-automatic-install.timer</code></pre>
+
+    <p>This opens an editor and creates <code>/etc/systemd/system/dnf-automatic-install.timer.d/override.conf</code>. Add your overrides:</p>
+
+    <pre><code class="language-bash">[Timer]
+OnCalendar=
+OnCalendar=*-*-* 03:00:00
+RandomizedDelaySec=1800
+Persistent=true</code></pre>
+
+    <p>The first <code>OnCalendar=</code> (empty) clears the inherited value before setting the new one. This is necessary when overriding list-type directives in systemd.</p>
+
+    <h3>SELinux Considerations</h3>
+
+    <p>RHEL 9 and Rocky Linux 9 run SELinux in enforcing mode by default. Custom timer-activated services that access files outside their expected context, bind to restricted ports, or interact with other services may trigger AVC denials.</p>
+
+    <p>For most simple scripts placed in standard locations (<code>/usr/local/bin/</code> with correct file permissions), the default <code>unconfined_service_t</code> context applied to user-created systemd services is permissive enough. For services that access sensitive paths or need network access, audit denials and generate a custom policy module:</p>
+
+    <pre><code class="language-bash"># After a denial, check what was blocked
+ausearch -m avc -ts recent
+
+# Generate a policy module from the denials
+audit2allow -a -M mybackup
+
+# Install the policy
+semodule -i mybackup.pp
+
+# Alternatively, set correct file context for a script
+semanage fcontext -a -t bin_t "/usr/local/bin/mybackup.sh"
+restorecon -v /usr/local/bin/mybackup.sh</code></pre>
+
+    <h3>Network-Dependent Timers</h3>
+
+    <p>Timers that require network connectivity should declare this dependency explicitly. Without it, the service may start before the network is ready and fail silently:</p>
+
+    <pre><code class="language-bash">[Unit]
+Description=Sync data to remote server
+After=network-online.target
+Wants=network-online.target</code></pre>
+
+    <p>On RHEL 9 / Rocky Linux 9 with NetworkManager, <code>network-online.target</code> is reached after NetworkManager has confirmed that at least one network interface is online. Note that <code>network.target</code> is weaker — it only guarantees that networking <em>configuration</em> has been applied, not that connectivity exists.</p>
+
+    <h3>RHEL 8 vs RHEL 9 / Rocky 8 vs Rocky 9</h3>
+
+    <p>RHEL 8 and Rocky 8 are fully systemd-based and support all the timer features described in this article. The key differences on RHEL 9 / Rocky 9 are: more system jobs have migrated from cron to timer units (logrotate being the most notable), <code>cronie</code> is still installed by default but is no longer used for most system tasks, and the default SELinux policy is stricter in several areas relevant to service execution. If you are migrating cron jobs on RHEL 8, the timer unit files you write will work unchanged on RHEL 9.</p>
+</section>
+
+<section>
+    <h2>Preventing Overlapping Execution</h2>
+
+    <p>Cron has no mechanism to prevent a second instance of a job from starting if the first is still running. This is a genuine operational hazard: a backup job that normally takes 20 minutes, triggered at an unusual time by a large dataset, will have a second instance start 60 minutes in if the schedule is hourly — and the two instances will fight over the same files.</p>
+
+    <p>systemd's solution is elegant: set <code>Type=oneshot</code> on the service. A <code>oneshot</code> service is considered "active" from start until the process exits. If the timer fires while the previous run is still active, systemd queues the activation rather than launching a second instance.</p>
+
+    <pre><code class="language-bash">[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/my-task.sh
+# No second instance will start while this is still running</code></pre>
+
+    <p>For additional protection, particularly on tasks with external dependencies, <code>ConditionPathExists=</code> can check for a lock file:</p>
+
+    <pre><code class="language-bash">[Unit]
+Description=Data processing task
+ConditionPathExists=!/var/run/myapp/processing.lock
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/touch /var/run/myapp/processing.lock
+ExecStart=/usr/local/bin/process-data.sh
+ExecStopPost=/usr/bin/rm -f /var/run/myapp/processing.lock</code></pre>
+
+    <p>The <code>!</code> prefix on <code>ConditionPathExists</code> inverts the check: the service only starts if the path does <em>not</em> exist. If the lock file is present (from a previous run that did not clean up), the service start is skipped entirely, and the timer records this as a "condition failed" rather than an error.</p>
+</section>
+
+<section>
+    <h2>Cron vs systemd Timers: The Comparison</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>cron</th>
+                <th>systemd timers</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Logging</strong></td>
+                <td>Local mail or manual redirect to file</td>
+                <td>Automatic structured logging via journald; <code>journalctl -u</code></td>
+            </tr>
+            <tr>
+                <td><strong>Missed execution recovery</strong></td>
+                <td>None (job simply skipped if system is off)</td>
+                <td><code>Persistent=true</code> runs missed jobs on next boot</td>
+            </tr>
+            <tr>
+                <td><strong>Overlapping run prevention</strong></td>
+                <td>None built-in; requires flock or custom logic</td>
+                <td>Built-in with <code>Type=oneshot</code></td>
+            </tr>
+            <tr>
+                <td><strong>Dependency management</strong></td>
+                <td>None</td>
+                <td>Full systemd dependency graph: <code>After=</code>, <code>Requires=</code>, <code>Wants=</code></td>
+            </tr>
+            <tr>
+                <td><strong>Security isolation</strong></td>
+                <td>None; runs as full user</td>
+                <td>Namespaces, seccomp, capability dropping, filesystem isolation</td>
+            </tr>
+            <tr>
+                <td><strong>User-level timers on servers</strong></td>
+                <td>Yes, via user crontab</td>
+                <td>Yes, via user units + <code>loginctl enable-linger</code></td>
+            </tr>
+            <tr>
+                <td><strong>Calendar syntax</strong></td>
+                <td>Five-field cron syntax</td>
+                <td>Human-readable <code>OnCalendar=</code> with ranges, steps, named shorthands</td>
+            </tr>
+            <tr>
+                <td><strong>Expression validation</strong></td>
+                <td>None (errors silently produce no runs)</td>
+                <td><code>systemd-analyze calendar</code> validates and shows next trigger times</td>
+            </tr>
+            <tr>
+                <td><strong>Error handling</strong></td>
+                <td>Exit code ignored; no automatic retry</td>
+                <td><code>Restart=on-failure</code> available; exit codes recorded in journal</td>
+            </tr>
+            <tr>
+                <td><strong>Resource limits</strong></td>
+                <td>None</td>
+                <td><code>CPUQuota=</code>, <code>MemoryMax=</code>, <code>IOWeight=</code> via cgroups</td>
+            </tr>
+            <tr>
+                <td><strong>Random delay / jitter</strong></td>
+                <td>None built-in</td>
+                <td><code>RandomizedDelaySec=</code></td>
+            </tr>
+            <tr>
+                <td><strong>File to create</strong></td>
+                <td>One crontab entry</td>
+                <td>Two unit files (.timer + .service)</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>Practical Examples</h2>
+
+    <h3>Example 1: Root-Level Backup Timer with Full Hardening</h3>
+
+    <p>A nightly backup to a remote target, running as a dedicated <code>backup</code> user with full filesystem isolation:</p>
+
+    <pre><code class="language-bash"># /etc/systemd/system/nightly-backup.timer
+[Unit]
+Description=Nightly backup timer
+Documentation=man:rsync(1)
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+RandomizedDelaySec=1800
+Persistent=true
+
+[Install]
+WantedBy=timers.target</code></pre>
+
+    <pre><code class="language-bash"># /etc/systemd/system/nightly-backup.service
+[Unit]
+Description=Nightly backup to remote storage
+After=network-online.target
+Wants=network-online.target
+Documentation=man:rsync(1)
+
+[Service]
+Type=oneshot
+User=backup
+Group=backup
+
+# The actual backup command
+ExecStart=/usr/bin/rsync -az --delete /srv/data/ backup-host:/backups/myserver/
+
+# Filesystem hardening
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/log/backup
+
+# Privilege hardening
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_NET_ADMIN
+AmbientCapabilities=
+
+# Kernel hardening
+LockPersonality=true
+RestrictNamespaces=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service @network-io
+
+# Resource limits
+MemoryMax=512M
+CPUQuota=25%
+
+# Logging
+StandardOutput=journal
+StandardError=journal</code></pre>
+
+    <pre><code class="language-bash"># Deploy
+useradd --system --no-create-home --shell /usr/sbin/nologin backup
+systemctl daemon-reload
+systemctl enable --now nightly-backup.timer
+
+# Verify
+systemctl list-timers nightly-backup.timer
+journalctl -u nightly-backup.service --since today</code></pre>
+
+    <h3>Example 2: User-Level Timer for a Deploy Account</h3>
+
+    <p>A data sync job running as the application's service account, without any root involvement:</p>
+
+    <pre><code class="language-bash"># ~/.config/systemd/user/data-sync.timer  (as user 'appuser')
+[Unit]
+Description=Sync application data every 4 hours
+
+[Timer]
+OnCalendar=*-*-* 00,04,08,12,16,20:00:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target</code></pre>
+
+    <pre><code class="language-bash"># ~/.config/systemd/user/data-sync.service
+[Unit]
+Description=Application data sync
+
+[Service]
+Type=oneshot
+ExecStart=/home/appuser/bin/sync-data.sh
+Environment=APP_ENV=production
+Environment=SYNC_TARGET=https://api.example.com/sync
+StandardOutput=journal
+StandardError=journal</code></pre>
+
+    <pre><code class="language-bash"># Enable lingering so timers run without an active session (run as root)
+loginctl enable-linger appuser
+
+# Enable the timer (as appuser)
+systemctl --user daemon-reload
+systemctl --user enable --now data-sync.timer
+
+# Monitor
+systemctl --user status data-sync.timer
+journalctl --user -u data-sync.service -f</code></pre>
+
+    <h3>Example 3: Replacing a Crontab Entry</h3>
+
+    <p>Converting a typical crontab entry to a systemd timer pair:</p>
+
+    <pre><code class="language-bash"># Before: the crontab entry
+# 0 */6 * * * /usr/local/bin/cleanup-old-files.sh &gt;&gt; /var/log/cleanup.log 2&gt;&amp;1</code></pre>
+
+    <pre><code class="language-bash"># After: cleanup-old-files.timer
+[Unit]
+Description=Clean up old files every 6 hours
+
+[Timer]
+OnCalendar=*-*-* 00,06,12,18:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target</code></pre>
+
+    <pre><code class="language-bash"># After: cleanup-old-files.service
+[Unit]
+Description=Clean up old files
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cleanup-old-files.sh
+# No log redirect needed - journald handles this automatically
+StandardOutput=journal
+StandardError=journal</code></pre>
+
+    <p>Notice the elimination of the <code>&gt;&gt; /var/log/cleanup.log 2&gt;&amp;1</code> redirect. Journald captures all output automatically — queried with <code>journalctl -u cleanup-old-files.service</code>. You gain timestamped, structured, queryable logs with zero effort, and the log is automatically rotated by journald's size and time limits.</p>
+</section>
+
+<section>
+    <h2>Monitoring and Troubleshooting</h2>
+
+    <p>The monitoring story for systemd timers is substantially better than cron. Everything is queryable through standard systemd tooling.</p>
+
+    <pre><code class="language-bash"># Show all active timers: last trigger, next trigger, timer name, service
+systemctl list-timers
+
+# Include inactive timers
+systemctl list-timers --all
+
+# Full status of a specific timer
+systemctl status myapp-sync.timer
+
+# Full status of the service it triggers
+systemctl status myapp-sync.service
+
+# Complete logs for the service, all time
+journalctl -u myapp-sync.service
+
+# Logs since a specific time
+journalctl -u myapp-sync.service --since "2026-02-25 00:00:00"
+
+# Last 50 lines
+journalctl -u myapp-sync.service -n 50
+
+# Follow in real time (useful during testing)
+journalctl -u myapp-sync.service -f
+
+# Check if a timer is enabled (will survive reboot)
+systemctl is-enabled myapp-sync.timer
+
+# Check the security score of the backing service
+systemd-analyze security myapp-sync.service
+
+# Validate a calendar expression
+systemd-analyze calendar "Mon..Fri *-*-* 08:30:00"</code></pre>
+
+    <p>When a service fails, <code>systemctl status</code> shows the last few lines of output inline — enough to diagnose most failures without needing to query the journal separately. The exit code is recorded, and if you have set <code>OnFailure=</code> on the service unit, a notification or recovery action fires automatically.</p>
+
+    <h3>Common Troubleshooting Scenarios</h3>
+
+    <p><strong>Timer is enabled but never fires</strong> — Check <code>systemctl list-timers</code> to confirm the next trigger time. Validate the <code>OnCalendar=</code> expression with <code>systemd-analyze calendar</code>. Check that the timer unit is active, not just enabled: <code>systemctl is-active myapp.timer</code>.</p>
+
+    <p><strong>Service starts but fails immediately</strong> — Run <code>systemctl status myapp.service</code> to see the exit code and recent output. Check <code>journalctl -u myapp.service -n 50</code> for more context. If you are running with <code>ProtectSystem=strict</code>, the service may be failing because it is trying to write to a path not listed in <code>ReadWritePaths=</code>.</p>
+
+    <p><strong>SELinux denials on Rocky/RHEL</strong> — Run <code>ausearch -m avc -ts recent</code> to see AVC denials. Use <code>audit2why</code> to get a human-readable explanation, and <code>audit2allow -a -M mypolicy</code> to generate a permissive policy for the denied operations.</p>
+
+    <p><strong>User timer not running when not logged in</strong> — Confirm lingering is enabled: <code>loginctl show-user username | grep Linger</code>. The user instance must be running: <code>systemctl --user is-active default.target</code> (run as that user, or check via <code>loginctl</code>).</p>
+</section>
+
+<section>
+    <h2>Migration Guide: Converting Existing Cron Jobs</h2>
+
+    <p>Converting an existing crontab is mechanical once you understand the pattern. Here is a systematic approach for a production migration.</p>
+
+    <h3>Step 1: Inventory Your Crontab</h3>
+
+    <pre><code class="language-bash"># List all system crontabs
+ls /etc/cron.d/
+cat /etc/crontab
+
+# List per-user crontabs
+crontab -l
+crontab -l -u otherappuser
+
+# List cron drop-in directories
+ls /etc/cron.hourly/ /etc/cron.daily/ /etc/cron.weekly/ /etc/cron.monthly/</code></pre>
+
+    <h3>Step 2: Cron Schedule to OnCalendar Conversion</h3>
+
+    <pre><code class="language-bash"># Common cron-to-OnCalendar mappings:
+# @hourly / 0 * * * *   →  OnCalendar=hourly
+# @daily / 0 0 * * *    →  OnCalendar=daily
+# @weekly / 0 0 * * 0   →  OnCalendar=weekly
+# @monthly / 0 0 1 * *  →  OnCalendar=monthly
+# @reboot               →  OnBootSec=15s  (one-time, after boot)
+# 0 */4 * * *           →  OnCalendar=*-*-* 00,04,08,12,16,20:00:00
+# 30 3 * * 1-5          →  OnCalendar=Mon..Fri *-*-* 03:30:00
+# 0 2 1 * *             →  OnCalendar=*-*-01 02:00:00</code></pre>
+
+    <h3>Step 3: Test Before Removing Cron</h3>
+
+    <pre><code class="language-bash"># Run the service immediately to validate it works
+systemctl start mynewjob.service
+
+# Check the outcome
+systemctl status mynewjob.service
+journalctl -u mynewjob.service -n 30
+
+# Enable the timer and watch it fire at the next scheduled time
+systemctl enable --now mynewjob.timer
+systemctl list-timers mynewjob.timer</code></pre>
+
+    <h3>Step 4: Remove the Cron Entry</h3>
+
+    <p>Only remove the cron entry after the timer has fired at least once and you have verified the output via <code>journalctl</code>. Leave both running in parallel for one full schedule cycle if the task is critical.</p>
+
+    <pre><code class="language-bash"># Edit user crontab
+crontab -e
+
+# Or remove a cron.d file
+rm /etc/cron.d/myjob</code></pre>
+
+    <h3>Handling @reboot Equivalents</h3>
+
+    <p>Cron's <code>@reboot</code> directive runs a command once after boot. The systemd equivalent uses a monotonic timer with <code>OnBootSec=</code>:</p>
+
+    <pre><code class="language-bash">[Timer]
+# Run 30 seconds after boot, once
+OnBootSec=30s
+
+[Install]
+WantedBy=timers.target</code></pre>
+
+    <p>For a task that should run once on boot and never again until the next boot, omit <code>OnUnitActiveSec=</code>. Without a repeating interval, the timer fires once and stays inactive until the next reboot.</p>
+</section>
+
+<section>
+    <h2>The Verdict</h2>
+
+    <p>The case for systemd timers over cron is not that cron is broken. Cron works. The case is that cron was designed for a simpler era, and the assumptions it makes — that logging is optional, that security isolation is someone else's problem, that missed runs are acceptable, that all jobs run in a homogeneous environment — are increasingly at odds with how production infrastructure is managed.</p>
+
+    <p>systemd timers require more upfront work: two files instead of one line, four commands to enable instead of one <code>crontab -e</code>. But every hour saved debugging "why did this job not run?" or "what output did last night's backup produce?" pays that cost back with interest. On RHEL 9 and Rocky Linux 9, the system itself has already made the migration — your application jobs should follow.</p>
+
+    <p>Start with your most critical production cron jobs: the ones where a missed run or a silent failure has real consequences. Convert those first, apply the hardening directives, and observe. The difference in operational clarity is immediate and difficult to argue against once you have experienced it.</p>
+</section>
+`,
+  },
+  {
     id: 'defence-before-fix-static-analysis',
     title: 'Defence Before Fix: Preventing Bug Classes with Static Analysis',
     description:
