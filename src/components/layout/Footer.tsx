@@ -18,8 +18,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <Link to={ROUTES.home.path} className="flex items-center mb-4">
-              {/* brightness-0 invert renders the SVG fully white on dark background */}
-              <img src="/logo.svg" alt="LTS Commerce" className="h-8 w-auto brightness-0 invert" />
+              <img src="/logo-mono-light.svg" alt="LTS Commerce" className="h-8 w-auto" />
             </Link>
             <p className="text-sm leading-relaxed text-gray-500 max-w-xs">
               Bespoke PHP development and infrastructure for complex, high-throughput backend

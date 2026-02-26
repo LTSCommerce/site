@@ -1,26 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" width="200" height="48">
-  <!-- Monochrome version for dark backgrounds (white) -->
-
-  <!-- Logo Mark -->
-  <g id="mark">
-    <path d="M6 8 L18 8 L18 12 L10 12 L10 36 L18 36 L18 40 L6 40 L6 8 Z"
-          fill="#FFFFFF" />
-    <path d="M34 8 L46 8 L46 40 L34 40 L34 36 L42 36 L42 12 L34 12 L34 8 Z"
-          fill="#FFFFFF" />
-    <circle cx="26" cy="24" r="4" fill="#FFFFFF" />
-  </g>
-
-  <!-- Wordmark -->
-  <g id="wordmark" fill="#FFFFFF">
-    <text x="58" y="32"
-          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
-          font-size="22"
-          font-weight="700"
-          letter-spacing="-0.02em">LTS</text>
-    <text x="100" y="32"
-          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
-          font-size="22"
-          font-weight="400"
-          letter-spacing="-0.01em">Commerce</text>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Monochrome light (for dark backgrounds) -->
+  <path d="M 45.9 25.9 A 22 22 0 0 1 14.7 43.9 L 19.4 34.0 A 11 11 0 0 0 35.0 25.0 Z" fill="#FFFFFF"/>
+  <path d="M 11.4 42.0 A 22 22 0 0 1 11.4 6.0 L 17.7 15.0 A 11 11 0 0 0 17.7 33.0 Z" fill="#FFFFFF"/>
+  <path d="M 14.7 4.1 A 22 22 0 0 1 45.9 22.1 L 35.0 23.0 A 11 11 0 0 0 19.4 14.0 Z" fill="#FFFFFF"/>
 </svg>
