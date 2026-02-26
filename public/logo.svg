@@ -1,14 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" width="240" height="48">
-  <!-- Three-colour triskelion mark (48x48 area) + wordmark -->
-  <!-- Geometry: center (24,24), outer R=22, inner R=11, three 110° arcs with 10° gaps -->
-  <!-- Green segment: 5° → 115° (bottom arc) -->
-  <path d="M 45.9 25.9 A 22 22 0 0 1 14.7 43.9 L 19.4 34.0 A 11 11 0 0 0 35.0 25.0 Z" fill="#1A7A30"/>
-  <!-- Red segment: 125° → 235° (left arc) -->
-  <path d="M 11.4 42.0 A 22 22 0 0 1 11.4 6.0 L 17.7 15.0 A 11 11 0 0 0 17.7 33.0 Z" fill="#C82020"/>
-  <!-- Blue segment: 245° → 355° (top arc) -->
-  <path d="M 14.7 4.1 A 22 22 0 0 1 45.9 22.1 L 35.0 23.0 A 11 11 0 0 0 19.4 14.0 Z" fill="#1E72C8"/>
+  <!-- Triskelion mark (48x48 area) + wordmark -->
+  <!-- Swept blade geometry: outer R=22, inner R=11, 60° rotational offset per blade -->
 
-  <!-- Wordmark: LTS Commerce -->
+  <!-- Green: outer 5°→115°, inner 65°→175° (CCW) -->
+  <path d="M 45.9 25.9 A 22 22 0 0 1 14.7 43.9 L 13.0 25.0 A 11 11 0 0 0 28.6 34.0 Z" fill="#1A7A30"/>
+  <!-- Red: outer 125°→235°, inner 185°→295° (CCW) -->
+  <path d="M 11.4 42.0 A 22 22 0 0 1 11.4 6.0 L 28.6 14.0 A 11 11 0 0 0 13.0 23.0 Z" fill="#C82020"/>
+  <!-- Blue: outer 245°→355°, inner 305°→55° (CCW) -->
+  <path d="M 14.7 4.1 A 22 22 0 0 1 45.9 22.1 L 30.3 33.0 A 11 11 0 0 0 30.3 15.0 Z" fill="#1E72C8"/>
+
+  <!-- Wordmark -->
   <text x="58" y="32"
         font-family="Inter, sans-serif"
         font-size="22"
