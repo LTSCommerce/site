@@ -198,17 +198,34 @@ module.exports = {
 
 | File | Description | Use Case |
 |------|-------------|----------|
-| `/public/logo.svg` | Full color logo with wordmark | Primary logo for headers, light backgrounds |
-| `/public/logo-mark.svg` | Logo mark only (icon) | Favicons, small spaces, app icons |
-| `/public/logo-mono-light.svg` | White monochrome logo | Dark backgrounds, overlays |
-| `/public/logo-mono-dark.svg` | Black monochrome logo | Light backgrounds when color not appropriate |
+| `/public/logo.svg` | Full color logo with wordmark (path outlines) | Primary logo for headers, light backgrounds |
+| `/public/logo-mark.svg` | Logo mark only (three-colour symbol) | Favicons, small spaces, app icons |
+| `/public/logo-mono-light.svg` | White monochrome mark | Dark backgrounds, overlays |
+| `/public/logo-mono-dark.svg` | Dark monochrome mark | Light backgrounds when color not appropriate |
+| `/public/favicon-32.png` | 32x32 PNG favicon | Fallback for browsers without SVG favicon support |
+| `/public/apple-touch-icon.png` | 180x180 PNG | iOS home screen icon |
+| `/docs/branding/Symbol.pdf` | Original symbol (AI/PDF source) | Authoritative brand source file |
+| `/docs/branding/LTSCommerce.pdf` | Original full logo (AI/PDF source) | Authoritative brand source file |
+
+### Logo Mark Colors
+
+The three-colour pinwheel symbol uses these colours from the original branding files:
+
+| Name | Hex | Usage |
+|------|-----|-------|
+| **Blue** | `#007EB7` | Upper-right arch |
+| **Green** | `#05723B` | Bottom arch |
+| **Red** | `#ED2C2A` | Left arch |
+| **LTS text** | `#1A1A1A` | Wordmark "LTS" |
+| **Commerce text** | `#007EB7` | Wordmark "Commerce" (matches blue) |
 
 ### Logo Usage Guidelines
 
-1. **Minimum size**: The full logo should be at least 120px wide
-2. **Clear space**: Maintain padding equal to the height of the center dot on all sides
+1. **Minimum size**: The full logo should be at least 120px wide; the mark works down to 16px
+2. **Clear space**: Maintain padding equal to the mark height on all sides
 3. **Background contrast**: Ensure sufficient contrast - use monochrome versions when needed
 4. **No modifications**: Do not rotate, stretch, or alter the logo proportions
+5. **Source of truth**: Original vector files in `/docs/branding/` (Adobe Illustrator + PDF)
 
 ---
 

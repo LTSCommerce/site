@@ -26,12 +26,13 @@ export function Navigation() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to={ROUTES.home.path} className="flex items-center shrink-0">
-            <img src="/logo.svg" alt="LTS Commerce" className="h-8 w-auto" />
+            <img src="/logo-mark.svg" alt="LTS Commerce" className="h-8 w-8 md:hidden" />
+            <img src="/logo.svg" alt="LTS Commerce" className="h-8 w-auto hidden md:block" />
           </Link>
 
           {/* Desktop nav */}
