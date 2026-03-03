@@ -6,6 +6,7 @@
  * - Strip GitHub Pages fingerprints and unnecessary headers
  * - Add security headers
  * - Redirect www to non-www
+ * - Redirect .html URLs to clean URLs (e.g. /articles.html -> /articles)
  * - Serve branded 404 page for missing resources
  *
  * Deployment:
@@ -51,6 +52,13 @@ async function handleRequest(request: Request): Promise<Response> {
   // Redirect www to non-www (301 permanent)
   if (url.hostname === 'www.ltscommerce.dev') {
     const redirectUrl = 'https://ltscommerce.dev' + url.pathname + url.search + url.hash;
+    return Response.redirect(redirectUrl, 301);
+  }
+
+  // Redirect .html URLs to clean URLs (301 permanent)
+  if (url.pathname.endsWith('.html')) {
+    const cleanPath = url.pathname.replace(/\.html$/, '');
+    const redirectUrl = 'https://ltscommerce.dev' + cleanPath + url.search + url.hash;
     return Response.redirect(redirectUrl, 301);
   }
 
