@@ -27,46 +27,26 @@ function formatDate(isoDate: string): string {
   }).format(date);
 }
 
-/**
- * Get share URL for current page
- */
-function getShareUrl(): string {
-  return typeof window !== 'undefined' ? window.location.href : '';
+const SITE_URL = 'https://ltscommerce.dev';
+
+function getArticleUrl(slug: string): string {
+  return `${SITE_URL}/articles/${slug}`;
 }
 
-/**
- * Get page title for sharing
- */
-function getPageTitle(): string {
-  return typeof document !== 'undefined' ? document.title : '';
+function getRedditShareUrl(slug: string, title: string, subreddit: string): string {
+  return `https://reddit.com/r/${subreddit}/submit?url=${encodeURIComponent(getArticleUrl(slug))}&title=${encodeURIComponent(title)}`;
 }
 
-/**
- * Create Reddit share link
- */
-function getRedditShareUrl(subreddit: string): string {
-  return `https://reddit.com/r/${subreddit}/submit?url=${encodeURIComponent(getShareUrl())}&title=${encodeURIComponent(getPageTitle())}`;
+function getHNShareUrl(slug: string, title: string): string {
+  return `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(getArticleUrl(slug))}&t=${encodeURIComponent(title)}`;
 }
 
-/**
- * Create Hacker News share link
- */
-function getHNShareUrl(): string {
-  return `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(getShareUrl())}&t=${encodeURIComponent(getPageTitle())}`;
+function getLobstersShareUrl(slug: string, title: string): string {
+  return `https://lobste.rs/stories/new?url=${encodeURIComponent(getArticleUrl(slug))}&title=${encodeURIComponent(title)}`;
 }
 
-/**
- * Create Lobsters share link
- */
-function getLobstersShareUrl(): string {
-  return `https://lobste.rs/stories/new?url=${encodeURIComponent(getShareUrl())}&title=${encodeURIComponent(getPageTitle())}`;
-}
-
-/**
- * Create LinkedIn share link
- */
-function getLinkedInShareUrl(): string {
-  return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl())}`;
+function getLinkedInShareUrl(slug: string): string {
+  return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getArticleUrl(slug))}`;
 }
 
 export function ArticleDetail() {
@@ -116,7 +96,7 @@ export function ArticleDetail() {
             {/* Social Sharing */}
             <div className="flex gap-4 mb-12 pb-12 border-b border-gray-200">
               <a
-                href={getRedditShareUrl(subreddit)}
+                href={getRedditShareUrl(article.id, article.title, subreddit)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors"
@@ -134,7 +114,7 @@ export function ArticleDetail() {
               </a>
 
               <a
-                href={getHNShareUrl()}
+                href={getHNShareUrl(article.id, article.title)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors"
@@ -150,7 +130,7 @@ export function ArticleDetail() {
               </a>
 
               <a
-                href={getLobstersShareUrl()}
+                href={getLobstersShareUrl(article.id, article.title)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
@@ -166,7 +146,7 @@ export function ArticleDetail() {
               </a>
 
               <a
-                href={getLinkedInShareUrl()}
+                href={getLinkedInShareUrl(article.id)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
