@@ -12,7 +12,7 @@ export function render(url: string): string {
 }
 
 export function getRoutes(): string[] {
-  const staticRoutes = ['/', '/about', '/contact', '/articles'];
+  const staticRoutes = ['/', '/about', '/contact', '/articles', '/errors/404'];
   const articleRoutes = getAllArticles().map(a => `/articles/${a.id}`);
   return [...staticRoutes, ...articleRoutes];
 }

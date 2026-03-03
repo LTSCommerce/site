@@ -5,6 +5,7 @@ import { About } from './pages/About';
 import { Contact } from './pages/Contact';
 import { ArticleList } from './pages/ArticleList';
 import { ArticleDetail } from './pages/ArticleDetail';
+import { NotFound } from './pages/NotFound';
 import { ROUTES } from './routes';
 import { useBodyLoaded } from './hooks/useBodyLoaded';
 
@@ -32,6 +33,8 @@ export function AppContent() {
         <Route path={ROUTES.contact.path} element={<Contact />} />
         <Route path={ROUTES.articles.path} element={<ArticleList />} />
         <Route path="/articles/:slug" element={<ArticleDetail />} />
+        <Route path={ROUTES.notFound.path} element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

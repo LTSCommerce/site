@@ -1,0 +1,14 @@
+name = "lts-site-proxy"
+main = "worker.js"
+compatibility_date = "2025-12-15"
+
+# account_id is intentionally omitted (public repo).
+# Set via environment variable CLOUDFLARE_ACCOUNT_ID or wrangler login.
+
+[[routes]]
+pattern = "ltscommerce.dev/*"
+zone_name = "ltscommerce.dev"
+
+[[routes]]
+pattern = "www.ltscommerce.dev/*"
+zone_name = "ltscommerce.dev"

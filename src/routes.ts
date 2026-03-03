@@ -23,6 +23,7 @@ export const ROUTES = {
   about: { path: '/about', label: 'About' },
   articles: { path: '/articles', label: 'Articles' },
   contact: { path: '/contact', label: 'Contact' },
+  notFound: { path: '/errors/404', label: '404' },
 } as const satisfies Record<string, RouteEntry>;
 
 /**

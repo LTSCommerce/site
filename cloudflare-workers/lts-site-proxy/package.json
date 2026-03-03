@@ -1,0 +1,16 @@
+{
+  "name": "lts-site-proxy-worker",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker for LTS Commerce site proxy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsx build.ts",
+    "deploy": "npm run build && npx wrangler deploy"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.2",
+    "wrangler": "^4.0.0"
+  }
+}
