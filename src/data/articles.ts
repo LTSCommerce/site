@@ -100,6 +100,11 @@ ansible-vault encrypt group_vars/production/vault.yml</code></pre>
 
     <p>If step 3 fails, is interrupted, or is simply forgotten, you've got plaintext secrets sitting in your working directory. One careless <code>git add -A</code> and those secrets are in your commit history forever. Yes, you can use <code>ansible-vault edit</code> to combine these steps, and yes, you can set up pre-commit hooks to catch unencrypted vault files. But these are guardrails bolted onto a fundamentally fragile process. The underlying workflow requires you to temporarily put secrets into plaintext. Any process that relies on "don't forget to re-encrypt" is a process that will eventually fail.</p>
 
+    <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 1.25rem 1.5rem; margin: 1.5rem 0; border-radius: 0.375rem;">
+        <p style="font-weight: 700; color: #991b1b; margin: 0 0 0.5rem 0;">Secrets committed to git are there forever</p>
+        <p style="color: #7f1d1d; margin: 0;">Deleting a file or overwriting a value does not remove it from git history. Anyone with access to the repository can recover every version of every file ever committed. If a plaintext secret hits a commit, even briefly, the only safe remediation is to rotate that secret immediately. Tools like <code>git filter-branch</code> or BFG Repo-Cleaner can rewrite history, but they require force-pushing to every remote and every clone. On a public repository, you must assume the secret has already been scraped. There is no undo.</p>
+    </div>
+
     <p>Pre-commit hooks are often cited as the solution here. They're a band-aid. They catch the mistake after it's already happened in the working directory. They don't prevent the plaintext from existing in the first place. And they only work if every developer on the team has them installed and hasn't bypassed them with <code>--no-verify</code>.</p>
 
     <h3>Completely Opaque in Git</h3>
