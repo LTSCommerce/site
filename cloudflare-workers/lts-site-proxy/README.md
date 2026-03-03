@@ -45,7 +45,7 @@ Set via: Cloudflare Dashboard -> `ltscommerce.dev` -> SSL/TLS -> Overview -> **F
 
 ### Cloudflare API Token
 
-Required for both CLI deployment and GitHub Actions CI/CD.
+Required for CLI deployment and API management.
 
 **Create the token:**
 
@@ -61,48 +61,17 @@ Required for both CLI deployment and GitHub Actions CI/CD.
 6. Zone Resources: Include -> Specific zone -> `ltscommerce.dev`
 7. Create Token and copy the value
 
-**Add to GitHub Actions:**
-
-1. Go to https://github.com/LTSCommerce/site/settings/secrets/actions
-2. Click **New repository secret**
-3. Name: `CLOUDFLARE_API_TOKEN`
-4. Value: paste the token
-5. Add secret
-
-## Build
+## Build & Deploy
 
 ```bash
 cd cloudflare-workers/lts-site-proxy
-npm install        # first time only
-npm run build      # compiles worker.ts -> worker.js via esbuild
+npm install                                    # first time only
+npm run build                                  # compiles worker.ts -> worker.js via esbuild
+export CLOUDFLARE_API_TOKEN="your-token-here"
+npm run deploy                                 # builds and deploys to Cloudflare
 ```
 
 The build output (`worker.js`) is gitignored - it's always built fresh before deployment.
-
-## Deployment
-
-### Automated (GitHub Actions)
-
-The workflow at `.github/workflows/deploy-worker.yml` deploys automatically on push to `main` when worker files change. It can also be triggered manually via **Actions -> Deploy Cloudflare Worker -> Run workflow**.
-
-Triggers:
-- Changes to `cloudflare-workers/lts-site-proxy/**`
-- Changes to `.github/workflows/deploy-worker.yml`
-
-### Manual (CLI)
-
-```bash
-cd cloudflare-workers/lts-site-proxy
-npm install
-
-# Option 1: Interactive login (opens browser)
-npx wrangler login
-npm run deploy
-
-# Option 2: API token
-export CLOUDFLARE_API_TOKEN="your-token-here"
-npm run deploy
-```
 
 ## Testing
 
