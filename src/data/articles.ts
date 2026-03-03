@@ -7,6 +7,520 @@ import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
+    id: 'ansible-vault-strings-vs-file-encryption',
+    title:
+      'Stop Encrypting Entire Files with Ansible Vault. Use Vault Strings Instead.',
+    description:
+      'Ansible Vault file encryption creates opaque blobs that break git diffs, block code review, and resist AI tooling. Vault encrypted strings keep your keys visible and your values safe. It is a strictly better workflow for infrastructure secrets.',
+    date: '2026-03-03',
+    category: CATEGORIES.infrastructure.id,
+    readingTime: 15,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'ansible',
+    content: `<div class="intro">
+    <p class="lead">Ansible Vault is the built-in answer to a real problem: you need secrets in your infrastructure code, and you can't commit plaintext passwords to git. But the way most teams use Vault, encrypting entire files, creates more problems than it solves. Since Ansible 2.3, there's been a better option: encrypting individual variable values with <code>ansible-vault encrypt_string</code>. After years of managing Ansible across production environments, I'm convinced that vault strings are the correct default and that file-level encryption should be treated as a legacy pattern.</p>
+</div>
+
+<section>
+    <h2>Two Approaches to the Same Problem</h2>
+
+    <p>Ansible Vault offers two distinct encryption strategies. The difference between them isn't cosmetic. It fundamentally changes how you work with secrets across your entire development lifecycle.</p>
+
+    <h3>File-Level Encryption</h3>
+
+    <p>The original approach. You run <code>ansible-vault encrypt secrets.yml</code> and the entire file becomes an encrypted blob. Every byte of content, including variable names, values, comments, and formatting, is replaced with ciphertext. The file header identifies it as vault-encrypted, and everything below that header is opaque.</p>
+
+    <p>Here's what a vault-encrypted file actually looks like in your repository:</p>
+
+    <pre><code class="language-yaml">$ANSIBLE_VAULT;1.1;AES256
+36353031653464376538653338663731313066653839383139656138313334326638
+62316535623834653238393064306536653565366131633064643539643830633365
+31393865323135353332363336653432626233356339313035323665643465336261
+63653261343139393132653134633739313535343935376365393762363137363936
+38343462613864663965393662333063363665303635393362303431383537303038
+35633937653562623464613930666332653766393563633035313534303934363264
+61383661336365623165646264633633366533653338633738363031363366363639
+30376164656261623561636135353432633462636234353230383466376439376461
+38653638323336366163383337636435316366393766323030316133333462356465
+33386262333432653261633632633633363833363034623234396235336530376565</code></pre>
+
+    <p>That is your variables file. Good luck reviewing it.</p>
+
+    <h3>Variable-Level Encryption (Vault Strings)</h3>
+
+    <p>Introduced in Ansible 2.3, <code>encrypt_string</code> encrypts individual values while leaving variable names in plaintext. The encrypted value is embedded directly in your YAML using the <code>!vault |</code> tag. Only the sensitive data is encrypted. The structure, the keys, and any non-sensitive values remain perfectly readable.</p>
+
+    <pre><code class="language-yaml"># group_vars/production/main.yml
+---
+app_name: my-application
+app_environment: production
+app_debug: false
+app_port: 8080
+
+db_host: db-prod-primary.internal
+db_port: 5432
+db_name: app_production
+db_user: app_service
+db_password: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    61626364656667686970716b6c6d6e6f70717273747576
+    77787980818283848586878889909192939495969798
+    99303132333435363738394041424344454647484950
+
+api_secret_key: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    31323334353637383930313233343536373839303132
+    33343536373839303132333435363738393031323334
+    35363738393031323334353637383930313233343536
+
+redis_host: redis-prod.internal
+redis_port: 6379</code></pre>
+
+    <p>Look at the difference. You can see exactly what this file configures. You know the database host, the port, the application settings. The only things you can't see are the actual password and the API key, which is precisely the security boundary you want.</p>
+</section>
+
+<section>
+    <h2>The Case Against File-Level Encryption</h2>
+
+    <p>File-level encryption isn't just less convenient than vault strings. It actively harms four aspects of modern infrastructure development: safety, reviewability, searchability, and AI-assisted workflows.</p>
+
+    <h3>The Decrypt-Edit-Re-encrypt Workflow Is Dangerous</h3>
+
+    <p>To edit a vault-encrypted file, the standard workflow is:</p>
+
+    <pre><code class="language-bash"># Step 1: Decrypt the file
+ansible-vault decrypt group_vars/production/vault.yml
+
+# Step 2: Edit it
+vim group_vars/production/vault.yml
+
+# Step 3: Re-encrypt it
+ansible-vault encrypt group_vars/production/vault.yml</code></pre>
+
+    <p>If step 3 fails, is interrupted, or is simply forgotten, you've got plaintext secrets sitting in your working directory. One careless <code>git add -A</code> and those secrets are in your commit history forever. Yes, you can use <code>ansible-vault edit</code> to combine these steps, and yes, you can set up pre-commit hooks to catch unencrypted vault files. But these are guardrails bolted onto a fundamentally fragile process. The underlying workflow requires you to temporarily put secrets into plaintext. Any process that relies on "don't forget to re-encrypt" is a process that will eventually fail.</p>
+
+    <p>Pre-commit hooks are often cited as the solution here. They're a band-aid. They catch the mistake after it's already happened in the working directory. They don't prevent the plaintext from existing in the first place. And they only work if every developer on the team has them installed and hasn't bypassed them with <code>--no-verify</code>.</p>
+
+    <h3>Completely Opaque in Git</h3>
+
+    <p>When someone changes a variable in a vault-encrypted file and opens a pull request, here's what the reviewer sees:</p>
+
+    <pre><code class="language-bash">$ git diff HEAD~1 -- group_vars/production/vault.yml
+diff --git a/group_vars/production/vault.yml b/group_vars/production/vault.yml
+index 3a7b2c1..8f4e9d2 100644
+--- a/group_vars/production/vault.yml
++++ b/group_vars/production/vault.yml
+@@ -1,10 +1,10 @@
+ $ANSIBLE_VAULT;1.1;AES256
+-36353031653464376538653338663731313066653839383139656138313334326638
+-62316535623834653238393064306536653565366131633064643539643830633365
+-31393865323135353332363336653432626233356339313035323665643465336261
++39323134653938373635343231393837363534333231393837363534333231393837
++36353433323139383736353433323139383736353433323139383736353433323139
++38373635343332313938373635343332313938373635343332313938373635343332</code></pre>
+
+    <p>What changed? A password? An API key? A database hostname? A comment? You've got absolutely no idea. Code review is impossible. The reviewer has to either trust the author blindly or decrypt the file locally, diff the plaintext, and hope nothing else changed that they missed.</p>
+
+    <p>Git's <code>textconv</code> feature can be configured to decrypt vault files for local diffs, but it only works in the CLI. It doesn't work on GitHub, GitLab, or any web-based PR review interface. Since most teams review pull requests in their browser, <code>textconv</code> solves the problem in exactly the place where nobody is looking.</p>
+
+    <p>Merge conflicts are even worse. Two engineers change different variables in the same vault file, and git can't merge encrypted blobs. The resolution process is: decrypt both versions, perform the three-way merge on plaintext, then re-encrypt. You're back to the dangerous decrypt-edit-re-encrypt dance, but now with added merge complexity.</p>
+
+    <h3>Unsearchable</h3>
+
+    <p>You can't <code>grep</code> for anything inside a vault-encrypted file. Variable names are hidden alongside their values. If you need to find where <code>db_password</code> is defined across your inventory, you have to decrypt every vault file first. The alternative is maintaining a separate, unencrypted reference file that lists the variable names. That's the official Ansible recommendation, and it's an admission that full-file encryption breaks basic discoverability.</p>
+
+    <h3>Opaque to AI Tooling</h3>
+
+    <p>This point didn't matter five years ago, but it matters enormously now. LLM-based coding assistants, whether Claude, Copilot, or anything else, are increasingly part of the infrastructure engineering workflow. They can review Ansible playbooks, suggest improvements, catch misconfigurations, and help refactor variable structures.</p>
+
+    <p>But they can't do any of this if the variables file is an encrypted blob. A vault-encrypted file is a solid wall to any AI tool. It can't see the variable names, can't understand the structure, and can't offer any meaningful assistance. You've eliminated an entire category of tooling from your workflow for zero additional security benefit over vault strings.</p>
+</section>
+
+<section>
+    <h2>The Case for Vault Strings</h2>
+
+    <p>Vault strings solve every one of these problems by placing the encryption boundary exactly where it belongs: around the secret values, and nowhere else.</p>
+
+    <h3>Plaintext Keys, Encrypted Values</h3>
+
+    <p>This is the core ergonomic win. Variable names stay in plaintext because variable names aren't secrets. When was the last time you needed to search your codebase for a password <em>by its value</em>? Never. You search for <code>db_password</code> or <code>api_secret_key</code>. You search by key name, and vault strings let you do exactly that.</p>
+
+    <pre><code class="language-bash"># This works perfectly with vault strings
+$ grep -r "db_password" group_vars/
+group_vars/production/main.yml:db_password: !vault |
+group_vars/staging/main.yml:db_password: !vault |
+
+# This tells you nothing with file-level encryption
+$ grep -r "db_password" group_vars/
+# (no output — the variable name is encrypted too)</code></pre>
+
+    <h3>Values Stay Encrypted Throughout Development</h3>
+
+    <p>With vault strings, sensitive values are never decrypted during development, during git operations, or during code review. They're only decrypted at Ansible runtime, when a playbook actually needs them. There's no decrypt-edit-re-encrypt cycle. There's no window where plaintext secrets exist in your working directory.</p>
+
+    <p>To change a vault string, you generate a new encrypted value and paste it in:</p>
+
+    <pre><code class="language-bash"># Encrypt a new value
+$ ansible-vault encrypt_string 'new-super-secret-password' --name 'db_password'
+Encryption successful
+db_password: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    35363738393031323334353637383930313233343536373839303132333435363738
+    39303132333435363738393031323334353637383930313233343536373839303132
+    33343536373839303132333435363738393031323334353637383930313233343536</code></pre>
+
+    <p>You copy that output, replace the old encrypted block in your YAML file, and commit. At no point did the old secret exist in plaintext in your working directory. At no point was any file fully decrypted. The safety improvement isn't marginal. It eliminates an entire class of accidental exposure.</p>
+
+    <h3>Git Diffs That Actually Tell You Something</h3>
+
+    <p>When a vault string changes in a pull request, the diff is genuinely useful:</p>
+
+    <pre><code class="language-bash">$ git diff HEAD~1 -- group_vars/production/main.yml
+diff --git a/group_vars/production/main.yml b/group_vars/production/main.yml
+index 7c3a1b2..9d5e4f6 100644
+--- a/group_vars/production/main.yml
++++ b/group_vars/production/main.yml
+@@ -12,9 +12,9 @@
+ db_name: app_production
+ db_user: app_service
+ db_password: !vault |
+-    $ANSIBLE_VAULT;1.1;AES256
+-    61626364656667686970716b6c6d6e6f70717273747576
+-    77787980818283848586878889909192939495969798
++    $ANSIBLE_VAULT;1.1;AES256
++    39323134653938373635343231393837363534333231
++    39383736353433323139383736353433323139383736</code></pre>
+
+    <p>You can't see the new password, and you don't need to. What the diff tells you is: "the <code>db_password</code> variable was changed, nothing else was modified." That's exactly the information a reviewer needs. They can see what changed conceptually, verify that no other variables were accidentally modified, and approve the PR with confidence.</p>
+
+    <h3>Compatible with AI-Assisted Development</h3>
+
+    <p>An LLM reading a vault-string file can see the complete structure of your infrastructure variables. It knows what secrets exist, how they are named, which services they belong to, and how they relate to each other. It can suggest renaming <code>db_pass</code> to <code>db_password</code> for consistency. It can identify that you have a <code>redis_host</code> but no corresponding <code>redis_password</code>. It can help you refactor your variable hierarchy across environments.</p>
+
+    <p>The encryption boundary is exactly where it should be. The AI can reason about structure and naming without ever seeing a single secret value. That's a meaningful improvement to your workflow, and you get it for free just by choosing vault strings over file encryption.</p>
+</section>
+
+<section>
+    <h2>Encrypting Strings in Practice</h2>
+
+    <p>The <code>ansible-vault encrypt_string</code> command has a few forms worth knowing about.</p>
+
+    <h3>Basic Usage</h3>
+
+    <pre><code class="language-bash"># Encrypt a string with a password prompt
+ansible-vault encrypt_string 'my-secret-value' --name 'variable_name'
+
+# Encrypt from stdin (avoids the secret appearing in shell history)
+echo -n 'my-secret-value' | ansible-vault encrypt_string --stdin-name 'variable_name'
+
+# Encrypt using a password file
+ansible-vault encrypt_string \\
+    --vault-password-file ~/.vault_pass \\
+    'my-secret-value' \\
+    --name 'variable_name'</code></pre>
+
+    <p>A word of caution: passing the secret directly on the command line leaves it in your shell history. For production use, prefer the <code>--stdin-name</code> approach or use a password file.</p>
+
+    <h3>Vault IDs for Multi-Environment Setups</h3>
+
+    <p>Ansible 2.4 introduced vault IDs, which let you use different encryption passwords for different environments. This is essential for any setup where staging and production secrets shouldn't share an encryption key.</p>
+
+    <pre><code class="language-bash"># Encrypt with a vault ID
+ansible-vault encrypt_string \\
+    --vault-id production@prompt \\
+    'prod-db-password' \\
+    --name 'db_password'
+
+# The output includes the vault ID in the header
+db_password: !vault |
+    $ANSIBLE_VAULT;1.2;AES256;production
+    35363738393031323334353637383930313233343536373839303132333435363738
+    39303132333435363738393031323334353637383930313233343536373839303132
+
+# Decrypt at runtime with the matching vault ID
+ansible-playbook site.yml \\
+    --vault-id production@~/.vault_pass_prod \\
+    --vault-id staging@~/.vault_pass_staging</code></pre>
+
+    <p>Notice the header changes from <code>$ANSIBLE_VAULT;1.1;AES256</code> to <code>$ANSIBLE_VAULT;1.2;AES256;production</code>. The vault ID label is appended, so Ansible can match the correct password at runtime.</p>
+
+    <h3>Configuring Vault Passwords in ansible.cfg</h3>
+
+    <p>For team workflows, configure vault password sources in <code>ansible.cfg</code> so that nobody has to remember command-line flags:</p>
+
+    <pre><code class="language-bash"># ansible.cfg
+[defaults]
+vault_identity_list = production@~/.vault_pass_prod, staging@~/.vault_pass_staging</code></pre>
+
+    <p>With this in place, <code>ansible-playbook site.yml</code> picks up the correct passwords automatically.</p>
+</section>
+
+<section>
+    <h2>What About the Official vars/vault Separation Pattern?</h2>
+
+    <p>The <a href="https://docs.ansible.com/projects/ansible/latest/tips_tricks/ansible_tips_tricks.html">official Ansible documentation</a> recommends an alternative pattern for keeping variable names visible while using file-level encryption. The idea is to split each group into two files:</p>
+
+    <pre><code class="language-bash">group_vars/
+  production/
+    vars.yml          # Unencrypted — references vault_ prefixed variables
+    vault.yml         # Fully encrypted — contains actual secret values</code></pre>
+
+    <p>In <code>vars.yml</code>:</p>
+
+    <pre><code class="language-yaml"># group_vars/production/vars.yml (unencrypted)
+db_password: "{{ vault_db_password }}"
+api_secret_key: "{{ vault_api_secret_key }}"</code></pre>
+
+    <p>In <code>vault.yml</code> (before encryption):</p>
+
+    <pre><code class="language-yaml"># group_vars/production/vault.yml (encrypted with ansible-vault encrypt)
+vault_db_password: "actual-secret-password"
+vault_api_secret_key: "actual-api-key-value"</code></pre>
+
+    <p>This pattern exists precisely because full-file encryption breaks discoverability. It's Ansible's official admission that encrypting entire files hides too much. But look at the overhead: you now maintain two files per group, with a naming convention (<code>vault_</code> prefix) and Jinja2 indirection for every single secret. Every secret requires a variable in <code>vars.yml</code> that references a variable in <code>vault.yml</code>. Add a new secret and you have to update both files. Rename a variable and you have to update both files.</p>
+
+    <p>Vault strings eliminate this indirection entirely. One file, one variable, one place to look. The variable name is visible because it is not encrypted. The value is encrypted because it is a secret. No duplication, no indirection, no <code>vault_</code> prefix convention to remember.</p>
+</section>
+
+<section>
+    <h2>The Rekey Trade-off (and How to Solve It)</h2>
+
+    <p>The one genuine limitation of vault strings that people raise is that <code>ansible-vault rekey</code> doesn't work with them.</p>
+
+    <p>With file-level encryption, rekeying is a single command:</p>
+
+    <pre><code class="language-bash"># Rekey an entire encrypted file
+ansible-vault rekey group_vars/production/vault.yml</code></pre>
+
+    <p>With vault strings, there's no built-in rekey command. To rotate your vault password, you have to re-encrypt each individual string with the new password. For a handful of secrets this is a minor inconvenience. For a large inventory with dozens of encrypted strings across many files, it would be genuinely tedious to do by hand.</p>
+
+    <p>The key word there is "would be." This is a solved problem. The <a href="https://github.com/LongTermSupport/ansible-role-vault-scripts" target="_blank" rel="noopener">LongTermSupport/ansible-role-vault-scripts</a> Ansible role includes a <code>rekeyVaultFile.bash</code> script that automates the entire process. It reads each encrypted variable from a file, decrypts it with the old key, re-encrypts it with the new key, and writes a new file. You run one command per file and the rotation is done:</p>
+
+    <pre><code class="language-bash"># Rekey all vault files in a single environment
+bash shellscripts/vault/rekeyVaultFile.bash \\
+    dev \\
+    ./vault-pass-dev.secret \\
+    dev \\
+    ./vault-pass-dev.secret-new \\
+    environment/dev/group_vars/all/vault-*</code></pre>
+
+    <p>The script creates new files prefixed with <code>new_</code> so you can verify them before replacing the originals. It isn't destructive by default.</p>
+
+    <p>Here's my honest assessment: I've rotated vault passwords perhaps three or four times across all the Ansible-managed infrastructure I've worked with. It's not a frequent operation. The safety and ergonomic benefits of vault strings are felt every single day, on every commit, every PR review, every grep, and every time an AI assistant reads your inventory. Trading a slightly more involved (but infrequent and fully scriptable) rekey process for a dramatically better daily workflow is an easy decision.</p>
+</section>
+
+<section>
+    <h2>Recommended File Structure</h2>
+
+    <p>With vault strings, your <code>group_vars</code> structure becomes simpler, not more complicated. You don't need the <code>vars</code>/<code>vault</code> file split because there are no fully-encrypted files to hide from:</p>
+
+    <pre><code class="language-bash">inventory/
+  group_vars/
+    all/
+      common.yml              # Shared non-secret config
+    production/
+      main.yml                # All production vars, secrets as vault strings
+      database.yml            # DB-specific vars, passwords as vault strings
+    staging/
+      main.yml                # All staging vars, secrets as vault strings
+      database.yml            # DB-specific vars, passwords as vault strings
+  host_vars/
+    web-prod-01/
+      main.yml                # Host-specific vars with inline vault strings</code></pre>
+
+    <p>Each file is self-contained. Secrets live alongside the configuration they belong to, encrypted at the value level. There's no indirection layer, no <code>vault_</code> prefix convention, and no separate encrypted file to keep in sync.</p>
+
+    <p>A complete example of a production variables file:</p>
+
+    <pre><code class="language-yaml"># inventory/group_vars/production/main.yml
+---
+# Application
+app_name: my-application
+app_environment: production
+app_debug: false
+app_log_level: warning
+app_domain: app.example.com
+
+# Database
+db_host: db-prod-primary.internal
+db_port: 5432
+db_name: app_production
+db_user: app_service
+db_password: !vault |
+    $ANSIBLE_VAULT;1.2;AES256;production
+    35363738393031323334353637383930313233343536373839
+    30313233343536373839303132333435363738393031323334
+    35363738393031323334353637383930313233343536373839
+
+# Redis
+redis_host: redis-prod.internal
+redis_port: 6379
+redis_password: !vault |
+    $ANSIBLE_VAULT;1.2;AES256;production
+    39323134653938373635343231393837363534333231393837
+    36353433323139383736353433323139383736353433323139
+    38373635343332313938373635343332313938373635343332
+
+# External APIs
+stripe_api_key: !vault |
+    $ANSIBLE_VAULT;1.2;AES256;production
+    61626364656637383930313233343536373839303132333435
+    36373839303132333435363738393031323334353637383930
+    31323334353637383930313233343536373839303132333435
+
+monitoring_webhook_url: https://hooks.slack.com/services/T00/B00/xxxxx
+backup_s3_bucket: my-app-backups-prod
+backup_retention_days: 30</code></pre>
+
+    <p>Readable, greppable, reviewable, AI-parseable, and secure. That is the entire point.</p>
+</section>
+
+<section>
+    <h2>Tooling: ansible-role-vault-scripts</h2>
+
+    <p>If you're serious about using vault strings at scale, you need tooling. The <a href="https://github.com/LongTermSupport/ansible-role-vault-scripts" target="_blank" rel="noopener">LongTermSupport/ansible-role-vault-scripts</a> role is a collection of shell scripts that automate every common vault string operation. It's packaged as an Ansible role so you can pin a version in your <code>requirements.yml</code> and integrate it directly into your project.</p>
+
+    <p>What the role provides:</p>
+
+    <ul>
+        <li><strong>Generate vault secrets</strong>: creates long random vault password files with <code>generateVaultSecret.bash</code></li>
+        <li><strong>Create vaulted passwords</strong>: generates a secure random password, encrypts it, and writes it to a variable in one step with <code>createVaultedPassword.bash</code></li>
+        <li><strong>Encrypt arbitrary strings</strong>: wraps <code>ansible-vault encrypt_string</code> with environment-aware defaults via <code>createVaultedString.bash</code></li>
+        <li><strong>Generate vaulted SSH key pairs</strong>: creates password-protected private/public keys, encrypts all three values (passphrase, private key, public key) as vault strings with <code>createVaultedSshKeyPair.bash</code></li>
+        <li><strong>Generate vaulted deploy keys</strong>: passwordless SSH keys for read-only deploy access with <code>createVaultedSshDeployKeyPair.bash</code></li>
+        <li><strong>Generate vaulted SSL client certificates</strong>: certificate authority and client certificates, all values encrypted as vault strings with <code>createVaultedSslClientCertificateAndAuth.bash</code></li>
+        <li><strong>Rekey vault files</strong>: the <code>rekeyVaultFile.bash</code> script solves the rekey limitation entirely, decrypting with the old key and re-encrypting with the new one</li>
+        <li><strong>Dump secrets</strong>: view decrypted values without ever writing plaintext to disk with <code>dumpGroupSecrets.bash</code></li>
+        <li><strong>Multi-environment support</strong>: all scripts support environment selection (dev, staging, production) and auto-detect the environment from file paths</li>
+    </ul>
+
+    <p>Installation is straightforward. Add it to your <code>requirements.yml</code>:</p>
+
+    <pre><code class="language-yaml"># requirements.yml
+- src: https://github.com/LongTermSupport/ansible-role-vault-scripts
+  scm: git
+  name: lts.vault-scripts
+  version: master</code></pre>
+
+    <p>Then symlink the scripts into your project:</p>
+
+    <pre><code class="language-bash">ansible-galaxy install --force --keep-scm-meta \\
+    --role-file=requirements.yml \\
+    --roles-path=roles
+
+mkdir -p shellscripts
+ln -s ../roles/lts.vault-scripts/shellscripts/ shellscripts/vault</code></pre>
+
+    <p>Once installed, creating a new encrypted password is a single command:</p>
+
+    <pre><code class="language-bash"># Generate a random password, encrypt it, and write it to a vars file
+bash shellscripts/vault/createVaultedPassword.bash \\
+    vault_db_password \\
+    ./environment/prod/group_vars/all/vault_database.yml \\
+    prod</code></pre>
+
+    <p>Generating vaulted SSH key pairs is equally simple:</p>
+
+    <pre><code class="language-bash"># Generate key pair with encrypted passphrase, private key, and public key
+bash shellscripts/vault/createVaultedSshKeyPair.bash \\
+    vault_deploy \\
+    ops@example.com \\
+    ./environment/prod/group_vars/all/vault_ssh_keys.yml \\
+    prod</code></pre>
+
+    <p>The point of this tooling is that vault strings shouldn't feel like extra work. With the right scripts, they're actually less work than file-level encryption because you never have to think about decrypt/edit/re-encrypt cycles at all.</p>
+</section>
+
+<section>
+    <h2>A Practical Migration Path</h2>
+
+    <p>If your team currently uses file-level encryption and wants to migrate, the process is straightforward:</p>
+
+    <pre><code class="language-bash"># 1. Decrypt the existing vault file
+ansible-vault decrypt group_vars/production/vault.yml
+
+# 2. For each secret variable, encrypt the value as a string
+ansible-vault encrypt_string \\
+    --vault-id production@prompt \\
+    'the-actual-secret-value' \\
+    --name 'db_password'
+
+# 3. Build your new combined vars file with vault strings inline
+# 4. Remove the old vault.yml and vars.yml pair
+# 5. Commit the new structure</code></pre>
+
+    <p>If you have the <a href="https://github.com/LongTermSupport/ansible-role-vault-scripts" target="_blank" rel="noopener">vault-scripts role</a> installed, you can streamline step 2 using <code>createVaultedString.bash</code> which handles environment detection, vault password lookup, and output formatting automatically.</p>
+
+    <p>If you were using the <code>vars</code>/<code>vault</code> separation pattern, you can merge both files into a single file, replacing the Jinja2 references with inline vault strings. The result is fewer files, less indirection, and a clearer structure.</p>
+
+    <p>Do this one environment at a time. Start with a development or staging environment where the stakes are low, verify that playbook execution works identically, then move to production.</p>
+</section>
+
+<section>
+    <h2>Summary: Why Vault Strings Win</h2>
+
+    <p>The comparison isn't close.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Concern</th>
+                <th>File Encryption</th>
+                <th>Vault Strings</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Plaintext exposure risk</td>
+                <td>Secrets exist in plaintext during editing</td>
+                <td>Secrets are never decrypted outside runtime</td>
+            </tr>
+            <tr>
+                <td>Git diffs</td>
+                <td>Meaningless encrypted blob</td>
+                <td>Key names visible, values encrypted</td>
+            </tr>
+            <tr>
+                <td>Pull request review</td>
+                <td>Impossible without local decryption</td>
+                <td>Reviewer sees which variable changed</td>
+            </tr>
+            <tr>
+                <td>Merge conflicts</td>
+                <td>Decrypt both sides, merge, re-encrypt</td>
+                <td>Standard YAML merge (keys are plaintext)</td>
+            </tr>
+            <tr>
+                <td>Searchability</td>
+                <td>Cannot grep for variable names</td>
+                <td>Full grep and IDE search support</td>
+            </tr>
+            <tr>
+                <td>AI/LLM compatibility</td>
+                <td>Completely opaque</td>
+                <td>Full structural visibility</td>
+            </tr>
+            <tr>
+                <td>File structure</td>
+                <td>Requires vars/vault split or loses discoverability</td>
+                <td>Single file per group, self-contained</td>
+            </tr>
+            <tr>
+                <td>Password rotation (rekey)</td>
+                <td>Built-in <code>ansible-vault rekey</code></td>
+                <td>Scriptable with <a href="https://github.com/LongTermSupport/ansible-role-vault-scripts" target="_blank" rel="noopener">vault-scripts</a> tooling</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>File-level encryption used to win on password rotation convenience, but with <a href="https://github.com/LongTermSupport/ansible-role-vault-scripts" target="_blank" rel="noopener">proper tooling</a> that advantage disappears. Vault strings win on safety, reviewability, searchability, tooling compatibility, and structural simplicity.</p>
+
+    <p>The <code>encrypt_string</code> feature has been available since Ansible 2.3. It's not new, it's not experimental, and it's not a niche pattern. It's the way secrets should be managed in Ansible, and I'd encourage any team still encrypting entire files to make the switch.</p>
+</section>
+`,
+  },
+  {
     id: 'systemd-timers-modern-cron',
     title: 'systemd Timers: The Modern Alternative to Cron Jobs',
     description:
