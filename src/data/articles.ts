@@ -4337,7 +4337,7 @@ loop:
 <span class="tag">DevOps</span>
 </div>
 <div class="article-nav">
-<a href="/articles.html" class="back-link">← Back to Articles</a>
+<a href="/articles" class="back-link">← Back to Articles</a>
 </div>
 </footer>
     `,
@@ -5410,7 +5410,7 @@ to explore the full documentation and get started with intelligent command manag
             <h3>Hook Configuration</h3>
             <p>Hooks are configured in <code>~/.claude/settings.json</code> or <code>.claude/settings.json</code>. Each hook specifies a script path and optional metadata. The <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener">v2.0.30 release</a> added prompt-based stop hooks, enabling even more sophisticated control patterns.</p>
 
-            <p>For a detailed example of using hooks to control subagent behavior and prevent resource conflicts, see my article on <a href="/articles/claude-code-hooks-subagent-control.html">Advanced Claude Code Hooks: Controlling Sub-Agent Behavior</a>.</p>
+            <p>For a detailed example of using hooks to control subagent behavior and prevent resource conflicts, see my article on <a href="/articles/claude-code-hooks-subagent-control">Advanced Claude Code Hooks: Controlling Sub-Agent Behavior</a>.</p>
         </section>
 
         <section>
@@ -8423,7 +8423,7 @@ download_file() {
 
     <footer class="article-footer">
       <div class="article-nav">
-        <a href="/articles.html" class="back-link">← Back to Articles</a>
+        <a href="/articles" class="back-link">← Back to Articles</a>
       </div>
     </footer>
     `,
@@ -9524,7 +9524,7 @@ return $this-&gt;queryLog;
 <span class="tag">Scalability</span>
 </div>
 <div class="article-nav">
-<a href="/articles.html" class="back-link">← Back to Articles</a>
+<a href="/articles" class="back-link">← Back to Articles</a>
 </div>
 </footer>
     `,
@@ -9778,7 +9778,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 </section>
 <footer class="article-footer">
 <div class="article-nav">
-<a href="/articles.html" class="back-link">← Back to Articles</a>
+<a href="/articles" class="back-link">← Back to Articles</a>
 </div>
 </footer>
     `,
@@ -12111,7 +12111,7 @@ return $backups[0];
 </section>
 <footer class="article-footer">
 <div class="article-nav">
-<a href="/articles.html" class="back-link">← Back to Articles</a>
+<a href="/articles" class="back-link">← Back to Articles</a>
 </div>
 </footer>
     `,
@@ -14907,7 +14907,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
 </section>
 <footer class="article-footer">
 <div class="article-nav">
-<a href="/articles.html" class="back-link">← Back to Articles</a>
+<a href="/articles" class="back-link">← Back to Articles</a>
 </div>
 </footer>
     `,
