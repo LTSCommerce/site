@@ -72,3 +72,5 @@ export function getRoutes(): string[] {
   const articleRoutes = getAllArticles().map(a => `/articles/${a.id}`);
   return [...staticRoutes, ...articleRoutes];
 }
+
+export { getAllArticles } from './data/articles';
