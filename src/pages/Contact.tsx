@@ -170,48 +170,35 @@ export function Contact() {
       title="Hire Joseph Edmonds - Senior Developer & Technical Leader | LTSCommerce"
       description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 20+ years experience. 150/hr."
     >
-      {/* Hero Section */}
-      <Section spacing="xl">
-        <Container size="md">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">Hire Me</h1>
-            <p className="text-xl text-gray-700 leading-relaxed">
-              Senior developer and technical leader with over 20 years of experience
-              building complex systems. I work across the full stack, from database
-              queries to deployment pipelines, and I can operate at both the code level
+      {/* Hero + Services combined */}
+      <Section spacing="md">
+        <Container>
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold mb-3">Hire Me</h1>
+            <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
+              Senior developer and technical leader with over 20 years of experience.
+              I work across the full stack and can operate at both the code level
               and the strategic level depending on what you need.
             </p>
           </div>
-        </Container>
-      </Section>
 
-      {/* What You Can Hire Me For */}
-      <Section spacing="lg" className="bg-gray-50">
-        <Container>
-          <h2 className="text-3xl font-bold mb-8 text-center">What You Can Hire Me For</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             {SERVICE_AREAS.map((service) => (
               <div
                 key={service.title}
-                className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm"
+                className="bg-gray-50 p-4 rounded-lg border border-gray-200"
               >
-                <h3 className="text-xl font-bold mb-3">{service.title}</h3>
-                <p className="text-gray-700">{service.description}</p>
+                <h3 className="text-lg font-bold mb-1">{service.title}</h3>
+                <p className="text-gray-700 text-sm">{service.description}</p>
               </div>
             ))}
           </div>
-        </Container>
-      </Section>
 
-      {/* Technologies */}
-      <Section spacing="lg">
-        <Container size="md">
-          <h2 className="text-3xl font-bold mb-6 text-center">Technologies</h2>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-2 mb-0">
             {TECH_TAGS.map((tag) => (
               <span
                 key={tag}
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-medium"
+                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
               >
                 {tag}
               </span>
@@ -220,43 +207,40 @@ export function Contact() {
         </Container>
       </Section>
 
-      {/* How I Work + Credibility */}
-      <Section spacing="lg" className="bg-gray-50">
+      {/* How I Work + Why Hire Me */}
+      <Section spacing="sm" className="bg-gray-50">
         <Container>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-              <h2 className="text-2xl font-bold mb-4">How I Work</h2>
-              <ul className="space-y-3 text-gray-700">
-                <li className="flex items-start gap-3">
-                  <span className="text-[#0f4c81] font-bold mt-0.5">Rate</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white p-5 rounded-lg border border-gray-200">
+              <h2 className="text-xl font-bold mb-3">How I Work</h2>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c81] font-bold shrink-0">Rate</span>
                   <span>150/hr GBP, 2 hour minimum. Negotiable for longer engagements.</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#0f4c81] font-bold mt-0.5">Location</span>
-                  <span>Remote-first, UK-based. Available for occasional on-site if needed.</span>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c81] font-bold shrink-0">Location</span>
+                  <span>Remote-first, UK-based. Available for occasional on-site.</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#0f4c81] font-bold mt-0.5">Engagement</span>
-                  <span>
-                    Flexible. Anything from a one-off audit or architecture review to long-term
-                    embedded development. I adapt to what the project needs.
-                  </span>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c81] font-bold shrink-0">Engagement</span>
+                  <span>Flexible. One-off audits to long-term embedded development.</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#0f4c81] font-bold mt-0.5">Response</span>
-                  <span>Typically within 24 hours on business days.</span>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c81] font-bold shrink-0">Response</span>
+                  <span>Within 24 hours on business days.</span>
                 </li>
               </ul>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-              <h2 className="text-2xl font-bold mb-4">Why Hire Me</h2>
-              <ul className="space-y-3 text-gray-700">
-                <li>20+ years hands-on development experience across PHP, TypeScript, Linux, and databases.</li>
+            <div className="bg-white p-5 rounded-lg border border-gray-200">
+              <h2 className="text-xl font-bold mb-3">Why Hire Me</h2>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li>20+ years hands-on experience across PHP, TypeScript, Linux, and databases.</li>
                 <li>Published author of "The Art of Modern PHP 8". Zend Certified Engineer.</li>
                 <li>Proven track record with large-scale, high-pressure systems and legacy codebases.</li>
-                <li>Comfortable at both the keyboard and the whiteboard. I can write the code or lead the team that writes it.</li>
-                <li>Active AI adopter. I use tools like Claude Code daily and can help your team do the same.</li>
+                <li>Comfortable at the keyboard and the whiteboard. I can write the code or lead the team.</li>
+                <li>Active AI adopter. I use Claude Code daily and can help your team do the same.</li>
               </ul>
             </div>
           </div>
@@ -264,10 +248,10 @@ export function Contact() {
       </Section>
 
       {/* Contact Form Section */}
-      <Section spacing="xl">
+      <Section spacing="md">
         <Container>
-          <h2 className="text-3xl font-bold mb-8 text-center">Get in Touch</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <h2 className="text-2xl font-bold mb-6 text-center">Get in Touch</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
