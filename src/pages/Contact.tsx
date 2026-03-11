@@ -27,6 +27,44 @@ function getInputClassName(
   return `${base} border-gray-300 focus:ring-blue-300`;
 }
 
+const SERVICE_AREAS = [
+  {
+    title: 'Development',
+    description:
+      'PHP, TypeScript, and full-stack web development. Complex backend systems, API design, ecommerce platforms, legacy modernisation, and performance optimisation.',
+  },
+  {
+    title: 'Technical Leadership',
+    description:
+      'Fractional CTO services, architecture decisions, code review culture, hiring guidance, team standards, and technical roadmapping for growing teams.',
+  },
+  {
+    title: 'Infrastructure & DevOps',
+    description:
+      'Linux server management, Ansible automation, Proxmox virtualisation, CI/CD pipelines, database administration, and deployment strategy.',
+  },
+  {
+    title: 'Strategy & Training',
+    description:
+      'Technical audits, tech debt prioritisation, build-vs-buy decisions, team upskilling, and AI-enhanced development workflows with tools like Claude Code.',
+  },
+];
+
+const TECH_TAGS = [
+  'PHP',
+  'TypeScript',
+  'MySQL',
+  'Linux',
+  'Ansible',
+  'Docker',
+  'Ecommerce',
+  'REST APIs',
+  'Claude Code',
+  'AI Integration',
+  'Proxmox',
+  'Bash',
+];
+
 export function Contact() {
   const [status, setStatus] = useState<SubmissionStatus>('idle');
   const [serverError, setServerError] = useState<string>('');
@@ -63,8 +101,6 @@ export function Contact() {
         | undefined;
 
       if (!contactFormUrl) {
-        // No backend configured — open mailto as fallback via anchor click
-        // (avoids window.location.href assignment which triggers full-page reload)
         const mailto = `mailto:hello@ltscommerce.dev?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(`Name: ${data.name}\n\n${data.message}`)}`;
         const a = document.createElement('a');
         a.href = mailto;
@@ -131,22 +167,106 @@ export function Contact() {
 
   return (
     <Page
-      title="Contact Joseph - Hire a PHP Expert | LTSCommerce"
-      description="Get in touch to discuss your PHP development project. Complex systems, legacy modernisation, infrastructure automation. Typically respond within 24 hours."
+      title="Hire Joseph Edmonds - Senior Developer & Technical Leader | LTSCommerce"
+      description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 20+ years experience. 150/hr."
     >
       {/* Hero Section */}
       <Section spacing="xl">
+        <Container size="md">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">Hire Me</h1>
+            <p className="text-xl text-gray-700 leading-relaxed">
+              Senior developer and technical leader with over 20 years of experience
+              building complex systems. I work across the full stack, from database
+              queries to deployment pipelines, and I can operate at both the code level
+              and the strategic level depending on what you need.
+            </p>
+          </div>
+        </Container>
+      </Section>
+
+      {/* What You Can Hire Me For */}
+      <Section spacing="lg" className="bg-gray-50">
         <Container>
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl font-bold mb-4">Let's Work Together</h1>
-            <p className="text-xl text-gray-700 mx-auto">Have a project in mind? I'd love to hear about it.</p>
+          <h2 className="text-3xl font-bold mb-8 text-center">What You Can Hire Me For</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {SERVICE_AREAS.map((service) => (
+              <div
+                key={service.title}
+                className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm"
+              >
+                <h3 className="text-xl font-bold mb-3">{service.title}</h3>
+                <p className="text-gray-700">{service.description}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* Technologies */}
+      <Section spacing="lg">
+        <Container size="md">
+          <h2 className="text-3xl font-bold mb-6 text-center">Technologies</h2>
+          <div className="flex flex-wrap justify-center gap-3">
+            {TECH_TAGS.map((tag) => (
+              <span
+                key={tag}
+                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-medium"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* How I Work + Credibility */}
+      <Section spacing="lg" className="bg-gray-50">
+        <Container>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              <h2 className="text-2xl font-bold mb-4">How I Work</h2>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-start gap-3">
+                  <span className="text-[#0f4c81] font-bold mt-0.5">Rate</span>
+                  <span>150/hr GBP, 2 hour minimum. Negotiable for longer engagements.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#0f4c81] font-bold mt-0.5">Location</span>
+                  <span>Remote-first, UK-based. Available for occasional on-site if needed.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#0f4c81] font-bold mt-0.5">Engagement</span>
+                  <span>
+                    Flexible. Anything from a one-off audit or architecture review to long-term
+                    embedded development. I adapt to what the project needs.
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#0f4c81] font-bold mt-0.5">Response</span>
+                  <span>Typically within 24 hours on business days.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              <h2 className="text-2xl font-bold mb-4">Why Hire Me</h2>
+              <ul className="space-y-3 text-gray-700">
+                <li>20+ years hands-on development experience across PHP, TypeScript, Linux, and databases.</li>
+                <li>Published author of "The Art of Modern PHP 8". Zend Certified Engineer.</li>
+                <li>Proven track record with large-scale, high-pressure systems and legacy codebases.</li>
+                <li>Comfortable at both the keyboard and the whiteboard. I can write the code or lead the team that writes it.</li>
+                <li>Active AI adopter. I use tools like Claude Code daily and can help your team do the same.</li>
+              </ul>
+            </div>
           </div>
         </Container>
       </Section>
 
       {/* Contact Form Section */}
-      <Section spacing="xl" className="bg-gray-50">
+      <Section spacing="xl">
         <Container>
+          <h2 className="text-3xl font-bold mb-8 text-center">Get in Touch</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Contact Form */}
             <div className="lg:col-span-2">
@@ -169,9 +289,9 @@ export function Contact() {
                         />
                       </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
                       Message Sent!
-                    </h2>
+                    </h3>
                     <p className="text-gray-600 mb-6">
                       Thanks for reaching out. I'll get back to you within 24 hours.
                     </p>
@@ -185,7 +305,7 @@ export function Contact() {
                   </div>
                 ) : (
                   <form onSubmit={handleFormSubmit} className="flex flex-col gap-5" noValidate>
-                    {/* Honeypot field — hidden from humans, catches bots */}
+                    {/* Honeypot field */}
                     <input
                       type="text"
                       {...register('company_url')}
@@ -326,7 +446,7 @@ export function Contact() {
                         aria-invalid={errors.message ? 'true' : 'false'}
                         aria-describedby={errors.message ? 'message-error' : undefined}
                         disabled={isDisabled}
-                        placeholder="Tell me about your project, goals, and any specific requirements..."
+                        placeholder="Tell me about your project, your team, and what you're looking for..."
                         {...register('message')}
                         className={getInputClassName(
                           Boolean(errors.message),
@@ -349,7 +469,7 @@ export function Contact() {
                     <button
                       type="submit"
                       disabled={isDisabled || !isValid}
-                      className="w-full py-3 px-6 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="w-full py-3 px-6 bg-[#0f4c81] text-white rounded-md text-sm font-medium hover:bg-[#1e6ba5] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
                         <>
@@ -384,43 +504,38 @@ export function Contact() {
               </div>
             </div>
 
-            {/* Contact Info Sidebar */}
+            {/* Sidebar */}
             <aside className="space-y-6">
               <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                <h2 className="text-2xl font-bold mb-4">Get in Touch</h2>
-                <p className="text-gray-700">
-                  I'm always interested in hearing about new projects and opportunities. Whether you
-                  need a complete solution built from scratch or help with an existing system, I'm
-                  here to help.
-                </p>
+                <h3 className="text-xl font-bold mb-3">Quick Details</h3>
+                <dl className="space-y-3 text-gray-700">
+                  <div>
+                    <dt className="font-medium text-gray-900">Rate</dt>
+                    <dd>150/hr GBP (2hr min)</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-gray-900">Based</dt>
+                    <dd>United Kingdom (remote)</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-gray-900">Response</dt>
+                    <dd>Within 24 hours</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-gray-900">Availability</dt>
+                    <dd>Taking new clients</dd>
+                  </div>
+                </dl>
               </div>
 
               <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                <h3 className="text-xl font-bold mb-3">Response Time</h3>
-                <p className="text-gray-700">
-                  I typically respond within 24 hours during business days.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                <h3 className="text-xl font-bold mb-3">Project Process</h3>
-                <ol className="list-decimal list-inside text-gray-700 space-y-2">
-                  <li>Initial consultation to understand your needs</li>
-                  <li>Detailed project proposal and timeline</li>
-                  <li>Agile development with regular updates</li>
-                  <li>Thorough testing and quality assurance</li>
-                  <li>Deployment and ongoing support</li>
-                </ol>
-              </div>
-
-              <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                <h3 className="text-xl font-bold mb-3">Other Ways to Connect</h3>
+                <h3 className="text-xl font-bold mb-3">Connect</h3>
                 <div className="flex flex-col gap-3">
                   <a
                     href="https://linkedin.com/in/edmondscommerce"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-[#0f4c81] hover:text-[#1e6ba5] transition-colors"
                   >
                     LinkedIn
                   </a>
@@ -428,7 +543,7 @@ export function Contact() {
                     href="https://github.com/LongTermSupport"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-[#0f4c81] hover:text-[#1e6ba5] transition-colors"
                   >
                     GitHub
                   </a>
