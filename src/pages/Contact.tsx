@@ -181,7 +181,7 @@ export function Contact() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6 items-start">
             {SERVICE_AREAS.map((service) => (
               <div
                 key={service.title}
@@ -204,7 +204,7 @@ export function Contact() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8 items-start">
             <div className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
               <h2 className="text-base font-bold mb-2">How I Work</h2>
               <ul className="space-y-1.5 text-sm text-gray-700">
