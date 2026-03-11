@@ -214,7 +214,7 @@ export function Contact() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#0f4c81] font-bold shrink-0">Location</span>
-                  <span>Remote-first, UK-based. Available for occasional on-site.</span>
+                  <span>Remote only, UK timezone. Flexible on hours for international clients.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#0f4c81] font-bold shrink-0">Engagement</span>
@@ -488,7 +488,7 @@ export function Contact() {
                   </div>
                   <div>
                     <dt className="font-medium text-gray-900">Based</dt>
-                    <dd>United Kingdom (remote)</dd>
+                    <dd>Remote only (UK timezone)</dd>
                   </div>
                   <div>
                     <dt className="font-medium text-gray-900">Response</dt>
