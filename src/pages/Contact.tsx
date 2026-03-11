@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Page } from '../components/layout/Page';
 import { Container } from '../components/layout/Container';
-import { Section } from '../components/layout/Section';
 import {
   contactFormSchema,
   type ContactFormData,
@@ -170,10 +169,10 @@ export function Contact() {
       title="Hire Joseph Edmonds - Senior Developer & Technical Leader | LTSCommerce"
       description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 20+ years experience. 150/hr."
     >
-      {/* Hero + Services combined */}
-      <Section spacing="md">
+      {/* Hero + Services + Details - single flow */}
+      <div className="py-10">
         <Container>
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <h1 className="text-4xl font-bold mb-3">Hire Me</h1>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
               Senior developer and technical leader with over 20 years of experience.
@@ -182,19 +181,19 @@ export function Contact() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
             {SERVICE_AREAS.map((service) => (
               <div
                 key={service.title}
-                className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200"
               >
-                <h3 className="text-lg font-bold mb-1">{service.title}</h3>
-                <p className="text-gray-700 text-sm">{service.description}</p>
+                <h3 className="text-base font-bold mb-1">{service.title}</h3>
+                <p className="text-gray-700 text-sm leading-snug">{service.description}</p>
               </div>
             ))}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2 mb-0">
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
             {TECH_TAGS.map((tag) => (
               <span
                 key={tag}
@@ -204,16 +203,11 @@ export function Contact() {
               </span>
             ))}
           </div>
-        </Container>
-      </Section>
 
-      {/* How I Work + Why Hire Me */}
-      <Section spacing="sm" className="bg-gray-50">
-        <Container>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-5 rounded-lg border border-gray-200">
-              <h2 className="text-xl font-bold mb-3">How I Work</h2>
-              <ul className="space-y-2 text-sm text-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
+            <div className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
+              <h2 className="text-base font-bold mb-2">How I Work</h2>
+              <ul className="space-y-1.5 text-sm text-gray-700">
                 <li className="flex items-start gap-2">
                   <span className="text-[#0f4c81] font-bold shrink-0">Rate</span>
                   <span>150/hr GBP, 2 hour minimum. Negotiable for longer engagements.</span>
@@ -233,9 +227,9 @@ export function Contact() {
               </ul>
             </div>
 
-            <div className="bg-white p-5 rounded-lg border border-gray-200">
-              <h2 className="text-xl font-bold mb-3">Why Hire Me</h2>
-              <ul className="space-y-2 text-sm text-gray-700">
+            <div className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
+              <h2 className="text-base font-bold mb-2">Why Hire Me</h2>
+              <ul className="space-y-1.5 text-sm text-gray-700">
                 <li>20+ years hands-on experience across PHP, TypeScript, Linux, and databases.</li>
                 <li>Published author of "The Art of Modern PHP 8". Zend Certified Engineer.</li>
                 <li>Proven track record with large-scale, high-pressure systems and legacy codebases.</li>
@@ -244,13 +238,8 @@ export function Contact() {
               </ul>
             </div>
           </div>
-        </Container>
-      </Section>
 
-      {/* Contact Form Section */}
-      <Section spacing="md">
-        <Container>
-          <h2 className="text-2xl font-bold mb-6 text-center">Get in Touch</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">Get in Touch</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Contact Form */}
             <div className="lg:col-span-2">
@@ -536,7 +525,7 @@ export function Contact() {
             </aside>
           </div>
         </Container>
-      </Section>
+      </div>
     </Page>
   );
 }
