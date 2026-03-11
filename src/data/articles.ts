@@ -7,6 +7,396 @@ import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
+    id: 'errors-vs-bugs-the-difference-that-matters',
+    title: 'Errors vs Bugs: The Difference That Actually Matters',
+    description:
+      'An error tells you what went wrong. A bug makes you figure it out. This fundamental distinction shapes how you should write code, handle failures, and think about the cost of debugging.',
+    date: '2026-03-11',
+    category: CATEGORIES.qa.id,
+    readingTime: 12,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'programming',
+    content: `<div class="intro">
+    <p class="lead">Software fails. That is not the interesting part. The interesting part is <em>how</em> it fails, because not all failures are the same. There is a fundamental distinction between two kinds of failure — <strong>errors</strong> and <strong>bugs</strong> — and most developers use these words interchangeably despite them meaning completely different things. Getting clear on this distinction will change how you write code, how you handle failures, and how much time you spend staring at production logs at two in the morning.</p>
+</div>
+
+<section>
+    <h2>What Is an Error?</h2>
+
+    <p>An error is a failure that the system knows about. Something went wrong, the system detected it, and it told you. You get a message, a location, a stack trace, context. The system is shouting: "This broke, here is where, here is why."</p>
+
+    <p>When you receive an error, you are not investigating. You are <em>responding</em>. The hard work of figuring out what happened has already been done — by the code that threw the error in the first place.</p>
+
+    <p>In PHP, the typical mechanism is an exception:</p>
+
+    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+final class PaymentService
+{
+    public function charge(Order $order): PaymentResult
+    {
+        if ($order-&gt;getTotal()-&gt;isNegative()) {
+            throw new \\InvalidArgumentException(
+                sprintf(
+                    'Order %s has a negative total: %s',
+                    $order-&gt;getId(),
+                    $order-&gt;getTotal()-&gt;format()
+                )
+            );
+        }
+
+        try {
+            return $this-&gt;gateway-&gt;charge($order-&gt;getTotal());
+        } catch (GatewayTimeoutException $e) {
+            throw new PaymentFailedException(
+                'Payment gateway timed out for order ' . $order-&gt;getId(),
+                previous: $e
+            );
+        }
+    }
+}</code></pre>
+
+    <p>When this fails, you know what happened. The exception type tells you the category of failure. The message gives you context. The stack trace pinpoints the location. The chained <code>previous</code> exception preserves the original cause. You can fix this in minutes.</p>
+
+    <p>TypeScript has the same pattern:</p>
+
+    <pre><code class="language-typescript">class InvoiceService {
+  generate(order: Order): Invoice {
+    if (order.items.length === 0) {
+      throw new ValidationError(
+        'Cannot generate invoice: order has no items',
+        { orderId: order.id }
+      );
+    }
+
+    const total = order.items.reduce(
+      (sum, item) =&gt; sum + item.price * item.quantity,
+      0
+    );
+
+    if (!Number.isFinite(total) || total &lt;= 0) {
+      throw new CalculationError(
+        'Invoice total is invalid',
+        { orderId: order.id, calculatedTotal: total }
+      );
+    }
+
+    return { orderId: order.id, total, generatedAt: new Date() };
+  }
+}</code></pre>
+
+    <p>Both examples share the same principle. The developer anticipated what could go wrong, wrote code to detect it, and made sure the failure would be loud and specific. That is an error. It is a known, anticipated failure mode, and dealing with it is straightforward.</p>
+</section>
+
+<section>
+    <h2>Think About It Like a Car</h2>
+
+    <p>You are driving and the oil warning light comes on. You know immediately what the problem is: oil pressure is low. You know why the light triggered. You know what to do about it. Pull over, check the oil, top it up or call for service. The warning system did its job. The problem was detected, reported, and you can act on it.</p>
+
+    <p>That is an error.</p>
+
+    <p>Now imagine something different. Over the past few weeks, your car has been losing power gradually. Fuel consumption is creeping up. Sometimes the engine hesitates when you accelerate. There is no warning light. No diagnostic code. Just a vague sense that something is not right. You take it to a mechanic and they start investigating. Could be the fuel injectors. Could be the catalytic converter. Could be an air leak in the intake manifold. Could be a dozen other things. That process of diagnosis, elimination, and detective work is expensive and slow.</p>
+
+    <p>That is a bug.</p>
+
+    <p>The oil light gave you everything you needed. The mystery power loss gave you nothing except a symptom. The distinction between these two experiences is the distinction between errors and bugs in software.</p>
+</section>
+
+<section>
+    <h2>What Is a Bug?</h2>
+
+    <p>A bug is something that has gone wrong, but the system has no idea. No exception is thrown. No warning is logged. The code runs to completion and produces a result. The problem is that the result is <em>wrong</em>, and nobody knows until the consequences surface as <strong>symptoms</strong> somewhere else entirely, possibly weeks later.</p>
+
+    <p>You never find a bug directly. You find symptoms. Then you have to work backwards to figure out the cause. That is bug fixing, and it is one of the most expensive activities in software development.</p>
+
+    <p>Here is a PHP example. See if you can spot it:</p>
+
+    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+final class DiscountCalculator
+{
+    public function applyDiscount(Money $price, int $discountPercent): Money
+    {
+        $multiplier = (100 - $discountPercent) / 100;
+
+        return $price-&gt;multiply($multiplier);
+    }
+}</code></pre>
+
+    <p>This code runs without complaint. No exceptions. Static analysis probably will not flag it. But if <code>$discountPercent</code> is 15, then <code>(100 - 15) / 100</code> performs integer division and evaluates to <code>0</code>, not <code>0.85</code>. Every customer gets a 100% discount. The system processes orders at zero cost with absolutely no indication that anything is wrong.</p>
+
+    <p>What is the symptom? Maybe a finance report three weeks later showing revenue has collapsed. Maybe a customer support ticket from someone puzzled about being charged nothing. Maybe an inventory anomaly. The symptom appears far from the cause, separated by time and layers of code, and the investigation to connect the two is where the real cost lives.</p>
+
+    <p>Here is a TypeScript example with the same dynamic:</p>
+
+    <pre><code class="language-typescript">interface UserPreferences {
+  theme: 'light' | 'dark';
+  notifications: boolean;
+  language: string;
+}
+
+function mergePreferences(
+  defaults: UserPreferences,
+  overrides: Partial&lt;UserPreferences&gt;
+): UserPreferences {
+  return { ...defaults, ...overrides };
+}
+
+// In an API handler:
+app.put('/preferences', (req, res) =&gt; {
+  const updated = mergePreferences(defaults, req.body);
+  savePreferences(user.id, updated);
+  res.json(updated);
+});</code></pre>
+
+    <p>No runtime error. TypeScript is satisfied at compile time. But <code>req.body</code> can contain anything — <code>{ theme: "rainbow", isAdmin: true }</code> — and the spread operator will blindly merge it all. There is no validation at the system boundary. Data gets silently corrupted, and you will not discover it until some other part of the system tries to use those preferences and encounters values it does not expect.</p>
+</section>
+
+<section>
+    <h2>Why the Distinction Matters: Cost</h2>
+
+    <p>The difference between errors and bugs is not academic. It is financial. They have fundamentally different cost profiles.</p>
+
+    <p>When an error fires in production:</p>
+
+    <ol>
+        <li>An alert triggers (seconds)</li>
+        <li>A developer reads the message and stack trace (minutes)</li>
+        <li>The developer understands the cause (minutes)</li>
+        <li>A fix is written and deployed (minutes to hours)</li>
+    </ol>
+
+    <p>When a bug surfaces as a symptom in production:</p>
+
+    <ol>
+        <li>Someone notices something seems "off" (days to weeks)</li>
+        <li>The symptom gets reported and triaged (hours)</li>
+        <li>A developer tries to reproduce it (hours)</li>
+        <li>The developer traces the symptom back through layers of code to find the cause (hours to days)</li>
+        <li>A fix is written that addresses the root cause, not just the symptom (hours)</li>
+        <li>The blast radius is assessed — what else did this affect? (hours)</li>
+        <li>Data cleanup and remediation, if needed (hours to days)</li>
+    </ol>
+
+    <p>The error took minutes. The bug took days or weeks. And the bug had a much longer window to cause damage because nobody knew it was there. The error was a fire alarm. The bug was a slow gas leak.</p>
+</section>
+
+<section>
+    <h2>Converting Bugs into Errors</h2>
+
+    <p>Once you see the cost difference clearly, the strategic conclusion is obvious: <strong>convert potential bugs into errors wherever you can</strong>. Every check, assertion, type constraint, and validation you add is taking a silent failure and making it loud. You are moving problems from the "bug" column into the "error" column, where they cost orders of magnitude less to deal with.</p>
+
+    <p>This is not defensive programming for its own sake. It is a deliberate economic decision.</p>
+
+    <h3>Strict Typing</h3>
+
+    <p>PHP's <code>declare(strict_types=1)</code> converts silent type coercion into TypeErrors:</p>
+
+    <pre><code class="language-php">&lt;?php
+
+// Without strict_types — a bug
+function calculateTax(float $amount, float $rate): float
+{
+    return $amount * $rate;
+}
+
+calculateTax("not a number", 0.2);
+// PHP coerces the string to 0.0, returns 0.0
+// No warning. No exception. Just wrong.
+
+// With strict_types — an error
+declare(strict_types=1);
+
+calculateTax("not a number", 0.2);
+// TypeError: Argument #1 must be of type float, string given
+// Exact location. Exact cause. Fixed in minutes.</code></pre>
+
+    <p>TypeScript's <code>strict: true</code> achieves the same thing at compile time. The point is language-agnostic: stricter type systems turn silent bugs into loud errors.</p>
+
+    <h3>Value Objects and Domain Assertions</h3>
+
+    <p>The integer division bug from the discount calculator can be made impossible with a value object:</p>
+
+    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+final class Percentage
+{
+    public function __construct(
+        public readonly float $value
+    ) {
+        if ($value &lt; 0.0 || $value &gt; 100.0) {
+            throw new \\DomainException(
+                sprintf('Percentage must be between 0 and 100, got %f', $value)
+            );
+        }
+    }
+
+    public function asMultiplier(): float
+    {
+        return (100.0 - $this-&gt;value) / 100.0;
+    }
+}
+
+final class DiscountCalculator
+{
+    public function applyDiscount(Money $price, Percentage $discount): Money
+    {
+        return $price-&gt;multiply($discount-&gt;asMultiplier());
+    }
+}</code></pre>
+
+    <p>The original bug is now structurally impossible. The <code>Percentage</code> value object guarantees float arithmetic and validates the range at construction time. Pass in <code>new Percentage(150)</code> and you get a <code>DomainException</code> — an error, not a bug.</p>
+
+    <h3>Boundary Validation</h3>
+
+    <p>The TypeScript preferences bug disappears once you validate at the system boundary:</p>
+
+    <pre><code class="language-typescript">import { z } from 'zod';
+
+const PreferencesSchema = z.object({
+  theme: z.enum(['light', 'dark']).optional(),
+  notifications: z.boolean().optional(),
+  language: z.string().min(2).max(10).optional(),
+}).strict();
+
+app.put('/preferences', (req, res) =&gt; {
+  const parsed = PreferencesSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      message: 'Invalid preferences',
+      errors: parsed.error.issues,
+    });
+  }
+
+  const updated = mergePreferences(defaults, parsed.data);
+  savePreferences(user.id, updated);
+  res.json(updated);
+});</code></pre>
+
+    <p>The <code>.strict()</code> modifier rejects unknown fields. Someone sending <code>{ isAdmin: true }</code> now gets a 400 response with a clear message, not silent data corruption. The bug has been converted into an error.</p>
+</section>
+
+<section>
+    <h2>Static Analysis: Errors Before Runtime</h2>
+
+    <p>The ultimate form of bug-to-error conversion happens before the code runs at all. Static analysis tools move bugs from "symptom in production" all the way to "red underline in your editor".</p>
+
+    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+// PHPStan level 8+ catches this:
+function findUser(array $users, string $email): User
+{
+    foreach ($users as $user) {
+        if ($user-&gt;getEmail() === $email) {
+            return $user;
+        }
+    }
+    // PHPStan: Method findUser() should return User
+    //          but return statement is missing.
+    // Without PHPStan, this silently returns null — a bug.
+    // With PHPStan, this is caught at development time — an error.
+}</code></pre>
+
+    <pre><code class="language-typescript">// @typescript-eslint/switch-exhaustiveness-check
+type Status = 'pending' | 'active' | 'cancelled';
+
+function getStatusLabel(status: Status): string {
+  switch (status) {
+    case 'pending':
+      return 'Pending';
+    case 'active':
+      return 'Active';
+    // ESLint: Switch is not exhaustive.
+    // Missing case: 'cancelled'
+  }
+}</code></pre>
+
+    <p>Every static analysis rule you enable is another class of bug that gets promoted to an error before it can ever reach a user. PHPStan, Psalm, ESLint, TypeScript strict mode — they all serve the same purpose. They turn silent wrongness into loud complaints.</p>
+</section>
+
+<section>
+    <h2>Fail Fast: The Only Sane Response</h2>
+
+    <p>Once you understand the cost difference between errors and bugs, there is really only one rational strategy: <strong>fail fast</strong>. The moment something is wrong, stop. Throw an exception. Return an error. Refuse to continue. Do not try to soldier on in a semi-broken state hoping things will work out.</p>
+
+    <p>A system that fails fast converts every problem into an error. A system that tries to be "resilient" by swallowing failures and pressing on converts every problem into a bug. The first system is cheap to operate. The second is a minefield.</p>
+
+    <p>Consider what happens when you catch an exception and silently continue:</p>
+
+    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+// This is a bug factory
+function loadConfig(string $path): array
+{
+    try {
+        return json_decode(
+            file_get_contents($path),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+    } catch (\\Throwable) {
+        return []; // "graceful" fallback
+    }
+}</code></pre>
+
+    <p>This code looks defensive and safe. It is neither. When the config file is missing or malformed, the system continues running with an empty config. No error is raised. No alert fires. The application just quietly behaves differently from what you expect, and you have no idea why. You have taken a perfectly good error and turned it back into a bug.</p>
+
+    <p>The fail-fast version is better in every way:</p>
+
+    <pre><code class="language-php">&lt;?php
+
+declare(strict_types=1);
+
+function loadConfig(string $path): array
+{
+    if (!is_file($path)) {
+        throw new \\RuntimeException(
+            sprintf('Config file not found: %s', $path)
+        );
+    }
+
+    $contents = file_get_contents($path);
+    if ($contents === false) {
+        throw new \\RuntimeException(
+            sprintf('Failed to read config file: %s', $path)
+        );
+    }
+
+    return json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
+}</code></pre>
+
+    <p>If anything is wrong, you know about it immediately. There is no window of time where the system runs in a broken state accumulating invisible damage. The failure is loud, specific, and caught within seconds of deployment.</p>
+
+    <p>The same principle applies everywhere. A database query returns unexpected data? Do not patch it up and continue. An API response is missing a required field? Do not substitute a default. A configuration value is outside its valid range? Do not clamp it silently. Every one of these "helpful" fallbacks is a bug waiting to happen. Every one of them trades a cheap, obvious error now for an expensive, mysterious investigation later.</p>
+
+    <p>Fail fast is not about being fragile. It is about being honest. A system that crashes when something is wrong is telling you the truth. A system that limps along pretending everything is fine is lying to you, and you will pay for that lie eventually.</p>
+</section>
+
+<section>
+    <h2>The Mindset Shift</h2>
+
+    <p>Once you internalise the error vs bug distinction, it changes how you think about every line of code you write. Error handling stops looking like defensive overhead and starts looking like an investment that pays for itself many times over.</p>
+
+    <p>The goal is not to write code that never fails. That is impossible and not even desirable. The goal is to write code that <strong>fails loudly, clearly, and early</strong>. A system full of well-crafted errors is a system that is cheap to operate. A system full of silent bugs is a system that is slowly, invisibly rotting — and every rotten piece is a future investigation waiting to consume someone's week.</p>
+
+    <p>The question to ask yourself when writing any piece of logic is not "what if this fails?" It is: "if this fails silently, how long before anyone notices, and how much damage will it do in the meantime?" If the answer makes you uncomfortable, add a check. Turn that potential bug into an error. Your future self will thank you for it.</p>
+</section>
+`,
+  },
+  {
     id: 'ansible-vault-strings-vs-file-encryption',
     title:
       'Stop Encrypting Entire Files with Ansible Vault. Use Vault Strings Instead.',
