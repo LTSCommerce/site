@@ -150,7 +150,30 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>The generated package includes a <code>composer.json</code>, proper PSR-4 autoloading, and is ready to be published as a private Composer package or included directly in your project.</p>
 
-    <p>There is work underway on a first-party PHP code generation library &mdash; a native PHP tool that does not require the Java runtime that OpenAPI Generator depends on. This is still in early development and not yet ready for production use. When it matures, it will be a significant improvement for PHP teams who want to keep their entire toolchain in one language. I will update this article with details and a link once the library reaches a stable release.</p>
+    <h3>Native PHP: lts/php-openapi-generator</h3>
+
+    <p>The biggest practical annoyance with OpenAPI Generator is the Java dependency. It requires a JVM to run, which means either installing Java on your development machines and CI servers or using the Docker wrapper. For PHP teams, adding Java to the toolchain just to generate some PHP classes feels wrong.</p>
+
+    <p><a href="https://github.com/LongTermSupport/php-openapi-generator" target="_blank" rel="noopener">lts/php-openapi-generator</a> solves this. It is a native PHP code generator that produces PHP models and API clients directly from OpenAPI specifications, with no Java runtime required. Install it with Composer and run it like any other PHP tool.</p>
+
+    <p>The project is a hard fork of <a href="https://github.com/janephp/janephp" target="_blank" rel="noopener">Jane PHP</a>, which deserves full credit as the original foundation for PHP-native OpenAPI code generation. However, Jane has not kept pace with the spec: it still lacks OpenAPI 3.1 support despite 3.1 being the standard since 2021, and its PHP version requirements lag behind current releases. The lts/php-openapi-generator fork takes a different approach, targeting only the latest OpenAPI specification and the latest PHP version. It is not a gentle patch on top of Jane but a heavily updated codebase focused on staying current. Key improvements include:</p>
+
+    <ul>
+        <li><strong>Full OpenAPI 3.1 support</strong> including type arrays (<code>["string", "null"]</code>), nullable types via type arrays, <code>const</code> values, and the <code>$schema</code> keyword</li>
+        <li><strong>PHP 8.4+ requirement</strong> taking advantage of modern language features</li>
+        <li><strong>Strict spec validation</strong> via <a href="https://github.com/LongTermSupport/strict-openapi-validator" target="_blank" rel="noopener">lts/strict-openapi-validator</a> built in</li>
+        <li><strong>PHPUnit 11</strong> test suite</li>
+    </ul>
+
+    <p>Usage is straightforward. Install, create a configuration file, and generate:</p>
+
+    <pre><code class="language-bash">{{SNIPPET:openapi-automatic-code-generation/jane-openapi-generate.sh}}</code></pre>
+
+    <p>The configuration file (<code>.jane-openapi</code>) is a PHP array pointing at your spec, namespace, and output directory:</p>
+
+    <pre><code class="language-php">{{SNIPPET:openapi-automatic-code-generation/jane-openapi-config.php}}</code></pre>
+
+    <p>The generator produces typed PHP model classes and API client code from your specification. Because it runs natively in PHP, it integrates cleanly into existing Composer scripts and CI pipelines without any additional runtime dependencies. No Docker, no Java, no separate toolchain. Just PHP generating PHP.</p>
 </section>
 
 <section>
