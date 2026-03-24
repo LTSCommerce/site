@@ -1,0 +1,138 @@
+openapi: 3.1.0
+info:
+  title: Product Catalogue API
+  version: 1.0.0
+  description: Manages products in the catalogue
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production
+  - url: https://staging-api.example.com/v1
+    description: Staging
+
+paths:
+  /products:
+    get:
+      operationId: listProducts
+      summary: List all products
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      operationId: createProduct
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /products/{productId}:
+    get:
+      operationId: getProduct
+      summary: Get a single product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+
+components:
+  schemas:
+    Product:
+      type: object
+      required: [id, name, price]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          examples: ['Wireless Keyboard']
+        price:
+          type: number
+          format: float
+          minimum: 0
+        category:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateProductRequest:
+      type: object
+      required: [name, price]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        price:
+          type: number
+          format: float
+          minimum: 0
+        category:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

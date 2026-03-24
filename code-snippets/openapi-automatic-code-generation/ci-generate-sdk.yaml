@@ -1,0 +1,34 @@
+# .github/workflows/generate-sdk.yml
+name: Generate SDK
+
+on:
+  push:
+    paths:
+      - 'api-spec.yaml'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate PHP Client
+        uses: openapi-generators/openapitools-generator-action@v1
+        with:
+          generator: php
+          openapi-file: api-spec.yaml
+          command-args: |
+            --additional-properties=invokerPackage=App\ApiClient
+
+      - name: Generate TypeScript Client
+        uses: openapi-generators/openapitools-generator-action@v1
+        with:
+          generator: typescript-axios
+          openapi-file: api-spec.yaml
+
+      - name: Commit generated code
+        run: |
+          git config user.name "SDK Bot"
+          git add generated/
+          git diff --staged --quiet || git commit -m "Regenerate SDKs from spec update"
+          git push

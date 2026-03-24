@@ -121,7 +121,28 @@ Screenshots are saved to `var/` directory which is gitignored. The screenshot sc
 
 **REACT/TYPESCRIPT SYSTEM**: Articles are TypeScript objects in `src/data/articles.ts`. There are no EJS files or `private_html/` for articles.
 
-#### Step 1: Add the article object to src/data/articles.ts
+#### Step 1: Create code snippet files
+
+All code blocks in articles **MUST** use the snippet system. Never embed inline code in the article `content` field.
+
+Create a directory for your article's code snippets:
+```
+code-snippets/your-article-slug/
+```
+
+Add each code example as a separate file with the appropriate extension:
+```
+code-snippets/your-article-slug/
+  ├── example-service.php
+  ├── install-commands.sh
+  ├── config-example.yaml
+  ├── generated-model.ts
+  └── database-query.sql
+```
+
+**Write raw code in snippet files** — no HTML encoding needed. The build system (`scripts/generate-snippets.mjs`) automatically HTML-escapes all snippet content and generates `src/data/snippets.ts`.
+
+#### Step 2: Add the article object to src/data/articles.ts
 
 Insert a new object at the **top** of the `SAMPLE_ARTICLES` array (before the first existing entry):
 
@@ -144,27 +165,25 @@ Insert a new object at the **top** of the `SAMPLE_ARTICLES` array (before the fi
     <h2>Section Title</h2>
     <p>Content...</p>
 
-    <pre><code class="language-php">&lt;?php
-// PHP code here
-</code></pre>
+    <pre><code class="language-php">{{SNIPPET:your-article-slug/example-service.php}}</code></pre>
+
+    <p>More content...</p>
+
+    <pre><code class="language-bash">{{SNIPPET:your-article-slug/install-commands.sh}}</code></pre>
 </section>
 `,
 },
 ```
 
-#### Critical HTML Escaping in Code Blocks
+#### Code Block Reference Format
 
-The `content` field is a JavaScript template literal. Code inside `<pre><code>` must be HTML-encoded:
+Reference snippets using the `{{SNIPPET:path}}` placeholder inside `<pre><code>` tags:
 
-| Raw | Encoded | Example |
-|-----|---------|---------|
-| `<` | `&lt;` | `<?php` → `&lt;?php` |
-| `>` | `&gt;` | `Rule<T>` → `Rule&lt;T&gt;` |
-| `&` | `&amp;` | `&&` → `&amp;&amp;` |
+```html
+<pre><code class="language-php">{{SNIPPET:your-article-slug/filename.php}}</code></pre>
+```
 
-Also escape backslashes in PHP namespaces/strings within the template literal: `App\Service` → `App\\Service`
-
-**Avoid** using backtick characters or `${...}` interpolation syntax inside code examples (they conflict with the template literal delimiter).
+The path is relative to the `code-snippets/` directory.
 
 #### Supported Code Block Languages
 
@@ -177,20 +196,34 @@ Also escape backslashes in PHP namespaces/strings within the template literal: `
 - `language-json` — JSON
 - `language-nginx` — Nginx config
 
-#### Step 2: Build and verify
+#### Template Literal Escaping (for non-code content)
+
+The `content` field is a JavaScript template literal. The prose/HTML content around snippet references still needs:
+- Backslashes doubled in any inline text: `App\Service` → `App\\Service`
+- **Avoid** backtick characters or `${...}` in prose (they conflict with the template literal delimiter)
+
+Code inside snippet files does NOT need any escaping — the build system handles it.
+
+#### Step 3: Build and verify
 
 ```bash
 npm run build
 # Check: dist/articles/your-article-slug/index.html exists and renders correctly
 ```
 
-#### Step 3: Deploy
+Read the generated HTML in `dist/articles/your-article-slug/index.html` to verify code blocks render with correct syntax highlighting and proper escaping.
+
+#### Step 4: Deploy
 
 ```bash
-git add src/data/articles.ts
+git add code-snippets/your-article-slug/ src/data/articles.ts
 git commit -m "Add article: Your Article Title"
 git push origin main
 ```
+
+#### Legacy Note
+
+Some older articles still use inline HTML-encoded code directly in the `content` field. New articles must always use the snippet system. If editing an older article's code blocks, migrate them to snippets at the same time.
 
 ## React Component System
 

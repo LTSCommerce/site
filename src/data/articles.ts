@@ -7,6 +7,267 @@ import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
+    id: 'openapi-automatic-code-generation',
+    title:
+      'OpenAPI and Automatic Code Generation: Define Once, Generate Everywhere',
+    description:
+      'How OpenAPI specifications let you define your API once and automatically generate type-safe client SDKs, server stubs, and models in PHP, TypeScript, Python, and dozens of other languages.',
+    date: '2026-03-24',
+    category: CATEGORIES.php.id,
+    readingTime: 20,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'PHP',
+    content: `<div class="intro">
+    <p class="lead">You have built an API. Now every team that wants to consume it needs to write HTTP client code, map JSON responses to objects, handle authentication headers, and deal with error responses. Multiply that by five client teams across three languages and you have a maintenance disaster waiting to happen. OpenAPI solves this by letting you describe your API in a single machine-readable specification, then automatically generating all that boilerplate in whatever language you need. The specification becomes the contract, and the generated code stays in sync with it.</p>
+</div>
+
+<section>
+    <h2>A Brief History: From Swagger to OpenAPI</h2>
+
+    <p>The story starts in 2009 when Tony Tam, CTO of the online dictionary service Wordnik, needed a way to document and manage their growing JSON API. The internal tool he built became <strong>Swagger</strong> &mdash; a name suggested by colleague Zeke Sikelianos as a playful jab at WADL (Web Application Description Language), the XML-heavy alternative that nobody enjoyed using.</p>
+
+    <h3>The Swagger Years</h3>
+
+    <p><strong>Swagger 1.0</strong> arrived in August 2011. It introduced a JSON-based format for describing RESTful APIs and shipped alongside tooling for interactive documentation and code generation. It was simple, practical, and solved a real problem that existing standards like WADL made painful.</p>
+
+    <p><strong>Swagger 1.1</strong> (August 2012) was a minor refinement. <strong>Swagger 1.2</strong> (March 2014) was the first version written as a formal specification document, separating the spec from the implementation and improving the type system to align with JSON Schema Draft 4.</p>
+
+    <p><strong>Swagger 2.0</strong> (2014) was the inflection point. It simplified the specification structure, gained massive adoption, and triggered an explosion of third-party tooling. This was the version that made API-first design practical for most teams.</p>
+
+    <h3>The OpenAPI Era</h3>
+
+    <p>In March 2015, SmartBear Software acquired the Swagger specification. Later that year, SmartBear donated it to the newly formed <strong>OpenAPI Initiative</strong> under the Linux Foundation, with founding members including Google, IBM, Microsoft, and PayPal. On 1 January 2016, the specification was officially renamed to the <strong>OpenAPI Specification</strong> (OAS). The Swagger brand lived on as SmartBear's commercial tooling &mdash; the Editor, the UI, and Codegen &mdash; but the specification itself was now community-governed.</p>
+
+    <p><strong>OpenAPI 3.0</strong> (July 2017) was a major restructuring. It introduced the <code>components</code> object to consolidate reusable definitions, replaced the flat <code>host</code>/<code>basePath</code>/<code>schemes</code> fields with a flexible <code>servers</code> array supporting multiple environments, added <code>callbacks</code> for describing webhooks, introduced <code>links</code> for expressing relationships between operations, and overhauled request body handling with proper content negotiation via media types.</p>
+
+    <p><strong>OpenAPI 3.1</strong> (February 2021) achieved full compatibility with JSON Schema Draft 2020-12 &mdash; the single most requested change. The OpenAPI-specific <code>nullable</code> keyword was replaced by JSON Schema's native type arrays (<code>type: [string, null]</code>), <code>$ref</code> could finally coexist with sibling keywords like <code>description</code>, and a new top-level <code>webhooks</code> field provided first-class support for event-driven APIs. The <code>paths</code> field became optional, allowing specifications that described only webhooks or shared components.</p>
+
+    <p><strong>OpenAPI 3.2</strong> (September 2025) added hierarchical tags for better API organisation, support for the <code>QUERY</code> HTTP method, streaming support for Server-Sent Events and JSON Lines, OAuth 2.0 Device Authorisation Flow, and the <code>additionalOperations</code> keyword for non-standard HTTP verbs.</p>
+</section>
+
+<section>
+    <h2>What Is an OpenAPI Specification?</h2>
+
+    <p>An OpenAPI specification is a YAML or JSON document that describes everything about your HTTP API in a structured, language-agnostic format. It covers:</p>
+
+    <ul>
+        <li><strong>Endpoints and operations</strong> &mdash; every URL path, HTTP method, and what each operation does</li>
+        <li><strong>Request and response schemas</strong> &mdash; the shape of every payload, with data types, validation rules, and examples</li>
+        <li><strong>Authentication</strong> &mdash; API keys, OAuth 2.0 flows, bearer tokens, mutual TLS</li>
+        <li><strong>Parameters</strong> &mdash; query strings, path variables, headers, and cookies</li>
+        <li><strong>Error responses</strong> &mdash; structured error formats for each status code</li>
+        <li><strong>Reusable components</strong> &mdash; shared schemas, parameters, responses, and examples</li>
+    </ul>
+
+    <p>Here is a minimal but complete example:</p>
+
+    <pre><code class="language-yaml">{{SNIPPET:openapi-automatic-code-generation/openapi-spec-example.yaml}}</code></pre>
+
+    <p>That single document is both human-readable documentation and a machine-readable contract. It tells you what every endpoint expects, what it returns, how authentication works, and what the data looks like. More importantly, it tells <em>tools</em> all of that too &mdash; which is where code generation comes in.</p>
+</section>
+
+<section>
+    <h2>Automatic Code Generation: The Big Win</h2>
+
+    <p>The real power of OpenAPI is not documentation. It is the ability to feed that specification into a code generator and produce working, type-safe client libraries, server stubs, and data models in any supported language. You define the API once, and the tooling generates the tedious parts.</p>
+
+    <p><a href="https://openapi-generator.tech/" target="_blank" rel="noopener">OpenAPI Generator</a> is the primary open-source tool for this. It is a community-driven fork of Swagger Codegen with broader language support, more active maintenance, and an Apache 2.0 licence. As of 2026, it supports over 50 target languages and frameworks.</p>
+
+    <h3>What Gets Generated</h3>
+
+    <p>For a client SDK, OpenAPI Generator typically produces:</p>
+
+    <ul>
+        <li><strong>Model classes / DTOs</strong> &mdash; typed objects matching every schema in your specification, with proper validation and serialisation</li>
+        <li><strong>API client classes</strong> &mdash; one class per tag or resource group, with a method for each operation</li>
+        <li><strong>Request and response handling</strong> &mdash; HTTP transport, content-type negotiation, error mapping</li>
+        <li><strong>Authentication</strong> &mdash; configured from the security schemes in your spec</li>
+        <li><strong>Configuration</strong> &mdash; base URL, timeouts, custom headers</li>
+    </ul>
+
+    <p>For a server stub, it generates the routing, controller interfaces, request validation, and model classes &mdash; you fill in the business logic.</p>
+
+    <h3>Supported Languages and Frameworks</h3>
+
+    <p>The breadth of support is genuinely impressive. On the client side: PHP, TypeScript (with Axios, Fetch, or Angular variants), Python, Go, Java, Kotlin, C#, Ruby, Rust, Swift, Dart, and many more. On the server side: PHP (Laravel, Symfony, Slim, Mezzio), Java (Spring, JAX-RS), Python (Flask, FastAPI), Go, Node.js (Express, NestJS), and others.</p>
+
+    <p>There are also generators for documentation (HTML, Asciidoc), configuration (Apache, Nginx), database schemas (MySQL), and even GraphQL schema definitions.</p>
+
+    <h3>The Workflow in Practice</h3>
+
+    <p>Here is how a typical code generation workflow looks:</p>
+
+    <pre><code class="language-bash">{{SNIPPET:openapi-automatic-code-generation/generate-clients.sh}}</code></pre>
+
+    <p>You can also use Docker, which avoids the Java dependency entirely:</p>
+
+    <pre><code class="language-bash">{{SNIPPET:openapi-automatic-code-generation/generate-docker.sh}}</code></pre>
+
+    <p>The generated code is immediately usable. Install dependencies, configure the base URL and authentication, and you have a working client:</p>
+
+    <pre><code class="language-php">{{SNIPPET:openapi-automatic-code-generation/using-generated-client.php}}</code></pre>
+
+    <p>Compare that to the alternative: manually writing HTTP calls with Guzzle or cURL, hand-mapping JSON arrays to objects, remembering which endpoints need which headers, and hoping the documentation is up to date. The generated client eliminates all of that.</p>
+</section>
+
+<section>
+    <h2>What the Generated Code Looks Like</h2>
+
+    <p>To make this concrete, let us look at what OpenAPI Generator produces from the <code>Product</code> schema in our specification above. Here is a simplified version of the generated PHP model:</p>
+
+    <pre><code class="language-php">{{SNIPPET:openapi-automatic-code-generation/generated-product-model.php}}</code></pre>
+
+    <p>You did not write any of that. The generator produced it directly from the schema. Every property has the correct type. The constructor handles deserialisation from JSON arrays. The <code>jsonSerialize</code> method handles the reverse. If you add a field to the specification and regenerate, the model updates automatically.</p>
+
+    <p>The same specification generates equivalent models in TypeScript:</p>
+
+    <pre><code class="language-typescript">{{SNIPPET:openapi-automatic-code-generation/generated-typescript-interfaces.ts}}</code></pre>
+
+    <p>And in Python:</p>
+
+    <pre><code class="language-bash">{{SNIPPET:openapi-automatic-code-generation/generated-python-dataclass.py}}</code></pre>
+
+    <p>One specification. Three languages. All type-safe. All consistent.</p>
+</section>
+
+<section>
+    <h2>PHP Code Generation: The Current Landscape</h2>
+
+    <p>For PHP specifically, OpenAPI Generator offers three generator variants:</p>
+
+    <ul>
+        <li><strong><code>php</code></strong> &mdash; the stable, battle-tested client generator producing PSR-compatible code with Guzzle as the default HTTP client</li>
+        <li><strong><code>php-nextgen</code></strong> (beta) &mdash; a modernised variant using newer PHP features and improved type handling</li>
+        <li><strong><code>php-dt</code></strong> (beta) &mdash; a data-transfer-focused variant</li>
+    </ul>
+
+    <p>On the server side, generators exist for Laravel, Symfony, Slim, Mezzio (formerly Zend Expressive), Lumen, and Flight.</p>
+
+    <p>The PHP client generator supports extensive customisation through additional properties:</p>
+
+    <pre><code class="language-bash">{{SNIPPET:openapi-automatic-code-generation/generate-php-custom.sh}}</code></pre>
+
+    <p>The generated package includes a <code>composer.json</code>, proper PSR-4 autoloading, and is ready to be published as a private Composer package or included directly in your project.</p>
+
+    <p>There is work underway on a first-party PHP code generation library &mdash; a native PHP tool that does not require the Java runtime that OpenAPI Generator depends on. This is still in early development and not yet ready for production use. When it matures, it will be a significant improvement for PHP teams who want to keep their entire toolchain in one language. I will update this article with details and a link once the library reaches a stable release.</p>
+</section>
+
+<section>
+    <h2>Integrating Code Generation into CI/CD</h2>
+
+    <p>Generating code once is useful. Generating it automatically on every spec change is transformational. Here is how to wire it into a CI pipeline:</p>
+
+    <pre><code class="language-yaml">{{SNIPPET:openapi-automatic-code-generation/ci-generate-sdk.yaml}}</code></pre>
+
+    <p>Every time someone updates the API specification, the pipeline regenerates all client libraries and commits the changes. No manual steps. No drift between spec and code. The specification is the single source of truth, and the generated code follows it automatically.</p>
+</section>
+
+<section>
+    <h2>Best Practices</h2>
+
+    <h3>Design-First vs Code-First</h3>
+
+    <p>There are two schools of thought here, and I have a clear preference.</p>
+
+    <p><strong>Design-first</strong> means writing the OpenAPI specification before you write any code. You design the API contract, get agreement from consumers, generate mock servers for frontend teams to build against, and then implement the backend to match the contract. This is the approach I recommend for any API that will have multiple consumers, and especially for public APIs.</p>
+
+    <p><strong>Code-first</strong> means building the API in code and generating the specification from annotations or framework metadata. Libraries like <a href="https://github.com/zircote/swagger-php" target="_blank" rel="noopener">swagger-php</a> do this for PHP using attributes. The specification becomes a byproduct of the implementation. This works for internal APIs where you have tight control over both sides, but it tends to produce lower-quality specifications with missing descriptions and examples.</p>
+
+    <p>For code generation to work well, the specification needs to be detailed and accurate. Design-first naturally produces that level of quality because the spec is the primary artefact, not an afterthought.</p>
+
+    <h3>Keep Specifications Up to Date</h3>
+
+    <p>A stale specification is worse than no specification, because it actively misleads. If you take the design-first approach, the spec should be committed to source control and validated in CI. Tools like <a href="https://github.com/stoplightio/spectral" target="_blank" rel="noopener">Spectral</a> can lint your specification against style rules and best practices on every pull request. If you take the code-first approach, regenerate the spec on every build and fail the pipeline if the output differs from the committed version.</p>
+
+    <h3>Customise the Generated Code</h3>
+
+    <p>The default output from OpenAPI Generator is functional but generic. For production use, you will likely want to customise it. The generator supports Mustache templates that you can override to control the generated code style, add custom base classes, or integrate with your existing HTTP client setup.</p>
+
+    <pre><code class="language-bash">{{SNIPPET:openapi-automatic-code-generation/custom-templates.sh}}</code></pre>
+
+    <p>Store your custom templates in your repository alongside the specification. This way, regenerating the code always produces output that fits your project's conventions.</p>
+
+    <h3>When to Use Generated Code vs Hand-Written</h3>
+
+    <p>Generated code excels at the repetitive structural work: models, serialisation, HTTP transport, parameter handling. It is not the right tool for business logic, complex validation rules, or domain-specific behaviour. The sweet spot is to use generated code as a foundation layer &mdash; the plumbing &mdash; and build your application logic on top of it.</p>
+
+    <p>If you find yourself fighting the generator to produce code that matches your needs, that is a signal to either customise the templates or write that particular layer by hand. The goal is less boilerplate, not zero hand-written code.</p>
+</section>
+
+<section>
+    <h2>Integrating with External APIs</h2>
+
+    <p>One of the most immediately practical uses of OpenAPI is consuming third-party APIs. If an external service publishes an OpenAPI specification, and increasingly most do, you can generate a fully typed client library in minutes instead of spending days writing HTTP boilerplate by hand.</p>
+
+    <p>The workflow is straightforward:</p>
+
+    <ol>
+        <li>Download the provider's OpenAPI specification (most publish it alongside their API docs)</li>
+        <li>Run it through OpenAPI Generator targeting your language</li>
+        <li>Install the generated package and start making type-safe API calls</li>
+    </ol>
+
+    <pre><code class="language-bash">{{SNIPPET:openapi-automatic-code-generation/fetch-external-spec.sh}}</code></pre>
+
+    <p>You now have a typed PHP client with proper models, authentication handling, and IDE autocompletion for every endpoint. No guessing at parameter names. No manually mapping JSON to arrays. No discovering at runtime that a field was renamed three versions ago.</p>
+
+    <h3>When the Spec and Reality Diverge</h3>
+
+    <p>Here is the problem nobody warns you about: external API specifications are often wrong. Not maliciously, but because keeping a specification perfectly in sync with a live API is hard, and most teams do not validate their own specs rigorously. You will encounter responses with extra fields not in the spec, missing fields that the spec says are required, types that do not match (a string where the spec says integer), and entire endpoints that behave differently from what is documented.</p>
+
+    <p>This is where strict validation tooling becomes essential. <a href="https://github.com/LongTermSupport/strict-openapi-validator" target="_blank" rel="noopener">strict-openapi-validator</a> is a PHP library designed for exactly this problem. It validates API requests and responses against an OpenAPI specification with zero tolerance for deviation. No type coercion, no silently ignoring extra fields, no glossing over missing required properties. If the data does not match the spec exactly, it tells you.</p>
+
+    <p>When integrating with external APIs, the validator's <strong>Client mode</strong> is particularly useful. It validates your outgoing requests strictly (catching your mistakes before they hit the wire) while validating incoming responses with warnings rather than hard failures. This is a pragmatic design choice: you control your requests, so those should be correct. But you do not control the external API's responses, and you do not want your application to crash because the provider's spec is slightly out of date.</p>
+
+    <pre><code class="language-php">{{SNIPPET:openapi-automatic-code-generation/client-mode-validation.php}}</code></pre>
+
+    <p>The real value surfaces over time. When a provider updates their API and the responses start drifting from the published spec, the validator catches it immediately. Instead of discovering the mismatch weeks later through mysterious bugs in your application, you get clear, specific warnings telling you exactly which fields have changed and how. You can then raise the issue with the provider or adapt your code accordingly.</p>
+
+    <p>The error output is deliberately detailed. Each validation failure includes the JSONPath location of the problem, a reference to the relevant line in the specification, what was expected versus what was received, and a contextual hint for resolution. This makes it straightforward to figure out whether the problem is on your side or theirs.</p>
+</section>
+
+<section>
+    <h2>Offering Your Own API for External Consumption</h2>
+
+    <p>The other side of the coin is building an API that other teams or external consumers will integrate with. Here, the stakes are higher. Your specification is a public contract, and if your API does not match it, you are the one causing integration headaches for everyone downstream.</p>
+
+    <p>The design-first approach is strongly recommended for APIs you expose externally. Write the OpenAPI specification first, agree on it with your consumers, and then implement the backend to match. The specification becomes the source of truth, and you can generate SDKs for your consumers to use.</p>
+
+    <p>But writing a good spec and implementing it faithfully are two different problems. It is remarkably easy for implementation drift to creep in. A developer adds an extra field to a response that is not in the spec. A nullable field starts returning <code>null</code> when the spec says it is required. An error response uses a different structure than what is documented. Each of these is invisible to your test suite unless you are actively validating against the spec.</p>
+
+    <h3>Strict Validation in Server Mode</h3>
+
+    <p>This is where <a href="https://github.com/LongTermSupport/strict-openapi-validator" target="_blank" rel="noopener">strict-openapi-validator</a> in <strong>Server mode</strong> is invaluable. In this mode, the validator is uncompromising about your responses. Every response your API sends is validated against the specification, and any deviation throws an exception. It also validates the specification itself, catching structural issues in your spec before they reach consumers.</p>
+
+    <pre><code class="language-php">{{SNIPPET:openapi-automatic-code-generation/server-mode-validation.php}}</code></pre>
+
+    <p>The strict typing enforcement is particularly important for APIs consumed across languages. If your spec says a field is an integer but your PHP code returns the string <code>"123"</code>, a JavaScript client might not care, but a Go or Rust client will fail to deserialise. The validator catches this: string <code>"123"</code> is not integer <code>123</code>, full stop. No type coercion, no silent conversion.</p>
+
+    <h3>Integrating Validation into Your Development Workflow</h3>
+
+    <p>The most effective approach is to run strict-openapi-validator in your test suite. Write integration tests that make real API requests and validate both the request and response against your spec. This catches drift the moment it happens, not after a consumer files a bug report.</p>
+
+    <pre><code class="language-php">{{SNIPPET:openapi-automatic-code-generation/test-suite-validation.php}}</code></pre>
+
+    <p>If your API returns a field that is not in the spec, the test fails. If it omits a required field, the test fails. If a type does not match exactly, the test fails. You find out in CI, not from an angry consumer.</p>
+
+    <p>The validator accumulates all errors before throwing, so you get the complete picture in one test run rather than fixing issues one at a time. And because the error output includes JSONPath locations and spec line references, you can pinpoint the exact source of the problem without digging through layers of code.</p>
+
+    <p>For PHP teams building APIs that others depend on, this combination of OpenAPI code generation and strict validation closes the loop. The specification defines the contract, code generation implements the boilerplate, and strict validation ensures the implementation matches the contract. No drift. No surprises. No "it works on my machine" when a consumer reports that your API returns something different from what the docs say.</p>
+</section>
+
+<section>
+    <h2>The Bigger Picture</h2>
+
+    <p>OpenAPI code generation is not just a convenience. It changes the development model. Instead of building clients by hand and hoping they stay in sync with the API, you have a single specification that drives everything: documentation, client SDKs, server stubs, request validation, mock servers, and contract tests. When the API changes, you update one YAML file and regenerate. Every consumer gets the update automatically.</p>
+
+    <p>For PHP teams in particular, this is a practical win. You can generate a type-safe client library for any third-party API that publishes an OpenAPI spec &mdash; and increasingly, most do. You can publish your own APIs with generated SDKs for every client team, whether they work in TypeScript, Python, Go, or anything else. And you can do it all from a single source of truth that lives in version control right next to your code.</p>
+
+    <p>The specification is the contract. The generated code is the implementation. Keep them in sync and you eliminate an entire class of integration bugs.</p>
+</section>`,
+  },
+  {
     id: 'errors-vs-bugs-the-difference-that-matters',
     title: 'Errors vs Bugs: The Difference That Actually Matters',
     description:

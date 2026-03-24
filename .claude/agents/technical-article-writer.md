@@ -59,9 +59,33 @@ New articles go at the **top** of the `SAMPLE_ARTICLES` array in `src/data/artic
 
 ---
 
-## Writing the HTML Content
+## Code Snippets System
 
-The `content` field is a JavaScript template literal containing an HTML string. Follow these rules precisely.
+All code blocks in articles **MUST** use the snippet system. **Never embed inline code in the article `content` field.**
+
+### Step 1: Create snippet files
+
+Create a directory for the article's code snippets and add each code example as a separate file:
+
+```
+code-snippets/your-article-slug/
+  ├── example-service.php
+  ├── install-commands.sh
+  ├── config-example.yaml
+  └── generated-model.ts
+```
+
+**Write raw code in snippet files** — no HTML encoding needed. The build system (`scripts/generate-snippets.mjs`) automatically HTML-escapes all snippet content.
+
+### Step 2: Reference snippets in the article HTML
+
+Use `{{SNIPPET:path}}` placeholders inside `<pre><code>` tags:
+
+```html
+<pre><code class="language-php">{{SNIPPET:your-article-slug/example-service.php}}</code></pre>
+```
+
+The path is relative to the `code-snippets/` directory.
 
 ### HTML Structure
 
@@ -74,8 +98,7 @@ The `content` field is a JavaScript template literal containing an HTML string. 
     <h2>Section Title</h2>
     <p>Section content...</p>
 
-    <pre><code class="language-php">...code here...
-</code></pre>
+    <pre><code class="language-php">{{SNIPPET:your-article-slug/example-service.php}}</code></pre>
 </section>
 
 <section>
@@ -96,34 +119,13 @@ Use the appropriate language class on `<code>`:
 - `language-json` — JSON
 - `language-nginx` — Nginx config
 
-### Critical Escaping Rules
+### Template Literal Escaping (for non-code content only)
 
-The content is a JavaScript template literal. Code block content must be HTML-encoded:
+The `content` field is a JavaScript template literal. The prose/HTML around snippet references still needs:
+- Backslashes doubled in inline text: `App\Service` → `App\\Service`
+- **Avoid** backtick characters or `${...}` in prose (they conflict with the template literal delimiter)
 
-| Character | HTML Entity | When |
-|-----------|-------------|------|
-| `<` | `&lt;` | Always in code blocks (e.g., `<?php` → `&lt;?php`) |
-| `>` | `&gt;` | In angle brackets (e.g., generics `Rule<T>` → `Rule&lt;T&gt;`) |
-| `&` | `&amp;` | Always (e.g., `&&` → `&amp;&amp;`) |
-
-Template literal escaping (inside the backtick string):
-- Backslash in PHP strings: `\\n`, `\\Exception`, `\\MyNamespace` (double the backslash)
-- Avoid using backtick characters in code examples
-- Avoid using `${` interpolation syntax in code examples (use PHP `{$var}` style which is safe)
-
-### Example of Correct Code Block
-
-```
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-
-namespace App\\Service;
-
-if ($value !== null &amp;&amp; $value !== '') {
-    // handle it
-}
-</code></pre>
-```
+Code inside snippet files does NOT need any escaping — the build system handles it.
 
 ---
 
@@ -132,10 +134,11 @@ if ($value !== null &amp;&amp; $value !== '') {
 1. **Run `date`** to get the precise current date for the article's `date` field and for search queries
 2. **Research the topic** using WebSearch with year-specific queries (e.g., "PHPStan 2025 custom rules")
 3. **Check existing articles** — read the first few entries in `src/data/articles.ts` to understand current style and formatting
-4. **Write the article** following the structure above
-5. **Add to articles.ts** — insert the new article object at the TOP of `SAMPLE_ARTICLES`
-6. **Run `npm run build`** to verify the build succeeds
-7. **Review the output** in `dist/` to check the article renders correctly
+4. **Create snippet files** — add raw code files to `code-snippets/your-article-slug/`
+5. **Write the article** — create the article object with `{{SNIPPET:...}}` references for all code blocks
+6. **Add to articles.ts** — insert the new article object at the TOP of `SAMPLE_ARTICLES`
+7. **Run `npm run build`** to verify the build succeeds
+8. **Review the output** — read `dist/articles/your-article-slug/index.html` to verify code blocks render correctly
 
 ## Build Command
 
