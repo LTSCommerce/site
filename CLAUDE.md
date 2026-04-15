@@ -7,6 +7,7 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 ## Architecture
 
 ### Build System
+
 - **Build Tool**: Vite 6.x with React plugin
 - **Package Manager**: npm with lockfile for reproducible builds
 - **Source Directory**: `src/` (React/TypeScript source)
@@ -14,6 +15,7 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 - **Deployment**: Automated via GitHub Actions
 
 ### Technology Stack
+
 - **Frontend**: React 18, TypeScript, Tailwind CSS
 - **Routing**: React Router v7
 - **Rendering**: SSG (Static Site Generation) via Vite SSR + custom prerender script
@@ -23,6 +25,7 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 - **Performance**: Pre-rendered static HTML, optimised assets, code splitting
 
 ### Site Structure
+
 ```
 ├── src/                 # React/TypeScript source
 │   ├── pages/           # Page components (Home, About, ArticleList, ArticleDetail, Contact)
@@ -49,6 +52,7 @@ Professional freelance PHP engineer portfolio website showcasing expertise in mo
 ## Development Workflow
 
 ### Local Development
+
 ```bash
 npm install              # Install dependencies
 npm run build           # Full production build (snippets → tsc → vite → SSR → prerender)
@@ -71,6 +75,7 @@ All code formatting and quality checks are handled automatically by GitHub Actio
 - **Local Development**: Focus on functionality - CI handles formatting
 
 Available scripts (for reference only):
+
 ```bash
 npm run format:check    # Check formatting (used by CI)
 npm run lint:check      # Check linting (used by CI)
@@ -92,12 +97,14 @@ node scripts/screenshot.js
 Screenshots are saved to `var/` directory which is gitignored. The screenshot script uses Playwright to capture high-quality screenshots for debugging visual issues.
 
 **Script Configuration:**
+
 - Default viewport: 1920x1080 (desktop)
 - Waits for network idle before capturing
 - Configurable clip area for focusing on specific sections
 - Outputs PNG files to `var/` directory
 
 ### Deployment Process
+
 1. **Push to main branch** triggers GitHub Actions CI/CD pipeline
 2. **Auto-Format** - Prettier automatically formats all code and commits changes
 3. **Quality Checks** - TypeScript + ESLint validation (deployment blocked if fails)
@@ -110,6 +117,7 @@ Screenshots are saved to `var/` directory which is gitignored. The screenshot sc
 ## Content Management
 
 ### Articles
+
 - **Location**: `src/data/articles.ts` — single file, all articles as TypeScript objects
 - **Format**: TypeScript object with HTML string `content` field
 - **Syntax Highlighting**: Highlight.js applied automatically at render time via `language-*` CSS classes
@@ -126,11 +134,13 @@ Screenshots are saved to `var/` directory which is gitignored. The screenshot sc
 All code blocks in articles **MUST** use the snippet system. Never embed inline code in the article `content` field.
 
 Create a directory for your article's code snippets:
+
 ```
 code-snippets/your-article-slug/
 ```
 
 Add each code example as a separate file with the appropriate extension:
+
 ```
 code-snippets/your-article-slug/
   ├── example-service.php
@@ -199,6 +209,7 @@ The path is relative to the `code-snippets/` directory.
 #### Template Literal Escaping (for non-code content)
 
 The `content` field is a JavaScript template literal. The prose/HTML content around snippet references still needs:
+
 - Backslashes doubled in any inline text: `App\Service` → `App\\Service`
 - **Avoid** backtick characters or `${...}` in prose (they conflict with the template literal delimiter)
 
@@ -212,6 +223,16 @@ npm run build
 ```
 
 Read the generated HTML in `dist/articles/your-article-slug/index.html` to verify code blocks render with correct syntax highlighting and proper escaping.
+
+#### Step 3b: Editorial review (MANDATORY before commit)
+
+Run the `article-reviewer` agent on the new article before committing. It catches fourth-wall breaks, conversational leakage, redundant sections, and factual red flags.
+
+```
+Agent(article-reviewer): review article 'your-article-slug' before publication
+```
+
+The reviewer returns `READY TO PUBLISH`, `NEEDS FIXES`, or `MAJOR REWORK`. Do not proceed to Step 4 until the verdict is `READY TO PUBLISH`. Fix all CRITICAL findings; resolve or consciously accept MODERATE ones.
 
 #### Step 4: Deploy
 
@@ -230,6 +251,7 @@ Some older articles still use inline HTML-encoded code directly in the `content`
 ### Page Components
 
 Pages live in `src/pages/`:
+
 - `Home.tsx` — Landing page
 - `About.tsx` — About page
 - `ArticleList.tsx` — Article listing with category filtering
@@ -293,12 +315,14 @@ Pages live in `src/pages/`:
 #### When to Link vs When to Show Code
 
 **Link to actual code when:**
+
 - Referencing complete interface definitions (use `See [path/to/file.ts](../path/to/file.ts)`)
 - Showing real implementation patterns that exist in the codebase
 - Pointing to complex examples that would clutter documentation
 - Referencing configuration files or complete class definitions
 
 **Use dummy examples when:**
+
 - Illustrating concepts or patterns generically
 - Showing before/after transformations
 - Demonstrating anti-patterns to avoid
@@ -346,12 +370,14 @@ result.addData(ExampleKeys.SAMPLE_FIELD, 'dummy-data')
 #### Code Synchronization Rules
 
 **For code snippets that reference real files:**
+
 1. Always include a comment indicating the source file
 2. Use `// Snippet from [filename]` to indicate partial code
 3. Keep snippets under 20 lines - link to full file for complete examples
 4. Update snippets when referenced files change significantly
 
 **For complete dummy examples:**
+
 1. Make them self-contained and runnable conceptually
 2. Use consistent dummy naming throughout the same document
 3. Ensure examples follow current coding standards and patterns
@@ -398,6 +424,7 @@ Documentation should follow clear information prioritization:
 ## Recent Updates (v4.0)
 
 ### React Migration
+
 - **Full React/TypeScript rewrite**: All pages converted from EJS/Vanilla JS to React 18 + TypeScript
 - **SSG Prerendering**: All routes pre-rendered to static HTML via Vite SSR + custom prerender script
 - **Tailwind CSS**: Styling via Tailwind v4 replacing custom CSS
@@ -405,6 +432,7 @@ Documentation should follow clear information prioritization:
 - **Article system**: All articles now TypeScript objects in `src/data/articles.ts`
 
 ### Build System
+
 - **Three-stage build**: Snippet generation → Vite client + SSR build → prerender
 - **TypeScript strict**: Full strict mode type checking as a build gate
 - **ESLint flat config**: Modern ESLint v9 flat config with TypeScript and React rules
@@ -422,17 +450,17 @@ The handlers listed below are active in this project. Read this section to avoid
 
 The following git commands are permanently blocked and will always be denied:
 
-| Command | Reason |
-|---------|--------|
-| `git reset --hard` | Permanently destroys all uncommitted changes |
-| `git clean -f` | Permanently deletes untracked files |
-| `git checkout -- <file>` | Discards all local changes to that file |
-| `git restore <file>` | Discards local changes (`--staged` is allowed) |
-| `git stash drop` | Permanently destroys stashed changes |
-| `git stash clear` | Permanently destroys all stashes |
-| `git push --force` | Can overwrite remote history and destroy teammates' work |
-| `git branch -D` | Force-deletes branch without checking if merged (lowercase `-d` is safe) |
-| `git commit --amend` | Rewrites the previous commit — create a new commit instead |
+| Command                  | Reason                                                                   |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `git reset --hard`       | Permanently destroys all uncommitted changes                             |
+| `git clean -f`           | Permanently deletes untracked files                                      |
+| `git checkout -- <file>` | Discards all local changes to that file                                  |
+| `git restore <file>`     | Discards local changes (`--staged` is allowed)                           |
+| `git stash drop`         | Permanently destroys stashed changes                                     |
+| `git stash clear`        | Permanently destroys all stashes                                         |
+| `git push --force`       | Can overwrite remote history and destroy teammates' work                 |
+| `git branch -D`          | Force-deletes branch without checking if merged (lowercase `-d` is safe) |
+| `git commit --amend`     | Rewrites the previous commit — create a new commit instead               |
 
 If the user needs to run one of these, ask them to do it manually. Do not attempt to work around the block.
 
@@ -443,15 +471,18 @@ If the user needs to run one of these, ask them to do it manually. Do not attemp
 `sed` is blocked because Claude gets sed syntax wrong and a single error can silently destroy hundreds of files with no recovery possible.
 
 **Blocked**:
+
 - `sed -i` / `sed -e` (in-place file editing via Bash tool)
 - `grep -rl X | xargs sed -i` (mass file modification)
 - Shell scripts (`.sh`/`.bash`) written via Write tool that contain `sed`
 
 **Allowed** (read-only, no file modification):
+
 - `cat file | sed 's/x/y/' | grep z` (pipeline transforming stdout only)
 - `sed` mentioned in commit messages, PR bodies, or `.md` documentation files
 
 **Use instead**:
+
 - `Edit` tool — safe, atomic, verifiable
 - Parallel Haiku agents with `Edit` tool for bulk changes across many files:
   1. Identify all files to update
@@ -472,6 +503,7 @@ The working directory is `/workspace`. Prepend `/workspace/` to any relative pat
 Writing code that silently swallows errors is blocked. All errors must be handled explicitly.
 
 **Blocked patterns (examples)**:
+
 - Python: bare `except` clauses with an empty body, catching and discarding all exceptions
 - Shell: redirecting stderr to `/dev/null` to silence failures, `|| true` to suppress non-zero exit codes
 - JavaScript/TypeScript: empty `catch` blocks that swallow exceptions
@@ -486,6 +518,7 @@ Piping network content directly to a shell is blocked. It executes untrusted rem
 **Blocked**: `curl URL | bash`, `curl URL | sh`, `wget URL | bash`, `curl URL | sudo bash`
 
 **Safe alternative**: download first, inspect, then execute:
+
 ```
 curl -o /tmp/script.sh URL
 cat /tmp/script.sh          # inspect
@@ -497,6 +530,7 @@ bash /tmp/script.sh         # execute if safe
 Writing code that contains security antipatterns is blocked across all supported languages. Fix the code to use safe patterns instead.
 
 **Blocked categories**:
+
 - SQL injection: building queries via string concatenation (use parameterised queries)
 - Command injection: passing unvalidated input to subprocess (use argument lists)
 - Hardcoded credentials: API keys, passwords, tokens embedded in source code
@@ -548,6 +582,7 @@ Configure via `handlers.pre_tool_use.git_stash.options.mode: deny` to enforce th
 **Blocked**: `chmod 777`, `chmod 666`, `chmod a+w`, `chmod o+w`
 
 **Use least-privilege permissions instead**:
+
 - Executable scripts: `chmod 755` (owner rwx, group/other rx)
 - Regular files: `chmod 644` (owner rw, group/other r)
 - Private files: `chmod 600` (owner rw only)
@@ -559,6 +594,7 @@ Direct `Write` or `Edit` to package manager lock files is blocked. Lock files ar
 **Blocked files**: `composer.lock`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Gemfile.lock`, `Cargo.lock`, `go.sum`, `Package.resolved`, `Pipfile.lock`, and others.
 
 **Use package manager commands instead**:
+
 - PHP: `composer install` / `composer require package`
 - Node: `npm install` / `yarn add package`
 - Ruby: `bundle install` / `bundle add gem`
@@ -570,6 +606,7 @@ Direct `Write` or `Edit` to package manager lock files is blocked. Lock files ar
 Using `Grep` or `Bash` (grep/rg) to find class definitions, function signatures, or symbol references is blocked or redirected to LSP tools, which are faster and semantically accurate.
 
 **Prefer LSP tools for**:
+
 - Finding where a class or function is defined → `goToDefinition`
 - Finding all usages of a symbol → `findReferences`
 - Getting type information or documentation → `hover`
@@ -595,6 +632,7 @@ If using `--json`, include `comments` in the field list instead of adding `--com
 Writes to `src/data/articles.ts` that embed multi-line code directly inside `<pre><code>...</code></pre>` blocks are blocked. Articles must reference code via `{{SNIPPET:article-slug/filename.ext}}` placeholders.
 
 **Workflow**:
+
 1. Create the code file under `code-snippets/<article-slug>/`.
 2. Reference it from the article: `<pre><code class="language-php">{{SNIPPET:article-slug/example.php}}</code></pre>`.
 3. The build step (`scripts/generate-snippets.mjs`) auto-generates `src/data/snippets.ts` from those files.
@@ -629,15 +667,18 @@ STOPPING BECAUSE: all tasks complete, QA passes, daemon restart verified.
 **Why**: The stop hook enforces intentional stops. Stopping without an explanation triggers an auto-block that asks you to explain or continue.
 
 **Alternatives**:
+
 - `STOPPING BECAUSE: <reason>` — stops cleanly with explanation
 - Continue working — no need to stop unless all work is genuinely complete
 
 **Do NOT**:
+
 - Stop mid-task without explanation
 - Ask confirmation questions and then stop (the hook auto-continues those)
 - Use `AUTO-CONTINUE` unless you intend to keep working indefinitely
 
 **Before asking a question, evaluate it critically**:
+
 - Tautological/rhetorical questions with obvious answers ("Should I continue?", "Would you like me to proceed?") — do NOT ask, just do it
 - Errors with a clear next step ("The test failed, should I fix it?") — do NOT ask, just fix it
 - Genuine choice questions where all options are valid ("Which of A, B, or C should we use?") — these deserve a response. Use `STOPPING BECAUSE: need user input` and ask your question
