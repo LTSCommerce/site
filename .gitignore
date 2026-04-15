@@ -32,3 +32,10 @@ Thumbs.db
 npm-debug.log*
 # Claude Code Hooks Daemon
 .claude/hooks-daemon/
+
+# ClaudeMdInjector backup (session artifact, never commit)
+.CLAUDE.md.pre-inject
+
+# Python bytecode caches (project-handlers)
+__pycache__/
+*.pyc

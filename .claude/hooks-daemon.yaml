@@ -314,3 +314,7 @@ handlers:
 #     path: ".claude/hooks/handlers/pre_tool_use/my_handler.py"
 #     class: "MyHandler"
 #     events: ["PreToolUse"]
+
+project_handlers:
+  enabled: true
+  path: .claude/project-handlers

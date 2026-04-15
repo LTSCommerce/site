@@ -24,19 +24,5 @@
     ],
     "deny": [],
     "ask": []
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/enforce-snippets.py",
-            "timeout": 2000
-          }
-        ]
-      }
-    ]
   }
 }
