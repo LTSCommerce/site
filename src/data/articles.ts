@@ -19,7 +19,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     tags: [],
     subreddit: 'PHP',
     content: `<div class="intro">
-    <p class="lead">Exceptions are the primary way PHP code communicates that something has gone wrong. Get them right and the stack trace, the log line, and the API error response all tell the same coherent story. Get them wrong and you end up parsing human-readable messages with regex, swallowing errors "temporarily", and turning every production incident into an archaeology dig. This article lays out the simple hard rules I apply on every PHP project, with a PHP 8.4 implementation pattern that makes them trivial to follow. Python and TypeScript get a cursory section at the end — the principles transfer directly.</p>
+    <p class="lead">Exceptions are the primary way PHP code communicates that something has gone wrong. Get them right and the stack trace, the log line, and the API error response all tell the same coherent story. Get them wrong and you end up parsing human-readable messages with regex, swallowing errors "temporarily", and turning every production incident into an archaeology dig. This article lays out a set of simple hard rules, with a PHP 8.4 implementation pattern that makes them trivial to follow. Python and TypeScript get a cursory section at the end — the principles transfer directly.</p>
 </div>
 
 <section>
@@ -97,7 +97,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/inheritance-depth-bad.php}}</code></pre>
 
-    <p>The rule I apply: <strong>concrete exceptions are exactly one level below the abstract base</strong>. No mid-tier abstracts like <code>OrderException</code> sitting between <code>AppException</code> and <code>InsufficientStockException</code>. No subclassing a concrete exception to tweak it. If you need to group exceptions for handling, group them with a marker interface. If you need to share mechanical boilerplate, share it with a trait.</p>
+    <p>The rule: <strong>concrete exceptions are exactly one level below the abstract base</strong>. No mid-tier abstracts like <code>OrderException</code> sitting between <code>AppException</code> and <code>InsufficientStockException</code>. No subclassing a concrete exception to tweak it. If you need to group exceptions for handling, group them with a marker interface. If you need to share mechanical boilerplate, share it with a trait.</p>
 
     <h3>Traits for Shared Mechanical Boilerplate</h3>
 
@@ -197,7 +197,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>Never, Ever Swallow Exceptions</h2>
 
-    <p>This needs its own section because it is the single most damaging pattern I see in PHP codebases.</p>
+    <p>This needs its own section because it is the single most damaging pattern in PHP codebases.</p>
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/never-swallow.php}}</code></pre>
 
@@ -229,7 +229,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>Exceptions deserve their own log channel with its own retention policy and its own format. Mixing them into the main application log makes them hard to find and hard to correlate across requests.</p>
 
-    <p>Here is the Symfony Monolog configuration I use on every project:</p>
+    <p>Here is a Symfony Monolog configuration for this setup:</p>
 
     <pre><code class="language-yaml">{{SNIPPET:php-exception-best-practices/monolog-config.yaml}}</code></pre>
 
@@ -296,25 +296,11 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>A Few Things I Propose on Top of Your Rules</h2>
+    <h2>Exceptions Are Not For Control Flow</h2>
 
-    <p>You asked what else I would add. Four things:</p>
+    <p>If "not found" is an expected outcome of a finder method, do not throw — return null, or a result object. Exceptions are for <em>failure</em>, not for signalling a normal code path that happened to yield no result.</p>
 
-    <h3>1. Exceptions Are Not For Control Flow</h3>
-
-    <p>If a "not found" is an expected outcome of a finder method, do not throw — return null, or a result object. Save exceptions for <em>failure</em>. The moment "throw and catch" becomes part of the happy path, the signal value of exceptions degrades. Logs fill with "expected" noise. Stack traces become routine. You lose the ability to say "if an exception reached the top, something is genuinely wrong".</p>
-
-    <h3>2. Marker Interfaces Beat Class Trees for Cross-Cutting Concerns</h3>
-
-    <p>The <code>UserFacingExceptionInterface</code>, <code>RetryableExceptionInterface</code>, and <code>SecurityExceptionInterface</code> pattern in the hierarchy snippet lets a single exception implement multiple capabilities orthogonally. A single <code>ExternalApiUnavailableException</code> can reasonably be <em>both</em> retryable <em>and</em> user-facing. Class inheritance cannot express that; interfaces can.</p>
-
-    <h3>3. Document @throws on Every Function That Throws</h3>
-
-    <p>Even without PHPStan's checked-exception enforcement, <code>@throws</code> is documentation for the caller. An IDE that reads PHPDoc will highlight uncaught thrown exceptions. A reviewer reading the function signature knows what failure modes they have to handle. Combined with PHPStan's <code>missingCheckedExceptionInThrows</code> rule, it becomes an enforced contract.</p>
-
-    <h3>4. Test the Exception, Not Just "Some Exception Was Thrown"</h3>
-
-    <p>Asserting that "any <code>Throwable</code>" was thrown is almost never the right assertion. Assert on the specific subclass. Better, catch the exception explicitly and assert on its typed properties. The exception is part of the method's contract — test it with the same rigour you test return values.</p>
+    <p>The moment "throw and catch" becomes part of the happy path, the signal value of exceptions degrades. Logs fill with noise. Stack traces become routine. The outer handler stops meaning "something genuinely went wrong" and starts meaning "one of fifty expected things happened". Every rule in this article depends on exceptions being rare and meaningful. Using them for control flow breaks that assumption at the root.</p>
 </section>
 
 <section>
