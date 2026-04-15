@@ -1,0 +1,48 @@
+# config/packages/monolog.yaml
+#
+# Dedicated "exception" channel with its own handler and log file.
+# Every caught-and-rethrown or uncaught exception gets logged here with
+# full structured context (including the whole $previous chain).
+
+monolog:
+    channels:
+        - exception    # our dedicated channel
+        - security
+
+    handlers:
+        # 1. Dedicated exception log — rotated daily, 30 day retention.
+        #    Uses the JSON formatter so structured data (including exception
+        #    properties) is queryable in log aggregation tooling.
+        exception_file:
+            type: rotating_file
+            path: '%kernel.logs_dir%/exception.log'
+            level: error
+            max_files: 30
+            channels: ['exception']
+            formatter: monolog.formatter.json
+
+        # 2. fingers_crossed on the main channel — a single error triggers
+        #    the whole request's debug log being flushed, giving you the
+        #    full context around the exception.
+        main:
+            type: fingers_crossed
+            action_level: error
+            handler: nested_main
+            channels: ['!exception', '!security']
+            excluded_http_codes: [404, 405]
+            buffer_size: 50
+
+        nested_main:
+            type: stream
+            path: '%kernel.logs_dir%/%kernel.environment%.log'
+            level: debug
+
+        # 3. Security channel — authentication failures, authorisation
+        #    failures, anything implementing SecurityExceptionInterface.
+        security:
+            type: rotating_file
+            path: '%kernel.logs_dir%/security.log'
+            level: info
+            max_files: 90
+            channels: ['security']
+            formatter: monolog.formatter.json

@@ -1,0 +1,28 @@
+# phpstan.neon — enforce that every thrown exception is declared via @throws.
+#
+# Combined with typed exception properties, this closes the loop: the set
+# of exceptions a function can throw is part of its signature, and the
+# type-checker fails the build if an @throws disappears or a new throw is
+# added without documenting it.
+
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+    level: 9
+    paths:
+        - src
+
+    exceptions:
+        check:
+            missingCheckedExceptionInThrows: true
+            tooWideThrowType: true
+        implicitThrows: false
+        uncheckedExceptionClasses:
+            # Truly unexpected — the outer handler deals with these.
+            - LogicException
+            - RuntimeException
+        checkedExceptionClasses:
+            # Every project exception is a "checked" exception — PHPStan
+            # will require @throws on every function in its call path.
+            - App\Exception\AppExceptionInterface

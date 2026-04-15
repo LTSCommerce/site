@@ -1,0 +1,7 @@
+# config/services.yaml — register the processor and tag it for Monolog.
+
+services:
+    App\Logging\AppExceptionProcessor:
+        tags:
+            - { name: monolog.processor, channel: exception }
+            - { name: monolog.processor, channel: security }

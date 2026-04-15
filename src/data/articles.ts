@@ -7,6 +7,370 @@ import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
+    id: 'php-exception-best-practices',
+    title:
+      'PHP Exception Best Practices: Hard Rules, Project-Level Hierarchies, and Modern 8.4 Patterns',
+    description:
+      'Simple hard rules for when to throw RuntimeException vs LogicException vs InvalidArgumentException, when to create project-level exceptions, how to structure them with typed properties and static factory methods, and how to log them properly with Monolog. Python and TypeScript get a cursory treatment at the end.',
+    date: '2026-04-15',
+    category: CATEGORIES.php.id,
+    readingTime: 18,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'PHP',
+    content: `<div class="intro">
+    <p class="lead">Exceptions are the primary way PHP code communicates that something has gone wrong. Get them right and the stack trace, the log line, and the API error response all tell the same coherent story. Get them wrong and you end up parsing human-readable messages with regex, swallowing errors "temporarily", and turning every production incident into an archaeology dig. This article lays out the simple hard rules I apply on every PHP project, with a PHP 8.4 implementation pattern that makes them trivial to follow. Python and TypeScript get a cursory section at the end — the principles transfer directly.</p>
+</div>
+
+<section>
+    <h2>The Hard Rules (In Order)</h2>
+
+    <p>Before anything else, these are the non-negotiables. Everything that follows is the mechanism for applying them without friction.</p>
+
+    <ol>
+        <li><strong>\\RuntimeException is reserved for the truly unexpected.</strong> If any layer other than the outermost handler is catching one, something is wrong. Either the failure mode is expected and deserves a proper project-level exception, or nobody should be catching it.</li>
+        <li><strong>\\LogicException is for impossible states.</strong> Type guards, invariant checks, "this branch should be unreachable" — things that, if they ever throw in production, mean the code is wrong.</li>
+        <li><strong>\\InvalidArgumentException is for argument validation at the boundary.</strong> Throw as early as possible, so invalid values never enter the domain.</li>
+        <li><strong>Always chain the previous exception.</strong> Never swallow debugging information by dropping the original cause.</li>
+        <li><strong>Never encode data inside message strings.</strong> Data belongs on typed properties. The message is synthesised from those properties via a published sprintf constant.</li>
+        <li><strong>Use named static factory methods</strong> — <code>create</code> and <code>createWithPrevious</code>. No more wondering which constructor overload you are looking at.</li>
+        <li><strong>Messages live in class constants as sprintf formats.</strong> One source of truth. Tests reuse the constant, so changing wording never breaks a test and never creates a magic string to hunt down.</li>
+        <li><strong>Never, ever, ever swallow an exception.</strong> Catching without rethrowing, recovering, or translating is fraud — the caller is told everything worked when it did not.</li>
+    </ol>
+
+    <p>The rest of this article is the machinery that makes all of the above easy.</p>
+</section>
+
+<section>
+    <h2>The SPL Hierarchy — What to Extend and When</h2>
+
+    <p>PHP's built-in exception classes form a small tree that encodes a useful distinction. Use it.</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/spl-hierarchy.php}}</code></pre>
+
+    <p>The single most important division is between <strong>\\LogicException</strong> and <strong>\\RuntimeException</strong>. It is a binary question about whose fault the failure is:</p>
+
+    <ul>
+        <li><strong>\\LogicException</strong> means <em>the code is wrong</em>. This should never happen. If it does, a developer needs to fix the code. No amount of retrying or recovery will help.</li>
+        <li><strong>\\RuntimeException</strong> means <em>the environment is wrong</em>. The database went away. The network timed out. The disk is full. The code is fine — the world is misbehaving.</li>
+    </ul>
+
+    <p>Here is the distinction in practice:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/runtime-vs-logic.php}}</code></pre>
+
+    <p>And <code>InvalidArgumentException</code> — a subclass of <code>LogicException</code> — covers the canonical "you passed me rubbish" case:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/invalid-argument.php}}</code></pre>
+</section>
+
+<section>
+    <h2>The Containment Rule for RuntimeException</h2>
+
+    <p>This is worth stating twice because it is the rule most often violated.</p>
+
+    <p><strong>No layer of the application may catch a bare <code>RuntimeException</code> except the outermost one.</strong> Not the service layer. Not the repository. Not the controller. Only the kernel or top-level exception listener that turns failures into a user-facing "something went wrong" response.</p>
+
+    <p>If you find yourself wanting to catch a <code>RuntimeException</code> in the middle of the stack, stop and ask: <em>why is this failure expected here?</em> If you can answer that question, the failure deserves its own project-level exception class that describes what happened in domain terms. Replace the bare <code>RuntimeException</code> with that new class, and now the catch block has a name and a contract.</p>
+
+    <p>The same rule applies, even more strictly, to <code>Throwable</code> and <code>Exception</code>. Generic catches in the middle of a stack are how silent bugs survive into production.</p>
+</section>
+
+<section>
+    <h2>Project-Level Exception Hierarchy</h2>
+
+    <p>Every project of any size needs its own exception tree. The minimum useful structure is a root marker interface that every project-thrown exception implements, a couple of category marker interfaces for things you want to react to generically, and abstract base classes corresponding to the <code>LogicException</code> and <code>RuntimeException</code> split.</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/project-hierarchy.php}}</code></pre>
+
+    <p>The marker interfaces pay for themselves instantly. The kernel exception listener can match on <code>UserFacingExceptionInterface</code> and return a structured 4xx without caring what the specific subclass is. The security logger listens for <code>SecurityExceptionInterface</code>. A retry middleware loops when it sees <code>RetryableExceptionInterface</code>. None of those components need to know about every concrete exception class — they react to capability.</p>
+
+    <p>The <code>AppExceptionInterface</code> root marker is the one that really earns its keep. If an exception reaching the top handler does not implement it, that is a signal: the code threw something it did not reason about. Either promote the exception to a proper domain class, or wrap it at the boundary where it originated.</p>
+</section>
+
+<section>
+    <h2>Composition Over Inheritance — Keep the Tree Shallow</h2>
+
+    <p>PHP forces you to extend <code>Exception</code> (or one of its subclasses) because <code>throw</code> only accepts a <code>Throwable</code>. That is the one piece of inheritance you cannot avoid. Everything else — categorisation, shared behaviour, rich context — should be composed, not inherited.</p>
+
+    <p>The common trap is using deep inheritance chains to "share a bit of behaviour" or to "group related exceptions". It looks tidy on a class diagram and falls apart in practice:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/inheritance-depth-bad.php}}</code></pre>
+
+    <p>The rule I apply: <strong>concrete exceptions are exactly one level below the abstract base</strong>. No mid-tier abstracts like <code>OrderException</code> sitting between <code>AppException</code> and <code>InsufficientStockException</code>. No subclassing a concrete exception to tweak it. If you need to group exceptions for handling, group them with a marker interface. If you need to share mechanical boilerplate, share it with a trait.</p>
+
+    <h3>Traits for Shared Mechanical Boilerplate</h3>
+
+    <p>Traits are a clean way to share the <code>MESSAGE_FORMAT</code> / <code>sprintf</code> / static factory pattern across every exception without an intermediate base class:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/shared-behavior-trait.php}}</code></pre>
+
+    <p>A concrete exception stays one level deep (<code>extends AppException</code>), <code>use</code>s the trait for boilerplate, declares its <code>MESSAGE_FORMAT</code> constant, and implements whichever marker interfaces describe its capabilities. Behaviour is composed from three orthogonal axes — class (for <code>throw</code> compatibility), interfaces (for categorisation), trait (for boilerplate) — not stacked up in an inheritance chain.</p>
+
+    <h3>Compose Rich Context via Value Objects</h3>
+
+    <p>When an exception would otherwise sprout six or seven flat properties, the right move is to compose a typed value object and have the exception hold <em>that</em>, rather than duplicating every field on the exception itself:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/composition-value-object.php}}</code></pre>
+
+    <p>Now the same <code>PaymentAttemptContext</code> value object is reused by the exception, the audit log writer, the analytics publisher, and anywhere else that needs to represent a payment attempt. Adding a new field to the context does not ripple through every exception constructor — the exception's public surface stays stable. This is the same argument for composition over inheritance that applies to any other class in the system; it just holds doubly for exceptions because inheritance is already load-bearing for the <code>throw</code> contract.</p>
+
+    <h3>Three Axes, Not One Chain</h3>
+
+    <p>Put it all together and every concrete exception composes along three independent axes:</p>
+
+    <ul>
+        <li><strong>Class</strong> — exactly one level below an abstract base (<code>AppException</code> or <code>AppLogicException</code>). This is the only inheritance in play, and it exists solely because <code>throw</code> requires a <code>Throwable</code>.</li>
+        <li><strong>Marker interfaces</strong> — orthogonal capabilities (<code>UserFacing</code>, <code>Retryable</code>, <code>Security</code>). An exception can be any combination of these. Try expressing "retryable AND user-facing" with class inheritance and you will see why interfaces win.</li>
+        <li><strong>Traits and value objects</strong> — reusable mechanical pieces. The sprintf/factory boilerplate lives in a trait. Rich context lives in a composed value object.</li>
+    </ul>
+
+    <p>The inheritance tree is two levels deep and stays that way forever. Every other axis of variation is handled by composition.</p>
+</section>
+
+<section>
+    <h2>Data Goes on Properties, Not in Message Strings</h2>
+
+    <p>This is the rule that most often surprises people, and the one that pays the biggest dividend. Here is the anti-pattern:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/data-in-message-bad.php}}</code></pre>
+
+    <p>Every piece of data in that message is valuable — the SKU, the requested quantity, the available quantity, the order ID, the customer ID. Downstream code will want to react to those values specifically. Logs want to index them. API responses want to return them as structured fields. But all of it is trapped inside a string, recoverable only by fragile regex that breaks the first time someone improves the wording.</p>
+
+    <p>The fix is simple: put the data on the exception as typed properties, and synthesise the message from them via a published <code>sprintf</code> format constant.</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/data-in-properties-good.php}}</code></pre>
+
+    <p>PHP 8.4's asymmetric visibility — <code>public private(set)</code> — is perfect here. The properties are freely readable anywhere (no boilerplate getters), but only the exception itself can set them. No accidental mutation, no <code>readonly</code> gotchas around inheritance.</p>
+
+    <p>Downstream code becomes clean and type-safe:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/using-exception-data.php}}</code></pre>
+</section>
+
+<section>
+    <h2>Static Factory Methods: create() and createWithPrevious()</h2>
+
+    <p>Exceptions are one of the rare cases where multiple named factories beat a single polymorphic constructor. A fully-typed constructor with five domain parameters plus an optional trailing <code>previous</code> is ugly to call and ambiguous to read. Named factories make the call site self-documenting:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/factory-call-sites.php}}</code></pre>
+
+    <p>They also give you a natural place to add convenience constructors later — <code>fromApiResponse(array $body)</code>, <code>forOrder(OrderId $id)</code>, and so on — without bloating the main constructor signature.</p>
+</section>
+
+<section>
+    <h2>Message Constants — The Single Source of Truth</h2>
+
+    <p>Exception messages are a surprisingly common source of magic strings scattered through codebases. Every test that asserts on a specific wording becomes a fragile coupling to the exact phrasing. Change the wording and seventeen unrelated tests turn red.</p>
+
+    <p>The fix is the <code>MESSAGE_FORMAT</code> class constant:</p>
+
+    <ul>
+        <li>The exception's constructor uses it to build the message.</li>
+        <li>Tests use the same constant to build the expected value.</li>
+        <li>Log parsers (if you really must) reference the constant, not the literal string.</li>
+    </ul>
+
+    <p>Change the wording in one place. Every caller and every test stays green automatically.</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/testing-exceptions.php}}</code></pre>
+
+    <p>Notice how the test never hardcodes the message string. It asserts on properties (which is the right thing to assert on 95% of the time) and, where it does check the message, it reproduces it from the published constant.</p>
+</section>
+
+<section>
+    <h2>Always Chain the Previous Exception</h2>
+
+    <p>PHP's <code>Exception</code> constructor takes a <code>?Throwable $previous</code> argument specifically for this. Use it. Every. Single. Time.</p>
+
+    <p>When you translate a low-level exception into a domain-meaningful one at a boundary, the low-level exception is not noise to be discarded — it is the root cause of the failure. Stack traces, connection IDs, driver error codes, provider-specific details all live on that original throwable. Throw it away and future you will be guessing.</p>
+
+    <p>Monolog's default formatter walks the entire previous chain. Symfony's profiler shows every level. PHPUnit's <code>expectException</code> output includes it. All of this works automatically — if you chain.</p>
+
+    <p>The boundary conversion pattern looks like this:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/boundary-conversion.php}}</code></pre>
+
+    <p>The rule in one sentence: <em>the rest of the application never sees <code>PDOException</code>, <code>RedisException</code>, or HTTP client exceptions — it sees <code>AppException</code> subclasses, and the original exception is always chained.</em></p>
+</section>
+
+<section>
+    <h2>Never, Ever Swallow Exceptions</h2>
+
+    <p>This needs its own section because it is the single most damaging pattern I see in PHP codebases.</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/never-swallow.php}}</code></pre>
+
+    <p>If you catch an exception, you must do exactly one of three things:</p>
+
+    <ol>
+        <li><strong>Rethrow.</strong> Optionally wrapped in a more meaningful exception, with the previous exception chained. The caller still knows something went wrong.</li>
+        <li><strong>Recover.</strong> Execute an alternative path that the caller has explicitly opted into (retry, fallback value, degraded mode). The recovery must be an actual plan, not "we hope it worked".</li>
+        <li><strong>Translate.</strong> Throw a different exception that the caller is documented (via <code>@throws</code>) to expect. This is a rethrow with wrapping.</li>
+    </ol>
+
+    <p>Logging and then not rethrowing is still swallowing. The caller is told via a normal return that everything succeeded. It did not. This is lying to your own code.</p>
+
+    <p>If you are ever tempted to write an empty <code>catch</code>, write a comment first explaining which of the three options above you are doing and why. Nine times out of ten, the act of writing the comment will reveal that you are about to do something wrong.</p>
+</section>
+
+<section>
+    <h2>The Outermost Handler — Where Generic Catches Belong</h2>
+
+    <p>Given all of the above, there is exactly one place in the application where a generic catch of <code>Throwable</code> makes sense: the kernel-level exception listener. That is the place that decides what a user sees when something goes wrong, and it is the only place that is allowed to deal in generic base types.</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/outer-layer-handler.php}}</code></pre>
+
+    <p>Notice how the handler uses the marker interfaces from the project hierarchy to branch. It does not enumerate concrete exception classes. The list of concrete exceptions can grow without the handler ever needing to change.</p>
+</section>
+
+<section>
+    <h2>Monolog: A Dedicated Exception Log Channel</h2>
+
+    <p>Exceptions deserve their own log channel with its own retention policy and its own format. Mixing them into the main application log makes them hard to find and hard to correlate across requests.</p>
+
+    <p>Here is the Symfony Monolog configuration I use on every project:</p>
+
+    <pre><code class="language-yaml">{{SNIPPET:php-exception-best-practices/monolog-config.yaml}}</code></pre>
+
+    <p>The key moves:</p>
+
+    <ul>
+        <li><strong>Dedicated <code>exception</code> channel</strong> with its own rotating log file, separate from the main application log.</li>
+        <li><strong>JSON formatter</strong> — exception properties (the structured data we put on the class) get serialised as queryable fields, not flattened into a message string.</li>
+        <li><strong>Fingers-crossed handler on main</strong> — a single error triggers the whole request's debug log being flushed, so you get full context around the failure without drowning in noise during healthy requests.</li>
+        <li><strong>Separate <code>security</code> channel</strong> for anything implementing <code>SecurityExceptionInterface</code>, with longer retention.</li>
+    </ul>
+
+    <p>The top-level kernel listener injects a channel-specific logger — Symfony auto-wires the channel by argument name (<code>exceptionLogger</code> resolves to the <code>exception</code> channel). Every thrown-and-logged exception ends up in <code>var/log/exception.log</code> as structured JSON.</p>
+</section>
+
+<section>
+    <h2>A Monolog Processor for Typed Exception Data</h2>
+
+    <p>Because we put exception data on real typed properties, we can reflect them out in a Monolog processor and attach them to every log record automatically. No manual context array at every throw site:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/manual-logging-bad.php}}</code></pre>
+
+    <p>Here is the processor that makes it automatic:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/monolog-processor.php}}</code></pre>
+
+    <p>Wire it up in <code>services.yaml</code>:</p>
+
+    <pre><code class="language-yaml">{{SNIPPET:php-exception-best-practices/processor-registration.yaml}}</code></pre>
+
+    <p>Now every log entry that carries an <code>AppExceptionInterface</code> in its context automatically gets an <code>extra.app_exception</code> block with the full class name, every typed property, and the full previous chain. All of this ends up as indexed, queryable JSON fields in your log aggregation tool of choice.</p>
+</section>
+
+<section>
+    <h2>PHPStan — Making @throws a Type Constraint</h2>
+
+    <p>PHP has no checked exceptions in the language, but PHPStan can simulate them. With the right configuration, every exception class in your project hierarchy is treated as "checked" — meaning PHPStan will fail the build if a function throws (or calls a function that throws) one of your exceptions without declaring it in <code>@throws</code>.</p>
+
+    <pre><code class="language-yaml">{{SNIPPET:php-exception-best-practices/phpstan-throws.neon}}</code></pre>
+
+    <p>Combined with the project-level hierarchy and typed properties, this closes the loop. The set of exceptions a function can throw is now part of its signature. Static analysis enforces it. Adding a new throw somewhere deep in the call graph surfaces as a required <code>@throws</code> update everywhere the exception can propagate — or a required <code>try</code> / <code>catch</code> at a natural boundary.</p>
+
+    <p>Bare <code>RuntimeException</code> and <code>LogicException</code> are left in <code>uncheckedExceptionClasses</code> on purpose — you do not want the type-checker demanding that every function declare that it might throw one. They are truly unexpected by definition. The outer handler catches them.</p>
+</section>
+
+<section>
+    <h2>Putting It All Together: A Modern PHP 8.4 Exception</h2>
+
+    <p>Here is the full pattern in one class, using the features PHP 8.4 gives us:</p>
+
+    <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/php84-modern-features.php}}</code></pre>
+
+    <p>Every rule from the top of this article is applied:</p>
+
+    <ul>
+        <li>Extends an <code>AppException</code> base, implements the <code>UserFacingExceptionInterface</code> marker.</li>
+        <li>Data is on typed properties, not in the message.</li>
+        <li>Asymmetric visibility means those properties are read-only from outside, without the <code>readonly</code> pitfalls.</li>
+        <li>A property hook gives us a computed <code>summary</code> attribute with no getter boilerplate.</li>
+        <li>Named static factories — <code>create</code> and <code>createWithPrevious</code> — for self-documenting call sites.</li>
+        <li>The message is synthesised from a <code>MESSAGE_FORMAT</code> constant that tests can reuse.</li>
+        <li>The previous exception is always chainable via the dedicated factory.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>A Few Things I Propose on Top of Your Rules</h2>
+
+    <p>You asked what else I would add. Four things:</p>
+
+    <h3>1. Exceptions Are Not For Control Flow</h3>
+
+    <p>If a "not found" is an expected outcome of a finder method, do not throw — return null, or a result object. Save exceptions for <em>failure</em>. The moment "throw and catch" becomes part of the happy path, the signal value of exceptions degrades. Logs fill with "expected" noise. Stack traces become routine. You lose the ability to say "if an exception reached the top, something is genuinely wrong".</p>
+
+    <h3>2. Marker Interfaces Beat Class Trees for Cross-Cutting Concerns</h3>
+
+    <p>The <code>UserFacingExceptionInterface</code>, <code>RetryableExceptionInterface</code>, and <code>SecurityExceptionInterface</code> pattern in the hierarchy snippet lets a single exception implement multiple capabilities orthogonally. A single <code>ExternalApiUnavailableException</code> can reasonably be <em>both</em> retryable <em>and</em> user-facing. Class inheritance cannot express that; interfaces can.</p>
+
+    <h3>3. Document @throws on Every Function That Throws</h3>
+
+    <p>Even without PHPStan's checked-exception enforcement, <code>@throws</code> is documentation for the caller. An IDE that reads PHPDoc will highlight uncaught thrown exceptions. A reviewer reading the function signature knows what failure modes they have to handle. Combined with PHPStan's <code>missingCheckedExceptionInThrows</code> rule, it becomes an enforced contract.</p>
+
+    <h3>4. Test the Exception, Not Just "Some Exception Was Thrown"</h3>
+
+    <p>Asserting that "any <code>Throwable</code>" was thrown is almost never the right assertion. Assert on the specific subclass. Better, catch the exception explicitly and assert on its typed properties. The exception is part of the method's contract — test it with the same rigour you test return values.</p>
+</section>
+
+<section>
+    <h2>Python — Same Principles, Different Syntax</h2>
+
+    <p>The principles port directly. Python's <code>raise ... from previous</code> is the language-level equivalent of PHP's <code>previous</code> constructor argument. Data goes on instance attributes, <code>__str__</code> synthesises the message from them.</p>
+
+    <pre><code class="language-python">{{SNIPPET:php-exception-best-practices/python-exceptions.py}}</code></pre>
+
+    <p>Two Python-specific notes:</p>
+
+    <ul>
+        <li>Subclass <code>Exception</code>, never <code>BaseException</code>. <code>BaseException</code> is reserved for things like <code>SystemExit</code> and <code>KeyboardInterrupt</code> that should generally not be caught.</li>
+        <li><code>raise ... from None</code> suppresses the previous-exception chain. It exists for rare cases where the cause is a noisy implementation detail, but it is usually wrong. Default to <code>raise ... from previous</code>.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>TypeScript — Error.cause and Nominal Typing via Class</h2>
+
+    <p>TypeScript's story is cleaner than you might expect. ES2022 added <code>Error.cause</code> — the direct analogue of PHP's previous exception — and the <code>Error</code> constructor accepts it as a second argument via an options object.</p>
+
+    <pre><code class="language-typescript">{{SNIPPET:php-exception-best-practices/typescript-exceptions.ts}}</code></pre>
+
+    <p>Three TypeScript-specific notes:</p>
+
+    <ul>
+        <li><code>instanceof</code> works for domain error classes at runtime — use it in catch blocks, never parse the message.</li>
+        <li>Set <code>this.name</code> explicitly. The default <code>"Error"</code> string makes all errors look alike in logs.</li>
+        <li>The caught value in a catch block is <code>unknown</code> in modern TypeScript. Narrow with <code>instanceof</code> before accessing properties — the type system will force you to be honest about what you actually know.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Summary: The Checklist</h2>
+
+    <p>Every exception in your project should pass all of these checks. Stick this list next to the keyboard:</p>
+
+    <ul>
+        <li>Extends an <code>AppException</code> base class and implements <code>AppExceptionInterface</code>.</li>
+        <li>Extends <code>LogicException</code> (via <code>AppLogicException</code>) if it is a code bug; <code>RuntimeException</code> (via <code>AppException</code>) otherwise.</li>
+        <li>Implements any relevant marker interfaces (<code>UserFacing</code>, <code>Retryable</code>, <code>Security</code>).</li>
+        <li>All domain data lives on typed properties (PHP 8.4 <code>public private(set)</code>).</li>
+        <li>Message is synthesised from a <code>MESSAGE_FORMAT</code> class constant via <code>sprintf</code>.</li>
+        <li>Named static factories: <code>create</code> and <code>createWithPrevious</code>.</li>
+        <li>The previous exception is accepted and forwarded to the parent constructor — never dropped.</li>
+        <li>Low-level third-party exceptions are wrapped at the boundary, not leaked to the domain.</li>
+        <li>Declared in <code>@throws</code> on every function that throws or propagates it.</li>
+        <li>Tested by asserting on properties, and on messages built from the published constant.</li>
+    </ul>
+
+    <p>Do this consistently and exceptions stop being an afterthought. They become a structured, testable, observable part of the system's contract — and the outer exception handler genuinely does mean "something unexpected happened" when it fires.</p>
+</section>
+`,
+  },
+  {
     id: 'openapi-automatic-code-generation',
     title:
       'OpenAPI and Automatic Code Generation: Define Once, Generate Everywhere',
