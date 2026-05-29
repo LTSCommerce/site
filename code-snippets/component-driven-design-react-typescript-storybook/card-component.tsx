@@ -1,5 +1,4 @@
-// Card composed from smaller sub-components.
-// The Button is imported and used with its declared props — no style overrides.
+// Button is used via declared props only; no style overrides permitted.
 
 import { Button } from './button-component';
 
@@ -58,7 +57,6 @@ export function Card({ intent, header, body, actionLabel, onAction }: CardProps)
       <CardBody>{body}</CardBody>
       {actionLabel && onAction && (
         <CardFooter>
-          {/* Button used via its declared variant/size props — no ad-hoc styling. */}
           <Button
             variant={intent === 'featured' ? 'primary' : 'secondary'}
             size="sm"

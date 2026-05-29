@@ -1,5 +1,4 @@
-// The page itself is a component with a layout variant prop.
-// Even the top-level layout is a named, testable, documented choice —
+// Even the top-level layout is a named, testable, documented choice,
 // not an ad-hoc CSS class scattered across route files.
 
 type PageLayout = 'default' | 'full-width' | 'landing';
@@ -23,7 +22,7 @@ export function Page({ layout, children }: PageProps) {
   );
 }
 
-// Usage — the layout choice is declared at the route level, not buried in CSS:
+// Usage: the layout choice is declared at the route level, not buried in CSS:
 //
 // function ProductCataloguePage() {
 //   return (

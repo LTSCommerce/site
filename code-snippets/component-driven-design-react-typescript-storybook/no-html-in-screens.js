@@ -37,7 +37,7 @@ export default {
         const filename = context.filename ?? context.getFilename();
         const isScreen = filename.includes('/src/screens/') && filename.endsWith('.tsx');
 
-        // Storybook story files are exempt — they need wrappers for layout demos
+        // Story files are exempt: they require wrapper elements for layout demonstration.
         if (!isScreen || filename.endsWith('.stories.tsx')) return;
 
         const elementName = node.openingElement.name.name;

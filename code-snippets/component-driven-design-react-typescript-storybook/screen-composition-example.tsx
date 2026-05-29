@@ -5,9 +5,8 @@ import { ScreenContainer, ScreenHeader, PageSection, Stack } from '@/components/
 import { SectionHeader, EmptyState, AppointmentCard, ButtonGroup } from '@/components/composite';
 import { Button } from '@/components/ui/button';
 
-// This screen contains zero raw HTML elements.
 // Every JSX tag is a named component from the component library.
-// The no-html-in-screens ESLint rule enforces this structurally —
+// The no-html-in-screens ESLint rule enforces this structurally:
 // a <div> or <h2> in a screen file is a build error, not a convention to remember.
 
 export function DashboardScreen({

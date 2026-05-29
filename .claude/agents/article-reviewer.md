@@ -54,21 +54,40 @@ A summary section is fine if it adds genuine value (e.g. a scannable checklist d
 - References to features that do not exist in the stated version
 - Links that go to wrong destinations
 
-### 6. Tone and Prose Issues
+### 6. Tone and Prose Issues — ALL Text Surfaces
 
-Flag (do not obsess over):
+This check applies to **every piece of text in the article**, not just paragraph prose. Check explicitly:
+
+**`<h2>` and `<h3>` heading text:**
+
+- Em dashes used as heading separators (`Title — Subtitle`) — use a colon instead
+- AI-flavoured subtitle patterns ("The Rule That Keeps Everything Sane", "What You Need to Know")
+- Headings that read as conversational rather than structural
+
+**Code comments in snippet files** (read each file under `code-snippets/<slug>/`):
+
+- Em dashes in inline comments
+- Phrases like "Note that...", "Keep in mind...", "It's worth noting...", "Simply..."
+- Over-explaining the obvious — comments should state WHY, not WHAT
+- Contractions (`isn't`, `don't`, `you've`) inconsistent with the article's formal register
+- First-person ("I use this pattern because...")
+- Sentence fragments and grammar issues
+
+**Paragraph prose:**
 
 - Excessive em dashes where a comma or full stop would do
 - "Moreover", "Furthermore", "In essence", "It is worth noting that"
 - Passive voice where active is clearly better
 - Sentences over 35 words
+- Contractions (`isn't`, `don't`, `you've`) — flag if inconsistent with overall register
 
 ## How To Run a Review
 
 1. Find the article by its slug in `src/data/articles.ts`
 2. Read the entire `content` template literal
-3. Work through each category above systematically
-4. Report findings as a structured list:
+3. Read every snippet file under `code-snippets/<article-slug>/` — check comments for tone issues
+4. Work through each category above systematically across ALL text surfaces
+5. Report findings as a structured list:
 
 ```
 FINDING [CRITICAL|MODERATE|MINOR]: <short description>

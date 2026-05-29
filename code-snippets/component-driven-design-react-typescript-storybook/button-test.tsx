@@ -2,8 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { Button } from './button-component';
 
-// Because ButtonVariant, ButtonSize, and the disabled flag are finite,
-// every valid combination can be enumerated and tested. No guessing what states exist.
+// Finite props mean every valid combination is enumerable: full test coverage without guessing.
 
 const variants = ['primary', 'secondary', 'ghost'] as const;
 const sizes = ['sm', 'md', 'lg'] as const;
