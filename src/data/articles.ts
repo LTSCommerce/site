@@ -7,6 +7,134 @@ import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
+    id: 'component-driven-design-react-typescript-storybook',
+    title: 'Component-Driven Design with React, TypeScript, and Storybook',
+    description:
+      'How building UIs as a hierarchy of typed, isolated components — where styling is controlled entirely through declared props — produces design systems that stay coherent, testable, and maintainable at scale.',
+    date: '2026-05-29',
+    category: CATEGORIES.typescript.id,
+    readingTime: 12,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'reactjs',
+    content: `<div class="intro">
+    <p class="lead">Every frontend codebase eventually accumulates a graveyard of slightly-different buttons. One is blue, one is navy, one has a drop shadow that nobody can explain, and three of them have <code>margin-top: 3px</code> applied directly in the page file because the designer asked for "just a small tweak" six months ago. Component-driven design is the discipline that prevents this — and React combined with TypeScript gives you the tools to enforce it mechanically, not just as a convention people might follow.</p>
+</div>
+
+<section>
+    <h2>The Component Mindset</h2>
+
+    <p>The core idea is older than React. In the mid-2000s, the web industry was building pages — large HTML documents with styles and behaviour bolted on. The problem with building pages is that everything on a page is, implicitly, a special case. The hero banner is slightly different from every other hero banner. The navigation on the product page has one extra link that the blog page does not. Consistency is achieved, if at all, by human discipline and shared CSS files that grow without bound.</p>
+
+    <p>Component-driven design inverts the model. Instead of designing pages and then trying to extract shared pieces, you design the pieces first and compose pages from them. A button is a button everywhere. A card is a card everywhere. A page header is a component with declared properties. The page itself is a component that assembles other components.</p>
+
+    <p>React made this model mainstream for the web in 2013. TypeScript, layered on top, turns the informal "we agreed buttons should look like this" into a compile-time contract. The sections below explain why that contract matters and how to structure it so it actually holds.</p>
+</section>
+
+<section>
+    <h2>TypeScript Props as a Design Contract</h2>
+
+    <p>A React component's props interface is a machine-readable specification of everything the component can do. When you define a <code>Button</code> component in TypeScript, the interface lists every dimension of variation the button supports — and, crucially, nothing else.</p>
+
+    <p>Consider a typed button that accepts a <code>variant</code> and a <code>size</code>:</p>
+
+    <pre><code class="language-typescript">{{SNIPPET:component-driven-design-react-typescript-storybook/button-component.tsx}}</code></pre>
+
+    <p>The TypeScript compiler now enforces the design system. Pass <code>variant="danger"</code> and the build fails — because "danger" is not a declared variant. Pass a number to <code>size</code> and the build fails. The contract is not a guideline in a Notion document that new developers might not read; it is a gate that the build will not pass without satisfying.</p>
+
+    <p>This is the key insight: design inconsistencies that used to be caught in a design review — or, worse, in production — are caught the moment a developer saves the file. The TypeScript interface <em>is</em> the design spec, expressed in a language both the build tool and the developer can reason about precisely.</p>
+</section>
+
+<section>
+    <h2>DRY — One Component, Infinite Reuse</h2>
+
+    <p>The "Don't Repeat Yourself" principle is usually discussed in the context of logic — if you find yourself copy-pasting a function, extract it. The same principle applies with equal force to UI. If you find yourself copy-pasting a button, that button is screaming to become a component.</p>
+
+    <p>The payoff is identical to the function case. Change the button once and every instance updates. Fix an accessibility issue in the component and it is fixed everywhere. Update the hover colour to match a rebrand and a single file changes. The alternative — twenty copies of the button spread across twenty page files — means twenty manual edits, twenty opportunities to miss one, and twenty slightly-diverged variations drifting apart over time.</p>
+
+    <p>There is also a subtler benefit: when a piece of UI exists in only one place, decisions about it happen in only one place. Designers and developers have one thing to discuss, not twenty. "The button should have more padding" is a one-line change to a single component, not a refactoring sprint.</p>
+</section>
+
+<section>
+    <h2>Styling by Flags — The Rule That Keeps Everything Sane</h2>
+
+    <p>This is the rule that separates a component library that stays coherent from one that slowly dissolves into chaos: <strong>components accept styling flags, never raw CSS</strong>.</p>
+
+    <p>Here is what the anti-pattern looks like:</p>
+
+    <pre><code class="language-typescript">{{SNIPPET:component-driven-design-react-typescript-storybook/button-bad-example.tsx}}</code></pre>
+
+    <p>The <code>className</code> and <code>style</code> props look like flexibility. They are, in practice, the exact mechanism by which design systems fall apart. The moment a consumer can pass arbitrary CSS, the component is no longer the single source of truth for how a button looks. Every caller becomes a one-off override. Within months you have as many button variations as you have call sites — and none of them are documented, tested, or consistent.</p>
+
+    <p>The constrained version — accepting <code>variant</code> and <code>size</code> instead — means the set of valid visual states is finite and declared. Three variants, three sizes, one disabled flag: that is eighteen combinations. Every one of them is enumerable, nameable, testable, and visible in Storybook. None of them are buried in page-level CSS that only the developer who wrote it knows about.</p>
+
+    <h3>What to do when the design genuinely needs something new</h3>
+
+    <p>The right response to "we need a red destructive button" is not to pass <code>className="text-red-500 border-red-500"</code> at the call site. It is to add <code>'destructive'</code> to the <code>ButtonVariant</code> union type, define its styles in the lookup table, write a Storybook story for it, and update the tests. The new variant becomes a first-class, documented member of the design system — not a one-off hack visible only to the developer who wrote it.</p>
+
+    <p>This forces a healthy friction. Before adding a new variant, someone has to consciously decide that this is a permanent part of the design vocabulary. That conversation — "do we need a destructive button, or should we use the existing secondary button with a modal confirmation?" — is exactly the conversation that design systems exist to prompt.</p>
+
+    <h3>The testing argument</h3>
+
+    <p>There is a purely practical reason for the no-arbitrary-CSS rule beyond design consistency: testability. When the set of valid states is finite and declared in the type system, you can write exhaustive tests mechanically. When states are arbitrary — any combination of CSS classes and inline styles the caller might dream up — exhaustive testing is impossible by definition. You can only test what you thought to test.</p>
+</section>
+
+<section>
+    <h2>Storybook — See Every State Before You Ship</h2>
+
+    <p>Storybook is a tool that renders components in isolation, outside the application. Each "story" is a single named state of a component — one specific combination of props. Open Storybook and you see a browsable catalogue of every component in the system, in every declared state, without needing to navigate through the app to find the right screen.</p>
+
+    <p>Because the Button's valid states are enumerable from its type definition, the stories file is almost mechanical to write:</p>
+
+    <pre><code class="language-typescript">{{SNIPPET:component-driven-design-react-typescript-storybook/button-stories.ts}}</code></pre>
+
+    <p>The result is a living document. Designers can open Storybook and see exactly what the "secondary, large, disabled" button looks like — without asking a developer to build a page that happens to contain one. When the design spec says "the ghost button should look muted", there is a specific story to point at. When a developer implements the change, there is a specific story to verify against.</p>
+
+    <p>Stories also serve as regression anchors. A visual regression tool can screenshot every story automatically and flag when anything changes unexpectedly. No component drifts silently between deploys.</p>
+</section>
+
+<section>
+    <h2>Testing Is Easy When Possibilities Are Finite</h2>
+
+    <p>The testing story for constrained components is remarkably straightforward. Because every valid state is a named combination of declared props, a test suite can iterate over every combination systematically. The example below uses <a href="https://vitest.dev/" target="_blank" rel="noopener">Vitest</a> and React Testing Library, but the pattern applies to any test runner:</p>
+
+    <pre><code class="language-typescript">{{SNIPPET:component-driven-design-react-typescript-storybook/button-test.tsx}}</code></pre>
+
+    <p>Three variants, three sizes, one disabled flag: the nested loop covers all eighteen combinations. No state is left untested because no state can exist outside the declared combinations. If a new variant is added to the type, TypeScript will flag any switch statement or lookup table that does not handle it — forcing the developer to define its styles <em>and</em> its tests at the same time.</p>
+
+    <p>Compare this to a component that accepts arbitrary <code>className</code>. The test suite covers whatever the author thought to test. The production cases are whatever consumers happen to pass. There is no mechanism connecting the two. Bugs live in the gap.</p>
+</section>
+
+<section>
+    <h2>Composition — Components All the Way Up</h2>
+
+    <p>The component model scales from atoms to pages. A <code>Button</code> is a primitive. A <code>Card</code> is composed from smaller sub-components and uses <code>Button</code> internally:</p>
+
+    <pre><code class="language-typescript">{{SNIPPET:component-driven-design-react-typescript-storybook/card-component.tsx}}</code></pre>
+
+    <p>Notice that the <code>Card</code> does not accept a <code>buttonVariant</code> prop and pass it through. It makes a design decision internally: featured cards get a primary button, all others get secondary. That decision lives in the component, not scattered across every page that renders a card. If the rule changes, one file changes.</p>
+
+    <p>A <code>ProductGrid</code> composes multiple <code>Card</code> components. A <code>CategoryPage</code> composes <code>ProductGrid</code> with a <code>PageHeader</code> and a <code>Sidebar</code>. And the page layout itself is a component:</p>
+
+    <pre><code class="language-typescript">{{SNIPPET:component-driven-design-react-typescript-storybook/page-component.tsx}}</code></pre>
+
+    <p>Even the decision of "this route uses a full-width layout" is a named, documented, testable choice — not a CSS class on a <code>&lt;div&gt;</code> that some developer added directly to a route file.</p>
+
+    <p>This fractal structure means consistency compounds as the codebase grows. Every new page is built from components whose visual behaviour is already defined and tested. The only new decisions are structural ones — which components to use, in what order, with what data. The design vocabulary does not expand with every new feature; it stays bounded and intentional.</p>
+</section>
+
+<section>
+    <h2>A Shared Language Between Designers and Developers</h2>
+
+    <p>The most underappreciated benefit of component-driven design is linguistic. When every piece of UI has a name — <code>Button</code>, <code>Card</code>, <code>PageLayout</code> — and every valid state of that piece has a name — <code>primary</code>, <code>featured</code>, <code>full-width</code> — designers and developers can have precise conversations. "The featured card on mobile" means something specific and findable. "Make the ghost button larger" is a one-word change to a single prop.</p>
+
+    <p>The TypeScript interface is not an implementation detail. It is the vocabulary of the design system, expressed in a form that a compiler can enforce. When that interface grows thoughtfully — new variants added deliberately, old ones deprecated explicitly — the design system stays coherent over years and across teams, not just for the weeks after launch when everyone still remembers why.</p>
+
+    <p>The scattered CSS nightmare at the start of this article is not inevitable. It is what happens when UI decisions are made locally, case by case, with no shared vocabulary and no machine-enforced contract. Component-driven design, typed with TypeScript and documented with Storybook, is the structural answer to that problem.</p>
+</section>
+`,
+  },
+  {
     id: 'php-exception-best-practices',
     title:
       'PHP Exception Best Practices: Hard Rules, Project-Level Hierarchies, and Modern 8.4 Patterns',
