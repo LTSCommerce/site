@@ -120,13 +120,37 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>Even "this route uses a full-width layout" becomes a named, documented, testable choice rather than a CSS class on a <code>&lt;div&gt;</code> that some developer dropped into a route file.</p>
 
-    <p>This fractal structure makes consistency compound as the codebase grows. Every new page draws on components whose visual behaviour is already defined and tested. The only fresh decisions are structural ones: which components to use, in what order, with what data. Your design vocabulary stays bounded and intentional instead of expanding with every feature.</p>
+    <p>This fractal structure makes consistency compound as the codebase grows. Every new page draws on components whose visual behaviour is already defined and tested. The only fresh decisions are structural ones: which components to use, in what order, with what data. The design vocabulary stays bounded and intentional instead of expanding with every feature.</p>
+
+    <p>Taken to its logical conclusion, a screen at the top of this hierarchy contains no raw HTML at all. Every element is a named component:</p>
+
+    <pre><code class="language-typescript">{{SNIPPET:component-driven-design-react-typescript-storybook/screen-composition-example.tsx}}</code></pre>
+
+    <p>No <code>&lt;div&gt;</code>, no <code>&lt;h2&gt;</code>, no <code>&lt;p&gt;</code>. The screen is a wiring diagram — routing data to components that already know how to display it. Visual decisions live inside the components. The screen owns structure and data flow, and nothing else.</p>
+
+    <p>Component libraries formalise this into a five-tier hierarchy: primitives (buttons, inputs, badges), layout components (structural containers and spacing utilities), composite components (assembled patterns like a form field with its label and error message), feature components (domain-aware UI like a booking calendar or payment form), and screens (full pages wiring everything together). Dependencies run strictly downward: screens import from the feature and layout tiers, never the reverse.</p>
+</section>
+
+<section>
+    <h2>Making the Rules Stick — ESLint as the Enforcer</h2>
+
+    <p>Conventions erode. A rule documented in a README is forgotten by the third developer who joins, misunderstood by the fourth, and quietly ignored by the fifth. The no-arbitrary-CSS discipline, the five-tier hierarchy, the ban on raw HTML in screens — these only stay coherent if something enforces them mechanically: not guidelines people might follow, but gates the build will not pass without satisfying.</p>
+
+    <p>One effective approach treats every CDD violation as the trigger for a static analysis rule rather than just a one-time code fix. The pattern is called Defence Before Fix: when a violation appears, the first question is not "how do I fix this instance?" but "what rule would have caught this before it was written?" Create the lint rule first, then fix the instance. Next time, the rule catches it in the editor before it reaches review.</p>
+
+    <p>Applied to the composition hierarchy, this produces a rule that bans raw HTML in screen components entirely:</p>
+
+    <pre><code class="language-javascript">{{SNIPPET:component-driven-design-react-typescript-storybook/no-html-in-screens.js}}</code></pre>
+
+    <p>The rule scans every file in the screens directory and reports an error the moment a raw HTML element appears: <code>&lt;div&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;form&gt;</code>, all of them. The error message does not just say "this is wrong"; it names the component to reach for instead. Screens stay pure composition by structural impossibility.</p>
+
+    <p>This pairs naturally with TypeScript's enforcement at the component boundary. TypeScript prevents invalid props; ESLint prevents raw HTML in screens. Together they make the architecture self-defending — the codebase pushes back on violations the moment they are written, before a pull request, before a review, before a test run. The discipline scales to teams of any size because it lives in tooling, not in institutional memory.</p>
 </section>
 
 <section>
     <h2>Designers Can Ship New Features Independently, and With High Confidence</h2>
 
-    <p>Once a mature component library exists, a designer or front-end designer, someone who writes markup and basic React but isn't a full engineer, can build an entire new page by composing components that already exist. No new components to build. No new styles to write. No new test cases to author. All of that already exists, and it is already passing.</p>
+    <p>Once a mature component library exists, a designer or front-end designer, someone who writes markup and basic React but is not a full engineer, can build an entire new page by composing components that already exist. No new components to build. No new styles to write. No new test cases to author. All of that already exists, and it is already passing.</p>
 
     <p>The confidence that comes with this is the real prize. Every component on the new page has been battle-tested. It has Storybook documentation, snapshot tests covering every state, and visual regression coverage on top. Assemble those proven pieces and the new page inherits all of that rigour for free. A designer can ship something genuinely new without a senior engineer hovering nervously over the diff, because there is no new untested UI in it to be nervous about.</p>
 
@@ -140,7 +164,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>The TypeScript interface is not an implementation detail. It is the vocabulary of the design system, written in a form a compiler can enforce. Grow that interface thoughtfully, adding new variants deliberately and deprecating old ones explicitly, and the design system stays coherent over years and across teams. It holds up long after launch, not just for the few weeks while everyone still remembers why.</p>
 
-    <p>The scattered CSS nightmare from the start of this article is not inevitable. It is simply what happens when UI decisions get made locally, case by case, with no shared vocabulary and no machine-enforced contract. Component-driven design, typed with TypeScript and documented with Storybook, is the structural answer. Commit to it and you build something that gets stronger with every feature instead of more fragile: a codebase where shipping fast and shipping safely stop being in tension, and where the next page is always the easiest one you've built. That is worth the up-front discipline many times over.</p>
+    <p>That scattered CSS nightmare is not inevitable. It is simply what happens when UI decisions get made locally, case by case, with no shared vocabulary and no machine-enforced contract. Component-driven design, typed with TypeScript and documented with Storybook, is the structural answer. Commit to it and you build something that gets stronger with every feature instead of more fragile: a codebase where shipping fast and shipping safely stop being in tension, and where the next page is always the easiest one you have built. That is worth the up-front discipline many times over.</p>
 </section>
 `,
   },
