@@ -22,6 +22,7 @@ Do NOT edit:
 - `{{SNIPPET:...}}` placeholder references
 - Links and URLs
 - Article metadata fields (`id`, `title`, `date`, etc.)
+- Heading hierarchy or section order — preserve `<h2>`/`<h3>` levels and section structure as-is; only the text words inside headings are in scope for humanisation
 
 ## Core Editing Principles
 
