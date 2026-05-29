@@ -46,7 +46,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>DRY — One Component, Infinite Reuse</h2>
+    <h2>DRY: One Component, Infinite Reuse</h2>
 
     <p>People usually discuss "Don't Repeat Yourself" in the context of logic. Find yourself copy-pasting a function, extract it. The same principle applies with equal force to UI. If you are copy-pasting a button, that button is screaming to become a component.</p>
 
@@ -56,7 +56,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>Styling by Flags — The Rule That Keeps Everything Sane</h2>
+    <h2>Styling by Flags: The Rule That Keeps Everything Sane</h2>
 
     <p>One rule separates a component library that stays coherent from one that slowly dissolves into chaos: <strong>components accept styling flags, never raw CSS</strong>.</p>
 
@@ -80,7 +80,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>Storybook — See Every State Before You Ship</h2>
+    <h2>Storybook: See Every State Before You Ship</h2>
 
     <p>Storybook renders components in isolation, outside the application. Each "story" is a single named state of a component, one specific combination of props. Open it and you get a browsable catalogue of every component in the system in every declared state, with no need to navigate through the app to find the right screen.</p>
 
@@ -106,7 +106,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>Composition — Components All the Way Up</h2>
+    <h2>Composition: Components All the Way Up</h2>
 
     <p>The component model scales from atoms to pages. A <code>Button</code> is a primitive. A <code>Card</code> composes smaller sub-components and uses <code>Button</code> internally:</p>
 
@@ -132,7 +132,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>Making the Rules Stick — ESLint as the Enforcer</h2>
+    <h2>Making the Rules Stick: ESLint as the Enforcer</h2>
 
     <p>Conventions erode. A rule documented in a README is forgotten by the third developer who joins, misunderstood by the fourth, and quietly ignored by the fifth. The no-arbitrary-CSS discipline, the five-tier hierarchy, the ban on raw HTML in screens — these only stay coherent if something enforces them mechanically: not guidelines people might follow, but gates the build will not pass without satisfying.</p>
 
