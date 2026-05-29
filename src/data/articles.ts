@@ -17,6 +17,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'reactjs',
+    register: 'formal',
     content: `<div class="intro">
     <p class="lead">Every frontend codebase eventually accumulates a graveyard of slightly-different buttons. One is blue, one is navy, one has a drop shadow that nobody can explain, and three of them have <code>margin-top: 3px</code> applied directly in the page file because the designer asked for "just a small tweak" six months ago. Component-driven design is the discipline that stops the graveyard from forming. Pair <a href="https://react.dev/" target="_blank" rel="noopener">React</a> with <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a> and you can enforce that discipline mechanically. It stops being a convention people remember to follow and becomes a rule the build refuses to break.</p>
 </div>

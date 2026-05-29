@@ -7,6 +7,19 @@
 import type { CategoryId } from '@/data/categories';
 
 /**
+ * Editorial register — defines prose standards for AI tooling (humanisation, review).
+ * All new articles must declare this explicitly. Existing articles without the field
+ * default to 'formal' (see DEFAULT_ARTICLE_REGISTER).
+ *
+ * formal: no contractions, authoritative third-person, direct assertions, active voice,
+ *         no hedging, no first-person, British English spelling preferred.
+ */
+export type ArticleRegister = 'formal';
+
+/** Site-wide fallback used by agents when an article omits the register field. */
+export const DEFAULT_ARTICLE_REGISTER: ArticleRegister = 'formal';
+
+/**
  * Article metadata and content
  */
 export interface Article {
@@ -39,6 +52,13 @@ export interface Article {
 
   /** Subreddit for social sharing (e.g., 'PHP', 'typescript', 'programming') */
   readonly subreddit?: string;
+
+  /**
+   * Editorial register — must be set on all new articles.
+   * AI tools (content-editor, article-reviewer) read this field to determine
+   * prose standards. Omitting it falls back to DEFAULT_ARTICLE_REGISTER.
+   */
+  readonly register?: ArticleRegister;
 }
 
 /**

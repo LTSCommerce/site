@@ -69,7 +69,7 @@ This check applies to **every piece of text in the article**, not just paragraph
 - Em dashes in inline comments
 - Phrases like "Note that...", "Keep in mind...", "It's worth noting...", "Simply..."
 - Over-explaining the obvious — comments should state WHY, not WHAT
-- Contractions (`isn't`, `don't`, `you've`) inconsistent with the article's formal register
+- Contractions (`isn't`, `don't`, `you've`) inconsistent with the article's declared register
 - First-person ("I use this pattern because...")
 - Sentence fragments and grammar issues
 
@@ -79,15 +79,16 @@ This check applies to **every piece of text in the article**, not just paragraph
 - "Moreover", "Furthermore", "In essence", "It is worth noting that"
 - Passive voice where active is clearly better
 - Sentences over 35 words
-- Contractions (`isn't`, `don't`, `you've`) — flag if inconsistent with overall register
+- Contractions (`isn't`, `don't`, `you've`) — flag if inconsistent with the article's declared register
 
 ## How To Run a Review
 
 1. Find the article by its slug in `src/data/articles.ts`
-2. Read the entire `content` template literal
-3. Read every snippet file under `code-snippets/<article-slug>/` — check comments for tone issues
-4. Work through each category above systematically across ALL text surfaces
-5. Report findings as a structured list:
+2. Read the article's `register` field. If absent, use `'formal'` (the site default). This is the authoritative source for all register-related findings — do not infer from prose.
+3. Read the entire `content` template literal
+4. Read every snippet file under `code-snippets/<article-slug>/` — check comments for tone issues
+5. Work through each category above systematically across ALL text surfaces
+6. Report findings as a structured list:
 
 ```
 FINDING [CRITICAL|MODERATE|MINOR]: <short description>

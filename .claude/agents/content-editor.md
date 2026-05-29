@@ -43,11 +43,17 @@ Replace ALL em dashes (`—`) with alternatives in prose AND headings AND code c
 
 **3. Register consistency**
 
-Establish the article's register from the first few paragraphs, then apply it uniformly:
+Read the `register` field from the article object in `src/data/articles.ts`. If absent, use `'formal'` (the site default). Do NOT infer register from prose — the field is the authoritative source.
 
-- If the article is formal (no contractions, third-person), maintain that throughout — including headings and code comments. Do NOT introduce contractions.
-- If the article uses a conversational register, contractions are fine — but be consistent.
-- Do NOT introduce direct address ("you", "your") unless it is already present in the article's established voice.
+**`formal` register (current site default) — apply to all text surfaces:**
+
+- No contractions (`isn't` → `is not`, `don't` → `do not`, `you've` → `you have`)
+- No first-person voice (`I use...`, `we prefer...`)
+- State things directly — no hedging (`might`, `perhaps`, `could`)
+- No direct address (`you`, `your`) unless the article already uses it consistently throughout
+- British English spelling preferred (`behaviour`, `colour`, `favour`, `recognised`)
+- Active voice preferred over passive
+- Apply identically to paragraph prose, heading text, and code comments
 
 **4. Code comment humanisation**
 
