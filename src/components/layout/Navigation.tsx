@@ -17,6 +17,7 @@ export function Navigation() {
 
   const navItems: Array<{ key: string; route: RouteEntry }> = [
     { key: 'articles', route: ROUTES.articles },
+    { key: 'openSource', route: ROUTES.openSource },
     { key: 'about', route: ROUTES.about },
   ];
 

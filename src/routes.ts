@@ -22,6 +22,7 @@ export const ROUTES = {
   home: { path: '/', label: 'Home' },
   about: { path: '/about', label: 'About' },
   articles: { path: '/articles', label: 'Articles' },
+  openSource: { path: '/open-source', label: 'Open Source' },
   contact: { path: '/contact', label: 'Contact' },
   notFound: { path: '/errors/404', label: '404' },
 } as const satisfies Record<string, RouteEntry>;
@@ -79,5 +80,18 @@ export function getCategoryRoute(categoryId: string): RouteEntry {
   return {
     path: `/articles/category/${categoryId}`,
     // Label omitted - typically comes from category metadata
+  };
+}
+
+/**
+ * Generate route for individual open source project page
+ *
+ * @param id - Project identifier (URL slug, matches the GitHub repo name)
+ * @returns RouteEntry for project detail page
+ */
+export function getProjectRoute(id: string): RouteEntry {
+  return {
+    path: `/open-source/${id}`,
+    // Label omitted - typically comes from project metadata
   };
 }

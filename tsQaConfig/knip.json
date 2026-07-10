@@ -8,7 +8,8 @@
     "src/hooks/index.ts",
     "src/routes.ts",
     "src/types/routing.ts",
-    "src/types/article.ts"
+    "src/types/article.ts",
+    "src/types/project.ts"
   ],
   "project": ["src/**/*.{ts,tsx}"],
   "ignoreDependencies": ["@longtermsupport/ts-qa-ci"]

@@ -2,6 +2,7 @@ import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
 import { AppContent } from './App';
 import { getAllArticles, getArticleById } from './data/articles';
+import { getAllProjects, getProjectById } from './data/projects';
 
 export interface RenderResult {
   html: string;
@@ -32,6 +33,11 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
     description:
       'In-depth technical articles on PHP development, infrastructure automation, database optimisation, and AI integration.',
   },
+  '/open-source': {
+    title: `Open Source Projects - ${SITE_NAME}`,
+    description:
+      'Public repositories published by LTS Commerce — QA/CI tooling and other open source packages for PHP and TypeScript projects.',
+  },
   '/errors/404': {
     title: `Page Not Found | ${SITE_NAME}`,
     description: 'The page you are looking for does not exist or has been moved.',
@@ -56,6 +62,18 @@ function getMetaForRoute(url: string): { title: string; description: string } {
     }
   }
 
+  // Check open source project routes
+  const projectMatch = url.match(/^\/open-source\/(.+)$/);
+  if (projectMatch && projectMatch[1]) {
+    const project = getProjectById(projectMatch[1]);
+    if (project) {
+      return {
+        title: `${project.name} - ${SITE_NAME}`,
+        description: project.tagline,
+      };
+    }
+  }
+
   return { title: SITE_NAME, description: '' };
 }
 
@@ -72,9 +90,11 @@ export function render(url: string): RenderResult {
 }
 
 export function getRoutes(): string[] {
-  const staticRoutes = ['/', '/about', '/contact', '/articles', '/errors/404'];
+  const staticRoutes = ['/', '/about', '/contact', '/articles', '/open-source', '/errors/404'];
   const articleRoutes = getAllArticles().map(a => `/articles/${a.id}`);
-  return [...staticRoutes, ...articleRoutes];
+  const projectRoutes = getAllProjects().map(p => `/open-source/${p.id}`);
+  return [...staticRoutes, ...articleRoutes, ...projectRoutes];
 }
 
 export { getAllArticles } from './data/articles';
+export { getAllProjects } from './data/projects';
