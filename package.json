@@ -47,7 +47,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@longtermsupport/ts-qa-ci": "github:LongTermSupport/ts-qa-ci#7edf62e2de5621b8c07297816ec7332d21b2c7d8",
+    "@longtermsupport/ts-qa-ci": "github:LongTermSupport/ts-qa-ci#1b46d3d9e045d4031852fe44be5d1294ae891478",
     "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4.1.18",
