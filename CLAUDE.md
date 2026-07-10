@@ -452,12 +452,14 @@ The handlers listed below are active in this project. Read this section to avoid
 AskUserQuestion calls are only allowed when every `question` string begins with `ASKING BECAUSE:` (case-sensitive, leading whitespace OK). The convention mirrors the Stop handler's `STOPPING BECAUSE:` pattern — explicit declared intent gates the privilege of pausing the session.
 
 **Before asking, evaluate critically**:
+
 - Tautological/rhetorical questions with one obvious answer ("Should I continue?", "Would you like me to proceed?") — do NOT ask. State the question and your assumed-correct answer in plain output text and proceed. The user is watching and will interrupt if the assumption is wrong.
 - Questions whose options reduce to **good vs. bad** are tautological — the answer is always the good option. Examples: best practice vs. bodge, increasing vs. decreasing code quality, delivering the requirement vs. not delivering it, fixing the failing test vs. leaving it broken, following project conventions vs. inventing your own. Do NOT ask; pick the good option and proceed.
 - Errors with a clear recovery path ("Should I fix the failing test?") — do NOT ask. Fix it.
 - Genuine choice questions where you cannot resolve the answer from context — these are the legitimate use case. Prefix every question text with `ASKING BECAUSE: <one-line reason you cannot decide>` so the daemon allows the call through.
 
 **Audit log pattern** (preferred for tautological questions):
+
 ```
 I would normally ask: <question>.
 Assumed answer: <your assumption>.
@@ -470,17 +472,17 @@ Proceeding on that basis; the user will interrupt if wrong.
 
 The following git commands are permanently blocked and will always be denied:
 
-| Command | Reason |
-|---------|--------|
-| `git reset --hard` | Permanently destroys all uncommitted changes |
-| `git clean -f` | Permanently deletes untracked files |
-| `git checkout -- <file>` | Discards all local changes to that file |
-| `git restore <file>` | Discards local changes (`--staged` is allowed) |
-| `git stash drop` | Permanently destroys stashed changes |
-| `git stash clear` | Permanently destroys all stashes |
-| `git push --force` | Can overwrite remote history and destroy teammates' work |
-| `git branch -D` | Force-deletes branch without checking if merged (lowercase `-d` is safe) |
-| `git commit --amend` | Rewrites the previous commit — create a new commit instead |
+| Command                  | Reason                                                                   |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `git reset --hard`       | Permanently destroys all uncommitted changes                             |
+| `git clean -f`           | Permanently deletes untracked files                                      |
+| `git checkout -- <file>` | Discards all local changes to that file                                  |
+| `git restore <file>`     | Discards local changes (`--staged` is allowed)                           |
+| `git stash drop`         | Permanently destroys stashed changes                                     |
+| `git stash clear`        | Permanently destroys all stashes                                         |
+| `git push --force`       | Can overwrite remote history and destroy teammates' work                 |
+| `git branch -D`          | Force-deletes branch without checking if merged (lowercase `-d` is safe) |
+| `git commit --amend`     | Rewrites the previous commit — create a new commit instead               |
 
 If the user needs to run one of these, ask them to do it manually. Do not attempt to work around the block.
 
@@ -491,15 +493,18 @@ If the user needs to run one of these, ask them to do it manually. Do not attemp
 `sed` is blocked because Claude gets sed syntax wrong and a single error can silently destroy hundreds of files with no recovery possible.
 
 **Blocked**:
+
 - `sed -i` / `sed -e` (in-place file editing via Bash tool)
 - `grep -rl X | xargs sed -i` (mass file modification)
 - Shell scripts (`.sh`/`.bash`) written via Write tool that contain `sed`
 
 **Allowed** (read-only, no file modification):
+
 - `cat file | sed 's/x/y/' | grep z` (pipeline transforming stdout only)
 - `sed` mentioned in commit messages, PR bodies, or `.md` documentation files
 
 **Use instead**:
+
 - `Edit` tool — safe, atomic, verifiable
 - Parallel Haiku agents with `Edit` tool for bulk changes across many files:
   1. Identify all files to update
@@ -534,6 +539,7 @@ The working directory is `/workspace`. Prepend `/workspace/` to any relative pat
 Writing code that silently swallows errors is blocked. All errors must be handled explicitly.
 
 **Blocked patterns (examples)**:
+
 - Python: bare `except` clauses with an empty body, catching and discarding all exceptions
 - Shell: redirecting stderr to `/dev/null` to silence failures, `|| true` to suppress non-zero exit codes
 - JavaScript/TypeScript: empty `catch` blocks that swallow exceptions
@@ -548,6 +554,7 @@ Piping network content directly to a shell is blocked. It executes untrusted rem
 **Blocked**: `curl URL | bash`, `curl URL | sh`, `wget URL | bash`, `curl URL | sudo bash`
 
 **Safe alternative**: download first, inspect, then execute:
+
 ```
 curl -o /tmp/script.sh URL
 cat /tmp/script.sh          # inspect
@@ -559,6 +566,7 @@ bash /tmp/script.sh         # execute if safe
 Writing code that contains security antipatterns is blocked across all supported languages. Fix the code to use safe patterns instead.
 
 **Blocked categories**:
+
 - SQL injection: building queries via string concatenation (use parameterised queries)
 - Command injection: passing unvalidated input to subprocess (use argument lists)
 - Hardcoded credentials: API keys, passwords, tokens embedded in source code
@@ -594,6 +602,25 @@ Worktrees are isolated branches. Cross-copying corrupts that isolation and can s
 
 **Allowed**: operations within the same worktree branch. **To merge changes**: use `git merge` or `git cherry-pick` instead.
 
+## root_recursion_guard — recursive scans rooted at / are blocked
+
+A recursive scanner whose path argument resolves to a catastrophic root location is blocked, because it walks the entire filesystem and can pin every CPU core for hours.
+
+**Blocked** (recursive scanner + dangerous root path):
+
+- `grep -r`/`-R`/`-rl`, `ugrep -r`, `rgrep`, `find`, `fd`/`fdfind`, `rg`
+- pointed at `/`, `/proc`, `/sys`, `/home`, `/root`, `~`, `$HOME`
+
+**Allowed**: the same scanners scoped to the project — `rg -l "x" /workspace`, `grep -rl "x" "$CLAUDE_PROJECT_DIR"`, `grep -rl x src/`, `find . -name y`. Non-recursive `grep x /etc/hosts` is not affected.
+
+**Note**: `... | head` does NOT bound a `-l`/`-rl` scan — a producer that matches nothing never writes, so it never receives SIGPIPE and runs to completion across the whole disk.
+
+**Escape hatch** (rare legitimate whole-disk scan):
+
+```
+MUST_SCAN_ROOT_BECAUSE="explain why"; grep -rl x /
+```
+
 ## git_stash — git stash is blocked by default
 
 `git stash`, `git stash push`, and `git stash save` are blocked. `git stash pop`, `git stash apply`, `git stash list`, and `git stash show` are always allowed.
@@ -601,6 +628,7 @@ Worktrees are isolated branches. Cross-copying corrupts that isolation and can s
 **Why**: stashes get forgotten, lost, and block `git pull`. Use `git commit -m 'WIP: ...'` instead — WIP commits are acceptable.
 
 **Escape hatch** (when commit truly won't work):
+
 ```
 MUST_STASH_BECAUSE="explain why"; git stash
 ```
@@ -614,6 +642,7 @@ Configure via `handlers.pre_tool_use.git_stash.options.mode: warn` for advisory-
 **Blocked**: `chmod 777`, `chmod 666`, `chmod a+w`, `chmod o+w`
 
 **Use least-privilege permissions instead**:
+
 - Executable scripts: `chmod 755` (owner rwx, group/other rx)
 - Regular files: `chmod 644` (owner rw, group/other r)
 - Private files: `chmod 600` (owner rw only)
@@ -625,6 +654,7 @@ Direct `Write` or `Edit` to package manager lock files is blocked. Lock files ar
 **Blocked files**: `composer.lock`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Gemfile.lock`, `Cargo.lock`, `go.sum`, `Package.resolved`, `Pipfile.lock`, and others.
 
 **Use package manager commands instead**:
+
 - PHP: `composer install` / `composer require package`
 - Node: `npm install` / `yarn add package`
 - Ruby: `bundle install` / `bundle add gem`
@@ -664,6 +694,7 @@ Even in a container running as root, `sudo` adds nothing — drop it and use a v
 Using `Grep` or `Bash` (grep/rg) to find class definitions, function signatures, or symbol references is blocked or redirected to LSP tools, which are faster and semantically accurate.
 
 **Prefer LSP tools for**:
+
 - Finding where a class or function is defined → `goToDefinition`
 - Finding all usages of a symbol → `findReferences`
 - Getting type information or documentation → `hover`
@@ -694,16 +725,95 @@ If using `--json`, include `comments` in the field list instead of adding `--com
 
 If using `--json`, include `comments` in the field list instead of adding `--comments`.
 
+## plan_qa_commit_gate — cross-file plan checks at git commit
+
+Every `git commit` is checked against the STAGED tree's plan QA
+invariants. In `commit_gate_mode: warn` (the rollout default)
+violations appear as advisory context — read them and amend the
+commit content BEFORE committing; in `block` mode they deny the
+commit with a TODO list of what the commit must also contain.
+
+**The invariants**:
+
+- creating a plan folder ⇒ the SAME commit stages its README
+  index row (`index-at-birth`) and the number must come from the
+  git counter / mkplan.bash (`counter-sanity`, `no-new-collisions`)
+- flipping a plan to Complete/Cancelled/Superseded ⇒ the SAME
+  commit contains the `git mv` into the archive dir AND the README
+  row + statistics update (`terminal-state-atomic`)
+- every folder has a README row in the section matching its
+  location, and every row's link resolves
+  (`row-folder-bijection`, `stats-recount`)
+- a commit claiming `Plan NNNNN` that stages src/tests/config
+  changes should also update that plan's PLAN.md
+  (`same-commit-plan-doc`); reference plans as `Plan NNNNN:`
+  (`plan-ref-format`)
+
+Check the staged tree any time without committing:
+`$PYTHON -m claude_code_hooks_daemon.daemon.cli plan-qa --check-staged`.
+Commits inside nested/vendor repos or foreign worktrees are exempt.
+
+## plan_qa_edit — PLAN.md writes are linted in real time
+
+Every Write/Edit of a `PLAN.md` under the plan directory is checked
+against the plan QA edit-stage rules on the content the file WOULD
+have. Block-level violations (in `edit_mode: block`) deny the tool
+call with the exact remediation; fix the content and retry.
+
+**Rules that block new plan material**:
+
+- a parseable `**Status**:` line must exist (`status-line-present`)
+- the status token must be one of: Not Started, In Progress,
+  Complete, Blocked, Cancelled, Superseded, Dormant
+  (`status-enum-and-date`)
+- the header must not contradict the body — do not leave
+  `Not Started`/`In Progress` above an all-ticked task list or
+  "ALL DONE" prose; flip the status instead
+  (`header-body-coherence`)
+- use the template task grammar `- [ ] ⬜ **Task N.N**:` — not
+  ad-hoc markers like `[✓]`/`[⏳]` (`task-grammar`)
+
+**Advisory rules**: missing Created/Owner/Priority headers on new
+plans; a terminal status set while the folder is still in the plan
+root (the same commit must `git mv` it to the archive dir and
+update the README row); edits to archived plans; backticked
+`src/...` paths that no longer exist.
+
+Grandfathered plans in `plan_workflow.qa.legacy_plan_allowlist`
+only ever advise. Lint any file on demand:
+`$PYTHON -m claude_code_hooks_daemon.daemon.cli plan-qa --lint <file>`.
+
 ## article-snippet-enforcer — articles must use the snippet system
 
 Writes to `src/data/articles.ts` that embed multi-line code directly inside `<pre><code>...</code></pre>` blocks are blocked. Articles must reference code via `{{SNIPPET:article-slug/filename.ext}}` placeholders.
 
 **Workflow**:
+
 1. Create the code file under `code-snippets/<article-slug>/`.
 2. Reference it from the article: `<pre><code class="language-php">{{SNIPPET:article-slug/example.php}}</code></pre>`.
 3. The build step (`scripts/generate-snippets.mjs`) auto-generates `src/data/snippets.ts` from those files.
 
 Short inline references like `<code>exampleVar</code>` are allowed.
+
+## background_process_tracker — backgrounded processes are tracked
+
+A PostToolUse advisory that fires when a Bash call backgrounds a process (`run_in_background: true`, or a `&`/`nohup`/`setsid`/`disown` command). It records the command to `background-processes.jsonl` and injects rate-limited guidance.
+
+**The daemon never kills.** It surfaces runaways; you decide.
+
+When you background a long-lived process:
+
+- Create a non-durable recurring **watchdog cron** (CronCreate, durable:false) whose prompt runs `$PYTHON -m claude_code_hooks_daemon.daemon.cli harvest-background` and acts on any runaway — this covers the idle/compaction window a tool-call hook cannot. Do NOT wait for the cron; keep working.
+- Check on demand: run `harvest-background` (exit 1 == runaways surfaced).
+- Reap a runaway by its **process group**: `kill -- -<pgid>` (not just the pid).
+- Keep a wanted long task: note `KEEP_RUNNING_BECAUSE="reason"`.
+- Delete the watchdog cron (CronDelete) when no backgrounded work remains.
+
+Advisory is rate-limited per session (default-on). Disable with `handlers.post_tool_use.background_process_tracker.enabled: false`.
+
+## git_hooks_executable_fixer — auto-fixes non-executable git hooks
+
+When a git command prints `hint: The '...' hook was ignored because it's not set as executable`, this handler automatically `chmod +x`s every non-`.sample` file in the repository's hooks directory (resolved via `git rev-parse --git-path hooks`, so worktrees and `core.hooksPath` are handled). Execute bits are added with least privilege (only where read is already granted). It never blocks the command and reports which hooks it fixed via advisory context. `.sample` files and already-executable hooks are left untouched.
 
 ## markdown_table_formatter — markdown tables are auto-aligned
 
@@ -722,6 +832,69 @@ After every `Write` or `Edit` of a `.md` or `.markdown` file, the content is re-
 $PYTHON -m claude_code_hooks_daemon.daemon.cli format-markdown <path>
 ```
 
+## recovery_cron_advisor — failsafe recovery cron lifecycle advisory
+
+An advisory PostToolUse handler that fires across a plan's lifecycle and
+injects guidance telling the agent to manage a non-durable hourly failsafe
+recovery cron.
+
+### What it does
+
+Three lifecycle phases are detected from Write/Edit to `CLAUDE/Plan/<digits>-<name>/PLAN.md`
+(never from files inside `Completed/`) and from `mkplan.bash` Bash invocations:
+
+| Phase          | Trigger                                                                               | Guidance injected                                                                                                                                                                                                                                         |
+| -------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Creation**   | New PLAN.md written, or `mkplan.bash` invoked                                         | Create a non-durable hourly cron now (CronCreate, durable:false); record the ID in the plan; do NOT wait for the cron.                                                                                                                                    |
+| **Progress**   | Edit to PLAN.md touching task-status icons (⬜/🔄/✅) or `## Notes & Updates` section | Confirm the recovery cron is still running (CronList); recreate if missing; keep working.                                                                                                                                                                 |
+| **Completion** | `**Status**: Complete[d]` written/edited                                              | Plan complete — **warns first**: deleting now leaves the still-live session with no recovery coverage. Keep the cron if any further work may happen (it is non-durable and dies on session exit); `CronDelete` only when certain the session is finished. |
+
+Progress reminders are rate-limited per plan: the handler advises on the first
+progress edit and then once every few progress edits for that plan, so it does
+not spam context on every edit. Completion always advises (bypasses the interval).
+
+### CRITICAL: recovery cron is NOT a heartbeat
+
+The recovery cron is a **failsafe safety net**, not a pacing mechanism:
+
+- The agent **must never** wait for the cron between units of work.
+- Work proceeds at **full speed** until an external factor (Claude API error,
+  rate limit, 5-hour usage limit, network failure) actually stalls it.
+- The cron fires only while the REPL is idle; it cannot interrupt active work.
+- Treating the cron as a heartbeat is an **own goal** — it would convert a
+  safety net into an artificial hourly throttle.
+
+### Canonical recovery-cron prompt
+
+Use this verbatim as the CronCreate prompt:
+
+```
+**FAILSAFE RECOVERY CHECK (automated hourly safety net — NOT a heartbeat).**
+If your most recent work on the active plan/task was interrupted by an
+*external* factor (Claude API error/overload, rate limit, 5-hour usage limit,
+network failure) and is now resumable, resume it immediately and carry it to
+completion. If you are blocked **only** on human input, do nothing and keep
+waiting. If work is already proceeding normally, this is a **no-op** — do not
+interrupt, restart, or duplicate anything in flight. Never treat this as a
+heartbeat or pacing signal: between checks, continue at full speed until an
+external factor actually stops you — waiting for the cron is an own goal. Do
+NOT delete this cron merely because a tick finds nothing to resume: it is
+non-durable and ends automatically when the session exits, and a still-live
+session stays exposed to the next rate limit without it. Remove it (CronDelete)
+only once the session is genuinely finished with no further work.
+```
+
+### Configuration
+
+This handler is **on by default** (opt-out). Disable with:
+
+```yaml
+handlers:
+  post_tool_use:
+    recovery_cron_advisor:
+      enabled: false
+```
+
 ## hook_registration_checker — hooks configuration policy
 
 On every new session this handler audits hook configuration across `.claude/settings.json` and `.claude/settings.local.json`. When it reports issues, fix them — do not ignore the warning.
@@ -738,6 +911,40 @@ On every new session this handler audits hook configuration across `.claude/sett
 - **Legacy-style commands**: replace them with a project-level handler. Run `$PYTHON -m claude_code_hooks_daemon.daemon.cli init-project-handlers` to scaffold `.claude/project-handlers/`, port the logic into a handler class, then restore the daemon wrapper in `settings.json`. The daemon will auto-discover the new handler on restart.
 - **Missing hooks**: the daemon's installer writes the full set. If any are missing, re-run `install.py` or manually add the missing `{event_name}` entry pointing at `"$CLAUDE_PROJECT_DIR"/.claude/hooks/{bash-key}`.
 - **Duplicate hooks**: a hook registered in both files fires twice. Keep the `settings.json` entry, delete from `settings.local.json`.
+
+## plan_qa_sweep — plan-tree drift report at session start
+
+At the start of each new session the plan directory is swept with the
+plan QA check catalogue (index/folder bijection, number collisions,
+statistics recount, archive structure, status-vs-location coherence,
+staleness). Findings are injected once as advisory context — the
+sweep never blocks.
+
+**When a drift report appears**: fix the listed findings (each names
+its exact remediation) as part of your plan housekeeping, then
+re-check with:
+
+```
+$PYTHON -m claude_code_hooks_daemon.daemon.cli plan-qa --sweep
+```
+
+The CLI exits 1 while findings remain (CI-able). Single-file lint:
+`plan-qa --lint <PLAN.md>`; staged-commit check: `plan-qa --check-staged`.
+Policy lives under `plan_workflow.qa` in `.claude/hooks-daemon.yaml`
+(archive dir names, staleness window, legacy/collision allowlists).
+
+## project_handler_load_checker — project protection degraded alert
+
+At session start this handler reports any **project handlers** (`.claude/project-handlers/`) that FAILED to load in the running daemon. A skipped handler is a silently-disabled protection — the alert exists so you never assume a guardrail is active when it is not.
+
+### When you see `🚨 PROJECT PROTECTION DEGRADED 🚨`
+
+1. **Do not assume normal guardrails are in force.** The listed handlers are OFF for this session.
+2. **Diagnose** each failure: `$PYTHON -m claude_code_hooks_daemon.daemon.cli validate-project-handlers` names the file, the missing method, and the daemon version that introduced it.
+3. **Fix** the handler(s) — usually adding a required method stub (e.g. `get_claude_md`) that a daemon upgrade made mandatory.
+4. **Restart the daemon** (`$PYTHON -m claude_code_hooks_daemon.daemon.cli restart`). The alert reflects the *running* daemon, so it clears only after a restart reloads the fixed handlers — fixing the file alone is not enough.
+
+The handler is silent when every project handler loads, so seeing this alert always means real action is required.
 
 ## auto_approve_reads — gated on bypassPermissions mode
 
@@ -758,15 +965,18 @@ STOPPING BECAUSE: all tasks complete, QA passes, daemon restart verified.
 **Why**: The stop hook enforces intentional stops. Stopping without an explanation triggers an auto-block that asks you to explain or continue.
 
 **Alternatives**:
+
 - `STOPPING BECAUSE: <reason>` — stops cleanly with explanation
 - Continue working — no need to stop unless all work is genuinely complete
 
 **Do NOT**:
+
 - Stop mid-task without explanation
 - Ask confirmation questions and then stop (the hook auto-continues those)
 - Use `AUTO-CONTINUE` unless you intend to keep working indefinitely
 
 **Before asking a question, evaluate it critically**:
+
 - Tautological/rhetorical questions with obvious answers ("Should I continue?", "Would you like me to proceed?") — do NOT ask, just do it
 - Errors with a clear next step ("The test failed, should I fix it?") — do NOT ask, just fix it
 - Genuine choice questions where all options are valid ("Which of A, B, or C should we use?") — these deserve a response. Use `STOPPING BECAUSE: need user input` and ask your question
@@ -774,6 +984,7 @@ STOPPING BECAUSE: all tasks complete, QA passes, daemon restart verified.
 **Recovering from a `tool_use_error` — do NOT stop silently**:
 
 Some tool errors require an explicit recovery action, not a halt. The most common shape:
+
 - You call `Edit` or `Write` on a file you have not yet read.
 - Claude Code returns a `tool_use_error` (e.g. "File has not been read yet").
 - The correct recovery is **Read the file, then retry Edit/Write** — **do not stop**. Stopping silently after a tool error triggers a Stop-hook re-entry loop and wastes a turn.
@@ -788,9 +999,9 @@ Stop-time advisory that fires on language patterns signalling avoidance of work.
 
 **Avoid**:
 
-- Dismissing issues as `pre-existing`, `out of scope`, `not our problem`,   or `not relevant` to deflect work that is in fact yours.
-- Premature-halt phrasing like `natural checkpoint`, `ready to continue on your   cue`, `pausing here` mid-plan when there is more to do — finish the task   rather than dressing up a halt.
-- Speculative `should be fine` or `probably works` when verification is   cheap (run the test, read the file).
+- Dismissing issues as `pre-existing`, `out of scope`, `not our problem`, or `not relevant` to deflect work that is in fact yours.
+- Premature-halt phrasing like `natural checkpoint`, `ready to continue on your   cue`, `pausing here` mid-plan when there is more to do — finish the task rather than dressing up a halt.
+- Speculative `should be fine` or `probably works` when verification is cheap (run the test, read the file).
 
 **Do**: acknowledge the issue, fix it, or — if it genuinely is out of scope — say so once with the specific reason and continue with the in-scope work.
 
