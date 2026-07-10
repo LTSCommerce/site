@@ -74,25 +74,10 @@ This repo is explicitly **not** assumed to be a paragon of best practice going i
 
 ## Tasks
 
-### Phase 1: Research — Concept Extraction from Both References
+### Phase 1: Research — Concept Extraction from Both References ✅ Complete (2026-07-10)
 
-- [ ] ⬜ **Task 1.1**: Dispatch Sonnet research agents (dynamic workflow), in parallel, over both references:
-  - `./untracked/repos/php-qa-ci` — orchestration & delivery philosophy:
-    - [ ] ⬜ Pipeline architecture & phasing philosophy (why 4 phases, why code-mod runs first, fail-fast design)
-    - [ ] ⬜ The read-only/CI-write duality (`qaReadOnly`/`detectReadOnly`): mutating tools dry-run-and-fail in CI, auto-fix locally — the single most load-bearing behaviour of Phase 1, and directly portable to Prettier `--check`/`--write` and ESLint `--fix`/not
-    - [ ] ⬜ Tool delivery/encapsulation strategy (PHARs via PHIVE, isolated Rector sub-project, `replace` trick, `bin/` shims) and what has a realistic npm/Node equivalent — go in already knowing npm's nested dependency model avoids most of the *problem* PHIVE/PHAR solves; focus research on the narrower peerDeps-vs-bundled and plugin-delivery questions instead of treating this as a from-scratch unknown
-    - [ ] ⬜ Config cascade & override system (`qaConfig/`, per-tool `.inc.bash` overrides, platform detection)
-    - [ ] ⬜ Hook system (`hookPre.bash`/`hookPost.bash`, per-tool override files) and its Claude Code hooks (`deploy-skills.bash`, hook list, migration-on-update behaviour, the `PHP_QA_CI_DISABLE_CONFIG_PUSH` opt-out for auto-deploy-on-install)
-    - [ ] ⬜ Rule-tiering philosophy (PHPArkitect vs PHPStan "where does a rule belong," always-on vs opt-in rule tiers, SSoT-never-duplicate principle) **and** the "estate-wide checks must be pipeline-owned, not opt-in rules" lesson (SensitiveParameter coverage) — both directly inform the CDD ESLint tier's design and delivery mechanism
-    - [ ] ⬜ Documentation structure and style (`docs/`, tool-specific docs, README structure) as the template for ts-qa-ci's docs
-    - [ ] ⬜ CI/GitHub Actions templates (`templates/github-actions/*.yml`, the autofix-then-gate pattern, branch protection setup script)
-  - `./untracked/ec-site/` — TS-native realisations:
-    - [ ] ⬜ Catalogue all 57 rules in `eslint-rules/*.js` (with their `.md` docs); classify each lift-as-is / adapt / drop for ts-qa-ci
-    - [ ] ⬜ Deep-dive the CDD rules specifically: `no-html-in-pages.js`, `no-raw-block-html-in-articles.js` (the solved articles-collision precedent), `enforce-width-standards.js`, `no-orphaned-grid-items.js`, `no-hard-coded-component-data.js`, `no-duplicate-section-ids.js`, and the `eslint-plugin-tailwindcss` integration
-    - [ ] ⬜ The `npm run llm:qa` orchestrator shape (`scripts/llm-*.ts`, `var/qa/` caching convention) as a concrete answer to the orchestrator-CLI design question
-    - [ ] ⬜ Meta-rules (rules that lint the rules) and the synchronous-handler gotcha in `eslint-rules/CLAUDE.md`
-    - [ ] ⬜ Note the licensing/provenance question for lifting private-repo rules into a publishable package (flag for Technical Decisions, do not resolve unilaterally)
-- [ ] ⬜ **Task 1.2**: Opus review pass on the concept-extraction report — confirm nothing load-bearing was missed, and confirm the lift/adapt/drop classification of ec-site's 57 rules is sound, before design work starts
+- [x] ✅ **Task 1.1**: Dispatched 12 parallel Sonnet research agents over both references; synthesized into `untracked/plan-011-phase1-concept-report.md` (391 lines, Parts A/B/C + appendix). Covered all planned bullets for both `php-qa-ci` (7 areas: pipeline phasing, read-only/CI duality, tool delivery, config cascade, hooks/Claude integration, rule-tiering, docs/CI templates) and `ec-site` (5 areas: full 54-rule catalogue lift/adapt/drop, CDD deep-dive, orchestrator/caching, meta-rules, licensing flag)
+- [x] ✅ **Task 1.2**: Opus review pass complete — verdict **READY FOR PHASE 2**, 6/6 spot-checked claims verified true against source, only 2 cosmetic findings (rule-count framing, one file citation), zero load-bearing gaps. Review at `untracked/plan-011-phase1-review.md`
 
 ### Phase 2: Design — TS Tool Landscape & Package Architecture
 
@@ -110,6 +95,7 @@ This repo is explicitly **not** assumed to be a paragon of best practice going i
 
 ### Phase 3: Build — Package Scaffold
 
+- [ ] ⬜ **Task 3.0 (gate)**: Obtain the maintainer's explicit sign-off on lifting ec-site code per Decision 5 before any other Phase 3 task begins — (1) confirms ec-site code may be relicensed/republished under `@longtermsupport`, (2) confirms the lift/adapt/drop audit boundary (generic infrastructure vs. brand-specific rules that must stay private)
 - [ ] ⬜ **Task 3.1**: Scaffold `ts-qa-ci` in `./untracked/repos/ts-qa-ci` — package.json (`@longtermsupport/ts-qa-ci`), orchestrator CLI, config defaults, directory layout mirroring php-qa-ci's clarity (`configDefaults/`, `bin/`, `docs/`, `.claude/`)
 - [ ] ⬜ **Task 3.2**: Implement Phase 1–4 tool runners with the config cascade, per-tool override mechanism, and the read-only/CI-write duality
 - [ ] ⬜ **Task 3.3**: Implement the CDD ESLint rule tier — **iteratively, cross-checked against this repo's real code from the start** (do not treat this as a frozen deliverable to hand to Phase 4 unchanged; prototype early against this repo's actual JSX/className surface and adapt ec-site's already-tuned versions rather than re-deriving from zero)
@@ -200,6 +186,14 @@ This repo is explicitly **not** assumed to be a paragon of best practice going i
 
 **Date**: 2026-07-10
 
+### Decision 5: ec-site code lift requires the maintainer's explicit sign-off — blocking precondition for Phase 3
+
+**Context**: Phase 1 research (Task 1.1, see `untracked/plan-011-phase1-concept-report.md` §B.5) found that ec-site is a private (`"private": true`) LongTermSupport repo, while `ts-qa-ci` is intended to become a publishable `@longtermsupport`-scoped package. Lifting ec-site's rules, meta-rules, cache library, or orchestrator scripts — even adapted — changes their exposure from "private, internal to one client site" to "public, redistributable." Several rules explicitly marked `drop` in the B.1 catalogue are ec-site-brand-specific (`no-hardcoded-contact-details.js`, `enforce-contact-link-whitelist.js`, `validate-tech-logos.js`, `validate-case-studies-index.js`, among others), underscoring this isn't a hypothetical concern.
+
+**Decision**: Before any Phase 3 code lift begins (Task 3.1 onward), obtain the maintainer's explicit sign-off that (1) ec-site's code may be relicensed/republished under the `@longtermsupport` scope, and (2) rules to be ported are audited first to separate genuinely generic QA infrastructure (the cache library, meta-rule concept, orchestrator shape, and the TRANSFERS-DIRECTLY/lift-as-is rows in the B.1 catalogue) from ec-site-brand-specific rules that must stay private or be rewritten from scratch. This is treated as a blocking precondition, not a footnote — added as an explicit Phase 3 gate task.
+
+**Date**: 2026-07-10
+
 ## Success Criteria
 
 - [ ] Concept-extraction report from Phase 1 exists (covering both php-qa-ci and ec-site) and was reviewed by an Opus pass
@@ -241,7 +235,17 @@ This repo is explicitly **not** assumed to be a paragon of best practice going i
 - Decided to bring variant-prop catalogue construction into Phase 4 scope rather than descope it (Decision 4), matching the user's explicit CDD ambition
 - Added an explicit non-publish CI-install-mechanism decision point (Task 2.6) ahead of the point where it would otherwise block Task 4.7
 - Full raw critique retained at `untracked/plan-011-review.md` (gitignored)
-- Next: kick off the Phase 1 research workflow against both references
+
+### 2026-07-10 - Phase 1 Research Complete
+
+- 12-agent research workflow completed cleanly (14/14 agents succeeded, 0 errors); concept-extraction report and Opus review both written to `untracked/` (gitignored, not part of the plan itself)
+- **Headline findings**: the read-only/CI-write duality (`qaReadOnly`/`detectReadOnly`) is confirmed as php-qa-ci's single most load-bearing mechanism and maps cleanly to Prettier `--check`/`--write` + ESLint `--fix`/not; npm's nested dependency model means the PHIVE/PHAR encapsulation problem mostly doesn't exist (DOESNT-APPLY) — real Phase 2 work is narrower (peerDeps for `typescript`/`eslint`/`vite`, ESLint plugin delivery via exported flat-config objects, already proven by ec-site)
+- **ec-site rule catalogue**: all 54 real rules (of 57 files — 3 are a POC/helper/test) classified: 8 lift-as-is, 25 adapt, 21 drop. Strong always-on core-tier candidates identified: `no-eslint-disable` (3 independent cross-project precedents), `no-duplicate-section-ids`, `no-placeholder`, `require-explicit-type-annotations`, `require-exported-component-types`, `ssr-safe-hooks`, `validate-lazy-imports`, the meta-rules
+- **CDD findings sharpen Decision 3/4**: `no-html-in-pages.js` is the confirmed ancestor of `no-ad-hoc-html`, needs widening to cover `src/components/**` not just pages; `no-raw-block-html-in-articles.js`'s mechanism is DOESNT-APPLY here (ec-site's articles are JSX, ours are template-literal strings) but its *governing principle* substantiates Decision 3 as-is; ec-site's own CVA/variant infrastructure is a **single-component pilot** (only `button.tsx`), not a mature catalogue — sharpens and validates Decision 4's choice to budget catalogue-building as real Phase 4 work rather than assume one exists to copy
+- **`validate-routes-have-pages.js` flagged unsafe**: uses `eval()` on extracted source text — must be rebuilt with AST-based extraction before any adaptation, not a straight port
+- **Genuinely open gaps for Phase 2** (not resolved by Phase 1 research): knip vs depcheck, markdown-link-checker tool choice (Task 2.1 remainder), and the non-publish CI install mechanism (Task 2.6) — flagged explicitly rather than guessed at
+- **Blocking precondition surfaced**: ec-site is a private repo; lifting its rules/cache-library/orchestrator into a publishable `@longtermsupport` package requires the maintainer's explicit sign-off before Phase 3 code lift begins (not resolved by this research, flagged for Technical Decisions)
+- Next: Phase 2 design work — targeted research to close the two genuine gaps, then formalize Part C's recommendations into concrete specs, then Opus review (Task 2.7)
 
 ---
 
