@@ -66,6 +66,7 @@ The EC site (`untracked/ec-site/`) has a proven testing stack:
 ### LTS Commerce Components Available for Testing
 
 Current components in `src/`:
+
 - **Layout**: Page, Navigation, Footer, Container, Section
 - **Content**: Hero, Prose, CategoryBadge
 - **Article**: ArticleCard, ArticleContent
@@ -217,13 +218,16 @@ Current components in `src/`:
 ## Technical Decisions
 
 ### Decision 1: Vitest over Jest
+
 **Context**: Which unit test runner for a Vite + React + TypeScript project?
 
 **Options Considered**:
+
 1. **Vitest** - Native Vite integration, fast, ESM-first
 2. **Jest** - Industry standard, but requires extra config for ESM/Vite
 
 **Decision**: Vitest
+
 - Native integration with Vite (shared config, transforms, path aliases)
 - First-class ESM support (matches project's `"type": "module"`)
 - Proven in EC site reference implementation
@@ -232,13 +236,16 @@ Current components in `src/`:
 **Date**: 2026-02-20
 
 ### Decision 2: happy-dom over jsdom
+
 **Context**: Which DOM implementation for unit tests?
 
 **Options Considered**:
+
 1. **happy-dom** - Lightweight, fast, sufficient for React testing
 2. **jsdom** - More complete DOM implementation, heavier
 
 **Decision**: happy-dom
+
 - Significantly faster test execution
 - Sufficient for React component testing with Testing Library
 - EC site validates this choice works well in practice
@@ -246,13 +253,16 @@ Current components in `src/`:
 **Date**: 2026-02-20
 
 ### Decision 3: Chrome-Only Playwright
+
 **Context**: Which browsers to test in E2E?
 
 **Options Considered**:
+
 1. **Chrome only** - Fastest, sufficient for smoke tests
 2. **Chrome + Firefox + WebKit** - Full cross-browser coverage
 
 **Decision**: Chrome only (to start)
+
 - Smoke tests verify page rendering and navigation, not browser-specific quirks
 - Keeps CI fast and simple
 - Can add Firefox/WebKit later if cross-browser issues arise
@@ -260,14 +270,17 @@ Current components in `src/`:
 **Date**: 2026-02-20
 
 ### Decision 4: Co-located Tests
+
 **Context**: Where to put unit test files?
 
 **Options Considered**:
+
 1. **Co-located** - `Component.test.tsx` next to `Component.tsx`
 2. **Separate `__tests__/`** - Test files in dedicated directories
 3. **Top-level `tests/`** - All tests in project root
 
 **Decision**: Co-located for unit tests, top-level `tests/` for E2E
+
 - Unit tests next to source (easy to find, maintain, and enforce coverage)
 - E2E tests in `tests/` directory (they test the built application, not individual modules)
 - Matches EC site convention
@@ -287,13 +300,13 @@ Current components in `src/`:
 
 ## Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Playwright browser install fails in CI | High | Low | Pin Playwright version, cache browser binaries |
-| happy-dom missing DOM APIs needed by components | Medium | Low | Fall back to jsdom if specific APIs missing |
-| Path alias mismatch between vite.config and vitest.config | Medium | Medium | Share alias config or reference same source |
-| E2E tests flaky due to timing | Medium | Medium | Use Playwright auto-waiting, add retries in CI |
-| Coverage thresholds block development | Low | Low | No enforced thresholds initially, add gradually |
+| Risk                                                      | Impact | Probability | Mitigation                                      |
+| --------------------------------------------------------- | ------ | ----------- | ----------------------------------------------- |
+| Playwright browser install fails in CI                    | High   | Low         | Pin Playwright version, cache browser binaries  |
+| happy-dom missing DOM APIs needed by components           | Medium | Low         | Fall back to jsdom if specific APIs missing     |
+| Path alias mismatch between vite.config and vitest.config | Medium | Medium      | Share alias config or reference same source     |
+| E2E tests flaky due to timing                             | Medium | Medium      | Use Playwright auto-waiting, add retries in CI  |
+| Coverage thresholds block development                     | Low    | Low         | No enforced thresholds initially, add gradually |
 
 ## Timeline
 
@@ -310,6 +323,7 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases:
 ## Notes & Updates
 
 ### 2026-02-20 - Plan Creation
+
 - Plan created based on EC site reference implementation
 - EC site dependencies reviewed for version pinning:
   - vitest `^4.0.16`, happy-dom `^20.1.0`

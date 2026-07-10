@@ -1,7 +1,6 @@
-
 services:
   php-qa:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.php-qa
     volumes:
@@ -10,7 +9,7 @@ services:
     command: /app/bin/phpstan analyse . --level=8 --no-progress
 
   php-cs-fixer:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.php-qa
     volumes:

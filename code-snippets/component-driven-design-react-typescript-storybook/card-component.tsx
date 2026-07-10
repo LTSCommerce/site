@@ -27,27 +27,17 @@ function CardHeader({ title, subtitle }: CardHeaderProps) {
   return (
     <div className="px-5 pt-5 pb-3">
       <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-      {subtitle && (
-        <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
-      )}
+      {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
     </div>
   );
 }
 
 function CardBody({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="px-5 pb-4 text-sm text-gray-700 leading-relaxed">
-      {children}
-    </div>
-  );
+  return <div className="px-5 pb-4 text-sm text-gray-700 leading-relaxed">{children}</div>;
 }
 
 function CardFooter({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="px-5 pb-5 pt-2 border-t border-gray-100">
-      {children}
-    </div>
-  );
+  return <div className="px-5 pb-5 pt-2 border-t border-gray-100">{children}</div>;
 }
 
 export function Card({ intent, header, body, actionLabel, onAction }: CardProps) {

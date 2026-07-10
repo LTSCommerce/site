@@ -47,7 +47,7 @@ class UserRegistrationService {
       id: null, // Will be assigned by repository
       email,
       passwordHash: hashedPassword,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     // Save user
@@ -56,7 +56,7 @@ class UserRegistrationService {
     // Send welcome email
     await this.emailService.sendTemplate(email, 'welcome', {
       email,
-      welcomeMessage: 'Welcome to our platform!'
+      welcomeMessage: 'Welcome to our platform!',
     });
 
     return user;
@@ -90,11 +90,7 @@ describe('UserRegistrationService - TypeScript Intersection Types', () => {
     };
 
     // Create service with properly typed mocks
-    service = new UserRegistrationService(
-      mockUserRepository,
-      mockEmailService,
-      mockPasswordHasher
-    );
+    service = new UserRegistrationService(mockUserRepository, mockEmailService, mockPasswordHasher);
 
     // Test the registration logic
     const user = await service.registerUser('test@example.com', 'password123');
@@ -103,13 +99,13 @@ describe('UserRegistrationService - TypeScript Intersection Types', () => {
     expect(user.email).toBe('test@example.com');
     expect(user.passwordHash).toBe('hashed_password_123');
     expect(user.createdAt).toBeInstanceOf(Date);
-    
+
     // Verify interactions with full type safety
     expect(mockUserRepository.findByEmail).toHaveBeenCalledWith('test@example.com');
     expect(mockUserRepository.save).toHaveBeenCalledWith(
       expect.objectContaining({
         email: 'test@example.com',
-        passwordHash: 'hashed_password_123'
+        passwordHash: 'hashed_password_123',
       })
     );
     expect(mockPasswordHasher.hash).toHaveBeenCalledWith('password123');
@@ -117,7 +113,7 @@ describe('UserRegistrationService - TypeScript Intersection Types', () => {
       'test@example.com',
       'welcome',
       expect.objectContaining({
-        email: 'test@example.com'
+        email: 'test@example.com',
       })
     );
   });
@@ -127,7 +123,7 @@ describe('UserRegistrationService - TypeScript Intersection Types', () => {
       id: 1,
       email: 'test@example.com',
       passwordHash: 'existing_hash',
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     // Mock returns existing user
@@ -147,16 +143,12 @@ describe('UserRegistrationService - TypeScript Intersection Types', () => {
       verify: vi.fn(),
     };
 
-    service = new UserRegistrationService(
-      mockUserRepository,
-      mockEmailService,
-      mockPasswordHasher
-    );
+    service = new UserRegistrationService(mockUserRepository, mockEmailService, mockPasswordHasher);
 
     // Should throw error for existing user
-    await expect(
-      service.registerUser('test@example.com', 'password123')
-    ).rejects.toThrow('User with email test@example.com already exists');
+    await expect(service.registerUser('test@example.com', 'password123')).rejects.toThrow(
+      'User with email test@example.com already exists'
+    );
 
     // Should not attempt to save or send email
     expect(mockUserRepository.save).not.toHaveBeenCalled();
@@ -181,17 +173,13 @@ describe('UserRegistrationService - Modern vi.Mocked<T>', () => {
     passwordHasher.hash = vi.fn().mockResolvedValue('hashed_password_456');
     passwordHasher.verify = vi.fn();
 
-    const service = new UserRegistrationService(
-      userRepository,
-      emailService,
-      passwordHasher
-    );
+    const service = new UserRegistrationService(userRepository, emailService, passwordHasher);
 
     const user = await service.registerUser('test2@example.com', 'secret123');
 
     expect(user.email).toBe('test2@example.com');
     expect(user.passwordHash).toBe('hashed_password_456');
-    
+
     // Type-safe mock assertions
     expect(userRepository.findByEmail).toHaveBeenCalledWith('test2@example.com');
     expect(passwordHasher.hash).toHaveBeenCalledWith('secret123');
@@ -218,17 +206,13 @@ describe('UserRegistrationService - satisfies approach', () => {
       verify: vi.fn(),
     } satisfies IPasswordHasher;
 
-    const service = new UserRegistrationService(
-      userRepository,
-      emailService,
-      passwordHasher
-    );
+    const service = new UserRegistrationService(userRepository, emailService, passwordHasher);
 
     const user = await service.registerUser('test3@example.com', 'secret789');
 
     expect(user.email).toBe('test3@example.com');
     expect(user.passwordHash).toBe('hashed_password_789');
-    
+
     // Type-safe mock assertions
     expect(userRepository.findByEmail).toHaveBeenCalledWith('test3@example.com');
     expect(passwordHasher.hash).toHaveBeenCalledWith('secret789');
@@ -238,11 +222,11 @@ describe('UserRegistrationService - satisfies approach', () => {
 // ANTI-PATTERN: Don't use concrete classes in TypeScript either
 class BadUserService {
   constructor(
-    private userRepo: ConcreteUserRepository,    // BAD: Concrete class
-    private emailSvc: ConcreteEmailService,      // BAD: Concrete class
-    private hasher: ConcretePasswordHasher       // BAD: Concrete class
+    private userRepo: ConcreteUserRepository, // BAD: Concrete class
+    private emailSvc: ConcreteEmailService, // BAD: Concrete class
+    private hasher: ConcretePasswordHasher // BAD: Concrete class
   ) {}
-  
+
   // This makes testing difficult and couples you to specific implementations
 }
 
@@ -252,12 +236,12 @@ class ConcreteUserRepository implements IUserRepository {
     // Real database logic
     throw new Error('Not implemented');
   }
-  
+
   async save(user: User): Promise<void> {
     // Real save logic
     throw new Error('Not implemented');
   }
-  
+
   async findByEmail(email: string): Promise<User | null> {
     // Real query logic
     throw new Error('Not implemented');
@@ -269,7 +253,7 @@ class ConcreteEmailService implements IEmailService {
     // Real SMTP logic
     return false;
   }
-  
+
   async sendTemplate(to: string, template: string, data: Record<string, any>): Promise<boolean> {
     // Real template rendering
     return false;
@@ -281,7 +265,7 @@ class ConcretePasswordHasher implements IPasswordHasher {
     // Real bcrypt logic
     return '';
   }
-  
+
   async verify(password: string, hash: string): Promise<boolean> {
     // Real verification
     return false;

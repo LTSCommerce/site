@@ -15,11 +15,7 @@ const layoutStyles: Record<PageLayout, string> = {
 };
 
 export function Page({ layout, children }: PageProps) {
-  return (
-    <main className={layoutStyles[layout]}>
-      {children}
-    </main>
-  );
+  return <main className={layoutStyles[layout]}>{children}</main>;
 }
 
 // Usage: the layout choice is declared at the route level, not buried in CSS:

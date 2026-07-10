@@ -101,17 +101,12 @@ export default {
         const attrs = node.attributes;
 
         const hasTitle = attrs.some(
-          (attr) =>
-            attr.type === 'JSXAttribute' &&
-            attr.name.name === 'title' &&
-            attr.value != null
+          attr => attr.type === 'JSXAttribute' && attr.name.name === 'title' && attr.value != null
         );
 
         const hasDescription = attrs.some(
-          (attr) =>
-            attr.type === 'JSXAttribute' &&
-            attr.name.name === 'description' &&
-            attr.value != null
+          attr =>
+            attr.type === 'JSXAttribute' && attr.name.name === 'description' && attr.value != null
         );
 
         if (!hasTitle) {

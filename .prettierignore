@@ -1,0 +1,11 @@
+dist
+dist-server
+node_modules
+code-snippets
+untracked
+ARCHIVE
+var
+.claude
+cloudflare-workers
+package-lock.json
+src/data/snippets.ts

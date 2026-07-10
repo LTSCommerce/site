@@ -4,8 +4,8 @@ stages:
   - deploy
 
 variables:
-  COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/.composer-cache"
-  APP_ENV: "production"
+  COMPOSER_CACHE_DIR: '$CI_PROJECT_DIR/.composer-cache'
+  APP_ENV: 'production'
 
 cache:
   paths:

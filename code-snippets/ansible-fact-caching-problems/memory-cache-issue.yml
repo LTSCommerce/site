@@ -13,7 +13,7 @@
       vars:
         # This will fail with --limit if db_servers facts aren't cached
         db_primary_ip: "{{ hostvars[groups['db_servers'][0]]['ansible_default_ipv4']['address'] }}"
-        
+
 - name: Update load balancer
   hosts: lb_servers
   gather_facts: yes

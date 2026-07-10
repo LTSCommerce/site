@@ -107,10 +107,8 @@ export default {
         if (isPageLayoutImport) {
           // Check for named import of 'Page'
           const namedImport = node.specifiers.find(
-            (spec) =>
-              spec.type === 'ImportSpecifier' &&
-              spec.imported &&
-              spec.imported.name === 'Page'
+            spec =>
+              spec.type === 'ImportSpecifier' && spec.imported && spec.imported.name === 'Page'
           );
 
           if (namedImport) {

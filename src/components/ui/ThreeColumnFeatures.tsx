@@ -147,7 +147,9 @@ function FeatureCard({
         <ul className="space-y-2">
           {feature.items.map(item => (
             <li key={item} className="flex items-start gap-2 text-sm font-light">
-              <span className={`mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${bulletColourClass}`} />
+              <span
+                className={`mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${bulletColourClass}`}
+              />
               <span className="text-gray-400">{item}</span>
             </li>
           ))}
@@ -185,7 +187,9 @@ function CarouselDots({ api }: { api: CarouselApi | undefined }) {
     setCount(api.scrollSnapList().length);
     setCurrent(api.selectedScrollSnap());
 
-    const onSelect = () => { setCurrent(api.selectedScrollSnap()); };
+    const onSelect = () => {
+      setCurrent(api.selectedScrollSnap());
+    };
     api.on('select', onSelect);
     return () => {
       api.off('select', onSelect);
@@ -265,5 +269,3 @@ export function ThreeColumnFeatures({
     </>
   );
 }
-
-export default ThreeColumnFeatures;

@@ -70,6 +70,7 @@ The EC site has 61+ components across 5 categories with extensive mobile optimis
 ### Dependency Analysis
 
 Components from EC site depend on:
+
 - `useMediaQuery` hook (from EC site -- covered by Plan 004)
 - `embla-carousel-react` (new dependency, ~12KB gzipped)
 - `lucide-react` (LTS likely needs this anyway)
@@ -90,6 +91,7 @@ Components from EC site depend on:
 **Dependencies**: `useMediaQuery` hook (Plan 004)
 
 **Adaptation Needed**: Low
+
 - Remove EC `@/hooks/useMediaQuery` import path, use LTS path
 - No other changes needed -- component is already generic
 
@@ -106,6 +108,7 @@ Components from EC site depend on:
 **Dependencies**: `useMediaQuery` hook (Plan 004)
 
 **Adaptation Needed**: Low
+
 - Update import path for `useMediaQuery`
 - No other changes needed
 
@@ -122,6 +125,7 @@ Components from EC site depend on:
 **Dependencies**: Typewriter component, CSICategory type (EC-specific)
 
 **Adaptation Needed**: Medium
+
 - Remove CSI category colour system entirely
 - Replace with simple colour prop (string hex value or preset name)
 - Rename to `HighlightTypewriter` or `ColourTypewriter` to avoid EC branding
@@ -141,6 +145,7 @@ Components from EC site depend on:
 **Dependencies**: Typewriter component, CSICategory type (EC-specific), `getCategoryColour` utility
 
 **Adaptation Needed**: Medium
+
 - Remove CSI category system (`csi` prop, `getCategoryColour`)
 - Keep `variant` prop (primary/secondary) with LTS colours
 - Remove `children?: never` ESLint enforcement (LTS doesn't have that rule yet)
@@ -160,6 +165,7 @@ Components from EC site depend on:
 **Dependencies**: CardTitle, SubHeading, Icon, carousel (Embla), CSICategory, RouteEntry, Zod validation, `validateProps`, `getCategoryColour`, `getCategoryPath`
 
 **Adaptation Needed**: High
+
 - Strip CSI category system entirely (colours, paths, getCategoryColour)
 - Strip Zod validation (ThreeColumnFeaturesPropsSchema, validateProps)
 - Strip CarouselIconIndicators (or simplify to dot indicators)
@@ -194,6 +200,7 @@ Components from EC site depend on:
 **Dependencies**: Embla carousel components, Zod validation
 
 **Adaptation Needed**: Medium
+
 - Strip Zod validation (MobileCarouselGridPropsSchema, validateProps)
 - Copy the carousel base components (Embla wrapper) or install `embla-carousel-react` and create a minimal carousel wrapper
 - Keep: mobile/desktop split pattern, dot indicators, Embla configuration
@@ -234,18 +241,18 @@ Components from EC site depend on:
 
 ### Summary Table
 
-| Component | Decision | Adaptation | Dependencies Added | Bundle Impact |
-|-----------|----------|------------|-------------------|---------------|
-| BlurText | ADOPT ✅ | Low | useMediaQuery (Plan 004) | ~1KB |
-| Typewriter | ADOPT ✅ | Low | useMediaQuery (Plan 004) | ~2KB |
-| WhiteToRedTypewriter | ADOPT ✅ | Medium | Typewriter | ~1KB |
-| StatusBadge | ADOPT ✅ | Medium | Typewriter | ~1KB |
-| ThreeColumnFeatures | ADOPT ✅ | High | Embla carousel | ~8KB |
-| Icon | SKIP | -- | -- | -- |
-| MobileCarouselGrid | ADOPT ✅ | Medium | Embla carousel | ~4KB |
-| ServicePageHero | SKIP | -- | -- | -- |
-| ServiceGrid | SKIP | -- | -- | -- |
-| ServiceBenefits | SKIP | -- | -- | -- |
+| Component            | Decision | Adaptation | Dependencies Added       | Bundle Impact |
+| -------------------- | -------- | ---------- | ------------------------ | ------------- |
+| BlurText             | ADOPT ✅ | Low        | useMediaQuery (Plan 004) | ~1KB          |
+| Typewriter           | ADOPT ✅ | Low        | useMediaQuery (Plan 004) | ~2KB          |
+| WhiteToRedTypewriter | ADOPT ✅ | Medium     | Typewriter               | ~1KB          |
+| StatusBadge          | ADOPT ✅ | Medium     | Typewriter               | ~1KB          |
+| ThreeColumnFeatures  | ADOPT ✅ | High       | Embla carousel           | ~8KB          |
+| Icon                 | SKIP     | --         | --                       | --            |
+| MobileCarouselGrid   | ADOPT ✅ | Medium     | Embla carousel           | ~4KB          |
+| ServicePageHero      | SKIP     | --         | --                       | --            |
+| ServiceGrid          | SKIP     | --         | --                       | --            |
+| ServiceBenefits      | SKIP     | --         | --                       | --            |
 
 **Actual bundle impact**: lucide-react + embla-carousel-react added ~45KB gzipped to vendor bundle (from 0KB to 45KB gzipped). Acceptable for the functionality gained.
 
@@ -347,14 +354,17 @@ Components from EC site depend on:
 ## Technical Decisions
 
 ### Decision 1: Selective Copy vs. Package Extraction
+
 **Context**: How to bring EC components into LTS?
 
 **Options Considered**:
+
 1. Copy individual files and adapt -- simple, direct control
 2. Create shared npm package -- reusable but high overhead
 3. Git submodule -- complex, fragile
 
 **Decision**: Option 1 -- Copy and adapt individual files
+
 - LTS is a single project, not a multi-project ecosystem
 - Adaptation is significant enough that shared code would diverge quickly
 - Simplest approach for a portfolio site
@@ -362,15 +372,18 @@ Components from EC site depend on:
 **Date**: 2026-02-20
 
 ### Decision 2: Embla Carousel vs. Alternatives
+
 **Context**: MobileCarouselGrid and ThreeColumnFeatures need a carousel library.
 
 **Options Considered**:
+
 1. Embla Carousel (~12KB gzipped) -- used by EC site, proven
 2. Swiper (~40KB) -- heavier, more features
 3. Native CSS scroll-snap -- lighter but no programmatic control
 4. Flowbite carousel -- already installed as dependency
 
 **Decision**: Embla Carousel (embla-carousel-react)
+
 - Proven in EC site with no issues
 - Lightweight at ~12KB gzipped
 - Good TypeScript support
@@ -379,9 +392,11 @@ Components from EC site depend on:
 **Date**: 2026-02-20
 
 ### Decision 3: Rename WhiteToRedTypewriter
+
 **Context**: EC component name references EC branding (white-to-red = EC brand colour).
 
 **Decision**: Rename to `HighlightTypewriter`
+
 - Generic name reflects actual functionality (typewriter with colour highlight)
 - No reference to EC brand colours
 - `highlightColour` prop accepts any hex code
@@ -390,9 +405,11 @@ Components from EC site depend on:
 **Date**: 2026-02-20
 
 ### Decision 4: useMediaQuery implementation
+
 **Context**: Plan 004 (Custom Hooks Lift) was planned as a dependency but runs in parallel.
 
 **Decision**: Implement useMediaQuery inline in this plan
+
 - Replaced `SSR.isServer()` / `SSR.isClient()` EC utility with inline `typeof window !== 'undefined'` checks
 - Added to `src/hooks/useMediaQuery.ts` and exported from `src/hooks/index.ts`
 - No conflict with Plan 004 -- if Plan 004 provides a different implementation, this can be replaced
@@ -400,9 +417,11 @@ Components from EC site depend on:
 **Date**: 2026-02-20
 
 ### Decision 5: Carousel.tsx -- no shadcn/ui dependency
+
 **Context**: EC's carousel.tsx uses shadcn/ui `cn()` utility and Flowbite Button component.
 
 **Decision**: Replace both with plain alternatives
+
 - `cn()` replaced with template literal string concatenation
 - `Button` replaced with native `<button>` elements with inline Tailwind classes
 - No shadcn/ui install required in LTS
@@ -411,9 +430,11 @@ Components from EC site depend on:
 **Date**: 2026-02-20
 
 ### Decision 6: ThreeColumnFeatures link type
+
 **Context**: EC's ThreeColumnFeatures uses `RouteEntry | HashLink` (EC-specific types from @/routes and @/types).
 
 **Decision**: Replace with plain `string` href
+
 - LTS does not have the same RouteEntry type system yet
 - Simple `string` works for all link use cases (relative paths, absolute URLs, hash links)
 - Can be upgraded to a typed route system later
@@ -432,13 +453,13 @@ Components from EC site depend on:
 
 ## Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Bundle size bloat from Embla | Medium | Medium | Measured: +45KB gzipped, acceptable |
-| useMediaQuery not ready (Plan 004 dependency) | High | Low | Implemented inline -- no blocker |
-| Component styling conflicts with Flowbite/Tailwind | Medium | Medium | Components use scoped Tailwind -- no conflicts found |
-| Carousel breaks on specific mobile viewports | Medium | Low | Embla proven in EC site |
-| TypeScript strict mode violations in adapted code | Low | Medium | Fixed: COLOUR_SCHEME index fallback |
+| Risk                                               | Impact | Probability | Mitigation                                           |
+| -------------------------------------------------- | ------ | ----------- | ---------------------------------------------------- |
+| Bundle size bloat from Embla                       | Medium | Medium      | Measured: +45KB gzipped, acceptable                  |
+| useMediaQuery not ready (Plan 004 dependency)      | High   | Low         | Implemented inline -- no blocker                     |
+| Component styling conflicts with Flowbite/Tailwind | Medium | Medium      | Components use scoped Tailwind -- no conflicts found |
+| Carousel breaks on specific mobile viewports       | Medium | Low         | Embla proven in EC site                              |
+| TypeScript strict mode violations in adapted code  | Low    | Medium      | Fixed: COLOUR_SCHEME index fallback                  |
 
 ## Timeline
 
@@ -464,6 +485,7 @@ Key insight: The EC site's components are heavily coupled to EC-specific systems
 All 6 planned components successfully lifted and adapted:
 
 **Files created**:
+
 - `src/hooks/useMediaQuery.ts` -- SSR-safe media query hook (Plan 004 dependency resolved inline)
 - `src/components/ui/BlurText.tsx` -- blur/fade-in animation component
 - `src/components/ui/Typewriter.tsx` -- character-by-character typing animation
@@ -475,6 +497,7 @@ All 6 planned components successfully lifted and adapted:
 - `src/components/ui/index.ts` -- barrel exports for all UI components
 
 **Files modified**:
+
 - `src/hooks/index.ts` -- added useMediaQuery export
 - `src/pages/Home.tsx` -- replaced 6 plain article cards with 2x ThreeColumnFeatures, added StatusBadge + BlurText to section header
 
@@ -482,6 +505,7 @@ All 6 planned components successfully lifted and adapted:
 **Build**: Successful, 287KB gzipped bundle
 
 **Components skipped** (as planned):
+
 - Icon: Too coupled to EC technology registry and Simple Icons slug system
 - ServicePageHero: 829 lines, EC-specific citation/metrics system
 - ServiceGrid: EC service/CSI model not applicable to LTS

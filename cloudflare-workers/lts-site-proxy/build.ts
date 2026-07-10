@@ -55,7 +55,6 @@ async function buildWorker(): Promise<void> {
     console.log(`\nWorker built successfully: ${WORKER_JS}`);
     console.log(`File size: ${(workerCode.length / 1024).toFixed(2)} KB`);
     console.log(`\nReady to deploy to Cloudflare Workers`);
-
   } catch (error) {
     console.error('Build failed:', error);
     process.exit(1);
@@ -68,7 +67,7 @@ async function main(): Promise<void> {
   console.log('\nBuild complete\n');
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error('Fatal error:', error);
   process.exit(1);
 });

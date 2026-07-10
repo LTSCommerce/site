@@ -2,13 +2,13 @@
 
 /**
  * Auto-register articles by scanning EJS template files and extracting metadata
- * 
+ *
  * This script:
  * 1. Scans private_html/articles/ for EJS files
  * 2. Extracts metadata from EJS template parameters
  * 3. Auto-generates articles.js with article data
  * 4. Auto-updates vite.config.js with new article paths
- * 
+ *
  * Metadata extraction:
  * - Parses EJS include parameters (articleTitle, articleDescription, etc.)
  * - Generates article data for the articles listing page
@@ -34,45 +34,47 @@ if (fs.existsSync(categoriesPath)) {
  */
 function extractArticleMetadata(ejsPath, fileName) {
   const ejsContent = fs.readFileSync(ejsPath, 'utf-8');
-  
+
   // Extract metadata from the EJS template parameters
   const includeMatch = ejsContent.match(/<%- include\([^,]+,\s*\{([\s\S]*?)\}[\s\S]*?%>/);
-  
+
   if (!includeMatch) {
     console.warn(`No article layout found in ${fileName}`);
     return null;
   }
-  
+
   const paramsText = includeMatch[1];
-  
+
   // Extract individual parameters with proper quote handling
-  const titleMatch = paramsText.match(/articleTitle:\s*'((?:[^'\\]|\\.)*)'/) || 
-                     paramsText.match(/articleTitle:\s*"((?:[^"\\]|\\.)*)"/);
-  const descriptionMatch = paramsText.match(/articleDescription:\s*'((?:[^'\\]|\\.)*)'/) || 
-                          paramsText.match(/articleDescription:\s*"((?:[^"\\]|\\.)*)"/);
+  const titleMatch =
+    paramsText.match(/articleTitle:\s*'((?:[^'\\]|\\.)*)'/) ||
+    paramsText.match(/articleTitle:\s*"((?:[^"\\]|\\.)*)"/);
+  const descriptionMatch =
+    paramsText.match(/articleDescription:\s*'((?:[^'\\]|\\.)*)'/) ||
+    paramsText.match(/articleDescription:\s*"((?:[^"\\]|\\.)*)"/);
   const dateMatch = paramsText.match(/articleDate:\s*['"](.*?)['"]/s);
   const categoryMatch = paramsText.match(/articleCategory:\s*['"](.*?)['"]/s);
   const readingTimeMatch = paramsText.match(/articleReadingTime:\s*['"](.*?)['"]/s);
-  
+
   const title = titleMatch ? titleMatch[1].replace(/\\'/g, "'") : '';
   const description = descriptionMatch ? descriptionMatch[1].replace(/\\'/g, "'") : '';
   const dateISO = dateMatch ? dateMatch[1] : '';
   const category = categoryMatch ? categoryMatch[1] : 'php';
   const readingTime = readingTimeMatch ? readingTimeMatch[1] : '5';
-  
+
   // Validate category
   if (Object.keys(validCategories).length > 0 && !validCategories[category]) {
     console.error(`❌ Invalid category "${category}" in ${fileName}`);
     console.error(`   Valid categories are: ${Object.keys(validCategories).join(', ')}`);
     process.exit(1);
   }
-  
+
   // Generate slug from filename
   const slug = fileName.replace('.ejs', '');
-  
+
   // Generate ID from slug (simple hash)
-  const id = slug.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 1000 + 1;
-  
+  const id = (slug.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 1000) + 1;
+
   return {
     id,
     title,
@@ -81,7 +83,7 @@ function extractArticleMetadata(ejsPath, fileName) {
     date: dateISO || new Date().toISOString().split('T')[0],
     slug,
     readingTime,
-    tags: []
+    tags: [],
   };
 }
 
@@ -90,21 +92,22 @@ function extractArticleMetadata(ejsPath, fileName) {
  */
 function scanArticles() {
   const articlesDir = path.join(projectRoot, 'private_html', 'articles');
-  
+
   if (!fs.existsSync(articlesDir)) {
     console.error('Articles directory not found:', articlesDir);
     return [];
   }
-  
-  const files = fs.readdirSync(articlesDir)
+
+  const files = fs
+    .readdirSync(articlesDir)
     .filter(file => file.endsWith('.ejs') && !file.startsWith('_'))
     .sort(); // Ensure consistent ordering
-  
+
   const articles = [];
-  
+
   for (const file of files) {
     const filePath = path.join(articlesDir, file);
-    
+
     try {
       const metadata = extractArticleMetadata(filePath, file);
       if (metadata) {
@@ -115,7 +118,7 @@ function scanArticles() {
       console.error(`✗ Failed to extract metadata for ${file}:`, error.message);
     }
   }
-  
+
   return articles;
 }
 
@@ -125,7 +128,7 @@ function scanArticles() {
 function generateArticlesJS(articles) {
   // Sort articles by date (newest first)
   const sortedArticles = articles.sort((a, b) => new Date(b.date) - new Date(a.date));
-  
+
   const articlesData = sortedArticles.map(article => ({
     id: article.id,
     title: article.title,
@@ -133,9 +136,9 @@ function generateArticlesJS(articles) {
     category: article.category,
     date: article.date,
     slug: article.slug,
-    readingTime: article.readingTime
+    readingTime: article.readingTime,
   }));
-  
+
   // Load categories data
   let categoriesData = {};
   const categoriesPath = path.join(projectRoot, 'private_html/data/categories.json');
@@ -313,37 +316,45 @@ class ArticleManager {
  */
 function updateViteConfig(articles) {
   const configPath = path.join(projectRoot, 'vite.config.js');
-  
+
   if (!fs.existsSync(configPath)) {
     console.error('vite.config.js not found');
     return;
   }
-  
+
   let configContent = fs.readFileSync(configPath, 'utf-8');
-  
+
   // Generate article input entries (both HTML and JS)
-  const articleInputs = articles.map(article => {
-    return `        'articles/${article.slug}': resolve(__dirname, 'private_html/articles/${article.slug}.html'),`;
-  }).join('\n');
-  
-  const articleJSInputs = articles.map(article => {
-    return `        'js/articles/${article.slug}': resolve(__dirname, 'private_html/js/articles/${article.slug}.js'),`;
-  }).join('\n');
-  
+  const articleInputs = articles
+    .map(article => {
+      return `        'articles/${article.slug}': resolve(__dirname, 'private_html/articles/${article.slug}.html'),`;
+    })
+    .join('\n');
+
+  const articleJSInputs = articles
+    .map(article => {
+      return `        'js/articles/${article.slug}': resolve(__dirname, 'private_html/js/articles/${article.slug}.js'),`;
+    })
+    .join('\n');
+
   // Replace the articles section in vite.config.js
   const articleSectionRegex = /\/\/ Article pages\n(.*?)\/\/ JavaScript entry points/s;
   const replacement = `// Article pages
 ${articleInputs}
         // JavaScript entry points`;
-  
+
   configContent = configContent.replace(articleSectionRegex, replacement);
-  
+
   // Replace JavaScript entries for articles
-  const jsEntryRegex = /(\/\/ JavaScript entry points\n.*?)(,\s*\/\/ Article JavaScript entry points\n.*?)?(\n\s*},)/s;
-  configContent = configContent.replace(jsEntryRegex, `$1,
+  const jsEntryRegex =
+    /(\/\/ JavaScript entry points\n.*?)(,\s*\/\/ Article JavaScript entry points\n.*?)?(\n\s*},)/s;
+  configContent = configContent.replace(
+    jsEntryRegex,
+    `$1,
         // Article JavaScript entry points
-${articleJSInputs}$3`);
-  
+${articleJSInputs}$3`
+  );
+
   fs.writeFileSync(configPath, configContent);
   console.log('✓ Updated vite.config.js with article paths');
 }
@@ -353,12 +364,12 @@ ${articleJSInputs}$3`);
  */
 function createArticleJSFiles(articles) {
   const articlesJSDir = path.join(projectRoot, 'private_html', 'js', 'articles');
-  
+
   // Create articles JS directory if it doesn't exist
   if (!fs.existsSync(articlesJSDir)) {
     fs.mkdirSync(articlesJSDir, { recursive: true });
   }
-  
+
   articles.forEach(article => {
     const jsContent = `// Import CSS for Vite processing
 import '../../css/main.css';
@@ -368,11 +379,11 @@ import '../../css/syntax-highlighting.css';
 // Article functionality
 import '../main.js';
 import '../syntax-highlighter.js';`;
-    
+
     const jsPath = path.join(articlesJSDir, `${article.slug}.js`);
     fs.writeFileSync(jsPath, jsContent);
   });
-  
+
   console.log('✓ Created JavaScript files for articles');
 }
 
@@ -381,33 +392,33 @@ import '../syntax-highlighter.js';`;
  */
 async function main() {
   console.log('🔧 Auto-registering articles...\n');
-  
+
   // Scan articles and extract metadata
   const articles = scanArticles();
-  
+
   if (articles.length === 0) {
     console.log('No articles found to register.');
     return;
   }
-  
+
   console.log(`\nFound ${articles.length} articles:`);
   articles.forEach(article => {
     console.log(`  - ${article.title} (${article.category}, ${article.date})`);
   });
-  
+
   // Generate articles.js
   const articlesJSContent = generateArticlesJS(articles);
   const articlesJSPath = path.join(projectRoot, 'private_html', 'js', 'articles.js');
-  
+
   fs.writeFileSync(articlesJSPath, articlesJSContent);
   console.log('\n✓ Generated articles.js');
-  
+
   // Update vite.config.js
   updateViteConfig(articles);
-  
+
   // Create JavaScript files for each article
   createArticleJSFiles(articles);
-  
+
   console.log('\n✅ Article auto-registration completed!');
 }
 

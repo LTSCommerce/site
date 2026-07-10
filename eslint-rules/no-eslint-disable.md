@@ -30,24 +30,28 @@ The discipline is: **fix the problem, don't hide it**.
 ## Violations and Correct Patterns
 
 BAD:
+
 ```tsx
 // eslint-disable-next-line custom/use-types-not-strings
 const category = 'php';
 ```
 
 GOOD:
+
 ```tsx
 // Use the typed constant
 const category = CATEGORIES.php.id;
 ```
 
 BAD:
+
 ```ts
 /* eslint-disable custom/no-hardcoded-routes */
 const url = '/about';
 ```
 
 GOOD:
+
 ```ts
 const url = ROUTES.about.path;
 ```

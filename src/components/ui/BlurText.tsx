@@ -69,5 +69,3 @@ export function BlurText({
     </Tag>
   );
 }
-
-export default BlurText;

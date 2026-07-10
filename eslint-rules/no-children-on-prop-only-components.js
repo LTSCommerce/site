@@ -102,7 +102,7 @@ export default {
         }
 
         // Check if element has non-whitespace children
-        const hasNonWhitespaceChildren = node.children.some((child) => {
+        const hasNonWhitespaceChildren = node.children.some(child => {
           if (child.type === 'JSXText') {
             return child.value.trim().length > 0;
           }
@@ -112,7 +112,7 @@ export default {
         });
 
         if (hasNonWhitespaceChildren) {
-          const firstChild = node.children.find((child) => {
+          const firstChild = node.children.find(child => {
             if (child.type === 'JSXText') {
               return child.value.trim().length > 0;
             }

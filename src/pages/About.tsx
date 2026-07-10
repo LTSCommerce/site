@@ -46,9 +46,8 @@ export function About() {
                   </p>
                   <p>
                     I've put in thousands of hours of hands-on development work. I can confidently
-                    say I'm at expert level now. Writing{' '}
-                    <strong>"The Art of Modern PHP 8"</strong> helped solidify that. The best way to
-                    learn is to teach, they say.
+                    say I'm at expert level now. Writing <strong>"The Art of Modern PHP 8"</strong>{' '}
+                    helped solidify that. The best way to learn is to teach, they say.
                   </p>
                   <p>
                     Today, I help businesses with large-scale PHP applications that handle serious
@@ -105,8 +104,8 @@ export function About() {
                   <div className="bg-white p-6 rounded-lg border border-gray-200">
                     <h3 className="text-xl font-bold mb-2">AI-Enhanced Development</h3>
                     <p className="text-gray-700">
-                      Actively embracing AI tools for development efficiency and implementing AI into
-                      business processes. Modern workflows with traditional reliability.
+                      Actively embracing AI tools for development efficiency and implementing AI
+                      into business processes. Modern workflows with traditional reliability.
                     </p>
                   </div>
                 </div>

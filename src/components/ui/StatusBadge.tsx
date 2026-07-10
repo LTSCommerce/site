@@ -89,5 +89,3 @@ export function StatusBadge({
     </div>
   );
 }
-
-export default StatusBadge;

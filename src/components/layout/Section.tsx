@@ -7,7 +7,7 @@
 
 import type { ReactNode } from 'react';
 
-interface SectionProps {
+export interface SectionProps {
   children: ReactNode;
   spacing?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;

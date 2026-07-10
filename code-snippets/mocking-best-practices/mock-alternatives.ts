@@ -19,17 +19,17 @@ class OrderService {
     // Business logic here - easy to test with real implementations
     const total = this.calculateTotal(order);
     const payment = await this.paymentProcessor.process(total);
-    
+
     if (payment.success) {
       await this.notificationService.send(`Order ${order.id} confirmed`);
     }
-    
+
     return { success: payment.success, orderId: order.id };
   }
 
   // Pure function - no mocking needed!
   private calculateTotal(order: Order): number {
-    return order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    return order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   }
 }
 
@@ -42,7 +42,7 @@ class FakePaymentProcessor implements PaymentProcessor {
     if (amount <= 0) {
       return { success: false, error: 'Invalid amount' };
     }
-    
+
     if (!this.shouldSucceed) {
       return { success: false, error: 'Payment declined' };
     }
@@ -83,7 +83,7 @@ class OrderBuilder {
   private order: Order = {
     id: '123',
     items: [],
-    customerId: 'customer1'
+    customerId: 'customer1',
   };
 
   withId(id: string): OrderBuilder {
@@ -122,8 +122,8 @@ describe('OrderService with Real Dependencies', () => {
     // Arrange - use builder pattern for clean test data
     const order = new OrderBuilder()
       .withId('order-123')
-      .withItem('item1', 50.00, 2)
-      .withItem('item2', 25.00, 1)
+      .withItem('item1', 50.0, 2)
+      .withItem('item2', 25.0, 1)
       .withCustomer('customer-456')
       .build();
 
@@ -133,7 +133,7 @@ describe('OrderService with Real Dependencies', () => {
     // Assert - verify outcomes, not implementation details
     expect(result.success).toBe(true);
     expect(result.orderId).toBe('order-123');
-    
+
     // Verify side effects through test double
     expect(fakeNotificationService.getLastMessage()).toBe('Order order-123 confirmed');
   });
@@ -141,10 +141,7 @@ describe('OrderService with Real Dependencies', () => {
   it('handles payment failures gracefully', async () => {
     // Arrange
     fakePaymentProcessor.setFailureMode();
-    const order = new OrderBuilder()
-      .withId('order-456')
-      .withItem('item1', 100.00)
-      .build();
+    const order = new OrderBuilder().withId('order-456').withItem('item1', 100.0).build();
 
     // Act
     const result = await orderService.processOrder(order);
@@ -158,7 +155,7 @@ describe('OrderService with Real Dependencies', () => {
 // 5. FUNCTIONAL APPROACH - Pure functions need no mocking
 export const OrderCalculator = {
   calculateSubtotal(items: OrderItem[]): number {
-    return items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   },
 
   applyDiscount(subtotal: number, discountPercent: number): number {
@@ -174,7 +171,7 @@ export const OrderCalculator = {
     const discounted = this.applyDiscount(subtotal, discountPercent);
     const tax = this.calculateTax(discounted, taxRate);
     return discounted + tax;
-  }
+  },
 };
 
 // Testing pure functions - no mocks needed!
@@ -182,7 +179,7 @@ describe('OrderCalculator', () => {
   it('calculates totals correctly', () => {
     const items = [
       { id: 'item1', price: 100, quantity: 2 },
-      { id: 'item2', price: 50, quantity: 1 }
+      { id: 'item2', price: 50, quantity: 1 },
     ];
 
     const total = OrderCalculator.calculateTotal(items, 10, 8.5); // 10% discount, 8.5% tax

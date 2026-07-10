@@ -21,7 +21,7 @@ import { useCallback, useMemo, useSyncExternalStore } from 'react';
 export function useMediaQuery(query: string): boolean {
   const mediaQuery = useMemo(
     () => (typeof window !== 'undefined' ? window.matchMedia(query) : null),
-    [query],
+    [query]
   );
 
   const subscribe = useCallback(
@@ -32,13 +32,10 @@ export function useMediaQuery(query: string): boolean {
         mediaQuery.removeEventListener('change', callback);
       };
     },
-    [mediaQuery],
+    [mediaQuery]
   );
 
-  const getSnapshot = useCallback(
-    () => mediaQuery?.matches ?? false,
-    [mediaQuery],
-  );
+  const getSnapshot = useCallback(() => mediaQuery?.matches ?? false, [mediaQuery]);
 
   const getServerSnapshot = useCallback(() => false, []);
 

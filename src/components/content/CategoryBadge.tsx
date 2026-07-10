@@ -6,17 +6,13 @@
 
 import type { Category } from '@/data/categories';
 
-interface CategoryBadgeProps {
+export interface CategoryBadgeProps {
   category: Category;
   size?: 'xs' | 'sm';
   variant?: 'filled' | 'outlined';
 }
 
-export function CategoryBadge({
-  category,
-  size = 'sm',
-  variant = 'filled',
-}: CategoryBadgeProps) {
+export function CategoryBadge({ category, size = 'sm', variant = 'filled' }: CategoryBadgeProps) {
   const sizeClass = size === 'xs' ? 'text-xs px-2 py-0.5' : 'text-xs px-2.5 py-1';
 
   return (

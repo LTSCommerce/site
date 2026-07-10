@@ -5,11 +5,11 @@
  * Handles document title, meta description, and basic page structure.
  */
 
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Navigation } from './Navigation';
 import { Footer } from './Footer';
 
-interface PageProps {
+export interface PageProps {
   title: string;
   description?: string;
   children: ReactNode;
@@ -24,8 +24,13 @@ export function Page({
   showNavigation = true,
   showFooter = true,
 }: PageProps) {
-  // Update document title and meta (browser only — no-op during SSG prerender)
-  if (typeof document !== 'undefined') {
+  // Client-side title/meta update for SPA route changes (the SSG prerender already
+  // bakes the correct <title>/<meta> per-route into the static HTML - this only
+  // matters for in-app navigation after hydration). Moved into an effect: reading/
+  // mutating `document` directly in the render body ran on every client render
+  // (StrictMode double-invokes it, concurrent rendering can re-run it), which is a
+  // side effect during render, not just an SSR/hydration mismatch risk.
+  useEffect(() => {
     if (title) {
       document.title = title;
     }
@@ -35,7 +40,7 @@ export function Page({
         metaDesc.setAttribute('content', description);
       }
     }
-  }
+  }, [title, description]);
 
   return (
     <div className="min-h-screen flex flex-col">

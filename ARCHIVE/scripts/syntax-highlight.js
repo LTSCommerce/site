@@ -23,16 +23,16 @@ let processedCodeBlocks = 0;
 
 htmlFiles.forEach(file => {
   console.log(`Processing: ${file}`);
-  
+
   const content = readFileSync(file, 'utf8');
   const $ = load(content);
-  
+
   let fileChanged = false;
-  
+
   $('pre code').each((i, element) => {
     const $code = $(element);
     let codeContent = $code.html();
-    
+
     // Decode HTML entities thoroughly
     codeContent = codeContent
       .replace(/&lt;/g, '<')
@@ -47,37 +47,50 @@ htmlFiles.forEach(file => {
       .replace(/&hellip;/g, '...')
       .replace(/&mdash;/g, '—')
       .replace(/&ndash;/g, '–');
-    
+
     // Clean up the content
     codeContent = codeContent.trim();
-    
+
     // Detect language from existing class or auto-detect
     let language = 'php';
     const existingClasses = $code.attr('class') || '';
     const languageMatch = existingClasses.match(/language-(\w+)/);
-    
+
     if (languageMatch) {
       language = languageMatch[1];
     } else {
       // Auto-detect language
       if (codeContent.includes('<?php') || codeContent.includes('declare(strict_types=1)')) {
         language = 'php';
-      } else if (codeContent.includes('#!/bin/bash') || codeContent.includes('apt install') || codeContent.includes('systemctl') || codeContent.includes('git diff')) {
+      } else if (
+        codeContent.includes('#!/bin/bash') ||
+        codeContent.includes('apt install') ||
+        codeContent.includes('systemctl') ||
+        codeContent.includes('git diff')
+      ) {
         language = 'bash';
       } else if (codeContent.includes('---') && codeContent.includes('name:')) {
         language = 'yaml';
-      } else if (codeContent.includes('SELECT') || codeContent.includes('CREATE TABLE') || codeContent.includes('INSERT INTO')) {
+      } else if (
+        codeContent.includes('SELECT') ||
+        codeContent.includes('CREATE TABLE') ||
+        codeContent.includes('INSERT INTO')
+      ) {
         language = 'sql';
-      } else if (codeContent.includes('server {') || codeContent.includes('location') || codeContent.includes('listen 80')) {
+      } else if (
+        codeContent.includes('server {') ||
+        codeContent.includes('location') ||
+        codeContent.includes('listen 80')
+      ) {
         language = 'nginx';
       } else if (codeContent.startsWith('{') || codeContent.startsWith('[')) {
         language = 'json';
       }
     }
-    
+
     // Add language class
     $code.addClass(`language-${language}`);
-    
+
     // Highlight with Prism
     try {
       if (Prism.languages[language]) {
@@ -101,7 +114,7 @@ htmlFiles.forEach(file => {
       fileChanged = true;
     }
   });
-  
+
   if (fileChanged) {
     writeFileSync(file, $.html());
     processedFiles++;

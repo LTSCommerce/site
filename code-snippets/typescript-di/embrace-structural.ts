@@ -2,15 +2,15 @@
 // Think "UserService needs something with a log method"
 
 type Loggable = {
-    log(message: string): void;
+  log(message: string): void;
 };
 
 class UserService {
-    constructor(private logger: Loggable) {}
-    
-    doSomething(): void {
-        this.logger.log("Doing something");
-    }
+  constructor(private logger: Loggable) {}
+
+  doSomething(): void {
+    this.logger.log('Doing something');
+  }
 }
 
 // All of these work!
@@ -22,5 +22,5 @@ const service3 = new UserService({ log: msg => sendToElasticsearch(msg) });
 const minimalLogger = { log: () => {} };
 const service4 = new UserService(minimalLogger);
 
-// This is the power of structural typing - 
+// This is the power of structural typing -
 // focus on capabilities, not classifications

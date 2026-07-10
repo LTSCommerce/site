@@ -11,6 +11,7 @@ This searches both `CLAUDE/Plan/` and `CLAUDE/Plan/Completed/` for plan folders 
 **Next plan number** = highest number + 1
 
 **Example**:
+
 ```bash
 # If command returns: 028
 # Next plan is: 029-your-plan-name
@@ -19,6 +20,5 @@ This searches both `CLAUDE/Plan/` and `CLAUDE/Plan/Completed/` for plan folders 
 **Always check both active and completed plans** to ensure sequential numbering.
 
 When a plan is completed it can be moved to Completed directory if human approves, you should suggest when appropriate
-
 
 MUST KEEP PLANS UPDATED WITH PROGRESS

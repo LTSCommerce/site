@@ -5,12 +5,12 @@ declare const magicValue: string;
 console.log(magicValue); // No error, but will crash if not defined!
 
 // Ambient declarations for third-party code
-declare module "untyped-library" {
+declare module 'untyped-library' {
   export function doSomething(param: any): any; // any everywhere!
 }
 
 // Module augmentation to add properties
-declare module "express" {
+declare module 'express' {
   interface Request {
     user?: any; // Adding 'any' typed properties
   }

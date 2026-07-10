@@ -26,12 +26,12 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
-function walkDir(dir, base = dir) {
+function walkDir(dir) {
   const entries = [];
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
     if (statSync(full).isDirectory()) {
-      entries.push(...walkDir(full, base));
+      entries.push(...walkDir(full));
     } else {
       entries.push(full);
     }

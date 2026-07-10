@@ -14,14 +14,14 @@ console.log('🔧 Processing EJS templates...\n');
 function injectCodeSnippets(html) {
   // Find all snippet placeholders
   const snippetPattern = /{{SNIPPET:([^}]+)}}/g;
-  
+
   return html.replace(snippetPattern, (match, snippetPath) => {
     const fullPath = path.join(projectRoot, 'code-snippets', snippetPath);
-    
+
     try {
       // Read the snippet file
       let snippetContent = fs.readFileSync(fullPath, 'utf8');
-      
+
       // Escape HTML entities to prevent browser interpretation
       snippetContent = snippetContent
         .replace(/&/g, '&amp;')
@@ -29,7 +29,7 @@ function injectCodeSnippets(html) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
-      
+
       // Ensure snippet doesn't end with a newline (we'll add it in the template)
       snippetContent = snippetContent.trimEnd();
       // Return the escaped snippet content
@@ -48,7 +48,7 @@ function getAssetPath(originalPath) {
   if (!viteManifest || Object.keys(viteManifest).length === 0) {
     return originalPath; // Fallback to original path if no manifest
   }
-  
+
   // Convert path to manifest key format
   let searchKey = originalPath;
   if (originalPath.startsWith('/css/')) {
@@ -56,14 +56,14 @@ function getAssetPath(originalPath) {
   } else if (originalPath.startsWith('/js/')) {
     searchKey = originalPath.replace('/js/', 'js/').replace('.js', '');
   }
-  
+
   // Look for the asset in the manifest
   for (const [key, asset] of Object.entries(viteManifest)) {
     if (key === searchKey || key.includes(searchKey)) {
       return '/' + asset.file;
     }
   }
-  
+
   return originalPath; // Fallback if not found
 }
 
@@ -84,11 +84,11 @@ try {
   if (fs.existsSync(siteDataPath)) {
     siteData = JSON.parse(fs.readFileSync(siteDataPath, 'utf8'));
   }
-  
+
   if (fs.existsSync(navDataPath)) {
     navigationData = JSON.parse(fs.readFileSync(navDataPath, 'utf8'));
   }
-  
+
   if (fs.existsSync(categoriesPath)) {
     categoriesData = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
   }
@@ -119,22 +119,22 @@ try {
 const helpers = {
   currentYear: new Date().getFullYear(),
   deploymentTimestamp: new Date().toLocaleDateString('en-GB', {
-    year: 'numeric', 
-    month: 'long', 
+    year: 'numeric',
+    month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   }),
-  formatDate: (date) => {
+  formatDate: date => {
     return new Date(date).toLocaleDateString('en-GB', {
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric'
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   },
   getAssetPath: getAssetPath,
   isActive: (currentPage, targetPage) => currentPage === targetPage,
-  articleUrl: (slug) => `/articles/${slug}.html`,
+  articleUrl: slug => `/articles/${slug}.html`,
   truncate: (text, length = 150) => {
     if (!text) return '';
     return text.length > length ? text.substring(0, length) + '...' : text;
@@ -143,10 +143,8 @@ const helpers = {
     return articles.filter(article => article.category === category);
   },
   recentArticles: (articles, limit = 5) => {
-    return articles
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, limit);
-  }
+    return articles.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, limit);
+  },
 };
 
 // Global template data
@@ -155,20 +153,20 @@ const templateData = {
   navigation: navigationData,
   categories: categoriesData,
   articles: articlesData,
-  ...helpers
+  ...helpers,
 };
 
 async function processEjsFiles() {
   // Find all EJS files in pages directory
   const ejsFiles = await glob('private_html/pages/**/*.ejs', { cwd: projectRoot });
-  
+
   // Also find article EJS files (exclude templates starting with underscore)
   const allArticleEjsFiles = await glob('private_html/articles/**/*.ejs', { cwd: projectRoot });
   const articleEjsFiles = allArticleEjsFiles.filter(file => {
     const fileName = path.basename(file);
     return !fileName.startsWith('_'); // Exclude template files
   });
-  
+
   if (ejsFiles.length === 0) {
     console.log('No EJS files found to process');
   } else {
@@ -176,22 +174,22 @@ async function processEjsFiles() {
       const fullPath = path.join(projectRoot, ejsFile);
       const relativePath = path.relative(path.join(projectRoot, 'private_html/pages'), fullPath);
       const outputPath = path.join(
-        projectRoot, 
-        'public_html', 
+        projectRoot,
+        'public_html',
         relativePath.replace('.ejs', '.html')
       );
 
       try {
         console.log(`Processing: ${ejsFile} → ${path.relative(projectRoot, outputPath)}`);
-        
+
         // Read template
         const template = fs.readFileSync(fullPath, 'utf8');
-        
+
         // Process with EJS
         const html = ejs.render(template, templateData, {
           filename: fullPath,
           views: [path.join(projectRoot, 'private_html/templates')],
-          rmWhitespace: false
+          rmWhitespace: false,
         });
 
         // Ensure output directory exists
@@ -202,53 +200,53 @@ async function processEjsFiles() {
 
         // Inject code snippets
         const finalHtml = injectCodeSnippets(html);
-        
+
         // Write processed HTML
         fs.writeFileSync(outputPath, finalHtml);
         console.log(`✓ Generated: ${path.relative(projectRoot, outputPath)}`);
-        
       } catch (error) {
         console.error(`✗ Error processing ${ejsFile}:`, error.message);
         process.exit(1);
       }
     }
   }
-  
+
   // Process article EJS files
   if (articleEjsFiles.length > 0) {
     console.log(`\nProcessing ${articleEjsFiles.length} article templates...`);
-    
+
     for (const articleFile of articleEjsFiles) {
       const fullPath = path.join(projectRoot, articleFile);
       const fileName = path.basename(articleFile, '.ejs');
       const outputPath = path.join(projectRoot, 'public_html/articles', fileName + '.html');
-      
+
       try {
-        console.log(`Processing article: ${articleFile} → ${path.relative(projectRoot, outputPath)}`);
-        
+        console.log(
+          `Processing article: ${articleFile} → ${path.relative(projectRoot, outputPath)}`
+        );
+
         // Read and process the article template
         const template = fs.readFileSync(fullPath, 'utf8');
-        
+
         // Process with EJS
         const html = ejs.render(template, templateData, {
           filename: fullPath,
           views: [path.join(projectRoot, 'private_html')],
-          rmWhitespace: false
+          rmWhitespace: false,
         });
-        
+
         // Ensure output directory exists
         const outputDir = path.dirname(outputPath);
         if (!fs.existsSync(outputDir)) {
           fs.mkdirSync(outputDir, { recursive: true });
         }
-        
+
         // Inject code snippets
         const finalHtml = injectCodeSnippets(html);
-        
+
         // Write processed HTML
         fs.writeFileSync(outputPath, finalHtml);
         console.log(`✓ Generated: ${path.relative(projectRoot, outputPath)}`);
-        
       } catch (error) {
         console.error(`✗ Error processing article ${articleFile}:`, error.message);
         process.exit(1);
@@ -256,7 +254,6 @@ async function processEjsFiles() {
     }
   }
 }
-
 
 // Run the processor
 try {

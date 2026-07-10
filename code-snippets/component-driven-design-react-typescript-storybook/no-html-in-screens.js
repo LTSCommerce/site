@@ -8,10 +8,32 @@
  */
 
 const BANNED_ELEMENTS = [
-  'div', 'section', 'article', 'aside', 'main', 'header', 'footer', 'nav',
-  'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span',
-  'ul', 'ol', 'li',
-  'form', 'input', 'textarea', 'label', 'select', 'button', 'a',
+  'div',
+  'section',
+  'article',
+  'aside',
+  'main',
+  'header',
+  'footer',
+  'nav',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'p',
+  'span',
+  'ul',
+  'ol',
+  'li',
+  'form',
+  'input',
+  'textarea',
+  'label',
+  'select',
+  'button',
+  'a',
 ];
 
 export default {

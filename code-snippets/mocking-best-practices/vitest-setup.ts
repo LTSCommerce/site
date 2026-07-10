@@ -5,7 +5,7 @@ import { vi, beforeEach, afterAll } from 'vitest';
 beforeEach(() => {
   // Clear all mocks before each test
   vi.clearAllMocks();
-  
+
   // Reset module mocks
   vi.resetModules();
 });
@@ -13,7 +13,7 @@ beforeEach(() => {
 afterAll(() => {
   // Restore real timers after all tests
   vi.useRealTimers();
-  
+
   // Restore all mocks
   vi.restoreAllMocks();
 });
@@ -26,10 +26,7 @@ export function createMockService<T>(implementation: Partial<T> = {}): T {
 // Example of when to use vi.spyOn vs vi.mock
 export class TestHelpers {
   // Use vi.spyOn for temporary overrides in specific tests
-  static spyOnMethod<T extends object, K extends keyof T>(
-    object: T,
-    method: K
-  ) {
+  static spyOnMethod<T extends object, K extends keyof T>(object: T, method: K) {
     return vi.spyOn(object, method);
   }
 
@@ -39,10 +36,7 @@ export class TestHelpers {
   }
 
   // Helper for mocking only external dependencies
-  static mockExternalDependency<T>(
-    dependency: T,
-    overrides: Partial<T> = {}
-  ): T {
+  static mockExternalDependency<T>(dependency: T, overrides: Partial<T> = {}): T {
     const baseMock = vi.fn() as any;
     return Object.assign(baseMock, overrides) as T;
   }

@@ -11,6 +11,7 @@ Comprehensive guide for the front controller hooks architecture.
 ## Core Pattern
 
 All handlers inherit `Handler` base class:
+
 - `matches(hook_input)` - Returns True if handler should execute
 - `handle(hook_input)` - Returns HookResult with decision
 
@@ -28,6 +29,7 @@ Steps: Write tests → Run (fail) → Implement → Run (pass) → Coverage → 
 ### Process
 
 **Step 1: Design**
+
 - Identify tool (Bash, Write, Edit, WebSearch)
 - Define trigger pattern
 - Choose priority (10-20 safety, 25-45 workflow, 50-60 tools)
@@ -36,6 +38,7 @@ Steps: Write tests → Run (fail) → Implement → Run (pass) → Coverage → 
 **Step 2: Write Tests**
 
 Create test file with minimum coverage:
+
 - Handler name and priority
 - matches() positive cases
 - matches() negative cases
@@ -55,6 +58,7 @@ Command: python3 run_tests.py
 **Step 4: Implement Handler**
 
 Add to handlers/ directory:
+
 - Inherit Handler base class
 - Set name and priority in constructor
 - Implement matches() logic
@@ -85,6 +89,7 @@ Add to tables in CLAUDE.md
 ## Best Practices
 
 **Handler Design**:
+
 - Single responsibility
 - Fail open (errors = allow)
 - Clear messages
@@ -92,6 +97,7 @@ Add to tables in CLAUDE.md
 - Pure functions
 
 **Pattern Matching**:
+
 - Word boundaries in regex
 - Case insensitive
 - Handle command chains
@@ -99,6 +105,7 @@ Add to tables in CLAUDE.md
 - Comprehensive edge cases
 
 **Error Messages**:
+
 - Emoji and summary
 - Show blocked item
 - Explain WHY
@@ -108,18 +115,21 @@ Add to tables in CLAUDE.md
 ## Common Patterns
 
 **Bash Handler**:
+
 - Use get_bash_command()
 - Check for None
 - re.IGNORECASE matching
 - Handle chains (&&, ;, |)
 
 **File Handler**:
+
 - Use get_file_path() and get_file_content()
 - Check extensions
 - Skip excluded dirs
 - Handle Write and Edit
 
 **Multi-Condition**:
+
 - Combine checks
 - Use any()/all()
 - Test independently
@@ -127,6 +137,7 @@ Add to tables in CLAUDE.md
 ## Testing
 
 **Requirements**:
+
 - TDD mandatory
 - 95%+ coverage minimum
 - All branches tested
@@ -134,12 +145,14 @@ Add to tables in CLAUDE.md
 - Error handling verified
 
 **Structure**:
+
 - Core functionality class
 - Edge cases class
 - Clear test names
 - One assertion per test
 
 **Commands**:
+
 - Run: python3 run_tests.py
 - Coverage: python3 analyze_coverage.py
 - Specific: python3 -m unittest tests.test_file
@@ -147,18 +160,21 @@ Add to tables in CLAUDE.md
 ## Troubleshooting
 
 **Not Firing**:
+
 - Check registration
 - Verify matches() returns True
 - Check priority ordering
 - Debug with stderr prints
 
 **False Positives**:
+
 - Pattern too broad
 - Missing word boundaries
 - Need negative tests
 - Refine logic
 
 **False Negatives**:
+
 - Pattern too specific
 - Case sensitivity
 - Missing chain handling
@@ -169,11 +185,13 @@ Add to tables in CLAUDE.md
 10 PreToolUse handlers:
 
 Priority 10-20 (Safety):
+
 - DestructiveGitHandler - blocks git reset --hard
 - WorktreeFileCopyHandler - blocks worktree file copy
 - GitStashHandler - discourages stash
 
 Priority 25-45 (Workflow):
+
 - OfficialPlanCommandHandler - enforce /plan command
 - EslintDisableHandler - block suppressions
 - MarkdownOrganizationHandler - enforce locations
@@ -181,6 +199,7 @@ Priority 25-45 (Workflow):
 - ClaudeReadmeHandler - validate content
 
 Priority 50-60 (Tools):
+
 - NpmCommandHandler - enforce llm: prefix
 - WebSearchYearHandler - block outdated years
 
@@ -189,6 +208,7 @@ Priority 50-60 (Tools):
 Location: .claude/hooks/controller/
 
 Structure:
+
 - front_controller.py - Core engine
 - pre_tool_use.py - Entry point
 - handlers/bash_handlers.py - Bash handlers

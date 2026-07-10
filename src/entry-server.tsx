@@ -14,19 +14,23 @@ const SITE_NAME = 'LTS Commerce';
 const PAGE_META: Record<string, { title: string; description: string }> = {
   '/': {
     title: `${SITE_NAME} - Bespoke PHP Development & Infrastructure`,
-    description: 'Expert PHP development, infrastructure automation, and AI-enhanced workflows. 18+ years of production experience.',
+    description:
+      'Expert PHP development, infrastructure automation, and AI-enhanced workflows. 18+ years of production experience.',
   },
   '/about': {
     title: `About - ${SITE_NAME}`,
-    description: 'Joseph Edmonds - Senior PHP engineer with 18+ years experience in complex backend systems, infrastructure automation, and AI-driven development.',
+    description:
+      'Joseph Edmonds - Senior PHP engineer with 18+ years experience in complex backend systems, infrastructure automation, and AI-driven development.',
   },
   '/contact': {
     title: `Contact - ${SITE_NAME}`,
-    description: 'Get in touch for PHP development, infrastructure automation, or technical consultancy.',
+    description:
+      'Get in touch for PHP development, infrastructure automation, or technical consultancy.',
   },
   '/articles': {
     title: `Technical Articles - PHP, Infrastructure & AI | ${SITE_NAME}`,
-    description: 'In-depth technical articles on PHP development, infrastructure automation, database optimisation, and AI integration.',
+    description:
+      'In-depth technical articles on PHP development, infrastructure automation, database optimisation, and AI integration.',
   },
   '/errors/404': {
     title: `Page Not Found | ${SITE_NAME}`,

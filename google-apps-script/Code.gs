@@ -21,18 +21,18 @@
  * This prevents unauthorized domains from using your contact form.
  */
 const ALLOWED_ORIGINS = [
-  'https://ltscommerce.dev',             // Production site
-  'http://localhost:5173',               // Vite dev server (default port)
-  'http://localhost:5174',               // Vite dev server (alternate port)
-  'http://localhost:4173',               // Vite preview server
-  'http://127.0.0.1:5173',               // Localhost IP variant
-  'http://127.0.0.1:5174',               // Localhost IP variant
+  'https://ltscommerce.dev', // Production site
+  'http://localhost:5173', // Vite dev server (default port)
+  'http://localhost:5174', // Vite dev server (alternate port)
+  'http://localhost:4173', // Vite preview server
+  'http://127.0.0.1:5173', // Localhost IP variant
+  'http://127.0.0.1:5174', // Localhost IP variant
 ];
 
 /**
  * Configuration: Feature Flags
  */
-const TURNSTILE_ENABLED = false;  // Toggle Turnstile verification on/off
+const TURNSTILE_ENABLED = false; // Toggle Turnstile verification on/off
 
 /**
  * Configuration: Cloudflare Turnstile Secret Key
@@ -49,7 +49,7 @@ const TURNSTILE_SECRET_KEY = 'YOUR_TURNSTILE_SECRET_KEY_HERE';
  *
  * Prevents spam by limiting submissions per origin/hour
  */
-const RATE_LIMIT_MAX_SUBMISSIONS = 10;  // Max submissions per hour
+const RATE_LIMIT_MAX_SUBMISSIONS = 10; // Max submissions per hour
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour in milliseconds
 
 /**
@@ -102,13 +102,13 @@ function verifyTurnstile(token) {
     const url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
     const payload = {
       secret: TURNSTILE_SECRET_KEY,
-      response: token
+      response: token,
     };
 
     const options = {
       method: 'post',
       payload: payload,
-      muteHttpExceptions: true
+      muteHttpExceptions: true,
     };
 
     const response = UrlFetchApp.fetch(url, options);
@@ -119,16 +119,15 @@ function verifyTurnstile(token) {
     if (!result.success) {
       return {
         success: false,
-        error: 'Turnstile verification failed: ' + (result['error-codes'] || []).join(', ')
+        error: 'Turnstile verification failed: ' + (result['error-codes'] || []).join(', '),
       };
     }
 
     return {
       success: true,
       hostname: result.hostname,
-      challengeTs: result.challenge_ts
+      challengeTs: result.challenge_ts,
     };
-
   } catch (error) {
     Logger.log('Turnstile verification error: ' + error.toString());
 
@@ -138,13 +137,13 @@ function verifyTurnstile(token) {
       return {
         success: true,
         skipped: true,
-        warning: 'Turnstile verification skipped - UrlFetchApp permission required'
+        warning: 'Turnstile verification skipped - UrlFetchApp permission required',
       };
     }
 
     return {
       success: false,
-      error: 'Turnstile verification failed: ' + error.toString()
+      error: 'Turnstile verification failed: ' + error.toString(),
     };
   }
 }
@@ -165,7 +164,7 @@ function checkRateLimit(origin) {
 
     // Clean up old submissions outside the time window
     const windowStart = now - RATE_LIMIT_WINDOW_MS;
-    data.submissions = (data.submissions || []).filter(function(timestamp) {
+    data.submissions = (data.submissions || []).filter(function (timestamp) {
       return timestamp > windowStart;
     });
 
@@ -180,7 +179,7 @@ function checkRateLimit(origin) {
         allowed: false,
         remaining: 0,
         resetInMinutes: minutesUntilReset,
-        error: 'Too many submissions. Please try again in ' + minutesUntilReset + ' minutes.'
+        error: 'Too many submissions. Please try again in ' + minutesUntilReset + ' minutes.',
       };
     }
 
@@ -191,9 +190,8 @@ function checkRateLimit(origin) {
     return {
       allowed: true,
       remaining: RATE_LIMIT_MAX_SUBMISSIONS - data.submissions.length,
-      submissions: data.submissions.length
+      submissions: data.submissions.length,
     };
-
   } catch (error) {
     Logger.log('Rate limit check error: ' + error.toString());
     // On error, allow request (fail open to avoid blocking legitimate users)
@@ -243,10 +241,13 @@ function doPost(e) {
     // CORS Origin Check
     if (!isOriginAllowed(origin)) {
       Logger.log('Blocked request from unauthorized origin: ' + origin);
-      return createCorsResponse({
-        success: false,
-        error: 'Access denied. Unauthorized origin.'
-      }, origin);
+      return createCorsResponse(
+        {
+          success: false,
+          error: 'Access denied. Unauthorized origin.',
+        },
+        origin
+      );
     }
 
     Logger.log('Allowed request from origin: ' + origin);
@@ -254,10 +255,13 @@ function doPost(e) {
     // Rate Limiting Check
     const rateLimit = checkRateLimit(origin);
     if (!rateLimit.allowed) {
-      return createCorsResponse({
-        success: false,
-        error: rateLimit.error
-      }, origin);
+      return createCorsResponse(
+        {
+          success: false,
+          error: rateLimit.error,
+        },
+        origin
+      );
     }
     Logger.log('Rate limit check passed. Remaining: ' + rateLimit.remaining);
 
@@ -267,13 +271,18 @@ function doPost(e) {
       const turnstileResult = verifyTurnstile(turnstileToken);
       if (!turnstileResult.success && !turnstileResult.skipped) {
         Logger.log('Turnstile verification failed: ' + turnstileResult.error);
-        return createCorsResponse({
-          success: false,
-          error: turnstileResult.error || 'Verification failed. Please try again.'
-        }, origin);
+        return createCorsResponse(
+          {
+            success: false,
+            error: turnstileResult.error || 'Verification failed. Please try again.',
+          },
+          origin
+        );
       }
     } else {
-      Logger.log('No Turnstile token provided - allowing submission (honeypot + rate limit active)');
+      Logger.log(
+        'No Turnstile token provided - allowing submission (honeypot + rate limit active)'
+      );
     }
 
     // Validate and send contact form
@@ -281,19 +290,24 @@ function doPost(e) {
 
     const validation = validateFormData(data);
     if (!validation.valid) {
-      return createCorsResponse({
-        success: false,
-        error: validation.error
-      }, origin);
+      return createCorsResponse(
+        {
+          success: false,
+          error: validation.error,
+        },
+        origin
+      );
     }
 
     sendContactEmail(data);
 
-    return createCorsResponse({
-      success: true,
-      message: 'Your message has been sent successfully. I\'ll get back to you soon!'
-    }, origin);
-
+    return createCorsResponse(
+      {
+        success: true,
+        message: "Your message has been sent successfully. I'll get back to you soon!",
+      },
+      origin
+    );
   } catch (error) {
     Logger.log('Error processing form submission: ' + error.toString());
     Logger.log('Error stack: ' + error.stack);
@@ -308,10 +322,14 @@ function doPost(e) {
       // Ignore parse errors in error handler
     }
 
-    return createCorsResponse({
-      success: false,
-      error: 'An error occurred processing your request. Please try again or contact me directly at hello@ltscommerce.dev'
-    }, origin);
+    return createCorsResponse(
+      {
+        success: false,
+        error:
+          'An error occurred processing your request. Please try again or contact me directly at hello@ltscommerce.dev',
+      },
+      origin
+    );
   }
 }
 
@@ -324,7 +342,7 @@ function validateFormData(data) {
   if (!data.name || !data.email || !data.subject || !data.message) {
     return {
       valid: false,
-      error: 'All fields are required. Please fill in name, email, subject, and message.'
+      error: 'All fields are required. Please fill in name, email, subject, and message.',
     };
   }
 
@@ -374,7 +392,7 @@ function sendContactEmail(data) {
   const submissionDate = new Date().toLocaleString('en-GB', {
     timeZone: 'Europe/London',
     dateStyle: 'full',
-    timeStyle: 'long'
+    timeStyle: 'long',
   });
 
   // Plain text email body
@@ -526,7 +544,7 @@ This email was sent from the contact form at https://ltscommerce.dev
     body: body,
     htmlBody: htmlBody,
     replyTo: data.email,
-    name: 'LTS Commerce Contact Form'
+    name: 'LTS Commerce Contact Form',
   });
 
   Logger.log('Email sent successfully to ' + recipient);
@@ -572,9 +590,9 @@ function testFormSubmission() {
         email: 'test@example.com',
         subject: 'Test Form Submission',
         message: 'This is a test message from the Apps Script test function.',
-        origin: 'http://localhost:5173'
-      })
-    }
+        origin: 'http://localhost:5173',
+      }),
+    },
   };
 
   try {
@@ -597,7 +615,7 @@ function testValidation() {
     name: 'John Smith',
     email: 'john@example.com',
     subject: 'Test Subject',
-    message: 'This is a valid test message with sufficient length.'
+    message: 'This is a valid test message with sufficient length.',
   };
   Logger.log('Valid data test: ' + JSON.stringify(validateFormData(validData)));
 

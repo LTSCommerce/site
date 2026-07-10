@@ -68,7 +68,7 @@ export default {
 
   create(context) {
     const options = context.options[0] || {};
-    const patterns = (options.patterns || []).map((pattern) => ({
+    const patterns = (options.patterns || []).map(pattern => ({
       ...pattern,
       match: new RegExp(pattern.match),
     }));

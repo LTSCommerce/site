@@ -17,12 +17,12 @@ function processOrderUnsafe(data: any): { status: string; message?: string } {
   // Type assertion without validation - fingers crossed programming!
   const order = data as OrderRequest;
   const user = getUserById(order.userId) as User;
-  
+
   // No runtime validation - assumes TypeScript types match reality
   if (user.permissions.includes('order_process')) {
     return { status: 'success' };
   }
-  
+
   return { status: 'error', message: 'Permission denied' };
 }
 
@@ -60,39 +60,43 @@ function processOrderSafe(data: unknown): { status: 'success' | 'error'; message
   if (!isValidOrderRequest(data)) {
     throw new Error('Invalid order request: missing or malformed required fields');
   }
-  
+
   // TypeScript now knows 'data' is OrderRequest - no casting needed!
   const order = data;
-  
+
   // Guard clause: Validate user exists
   const userData = getUserById(order.userId);
   if (!userData) {
     throw new Error(`User ${order.userId} not found`);
   }
-  
+
   // Guard clause: Validate user data structure
   if (!isValidUser(userData)) {
     throw new Error(`User ${order.userId} has invalid data structure`);
   }
-  
+
   // TypeScript now knows userData is User
   const user = userData;
-  
+
   // Guard clause: Validate permissions
   if (!user.permissions.includes('order_process')) {
     throw new Error(`User ${user.id} (${user.name}) lacks order_process permission`);
   }
-  
+
   // All validations passed - safe to process
   return {
-    status: 'success'
+    status: 'success',
   };
 }
 
 // Advanced: Using discriminated unions for better type safety
-type ProcessResult = 
+type ProcessResult =
   | { success: true; orderId: string; processedAt: Date }
-  | { success: false; error: string; errorCode: 'INVALID_ORDER' | 'USER_NOT_FOUND' | 'PERMISSION_DENIED' | 'INSUFFICIENT_STOCK' };
+  | {
+      success: false;
+      error: string;
+      errorCode: 'INVALID_ORDER' | 'USER_NOT_FOUND' | 'PERMISSION_DENIED' | 'INSUFFICIENT_STOCK';
+    };
 
 function processOrderWithResult(data: unknown): ProcessResult {
   // Fail fast with specific error types
@@ -100,40 +104,40 @@ function processOrderWithResult(data: unknown): ProcessResult {
     return {
       success: false,
       error: 'Order request is missing required fields or has invalid types',
-      errorCode: 'INVALID_ORDER'
+      errorCode: 'INVALID_ORDER',
     };
   }
-  
+
   const userData = getUserById(data.userId);
   if (!userData) {
     return {
       success: false,
       error: `User ${data.userId} not found`,
-      errorCode: 'USER_NOT_FOUND'
+      errorCode: 'USER_NOT_FOUND',
     };
   }
-  
+
   if (!isValidUser(userData)) {
     return {
       success: false,
       error: `User ${data.userId} has corrupted data`,
-      errorCode: 'USER_NOT_FOUND'
+      errorCode: 'USER_NOT_FOUND',
     };
   }
-  
+
   if (!userData.permissions.includes('order_process')) {
     return {
       success: false,
       error: `User ${userData.name} lacks order processing permission`,
-      errorCode: 'PERMISSION_DENIED'
+      errorCode: 'PERMISSION_DENIED',
     };
   }
-  
+
   // Success case - TypeScript enforces we return the correct shape
   return {
     success: true,
     orderId: data.id,
-    processedAt: new Date()
+    processedAt: new Date(),
   };
 }
 
@@ -153,23 +157,23 @@ function assertValidUser(data: unknown): asserts data is User {
 // Using assertion functions for fail-fast validation
 function processOrderWithAssertions(data: unknown): { status: 'success'; orderId: string } {
   // These throw if validation fails - fail fast!
-  assertValidOrderRequest(data);  // TypeScript knows data is OrderRequest after this
-  
+  assertValidOrderRequest(data); // TypeScript knows data is OrderRequest after this
+
   const userData = getUserById(data.userId);
   if (!userData) {
     throw new Error(`User ${data.userId} not found`);
   }
-  
-  assertValidUser(userData);  // TypeScript knows userData is User after this
-  
+
+  assertValidUser(userData); // TypeScript knows userData is User after this
+
   if (!userData.permissions.includes('order_process')) {
     throw new Error(`User ${userData.name} lacks permission`);
   }
-  
+
   // All assertions passed - guaranteed safe
   return {
     status: 'success',
-    orderId: data.id
+    orderId: data.id,
   };
 }
 

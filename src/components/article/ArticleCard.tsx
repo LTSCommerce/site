@@ -11,7 +11,7 @@ import { getCategoryById } from '@/data/categories';
 import { getArticleRoute } from '@/routes';
 import type { ArticlePreview } from '@/types/article';
 
-interface ArticleCardProps {
+export interface ArticleCardProps {
   article: ArticlePreview;
   className?: string;
 }
@@ -41,9 +41,7 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
         {article.title}
       </h3>
 
-      <p className="text-sm leading-relaxed text-gray-500 mb-4 flex-grow">
-        {article.description}
-      </p>
+      <p className="text-sm leading-relaxed text-gray-500 mb-4 flex-grow">{article.description}</p>
 
       <div className="flex gap-3 text-xs text-gray-400 mt-auto">
         <span>{formatDate(article.date)}</span>

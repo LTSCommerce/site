@@ -73,6 +73,7 @@ export default defineConfig({
 ```
 
 **What this does:**
+
 - Single `vendor` chunk for React core (good start)
 - Sourcemaps enabled (good for debugging, but large in production)
 - Default esbuild minification (fast but not as aggressive as terser)
@@ -84,28 +85,30 @@ export default defineConfig({
 
 The EC site config includes several advanced features:
 
-| Feature | EC Site | LTS Current | Gap |
-|---------|---------|-------------|-----|
-| `manualChunks` | Function-based, 9 chunk categories | Static object, 1 chunk | Large |
-| Minifier | Terser with 2-pass, drop_console | Default esbuild | Medium |
-| Bundle visualiser | rollup-plugin-visualizer | None | Medium |
-| `optimizeDeps.exclude` | Lazy-loaded deps excluded | None configured | Small |
-| `chunkSizeWarningLimit` | 1000KB | Default (500KB) | Small |
-| `reportCompressedSize` | false (faster builds) | Default (true) | Small |
-| Chunk naming | `assets/[name]-[hash].js` | Default | Small |
-| Custom plugins | dev-server-lock, preload-logo | None | N/A (not needed) |
-| Sourcemaps | Not configured (default off for prod) | Enabled | Review needed |
+| Feature                 | EC Site                               | LTS Current            | Gap              |
+| ----------------------- | ------------------------------------- | ---------------------- | ---------------- |
+| `manualChunks`          | Function-based, 9 chunk categories    | Static object, 1 chunk | Large            |
+| Minifier                | Terser with 2-pass, drop_console      | Default esbuild        | Medium           |
+| Bundle visualiser       | rollup-plugin-visualizer              | None                   | Medium           |
+| `optimizeDeps.exclude`  | Lazy-loaded deps excluded             | None configured        | Small            |
+| `chunkSizeWarningLimit` | 1000KB                                | Default (500KB)        | Small            |
+| `reportCompressedSize`  | false (faster builds)                 | Default (true)         | Small            |
+| Chunk naming            | `assets/[name]-[hash].js`             | Default                | Small            |
+| Custom plugins          | dev-server-lock, preload-logo         | None                   | N/A (not needed) |
+| Sourcemaps              | Not configured (default off for prod) | Enabled                | Review needed    |
 
 ### Current LTS Dependencies (Relevant to Chunking)
 
 From `package.json`:
 
 **Runtime dependencies:**
+
 - `react` ^18.3.1 + `react-dom` ^18.3.1 -- React core (~140KB)
 - `react-router-dom` ^7.10.1 -- Routing (~40KB)
 - `highlight.js` ^11.11.1 -- Syntax highlighting (~large, language-dependent)
 
 **Dev dependencies used at runtime (via Flowbite):**
+
 - `flowbite` ^4.0.1 + `flowbite-react` ^0.12.16 -- UI component library
 
 ### Custom Plugin Evaluation
@@ -172,14 +175,14 @@ From `package.json`:
 
 Build time: 3.91s
 
-| File | Size | Gzip | Notes |
-|------|------|------|-------|
-| `index.html` | 0.54 kB | 0.33 kB | |
-| `assets/index-K8QfAdPi.css` | 208.05 kB | 31.47 kB | All CSS |
-| `assets/vendor-C8w-UNLI.js` | 141.78 kB | 45.52 kB | react + react-dom only |
-| `assets/index-CglJae2I.js` | 1,034.45 kB | 274.74 kB | **Everything else — massively oversized** |
-| Source maps | ~2,308 kB | — | Committed to dist |
-| **Total JS** | **1,176.23 kB** | **320.26 kB** | |
+| File                        | Size            | Gzip          | Notes                                     |
+| --------------------------- | --------------- | ------------- | ----------------------------------------- |
+| `index.html`                | 0.54 kB         | 0.33 kB       |                                           |
+| `assets/index-K8QfAdPi.css` | 208.05 kB       | 31.47 kB      | All CSS                                   |
+| `assets/vendor-C8w-UNLI.js` | 141.78 kB       | 45.52 kB      | react + react-dom only                    |
+| `assets/index-CglJae2I.js`  | 1,034.45 kB     | 274.74 kB     | **Everything else — massively oversized** |
+| Source maps                 | ~2,308 kB       | —             | Committed to dist                         |
+| **Total JS**                | **1,176.23 kB** | **320.26 kB** |                                           |
 
 Chunk size warning triggered on `index` chunk (>500 kB).
 
@@ -187,19 +190,19 @@ Chunk size warning triggered on `index` chunk (>500 kB).
 
 Build time: 14.38s (terser 2-pass adds ~10s — acceptable for a portfolio site with infrequent builds)
 
-| File | Size | Notes |
-|------|------|-------|
-| `index.html` | 0.95 kB | Slightly larger (visualizer injects stats) |
-| `assets/highlight-js-BEHUn5zE.css` | 1.32 kB | highlight.js theme CSS split out |
-| `assets/index-CIV3VyUi.css` | 206.74 kB | Main CSS |
-| `assets/vendor-BNCjyEW-.js` | 27.20 kB | Remaining node_modules (tailwind utils, etc.) |
-| `assets/ui-libs-DhjsNCMU.js` | 29.85 kB | flowbite + flowbite-react |
-| `assets/react-router-C7FRow3w.js` | 33.16 kB | react-router-dom + @remix-run |
-| `assets/highlight-js-D41LHP6T.js` | 69.91 kB | highlight.js isolated |
-| `assets/react-core-CQkM7gDD.js` | 139.82 kB | react + react-dom + scheduler |
-| `assets/index-Beh2pL-g.js` | 888.11 kB | Application code + remaining deps |
-| Source maps | 0 kB | Removed (`sourcemap: false`) |
-| **Total JS** | **1,188.05 kB** | |
+| File                               | Size            | Notes                                         |
+| ---------------------------------- | --------------- | --------------------------------------------- |
+| `index.html`                       | 0.95 kB         | Slightly larger (visualizer injects stats)    |
+| `assets/highlight-js-BEHUn5zE.css` | 1.32 kB         | highlight.js theme CSS split out              |
+| `assets/index-CIV3VyUi.css`        | 206.74 kB       | Main CSS                                      |
+| `assets/vendor-BNCjyEW-.js`        | 27.20 kB        | Remaining node_modules (tailwind utils, etc.) |
+| `assets/ui-libs-DhjsNCMU.js`       | 29.85 kB        | flowbite + flowbite-react                     |
+| `assets/react-router-C7FRow3w.js`  | 33.16 kB        | react-router-dom + @remix-run                 |
+| `assets/highlight-js-D41LHP6T.js`  | 69.91 kB        | highlight.js isolated                         |
+| `assets/react-core-CQkM7gDD.js`    | 139.82 kB       | react + react-dom + scheduler                 |
+| `assets/index-Beh2pL-g.js`         | 888.11 kB       | Application code + remaining deps             |
+| Source maps                        | 0 kB            | Removed (`sourcemap: false`)                  |
+| **Total JS**                       | **1,188.05 kB** |                                               |
 
 No chunk size warnings (limit raised to 1000 kB; largest chunk is 888 kB).
 
@@ -208,6 +211,7 @@ No chunk size warnings (limit raised to 1000 kB; largest chunk is 888 kB).
 The `index` JS chunk is still large (888 kB vs 1,034 kB baseline) because the application imports `highlight.js` eagerly rather than via dynamic `import()`. The chunk splitting correctly isolates highlight.js into its own file (`69.91 kB`) but the app entry still pulls it in synchronously. **True size reduction for the index chunk requires lazy loading highlight.js** — this is a future application-level change, not a build config change.
 
 Wins achieved:
+
 - **Source maps eliminated**: ~2,308 kB removed from dist
 - **Clean chunk separation**: react-core, react-router, highlight-js, ui-libs, vendor all isolated for optimal browser caching
 - **No chunk warnings**: Limit tuned to suppress false positives on known-large vendor chunks
@@ -228,6 +232,7 @@ Wins achieved:
 **Context**: The current config uses a static object for `manualChunks`. The EC site uses a function.
 
 **Options Considered**:
+
 1. **Static object** -- Simpler, explicit list of packages per chunk
 2. **Function-based** -- More flexible, can use `id.includes()` patterns to catch sub-dependencies
 
@@ -242,6 +247,7 @@ Wins achieved:
 **Context**: Vite defaults to esbuild for minification (fast). The EC site uses terser (slower but smaller output).
 
 **Options Considered**:
+
 1. **esbuild** (current) -- ~10x faster minification, good-enough compression
 2. **terser** -- Slower but supports `drop_console`, multi-pass, and produces 5-15% smaller bundles
 
@@ -256,6 +262,7 @@ Wins achieved:
 **Context**: The EC site has two custom plugins (dev-server-lock, preload-logo). Should LTS adopt them?
 
 **Options Considered**:
+
 1. **Adopt both plugins** -- Full feature parity with EC site
 2. **Adopt preload-logo only** -- LCP optimisation is universally beneficial
 3. **Adopt neither** -- Both solve EC-specific problems
@@ -263,6 +270,7 @@ Wins achieved:
 **Decision**: Adopt neither
 
 **Rationale**:
+
 - `dev-server-lock` solves Docker multi-developer conflicts -- LTS is single-developer without Docker
 - `preload-logo` requires SSR/SSG to inject into HTML at build time -- LTS is a client-side SPA where React controls the DOM
 - Both can be revisited if LTS adds SSR or containerised development
@@ -274,6 +282,7 @@ Wins achieved:
 **Context**: Current config has `sourcemap: true`. This increases build output size significantly.
 
 **Options Considered**:
+
 1. **`true`** (current) -- Full sourcemaps, referenced in bundles, visible in browser DevTools
 2. **`'hidden'`** -- Sourcemaps generated but not referenced (for error tracking services)
 3. **`false`** -- No sourcemaps (smallest build, no debugging aid)
@@ -298,14 +307,14 @@ Note on bundle size criterion: The JS chunk total is slightly larger (1,188 kB v
 
 ## Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Terser slows build significantly | Low | Medium | Build speed is not critical for infrequent deployments; can revert to esbuild if > 30s |
-| manualChunks breaks lazy loading | High | Low | Test lazy-loaded routes after changes; function includes fallback vendor chunk |
-| Over-splitting creates too many HTTP requests | Medium | Low | Monitor chunk count; merge small chunks if > 10 separate files |
-| Removing sourcemaps hinders debugging | Low | Low | Keep `sourcemap: 'hidden'` as compromise; can re-enable for debugging sessions |
-| rollup-plugin-visualizer adds dev dependency bloat | Low | Low | It's a devDependency only, ~2MB, no production impact |
-| optimizeDeps.exclude causes dev server issues | Medium | Low | Test dev server thoroughly; easy to revert exclusions |
+| Risk                                               | Impact | Probability | Mitigation                                                                             |
+| -------------------------------------------------- | ------ | ----------- | -------------------------------------------------------------------------------------- |
+| Terser slows build significantly                   | Low    | Medium      | Build speed is not critical for infrequent deployments; can revert to esbuild if > 30s |
+| manualChunks breaks lazy loading                   | High   | Low         | Test lazy-loaded routes after changes; function includes fallback vendor chunk         |
+| Over-splitting creates too many HTTP requests      | Medium | Low         | Monitor chunk count; merge small chunks if > 10 separate files                         |
+| Removing sourcemaps hinders debugging              | Low    | Low         | Keep `sourcemap: 'hidden'` as compromise; can re-enable for debugging sessions         |
+| rollup-plugin-visualizer adds dev dependency bloat | Low    | Low         | It's a devDependency only, ~2MB, no production impact                                  |
+| optimizeDeps.exclude causes dev server issues      | Medium | Low         | Test dev server thoroughly; easy to revert exclusions                                  |
 
 ## Timeline
 
@@ -334,6 +343,7 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 All phases executed in worktree `worktree-plan-005`. Changes made:
 
 **`vite.config.ts`**:
+
 - Added `rollup-plugin-visualizer` import and plugin configuration
 - Replaced static `manualChunks` object with function-based chunking (react-core, react-router, highlight-js, ui-libs, vendor)
 - Set `sourcemap: false` (no error tracking service)
@@ -343,6 +353,7 @@ All phases executed in worktree `worktree-plan-005`. Changes made:
 - Added `chunkFileNames: 'assets/[name]-[hash].js'`
 
 **`package.json`**:
+
 - Added `terser` devDependency (^5.46.0)
 - Added `rollup-plugin-visualizer` devDependency (^6.0.5)
 - Added `build:analyze` script

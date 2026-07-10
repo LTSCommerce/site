@@ -30,7 +30,7 @@ export default {
 
   create(context) {
     // Route pattern: starts with / and contains path-like structure
-    const routePattern = /^\/[a-z0-9\-\/]*$/i;
+    const routePattern = /^\/[a-z0-9\-/]*$/i;
 
     return {
       JSXAttribute(node) {

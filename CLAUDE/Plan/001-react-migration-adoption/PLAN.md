@@ -19,6 +19,7 @@
 ✅ **Phase 5: Convert Core Templates to React** - All pages converted, filtering & search implemented
 
 ### Phase 1 Summary:
+
 - Created react-migration branch
 - Copied essential Claude Code documentation (PlanWorkflow, Worktree)
 - Created Plan 001 and Plan 002 (concurrent skeleton development)
@@ -26,6 +27,7 @@
 - All legacy content preserved for migration
 
 ### Phase 2 Summary:
+
 - Applied react-site-skeleton foundation (from Plan 002)
 - Installed React 18, TypeScript 5.6, Vite 6
 - Configured TypeScript strict mode
@@ -37,6 +39,7 @@
 - All QA checks passing (type-check, build, lint)
 
 ### Phase 3 Summary:
+
 - Fixed ESLint configuration (regex pattern as string, ignore directories)
 - Verified type-safe routing system from skeleton
 - Routes configured: Home (/), About (/about), Articles (/articles), Contact (/contact)
@@ -47,6 +50,7 @@
 - All QA checks passing (TypeScript: 0 errors, ESLint: 0 violations, Build: successful)
 
 ### Phase 4 Summary:
+
 - Created missing directories: src/articles/, src/assets/, src/components/article/
 - Built Footer component with type-safe social links and navigation
 - Created Article type system: Article, ArticlePreview interfaces with type guards
@@ -59,6 +63,7 @@
 - All QA checks passing (TypeScript: 0 errors, ESLint: 0 violations, Build: successful)
 
 ### Phase 5 Summary - ✅ COMPLETE:
+
 - ✅ Base Layout: Page, Navigation, Footer all complete with SEO meta
 - ✅ Home Page: Hero, expertise cards, latest articles, author section complete
 - ✅ About Page: Full content migrated from legacy EJS
@@ -76,6 +81,7 @@
 Migrate the LTS Commerce static site from EJS/Vite architecture to React/TypeScript, adopting the PlanWorkflow system and development practices that enable efficient AI-assisted development.
 
 This is not just a technology migration—it's adopting a structured approach to development:
+
 - **PlanWorkflow system** for trackable, multi-phase development
 - **Worktree workflows** for parallel development when needed
 - **Type-safe React/TypeScript** for better code quality and AI assistance
@@ -102,6 +108,7 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 ### Current State (LTS Commerce Site)
 
 **Technology Stack:**
+
 - Build: Vite 5.x with custom EJS preprocessing
 - Templating: EJS (server-side templates)
 - Frontend: Vanilla JavaScript, CSS3
@@ -109,6 +116,7 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 - Deployment: GitHub Actions → GitHub Pages
 
 **Limitations:**
+
 - No type safety (vanilla JS)
 - Template duplication across articles
 - Limited component reusability
@@ -117,6 +125,7 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 ### Target State
 
 **Technology Stack:**
+
 - Build: Vite with React/TypeScript
 - Frontend: React 18 + TypeScript 5
 - Routing: Type-safe route system
@@ -125,6 +134,7 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 - Testing: Playwright smoke tests
 
 **Development Infrastructure:**
+
 - **PlanWorkflow system** for structured development
 - **Worktree support** for parallel development
 - **Type-safe architecture** throughout
@@ -132,12 +142,14 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 ### Skeleton Approach (Plan 002)
 
 **Strategy**: Use `react-site-skeleton` repository as foundation
+
 - **Plan 002** builds the generic skeleton concurrently
 - Skeleton provides: Type-safe routing, ESLint rules, minimal components, Claude infrastructure
 - **This plan** applies skeleton and builds LTS-specific components/content
 - **Archive legacy**: Current build system moved to ARCHIVE/ for reference
 
 **Benefits**:
+
 - Proven patterns from skeleton
 - Avoid copying ec-site design
 - LTS site gets bespoke components
@@ -336,15 +348,18 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 ## Technical Decisions
 
 ### Decision 1: React vs Other Frameworks
+
 **Context**: Which modern framework to adopt?
 
 **Options Considered**:
+
 1. React - Industry standard, extensive ecosystem
 2. Vue - Simpler learning curve
 3. Svelte - Smaller bundles
 4. Stay vanilla - No framework overhead
 
 **Decision**: React + TypeScript
+
 - Industry standard
 - Strong TypeScript integration
 - Rich ecosystem
@@ -353,9 +368,11 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 **Date**: 2025-12-11
 
 ### Decision 2: Article Content Format
+
 **Context**: How to store and render article content?
 
 **Options Considered**:
+
 1. **MDX** - Markdown with React components
 2. **HTML rendering** - Keep EJS, use dangerouslySetInnerHTML
 3. **Pure React** - Full type safety, verbose for content
@@ -365,9 +382,11 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 **Date**: 2025-12-11 (pending)
 
 ### Decision 3: Styling Approach
+
 **Context**: CSS Modules, Tailwind, or CSS-in-JS?
 
 **Options Considered**:
+
 1. **Tailwind CSS** - Utility-first, rapid development
 2. **CSS Modules** - Scoped styles, standard CSS
 3. **Styled Components** - CSS-in-JS, full JS power
@@ -389,13 +408,13 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 
 ## Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Article rendering breaks | High | Medium | Test each article, have HTML fallback |
-| Bundle size too large | Medium | Medium | Code splitting, monitor sizes |
-| TypeScript complexity | Medium | Low | Gradual adoption, allow 'any' in transition |
-| Styling inconsistencies | Medium | Medium | Visual regression testing |
-| SEO regression | High | Low | Preserve meta tags, test with Lighthouse |
+| Risk                     | Impact | Probability | Mitigation                                  |
+| ------------------------ | ------ | ----------- | ------------------------------------------- |
+| Article rendering breaks | High   | Medium      | Test each article, have HTML fallback       |
+| Bundle size too large    | Medium | Medium      | Code splitting, monitor sizes               |
+| TypeScript complexity    | Medium | Low         | Gradual adoption, allow 'any' in transition |
+| Styling inconsistencies  | Medium | Medium      | Visual regression testing                   |
+| SEO regression           | High   | Low         | Preserve meta tags, test with Lighthouse    |
 
 ## Timeline
 
@@ -414,6 +433,7 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 ## Notes & Updates
 
 ### 2025-12-11 - Plan Creation (Take 2)
+
 - Started fresh after realizing we copied too much from ec-site (all 70+ plans)
 - Taking surgical approach: copy only essential documentation
 - Created empty Plan/ directory structure
@@ -422,12 +442,15 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 - Phase 1 in progress: Foundation & Documentation
 
 ### 2025-12-11 - Infrastructure Approach
+
 **What we copied:**
+
 - Essential documentation only (PlanWorkflow, Worktree, Hooks docs)
 - Empty Plan/ directory structure
 - Plan numbering instructions
 
 **What we did NOT copy:**
+
 - All 70+ plans from ec-site (not relevant)
 - Hooks implementation (can add incrementally if needed)
 - All agents/skills (can add as needed)
@@ -436,9 +459,11 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 **Philosophy**: Start minimal, add infrastructure as needed rather than copying everything upfront.
 
 ### 2026-01-22 - Phase 5 Audit & Status Update
+
 **Context**: Session became unworkable, used Explore agent to audit status
 
 **Audit Findings**:
+
 - Phase 5 is 95% complete - far more progress than plan indicated
 - All 6 major page conversions implemented (Home, About, Contact, ArticleList, ArticleDetail, Layout)
 - 25 sample articles with full metadata created in `src/data/articles.ts`
@@ -446,12 +471,14 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 - TypeScript: 0 errors, ESLint: 0 violations, Build: successful
 
 **Gaps Identified**:
+
 1. ArticleList missing category filter buttons (legacy has this)
 2. ArticleList missing search functionality (legacy has this)
 3. ArticleDetail has placeholder for content (Phase 6 work)
 4. No syntax highlighting integration yet (Phase 6 work)
 
 **Plan Updated**:
+
 - Marked Phase 5 tasks as complete/in-progress based on reality
 - Updated status summary to reflect 95% completion
 - Identified clear path forward: finish filters/search, then Phase 6
@@ -459,9 +486,11 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 **Decision**: Focus on completing Phase 5 filtering/search before moving to Phase 6
 
 ### 2026-01-22 - Phase 5 Complete
+
 **Implementation**: Added filtering and search to ArticleList page
 
 **Features Added**:
+
 - Category filter buttons (All Categories + 5 category buttons)
 - Active state styling for selected filter
 - Search input field (filters by title/description, case-insensitive)
@@ -471,6 +500,7 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 - useMemo optimization for filtered article computation
 
 **Testing**:
+
 - TypeScript: ✅ 0 errors
 - Build: ✅ Successful (1.77s, 218KB bundle)
 - Bundle size increase: +1.75KB (filtering logic overhead - acceptable)
@@ -478,9 +508,11 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 **Phase 5 Status**: ✅ COMPLETE - All core templates converted to React with full functionality
 
 ### 2026-01-23 - Typography & Branding Improvements
+
 **Implementation**: Professional font pairing and logo fixes
 
 **Changes**:
+
 - **Self-Hosted Inter Font**: Downloaded and integrated Inter font files (Regular, Medium, SemiBold, Bold)
 - **Self-Hosted Source Sans 3**: Added Source Sans 3 for body text (~48KB Latin subset)
 - **Professional Font Pairing**:
@@ -495,6 +527,7 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 - **Navigation Cleanup**: Removed unused imports, improved component consistency
 
 **Typography Benefits**:
+
 - ✅ Consistent branding across all platforms and browsers
 - ✅ No external font dependencies (except JetBrains Mono for code)
 - ✅ Faster initial load (no external CSS requests for Inter/Source Sans 3)
@@ -502,6 +535,7 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 - ✅ Total font payload: ~500KB (Inter + Source Sans 3 woff2 files)
 
 **Pending Work**:
+
 - Contact form currently uses mailto: approach (opens email client)
 - **TODO (Phase 6.5)**: Implement Google Apps Script backend for contact form
   - Reference: EC-Site `google-apps-script/Code.gs` and `README.md`

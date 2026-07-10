@@ -5,17 +5,17 @@
       -f "/home/{{ user_login }}/.ssh/github_{{ item.item.key }}" \
       -N "" <<<y >/dev/null 2>&1
   when: not item.stat.exists
-  loop: "{{ ssh_key_status.results }}"
+  loop: '{{ ssh_key_status.results }}'
 
 - name: Create SSH config entries
   blockinfile:
-    path: "/home/{{ user_login }}/.ssh/config"
+    path: '/home/{{ user_login }}/.ssh/config'
     create: true
-    marker: "# {mark} ANSIBLE MANAGED: GitHub {{ item.key }}"
+    marker: '# {mark} ANSIBLE MANAGED: GitHub {{ item.key }}'
     block: |
       Host github.com-{{ item.key }}
           HostName github.com
           User git
           IdentityFile ~/.ssh/github_{{ item.key }}
           IdentitiesOnly yes
-  loop: "{{ github_accounts | default({}) | dict2items }}"
+  loop: '{{ github_accounts | default({}) | dict2items }}'

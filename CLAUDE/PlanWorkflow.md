@@ -97,8 +97,10 @@ Refer to detailed info in supporting docs as required
 ## Technical Decisions
 
 ### Decision 1: [Title]
+
 **Context**: Why this decision is needed
 **Options Considered**:
+
 1. Option A - pros/cons
 2. Option B - pros/cons
 
@@ -113,8 +115,8 @@ Refer to detailed info in supporting docs as required
 
 ## Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
+| Risk             | Impact       | Probability  | Mitigation          |
+| ---------------- | ------------ | ------------ | ------------------- |
 | Risk description | High/Med/Low | High/Med/Low | How we'll handle it |
 
 ## Timeline
@@ -126,9 +128,11 @@ Refer to detailed info in supporting docs as required
 ## Notes & Updates
 
 ### YYYY-MM-DD
+
 - Update or note about progress/changes
 
 ### YYYY-MM-DD
+
 - Another update
 ```
 
@@ -140,15 +144,15 @@ Refer to detailed info in supporting docs as required
 
 Use these Unicode icons for task status:
 
-| Status | Icon | Markdown | Meaning |
-|--------|------|----------|---------|
-| **Not Started** | ⬜ | `⬜` | Task not yet begun |
-| **In Progress** | 🔄 | `🔄` | Currently being worked on |
-| **Completed** | ✅ | `✅` | Task finished and verified |
-| **Blocked** | 🚫 | `🚫` | Cannot proceed (dependency/issue) |
-| **Cancelled** | ❌ | `❌` | Task no longer needed |
-| **On Hold** | ⏸️ | `⏸️` | Paused temporarily |
-| **Needs Review** | 👁️ | `👁️` | Work done, awaiting review |
+| Status           | Icon | Markdown | Meaning                           |
+| ---------------- | ---- | -------- | --------------------------------- |
+| **Not Started**  | ⬜   | `⬜`     | Task not yet begun                |
+| **In Progress**  | 🔄   | `🔄`     | Currently being worked on         |
+| **Completed**    | ✅   | `✅`     | Task finished and verified        |
+| **Blocked**      | 🚫   | `🚫`     | Cannot proceed (dependency/issue) |
+| **Cancelled**    | ❌   | `❌`     | Task no longer needed             |
+| **On Hold**      | ⏸️   | `⏸️`     | Paused temporarily                |
+| **Needs Review** | 👁️   | `👁️`     | Work done, awaiting review        |
 
 ### Task Formatting
 
@@ -225,12 +229,14 @@ When new work is identified:
 ## 📝 Using TodoWrite vs Plans
 
 ### Use TodoWrite For:
+
 - Very small Tasks and LOW RISK tasks
 - Single-session work
 - No major architectural decisions
 - Temporary tracking during active work
 
 ### Use Plans For:
+
 - Medium sized+
 - Any risk
 - Work with multiple phases
@@ -241,6 +247,7 @@ When new work is identified:
 ### Converting TodoWrite to Plan
 
 If TodoWrite list grows beyond 5 items or becomes multi-session:
+
 1. Create proper plan
 2. Migrate tasks to plan
 3. Clear TodoWrite
@@ -260,9 +267,11 @@ If TodoWrite list grows beyond 5 items or becomes multi-session:
 **Estimated Effort**: [X hours/days]
 
 ## Overview
+
 [What feature, why needed]
 
 ## Tasks
+
 - [ ] ⬜ Design component structure
 - [ ] ⬜ Implement core functionality
 - [ ] ⬜ Add styling
@@ -270,6 +279,7 @@ If TodoWrite list grows beyond 5 items or becomes multi-session:
 - [ ] ⬜ Update documentation
 
 ## Success Criteria
+
 - [ ] Feature works as specified
 - [ ] Tests passing
 - [ ] Documentation updated
@@ -285,9 +295,11 @@ If TodoWrite list grows beyond 5 items or becomes multi-session:
 **Severity**: Critical | High | Medium | Low
 
 ## Bug Description
+
 [What's broken, how to reproduce]
 
 ## Tasks
+
 - [ ] ⬜ Reproduce bug locally
 - [ ] ⬜ Identify root cause
 - [ ] ⬜ Implement fix
@@ -295,6 +307,7 @@ If TodoWrite list grows beyond 5 items or becomes multi-session:
 - [ ] ⬜ Verify fix works
 
 ## Success Criteria
+
 - [ ] Bug no longer reproducible
 - [ ] Test added to prevent regression
 ```
@@ -309,31 +322,38 @@ If TodoWrite list grows beyond 5 items or becomes multi-session:
 **Reference**: [Link to design/mockup]
 
 ## Overview
+
 [What design, design goals]
 
 ## Design Analysis
+
 - Key visual elements
 - Animations/interactions
 - Responsive behavior
 
 ## Tasks
+
 ### Phase 1: Structure
+
 - [ ] ⬜ Analyze reference design
 - [ ] ⬜ Map components needed
 - [ ] ⬜ Plan component hierarchy
 
 ### Phase 2: Implementation
+
 - [ ] ⬜ Create base components
 - [ ] ⬜ Implement styling
 - [ ] ⬜ Add animations/effects
 - [ ] ⬜ Responsive adjustments
 
 ### Phase 3: Polish
+
 - [ ] ⬜ Fine-tune animations
 - [ ] ⬜ Cross-browser testing
 - [ ] ⬜ Performance optimization
 
 ## Success Criteria
+
 - [ ] Visual match to reference design
 - [ ] Animations smooth (60fps)
 - [ ] Responsive on all breakpoints
@@ -346,11 +366,13 @@ If TodoWrite list grows beyond 5 items or becomes multi-session:
 ### Task Writing
 
 ✅ **Good Tasks**:
+
 - "Create Navigation component with mobile menu toggle"
 - "Add typewriter animation to Hero heading (40ms/char)"
 - "Implement blur-in effect for stats section"
 
 ❌ **Bad Tasks**:
+
 - "Fix the website"
 - "Make it look better"
 - "Work on components"
@@ -447,15 +469,19 @@ Maintain `CLAUDE/Plan/README.md`:
 # Plans Index
 
 ## Active Plans
+
 - [001: Gemini Design Implementation](001-gemini-design-implementation/PLAN.md) - 🔄 In Progress
 
 ## Completed Plans
+
 - None yet
 
 ## Blocked Plans
+
 - None
 
 ## Cancelled Plans
+
 - None
 ```
 
@@ -499,6 +525,7 @@ Agent:
 ## ✨ Summary
 
 **Remember**:
+
 - 📋 Plan before you code
 - ✅ Update status religiously
 - 🎯 Keep tasks concrete and testable

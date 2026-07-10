@@ -7,6 +7,7 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 ## Repositories Found
 
 ### Primary Blog Repository
+
 - **Name**: edmondscommerce/edmondscommerce.github.io
 - **URL**: https://github.com/edmondscommerce/edmondscommerce.github.io
 - **Type**: Jekyll-based GitHub Pages blog
@@ -15,6 +16,7 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 - **Content**: 150+ category directories, 154 pages
 
 ### Main Company Website
+
 - **URL**: https://www.edmondscommerce.co.uk
 - **Type**: Modern PHP consultancy site with handbook
 - **Stack**: Next.js, React 18, TypeScript
@@ -23,6 +25,7 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 ## SSG Implementation - Jekyll Blog
 
 ### Technology Stack
+
 - **Generator**: Jekyll (Ruby-based static site generator)
 - **Hosting**: GitHub Pages (automatic deployment)
 - **Content**: HTML files (99.4%), minimal CSS (0.6%)
@@ -31,11 +34,13 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 ### Content Organization
 
 **Category-Based Hierarchy**:
+
 - Flat directory structure per category
 - 150+ category folders
 - Kebab-case file naming (e.g., `php-custom-error-handler.html`)
 
 **Categories Include**:
+
 - Programming: PHP, JavaScript, Java, Bash, Python
 - E-commerce: Magento 1.x/2.x, Drupal, PrestaShop, OpenCart
 - DevOps: Linux, Fedora, Apache, Nginx, Docker, MySQL
@@ -43,6 +48,7 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 - Business: SEO, conversion optimization, PageSpeed
 
 **File Structure**:
+
 ```
 /
 ├── index.html (12,916 bytes)
@@ -75,6 +81,7 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 5. **No CI/CD**: Uses GitHub Pages native build (no Actions)
 
 **Advantages**:
+
 - Zero configuration deployment
 - Automatic RSS generation
 - Free hosting on GitHub Pages
@@ -82,6 +89,7 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 - No database or backend needed
 
 **Limitations**:
+
 - Cannot handle dynamic URL states (filters, search)
 - Static HTML only, no client-side routing
 - Manual category management
@@ -90,6 +98,7 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 ## Modern Handbook - Main Site
 
 ### Technology Stack (edmondscommerce.co.uk)
+
 - **Frontend**: React 18, Next.js, TypeScript
 - **Backend**: PHP, Laravel, Symfony
 - **Infrastructure**: Kubernetes, Terraform, Ansible
@@ -105,6 +114,7 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 ## Key Learnings for LTS Commerce
 
 ### What Works (Jekyll Blog)
+
 1. **Simple Categories**: Flat directories scale to 150+ categories
 2. **GitHub Pages**: Zero-maintenance hosting
 3. **Standard URLs**: Clean, predictable structure
@@ -112,6 +122,7 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 5. **Asset Organization**: Clear `/images`, `/js`, `/css` structure
 
 ### Limitations
+
 1. **No Dynamic Filtering**: Can't encode filter state in URLs
 2. **No Client Routing**: All content is static HTML
 3. **Limited Search**: Client-side only, no URL state
@@ -120,12 +131,14 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 ### Adaptations for LTS Commerce
 
 #### Current Vite/React Approach
+
 - Implement URL-based filtering with query parameters
 - Example: `/articles?category=php&search=magento`
 - Client-side routing preserves SPA benefits
 - Can pre-render common routes at build time
 
 #### Next Steps for Full SSG
+
 1. **Pre-render Common Routes**:
    - `/articles` (all articles)
    - `/articles?category=php` (category pages)
@@ -148,34 +161,38 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 
 ## Comparison Table
 
-| Feature | EC Blog (Jekyll) | EC Main (Next.js) | LTS Current | LTS Recommended |
-|---------|------------------|-------------------|-------------|-----------------|
-| **Generator** | Jekyll | Next.js | Vite/React | Vite + Prerender |
-| **Hosting** | GitHub Pages | Custom | Any | GitHub Pages/Vercel |
-| **URLs** | Static paths | Dynamic routes | Client routing | Query params |
-| **Search** | Client-side | Server/client | Client-side | URL-based client |
-| **Build** | GitHub native | Custom CI | Vite build | Vite + GH Actions |
-| **Content** | HTML files | MDX/API | React components | TSX + data files |
-| **Deploy** | Auto (GH) | CI/CD | Manual | Auto (GH Actions) |
+| Feature       | EC Blog (Jekyll) | EC Main (Next.js) | LTS Current      | LTS Recommended     |
+| ------------- | ---------------- | ----------------- | ---------------- | ------------------- |
+| **Generator** | Jekyll           | Next.js           | Vite/React       | Vite + Prerender    |
+| **Hosting**   | GitHub Pages     | Custom            | Any              | GitHub Pages/Vercel |
+| **URLs**      | Static paths     | Dynamic routes    | Client routing   | Query params        |
+| **Search**    | Client-side      | Server/client     | Client-side      | URL-based client    |
+| **Build**     | GitHub native    | Custom CI         | Vite build       | Vite + GH Actions   |
+| **Content**   | HTML files       | MDX/API           | React components | TSX + data files    |
+| **Deploy**    | Auto (GH)        | CI/CD             | Manual           | Auto (GH Actions)   |
 
 ## Implementation Recommendations
 
 ### Phase 1: URL State (✅ Completed)
+
 - Implement query parameter-based filtering
 - Articles accessible via `/articles?category=php&search=mysql`
 - Shareable, bookmarkable URLs
 
 ### Phase 2: Static Optimization
+
 - Add Vite prerender plugin
 - Pre-generate popular routes at build time
 - Reduces client-side JavaScript execution
 
 ### Phase 3: Automated Deployment
+
 - GitHub Actions workflow
 - Build on push to main
 - Deploy to GitHub Pages or Vercel
 
 ### Phase 4: Content Management
+
 - Git-based workflow (like ec-site)
 - Article files in `/src/articles`
 - Auto-rebuild on content changes
@@ -183,10 +200,12 @@ Edmonds Commerce uses a Jekyll-based static site for their development blog (edm
 ## Conclusion
 
 Edmonds Commerce demonstrates two approaches:
+
 1. **Jekyll (legacy)**: Simple, static, category-based
 2. **Next.js (modern)**: Dynamic, handbook-style
 
 For LTS Commerce, a hybrid approach works best:
+
 - React/Vite for modern development
 - URL-based state for shareability
 - Pre-rendering for performance
@@ -197,6 +216,7 @@ The current implementation with URL query parameters (`?category=php&search=mysq
 ---
 
 **Sources**:
+
 - https://github.com/edmondscommerce/edmondscommerce.github.io
 - https://edmondscommerce.github.io/
 - https://www.edmondscommerce.co.uk/

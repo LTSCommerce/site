@@ -14,13 +14,13 @@ const result = callback(); // result type is 'void', but runtime value is 42
 type AsyncVoid = () => Promise<void>;
 
 const asyncCallback: AsyncVoid = async () => {
-  return { data: "surprise" }; // Allowed! Returns object despite Promise<void>
+  return { data: 'surprise' }; // Allowed! Returns object despite Promise<void>
 };
 
 // Array methods demonstrate the "feature"
 const numbers = [1, 2, 3];
 const results: void[] = numbers.map(() => {
-  return "string"; // Returns strings, typed as void[]
+  return 'string'; // Returns strings, typed as void[]
 });
 
 // EXPLICIT void annotation prevents returns

@@ -1,0 +1,7 @@
+[
+  {
+    "ruleId": "ts-qa/ssr-safe-hooks",
+    "files": ["**/src/main.tsx"],
+    "justification": "src/main.tsx is Vite's client-only browser entry point (the separate src/entry-server.tsx is the SSR entry) - it structurally never executes during SSR/SSG, so its module-top-level document.getElementById('root') is not an SSR-hydration risk."
+  }
+]

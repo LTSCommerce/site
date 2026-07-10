@@ -28,6 +28,7 @@ This rule enforces the discipline of replacing placeholder content before commit
 ## Violations and Correct Patterns
 
 BAD:
+
 ```tsx
 <Page
   title="PLACEHOLDER | LTSCommerce"
@@ -36,6 +37,7 @@ BAD:
 ```
 
 GOOD:
+
 ```tsx
 <Page
   title="About Joseph - Bespoke PHP Developer | LTSCommerce"
@@ -44,13 +46,15 @@ GOOD:
 ```
 
 BAD:
+
 ```ts
-const heroTitle = "PLACEHOLDER hero heading";
+const heroTitle = 'PLACEHOLDER hero heading';
 ```
 
 GOOD:
+
 ```ts
-const heroTitle = "LTSCommerce: Bespoke PHP Development for Complex Systems";
+const heroTitle = 'LTSCommerce: Bespoke PHP Development for Complex Systems';
 ```
 
 ## Fix Guidance

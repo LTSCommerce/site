@@ -16,13 +16,12 @@ interface UserProfile {
 
 class UserService {
   async updateUserProfile(
-    userId: string, 
+    userId: string,
     profileData: Partial<UserProfile>
   ): Promise<{ success: boolean; message: string; user?: User }> {
-    
     if (userId) {
       const user = await this.userRepository.findById(userId);
-      
+
       if (user) {
         if (user.isActive) {
           if (user.permissions.includes('profile:update')) {
@@ -32,55 +31,55 @@ class UserService {
                   // Main business logic buried in nested conditions
                   const updatedProfile = { ...user.profile, ...profileData };
                   user.profile = updatedProfile;
-                  
+
                   await this.userRepository.save(user);
                   await this.auditService.logProfileUpdate(userId, profileData);
-                  
+
                   return {
                     success: true,
                     message: 'Profile updated successfully',
-                    user
+                    user,
                   };
                 } else {
                   return {
                     success: false,
-                    message: 'User profile does not exist'
+                    message: 'User profile does not exist',
                   };
                 }
               } else {
                 return {
                   success: false,
-                  message: 'Invalid profile data provided'
+                  message: 'Invalid profile data provided',
                 };
               }
             } else {
               return {
                 success: false,
-                message: 'Profile data is required'
+                message: 'Profile data is required',
               };
             }
           } else {
             return {
               success: false,
-              message: 'Insufficient permissions to update profile'
+              message: 'Insufficient permissions to update profile',
             };
           }
         } else {
           return {
             success: false,
-            message: 'User account is inactive'
+            message: 'User account is inactive',
           };
         }
       } else {
         return {
           success: false,
-          message: 'User not found'
+          message: 'User not found',
         };
       }
     } else {
       return {
         success: false,
-        message: 'User ID is required'
+        message: 'User ID is required',
       };
     }
   }

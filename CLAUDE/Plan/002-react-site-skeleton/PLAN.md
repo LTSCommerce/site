@@ -67,6 +67,7 @@ Create a **reusable React/TypeScript skeleton repository** that captures the inf
 **Problem**: EC-site has great infrastructure but copying it means copying specific business/design decisions.
 
 **Solution**: Extract the **approach** into a generic skeleton:
+
 - Type-safe routing patterns
 - ESLint rules for safety
 - Component organization patterns
@@ -74,6 +75,7 @@ Create a **reusable React/TypeScript skeleton repository** that captures the inf
 - Minimal reference components
 
 **Benefits**:
+
 1. Reusable across projects (LTS site, future clients)
 2. Captures lessons learned from ec-site
 3. Each site maintains design independence
@@ -316,9 +318,11 @@ react-site-skeleton/
 ## Technical Decisions
 
 ### Decision 1: Repository Structure
+
 **Context**: How to organize the skeleton for maximum reusability?
 
 **Decision**: Flat structure with clear separation
+
 - src/ - application code
 - .claude/ - AI infrastructure
 - CLAUDE/ - documentation
@@ -330,19 +334,23 @@ react-site-skeleton/
 **Date**: 2025-12-11
 
 ### Decision 2: Minimal vs Comprehensive Components
+
 **Context**: How many components should the skeleton include?
 
 **Options Considered**:
+
 1. Minimal (5-10 components) - Layout, Hero, Prose
 2. Comprehensive (30+ components) - Full component library
 3. Medium (15-20 components) - Common patterns
 
 **Decision**: Minimal (5-10 essential components)
+
 - Layout: Page, Section, Container
 - Content: Hero, Prose
 - UI: (sites add their own)
 
 **Rationale**:
+
 - Each site needs unique design
 - Too many components = design cloning
 - Better to document patterns than provide components
@@ -351,14 +359,17 @@ react-site-skeleton/
 **Date**: 2025-12-11
 
 ### Decision 3: Styling Approach
+
 **Context**: CSS Modules, Tailwind, styled-components?
 
 **Decision**: No opinion - document all approaches
+
 - Skeleton uses minimal inline styles for examples
 - README documents how to add Tailwind/CSS Modules/etc
 - Sites choose their own styling system
 
 **Rationale**:
+
 - Different projects have different needs
 - Skeleton focuses on structure/types, not styling
 - Flexibility more valuable than opinionated choice
@@ -366,9 +377,11 @@ react-site-skeleton/
 **Date**: 2025-12-11
 
 ### Decision 4: Claude Infrastructure Level
+
 **Context**: How much Claude Code infrastructure to include?
 
 **Decision**: Essential generic infrastructure only
+
 - **Include**:
   - PlanWorkflow.md (planning system)
   - Worktree.md (parallel development)
@@ -401,13 +414,13 @@ react-site-skeleton/
 
 ## Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Too opinionated, limits flexibility | High | Medium | Keep minimal, document alternatives |
-| Too minimal, not useful | Medium | Low | Include essential patterns and clear docs |
-| Difficult to genericize hooks/agents | Medium | Medium | Start simple, iterate based on usage |
-| Maintenance burden across projects | Medium | Medium | Semantic versioning, clear changelog |
-| Type system too complex | Medium | Low | Clear documentation, gradual adoption |
+| Risk                                 | Impact | Probability | Mitigation                                |
+| ------------------------------------ | ------ | ----------- | ----------------------------------------- |
+| Too opinionated, limits flexibility  | High   | Medium      | Keep minimal, document alternatives       |
+| Too minimal, not useful              | Medium | Low         | Include essential patterns and clear docs |
+| Difficult to genericize hooks/agents | Medium | Medium      | Start simple, iterate based on usage      |
+| Maintenance burden across projects   | Medium | Medium      | Semantic versioning, clear changelog      |
+| Type system too complex              | Medium | Low         | Clear documentation, gradual adoption     |
 
 ## Timeline
 
@@ -429,6 +442,7 @@ No specific time estimates per PlanWorkflow. Work proceeds in phases.
 ## Notes & Updates
 
 ### 2025-12-11 - Plan Creation
+
 - Created Plan 002 for react-site-skeleton repository
 - Key insight: Clone the **approach**, not the **design**
 - Minimal component set (5-10) to avoid design cloning
@@ -437,13 +451,16 @@ No specific time estimates per PlanWorkflow. Work proceeds in phases.
 - Plan 001 Phase 2+ will use this skeleton
 
 ### 2025-12-11 - Concurrent Development Strategy
+
 **Plan 002** (Skeleton):
+
 - Build generic, reusable foundation
 - Type-safe patterns
 - Minimal components
 - Generic Claude infrastructure
 
 **Plan 001** (LTS Site):
+
 - Archive legacy build system
 - Apply skeleton
 - Build LTS-specific components

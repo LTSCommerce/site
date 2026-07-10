@@ -15,7 +15,7 @@ function removeHtmlComments() {
           file.source = file.source.toString().replace(/<!--[\s\S]*?-->/g, '');
         }
       }
-    }
+    },
   };
 }
 
@@ -31,7 +31,7 @@ export default defineConfig({
     manifest: true, // Generate manifest.json with asset mappings
     rollupOptions: {
       input: {
-        // CSS entry points  
+        // CSS entry points
         'css/main': resolve(__dirname, 'private_html/css/main.css'),
         'css/about': resolve(__dirname, 'private_html/css/about.css'),
         'css/services': resolve(__dirname, 'private_html/css/services.css'),
@@ -51,54 +51,165 @@ export default defineConfig({
         'js/syntax-highlighter': resolve(__dirname, 'private_html/js/syntax-highlighter.js'),
         'js/claude-terminal': resolve(__dirname, 'private_html/js/claude-terminal.js'),
         // Article JavaScript entry points
-        'js/articles/ai-software-development-paradigm-shift': resolve(__dirname, 'private_html/js/articles/ai-software-development-paradigm-shift.js'),
-        'js/articles/typescript-honesty-system': resolve(__dirname, 'private_html/js/articles/typescript-honesty-system.js'),
-        'js/articles/phpstan-project-level-rules': resolve(__dirname, 'private_html/js/articles/phpstan-project-level-rules.js'),
-        'js/articles/claude-code-latest-features': resolve(__dirname, 'private_html/js/articles/claude-code-latest-features.js'),
-        'js/articles/claude-code-hooks-subagent-control': resolve(__dirname, 'private_html/js/articles/claude-code-hooks-subagent-control.js'),
-        'js/articles/advanced-php-database-patterns': resolve(__dirname, 'private_html/js/articles/advanced-php-database-patterns.js'),
-        'js/articles/caching-vs-memoization': resolve(__dirname, 'private_html/js/articles/caching-vs-memoization.js'),
-        'js/articles/claude-code-planning-execution-workflows': resolve(__dirname, 'private_html/js/articles/claude-code-planning-execution-workflows.js'),
-        'js/articles/reusable-openapi-classes-php-symfony': resolve(__dirname, 'private_html/js/articles/reusable-openapi-classes-php-symfony.js'),
-        'js/articles/php-stream-wrappers': resolve(__dirname, 'private_html/js/articles/php-stream-wrappers.js'),
-        'js/articles/regex-strictness-code-paths': resolve(__dirname, 'private_html/js/articles/regex-strictness-code-paths.js'),
-        'js/articles/fedora-desktop-automation-ansible': resolve(__dirname, 'private_html/js/articles/fedora-desktop-automation-ansible.js'),
-        'js/articles/llm-overfitting-trap': resolve(__dirname, 'private_html/js/articles/llm-overfitting-trap.js'),
-        'js/articles/understanding-llm-context-management': resolve(__dirname, 'private_html/js/articles/understanding-llm-context-management.js'),
-        'js/articles/mysql-legacy-to-modern-upgrade': resolve(__dirname, 'private_html/js/articles/mysql-legacy-to-modern-upgrade.js'),
-        'js/articles/unix-philosophy-strategic-guide': resolve(__dirname, 'private_html/js/articles/unix-philosophy-strategic-guide.js'),
-        'js/articles/dependency-inversion-final-classes-pragmatic-testing': resolve(__dirname, 'private_html/js/articles/dependency-inversion-final-classes-pragmatic-testing.js'),
-        'js/articles/defensive-programming-principles': resolve(__dirname, 'private_html/js/articles/defensive-programming-principles.js'),
-        'js/articles/fail-fast-programming-philosophy': resolve(__dirname, 'private_html/js/articles/fail-fast-programming-philosophy.js'),
-        'js/articles/early-return-patterns-cleaner-code': resolve(__dirname, 'private_html/js/articles/early-return-patterns-cleaner-code.js'),
-        'js/articles/mocking-best-practices': resolve(__dirname, 'private_html/js/articles/mocking-best-practices.js'),
-        'js/articles/php-magic-constants-maintainable-logging': resolve(__dirname, 'private_html/js/articles/php-magic-constants-maintainable-logging.js'),
-        'js/articles/php-qa-ci-comprehensive-quality-pipeline': resolve(__dirname, 'private_html/js/articles/php-qa-ci-comprehensive-quality-pipeline.js'),
-        'js/articles/php-per-coding-style-evolution': resolve(__dirname, 'private_html/js/articles/php-per-coding-style-evolution.js'),
-        'js/articles/typescript-di-for-php-developers': resolve(__dirname, 'private_html/js/articles/typescript-di-for-php-developers.js'),
-        'js/articles/oclif-cli-framework-guide': resolve(__dirname, 'private_html/js/articles/oclif-cli-framework-guide.js'),
-        'js/articles/dynamic-gradient-headings': resolve(__dirname, 'private_html/js/articles/dynamic-gradient-headings.js'),
-        'js/articles/claude-code-custom-commands-cc-commands': resolve(__dirname, 'private_html/js/articles/claude-code-custom-commands-cc-commands.js'),
-        'js/articles/fedora-42-breakthrough-features': resolve(__dirname, 'private_html/js/articles/fedora-42-breakthrough-features.js'),
-        'js/articles/ansible-fact-caching-problems': resolve(__dirname, 'private_html/js/articles/ansible-fact-caching-problems.js'),
-        'js/articles/legacy-php-modernization': resolve(__dirname, 'private_html/js/articles/legacy-php-modernization.js'),
-        'js/articles/ansible-php-infrastructure': resolve(__dirname, 'private_html/js/articles/ansible-php-infrastructure.js'),
-        'js/articles/proxmox-vs-cloud': resolve(__dirname, 'private_html/js/articles/proxmox-vs-cloud.js'),
-        'js/articles/high-performance-php': resolve(__dirname, 'private_html/js/articles/high-performance-php.js'),
-        'js/articles/mysql-performance-php': resolve(__dirname, 'private_html/js/articles/mysql-performance-php.js'),
-        'js/articles/scalable-php-apis': resolve(__dirname, 'private_html/js/articles/scalable-php-apis.js'),
-        'js/articles/ai-enhanced-php-development': resolve(__dirname, 'private_html/js/articles/ai-enhanced-php-development.js'),
+        'js/articles/ai-software-development-paradigm-shift': resolve(
+          __dirname,
+          'private_html/js/articles/ai-software-development-paradigm-shift.js'
+        ),
+        'js/articles/typescript-honesty-system': resolve(
+          __dirname,
+          'private_html/js/articles/typescript-honesty-system.js'
+        ),
+        'js/articles/phpstan-project-level-rules': resolve(
+          __dirname,
+          'private_html/js/articles/phpstan-project-level-rules.js'
+        ),
+        'js/articles/claude-code-latest-features': resolve(
+          __dirname,
+          'private_html/js/articles/claude-code-latest-features.js'
+        ),
+        'js/articles/claude-code-hooks-subagent-control': resolve(
+          __dirname,
+          'private_html/js/articles/claude-code-hooks-subagent-control.js'
+        ),
+        'js/articles/advanced-php-database-patterns': resolve(
+          __dirname,
+          'private_html/js/articles/advanced-php-database-patterns.js'
+        ),
+        'js/articles/caching-vs-memoization': resolve(
+          __dirname,
+          'private_html/js/articles/caching-vs-memoization.js'
+        ),
+        'js/articles/claude-code-planning-execution-workflows': resolve(
+          __dirname,
+          'private_html/js/articles/claude-code-planning-execution-workflows.js'
+        ),
+        'js/articles/reusable-openapi-classes-php-symfony': resolve(
+          __dirname,
+          'private_html/js/articles/reusable-openapi-classes-php-symfony.js'
+        ),
+        'js/articles/php-stream-wrappers': resolve(
+          __dirname,
+          'private_html/js/articles/php-stream-wrappers.js'
+        ),
+        'js/articles/regex-strictness-code-paths': resolve(
+          __dirname,
+          'private_html/js/articles/regex-strictness-code-paths.js'
+        ),
+        'js/articles/fedora-desktop-automation-ansible': resolve(
+          __dirname,
+          'private_html/js/articles/fedora-desktop-automation-ansible.js'
+        ),
+        'js/articles/llm-overfitting-trap': resolve(
+          __dirname,
+          'private_html/js/articles/llm-overfitting-trap.js'
+        ),
+        'js/articles/understanding-llm-context-management': resolve(
+          __dirname,
+          'private_html/js/articles/understanding-llm-context-management.js'
+        ),
+        'js/articles/mysql-legacy-to-modern-upgrade': resolve(
+          __dirname,
+          'private_html/js/articles/mysql-legacy-to-modern-upgrade.js'
+        ),
+        'js/articles/unix-philosophy-strategic-guide': resolve(
+          __dirname,
+          'private_html/js/articles/unix-philosophy-strategic-guide.js'
+        ),
+        'js/articles/dependency-inversion-final-classes-pragmatic-testing': resolve(
+          __dirname,
+          'private_html/js/articles/dependency-inversion-final-classes-pragmatic-testing.js'
+        ),
+        'js/articles/defensive-programming-principles': resolve(
+          __dirname,
+          'private_html/js/articles/defensive-programming-principles.js'
+        ),
+        'js/articles/fail-fast-programming-philosophy': resolve(
+          __dirname,
+          'private_html/js/articles/fail-fast-programming-philosophy.js'
+        ),
+        'js/articles/early-return-patterns-cleaner-code': resolve(
+          __dirname,
+          'private_html/js/articles/early-return-patterns-cleaner-code.js'
+        ),
+        'js/articles/mocking-best-practices': resolve(
+          __dirname,
+          'private_html/js/articles/mocking-best-practices.js'
+        ),
+        'js/articles/php-magic-constants-maintainable-logging': resolve(
+          __dirname,
+          'private_html/js/articles/php-magic-constants-maintainable-logging.js'
+        ),
+        'js/articles/php-qa-ci-comprehensive-quality-pipeline': resolve(
+          __dirname,
+          'private_html/js/articles/php-qa-ci-comprehensive-quality-pipeline.js'
+        ),
+        'js/articles/php-per-coding-style-evolution': resolve(
+          __dirname,
+          'private_html/js/articles/php-per-coding-style-evolution.js'
+        ),
+        'js/articles/typescript-di-for-php-developers': resolve(
+          __dirname,
+          'private_html/js/articles/typescript-di-for-php-developers.js'
+        ),
+        'js/articles/oclif-cli-framework-guide': resolve(
+          __dirname,
+          'private_html/js/articles/oclif-cli-framework-guide.js'
+        ),
+        'js/articles/dynamic-gradient-headings': resolve(
+          __dirname,
+          'private_html/js/articles/dynamic-gradient-headings.js'
+        ),
+        'js/articles/claude-code-custom-commands-cc-commands': resolve(
+          __dirname,
+          'private_html/js/articles/claude-code-custom-commands-cc-commands.js'
+        ),
+        'js/articles/fedora-42-breakthrough-features': resolve(
+          __dirname,
+          'private_html/js/articles/fedora-42-breakthrough-features.js'
+        ),
+        'js/articles/ansible-fact-caching-problems': resolve(
+          __dirname,
+          'private_html/js/articles/ansible-fact-caching-problems.js'
+        ),
+        'js/articles/legacy-php-modernization': resolve(
+          __dirname,
+          'private_html/js/articles/legacy-php-modernization.js'
+        ),
+        'js/articles/ansible-php-infrastructure': resolve(
+          __dirname,
+          'private_html/js/articles/ansible-php-infrastructure.js'
+        ),
+        'js/articles/proxmox-vs-cloud': resolve(
+          __dirname,
+          'private_html/js/articles/proxmox-vs-cloud.js'
+        ),
+        'js/articles/high-performance-php': resolve(
+          __dirname,
+          'private_html/js/articles/high-performance-php.js'
+        ),
+        'js/articles/mysql-performance-php': resolve(
+          __dirname,
+          'private_html/js/articles/mysql-performance-php.js'
+        ),
+        'js/articles/scalable-php-apis': resolve(
+          __dirname,
+          'private_html/js/articles/scalable-php-apis.js'
+        ),
+        'js/articles/ai-enhanced-php-development': resolve(
+          __dirname,
+          'private_html/js/articles/ai-enhanced-php-development.js'
+        ),
       },
       output: {
         // Ensure JS files keep their names and paths
-        entryFileNames: (chunkInfo) => {
+        entryFileNames: chunkInfo => {
           if (chunkInfo.name.startsWith('js/')) {
             return '[name].js';
           }
           return 'assets/[name]-[hash].js';
         },
         chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           if (assetInfo.name?.endsWith('.css')) {
             return 'assets/[name]-[hash].css';
           }
@@ -107,13 +218,11 @@ export default defineConfig({
       },
       plugins: [
         copy({
-          targets: [
-            { src: 'private_html/images/*', dest: 'public_html/images' }
-          ],
-          hook: 'writeBundle'
+          targets: [{ src: 'private_html/images/*', dest: 'public_html/images' }],
+          hook: 'writeBundle',
         }),
-        removeHtmlComments()
-      ]
+        removeHtmlComments(),
+      ],
     },
   },
   server: {
@@ -125,5 +234,13 @@ export default defineConfig({
   },
   // Handle static assets properly
   publicDir: false, // We'll handle this through rollup options
-  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.gif', '**/*.svg', '**/*.webp', '**/*.ejs']
+  assetsInclude: [
+    '**/*.jpg',
+    '**/*.jpeg',
+    '**/*.png',
+    '**/*.gif',
+    '**/*.svg',
+    '**/*.webp',
+    '**/*.ejs',
+  ],
 });

@@ -7,7 +7,7 @@
 
 import type { ReactNode } from 'react';
 
-interface ContainerProps {
+export interface ContainerProps {
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   className?: string;

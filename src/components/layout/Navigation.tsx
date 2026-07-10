@@ -61,7 +61,9 @@ export function Navigation() {
           {/* Mobile hamburger */}
           <button
             className="md:hidden p-2 text-gray-500 hover:text-gray-900"
-            onClick={() => { setMobileOpen(v => !v); }}
+            onClick={() => {
+              setMobileOpen(v => !v);
+            }}
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -76,7 +78,9 @@ export function Navigation() {
             <Link
               key={key}
               to={route.path}
-              onClick={() => { setMobileOpen(false); }}
+              onClick={() => {
+                setMobileOpen(false);
+              }}
               className={`px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
                 isActive(route)
                   ? 'text-gray-900 bg-gray-100'
@@ -88,7 +92,9 @@ export function Navigation() {
           ))}
           <Link
             to={ROUTES.contact.path}
-            onClick={() => { setMobileOpen(false); }}
+            onClick={() => {
+              setMobileOpen(false);
+            }}
             className="mt-2 px-3 py-2.5 text-sm font-medium bg-[#0f4c81] text-white rounded-md text-center"
           >
             Hire Me

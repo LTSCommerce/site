@@ -33,7 +33,7 @@ export function useScrollAnimations(): void {
       threshold: 0.1,
     };
 
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver(entries => {
       entries.forEach((entry, index) => {
         if (entry.isIntersecting) {
           // Add staggered animation delays
@@ -48,7 +48,7 @@ export function useScrollAnimations(): void {
 
     // Observe all elements with scroll-animate class
     const elements = document.querySelectorAll('.scroll-animate');
-    elements.forEach((element) => {
+    elements.forEach(element => {
       const htmlElement = element as HTMLElement;
       // Set initial state
       htmlElement.style.opacity = '0';
@@ -59,7 +59,7 @@ export function useScrollAnimations(): void {
 
     // Cleanup
     return () => {
-      elements.forEach((element) => {
+      elements.forEach(element => {
         observer.unobserve(element);
       });
     };

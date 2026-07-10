@@ -17,14 +17,14 @@ describe('Button', () => {
 
           it(`renders ${label} without throwing`, () => {
             const { container } = render(
-              <Button variant={variant} size={size} label="Test" disabled={disabled} />,
+              <Button variant={variant} size={size} label="Test" disabled={disabled} />
             );
             expect(container.firstChild).toBeTruthy();
           });
 
           it(`matches snapshot for ${label}`, () => {
             const { container } = render(
-              <Button variant={variant} size={size} label="Test" disabled={disabled} />,
+              <Button variant={variant} size={size} label="Test" disabled={disabled} />
             );
             expect(container).toMatchSnapshot();
           });

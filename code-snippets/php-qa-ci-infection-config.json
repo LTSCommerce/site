@@ -1,21 +1,17 @@
 {
-    "source": {
-        "directories": [
-            "src"
-        ]
-    },
-    "logs": {
-        "text": "infection.log",
-        "summary": "summary.log",
-        "debug": "debug.log",
-        "perMutator": "per-mutator.md"
-    },
-    "mutators": {
-        "@default": true,
-        "global-ignoreSourceCodeByRegex": [
-            "Assert::.*"
-        ]
-    },
-    "testFramework": "phpunit",
-    "testFrameworkOptions": "--configuration=phpunit.xml"
+  "source": {
+    "directories": ["src"]
+  },
+  "logs": {
+    "text": "infection.log",
+    "summary": "summary.log",
+    "debug": "debug.log",
+    "perMutator": "per-mutator.md"
+  },
+  "mutators": {
+    "@default": true,
+    "global-ignoreSourceCodeByRegex": ["Assert::.*"]
+  },
+  "testFramework": "phpunit",
+  "testFrameworkOptions": "--configuration=phpunit.xml"
 }

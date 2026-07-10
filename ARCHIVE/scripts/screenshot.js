@@ -7,7 +7,7 @@ const config = {
   outputPath: 'var/screenshot.png',
   clip: null, // null for full page
   waitForSelector: null, // Optional selector to wait for
-  delay: 0 // Additional delay in ms after page load
+  delay: 0, // Additional delay in ms after page load
 };
 
 // Override config from command line args
@@ -17,38 +17,38 @@ if (args[1]) config.outputPath = `var/${args[1]}`;
 
 (async () => {
   console.log(`📸 Taking screenshot of: ${config.url}`);
-  
+
   const browser = await chromium.launch();
   const page = await browser.newPage();
-  
+
   // Set viewport
   await page.setViewportSize(config.viewport);
-  
+
   try {
     // Navigate to the page
     await page.goto(config.url, { waitUntil: 'networkidle' });
-    
+
     // Wait for specific selector if configured
     if (config.waitForSelector) {
       await page.waitForSelector(config.waitForSelector);
     }
-    
+
     // Additional delay if configured
     if (config.delay > 0) {
       await page.waitForTimeout(config.delay);
     }
-    
+
     // Take screenshot with dimension constraints
     if (config.clip) {
       await page.screenshot({
         path: config.outputPath,
-        clip: config.clip
+        clip: config.clip,
       });
     } else {
       // Get page dimensions and constrain to 8000px max
       const dimensions = await page.evaluate(() => ({
         width: document.documentElement.scrollWidth,
-        height: document.documentElement.scrollHeight
+        height: document.documentElement.scrollHeight,
       }));
 
       const MAX_DIMENSION = 8000;
@@ -57,7 +57,9 @@ if (args[1]) config.outputPath = `var/${args[1]}`;
       if (dimensions.height > MAX_DIMENSION) {
         // Take multiple screenshots for tall pages
         const numScreenshots = Math.ceil(dimensions.height / MAX_DIMENSION);
-        console.log(`⚠️  Page height (${dimensions.height}px) exceeds max, taking ${numScreenshots} screenshots`);
+        console.log(
+          `⚠️  Page height (${dimensions.height}px) exceeds max, taking ${numScreenshots} screenshots`
+        );
 
         const baseOutputPath = config.outputPath.replace(/\.png$/, '');
 
@@ -69,7 +71,7 @@ if (args[1]) config.outputPath = `var/${args[1]}`;
           const screenshotPath = `${baseOutputPath}_scroll${yOffset}.png`;
 
           // Scroll to the position first
-          await page.evaluate((offset) => {
+          await page.evaluate(offset => {
             window.scrollTo(0, offset);
           }, yOffset);
 
@@ -83,22 +85,23 @@ if (args[1]) config.outputPath = `var/${args[1]}`;
               x: 0,
               y: 0,
               width: clipWidth,
-              height: clipHeight
-            }
+              height: clipHeight,
+            },
           });
 
-          console.log(`✅ Screenshot ${i + 1}/${numScreenshots} saved: ${screenshotPath} (y: ${yOffset}-${yOffset + clipHeight})`);
+          console.log(
+            `✅ Screenshot ${i + 1}/${numScreenshots} saved: ${screenshotPath} (y: ${yOffset}-${yOffset + clipHeight})`
+          );
         }
       } else {
         // Single screenshot
         await page.screenshot({
           path: config.outputPath,
-          fullPage: true
+          fullPage: true,
         });
         console.log(`✅ Screenshot saved: ${config.outputPath}`);
       }
     }
-    
   } catch (error) {
     console.error('❌ Screenshot failed:', error.message);
     process.exit(1);

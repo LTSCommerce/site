@@ -9,10 +9,10 @@ interface UserBad {
 
 // Problems with this approach:
 const badUser: UserBad = {
-  id: "123",
-  email: "user@example.com", 
-  status: "TOTALLY_INVALID_STATUS", // Compiles fine
-  hashedPassword: "plaintext", // Not actually hashed!
+  id: '123',
+  email: 'user@example.com',
+  status: 'TOTALLY_INVALID_STATUS', // Compiles fine
+  hashedPassword: 'plaintext', // Not actually hashed!
 };
 
 function canLoginBad(user: UserBad): boolean {
@@ -21,17 +21,12 @@ function canLoginBad(user: UserBad): boolean {
   if (!validStatuses.includes(user.status.toLowerCase())) {
     return false;
   }
-  
+
   return user.hashedPassword !== undefined;
 }
 
 // Good: Invalid states unrepresentable
-type UserStatus = 
-  | 'active'
-  | 'inactive'
-  | 'suspended' 
-  | 'pending_verification'
-  | 'deleted';
+type UserStatus = 'active' | 'inactive' | 'suspended' | 'pending_verification' | 'deleted';
 
 type UserId = string & { readonly brand: unique symbol };
 type Email = string & { readonly brand: unique symbol };
@@ -76,8 +71,7 @@ function canLoginGood(user: UserGood): boolean {
     case 'active':
       return user.hashedPassword !== undefined;
     case 'pending_verification':
-      return user.hashedPassword !== undefined && 
-             user.emailVerifiedAt !== undefined;
+      return user.hashedPassword !== undefined && user.emailVerifiedAt !== undefined;
     case 'inactive':
     case 'suspended':
     case 'deleted':
@@ -88,10 +82,10 @@ function canLoginGood(user: UserGood): boolean {
 
 // Usage - invalid states are impossible
 const goodUser: UserGood = {
-  id: createUserId("user-123"),
-  email: createEmail("user@example.com"),
+  id: createUserId('user-123'),
+  email: createEmail('user@example.com'),
   status: 'active', // Only valid statuses allowed
-  hashedPassword: createHashedPassword("secretpassword")
+  hashedPassword: createHashedPassword('secretpassword'),
 };
 
 // These would cause compile/runtime errors:

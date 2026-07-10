@@ -7,371 +7,407 @@ import '../css/articles.css';
 
 const articles = [
   {
-    "id": 824,
-    "title": "The AI Development Paradigm Shift: Managing the Firehose",
-    "excerpt": "AI coding assistants are fundamentally transforming software development productivity and economics. Understanding when to use AI versus deterministic code is now a critical strategic skill.",
-    "category": "ai",
-    "date": "2025-11-19",
-    "slug": "ai-software-development-paradigm-shift",
-    "readingTime": "14"
+    id: 824,
+    title: 'The AI Development Paradigm Shift: Managing the Firehose',
+    excerpt:
+      'AI coding assistants are fundamentally transforming software development productivity and economics. Understanding when to use AI versus deterministic code is now a critical strategic skill.',
+    category: 'ai',
+    date: '2025-11-19',
+    slug: 'ai-software-development-paradigm-shift',
+    readingTime: '14',
   },
   {
-    "id": 657,
-    "title": "TypeScript's Honesty System: Why Type Safety is Optional and How to Enforce It",
-    "excerpt": "TypeScript provides zero runtime safety and can be bypassed 25+ different ways. The definitive guide to every bypass mechanism - from any to eval to recursive type limits - and how to defend against them with ESLint.",
-    "category": "typescript",
-    "date": "2025-11-18",
-    "slug": "typescript-honesty-system",
-    "readingTime": "18"
+    id: 657,
+    title: "TypeScript's Honesty System: Why Type Safety is Optional and How to Enforce It",
+    excerpt:
+      'TypeScript provides zero runtime safety and can be bypassed 25+ different ways. The definitive guide to every bypass mechanism - from any to eval to recursive type limits - and how to defend against them with ESLint.',
+    category: 'typescript',
+    date: '2025-11-18',
+    slug: 'typescript-honesty-system',
+    readingTime: '18',
   },
   {
-    "id": 752,
-    "title": "Using PHPStan to Enforce Project-Level Rules",
-    "excerpt": "Learn how to write custom PHPStan rules to enforce performance, architectural, and testing standards across your entire codebase. Includes real-world examples and multi-language comparisons.",
-    "category": "php",
-    "date": "2025-11-10",
-    "slug": "phpstan-project-level-rules",
-    "readingTime": "12"
+    id: 752,
+    title: 'Using PHPStan to Enforce Project-Level Rules',
+    excerpt:
+      'Learn how to write custom PHPStan rules to enforce performance, architectural, and testing standards across your entire codebase. Includes real-world examples and multi-language comparisons.',
+    category: 'php',
+    date: '2025-11-10',
+    slug: 'phpstan-project-level-rules',
+    readingTime: '12',
   },
   {
-    "id": 685,
-    "title": "Claude Code Latest Features: What's New in Autumn 2025",
-    "excerpt": "Explore the groundbreaking features added to Claude Code in the last three months, including checkpoints for fearless refactoring, autonomous subagents, plugin marketplace, web interface, and more.",
-    "category": "ai",
-    "date": "2025-11-05",
-    "slug": "claude-code-latest-features",
-    "readingTime": "12"
+    id: 685,
+    title: "Claude Code Latest Features: What's New in Autumn 2025",
+    excerpt:
+      'Explore the groundbreaking features added to Claude Code in the last three months, including checkpoints for fearless refactoring, autonomous subagents, plugin marketplace, web interface, and more.',
+    category: 'ai',
+    date: '2025-11-05',
+    slug: 'claude-code-latest-features',
+    readingTime: '12',
   },
   {
-    "id": 388,
-    "title": "Advanced Claude Code Hooks: Controlling Sub-Agent Behavior",
-    "excerpt": "Learn how to use Claude Code hooks to enforce execution rules for parallel sub-agents, preventing resource conflicts in test suites and other shared-resource scenarios.",
-    "category": "ai",
-    "date": "2025-10-24",
-    "slug": "claude-code-hooks-subagent-control",
-    "readingTime": "8"
+    id: 388,
+    title: 'Advanced Claude Code Hooks: Controlling Sub-Agent Behavior',
+    excerpt:
+      'Learn how to use Claude Code hooks to enforce execution rules for parallel sub-agents, preventing resource conflicts in test suites and other shared-resource scenarios.',
+    category: 'ai',
+    date: '2025-10-24',
+    slug: 'claude-code-hooks-subagent-control',
+    readingTime: '8',
   },
   {
-    "id": 988,
-    "title": "Advanced PHP Database Patterns: Beyond ORMs for High-Performance Applications",
-    "excerpt": "Discover advanced database patterns for PHP including retry mechanisms, bulk updates, statement caching, query classes, generators for memory efficiency, and PHPStan rules for test correctness. Learn when to use PDO directly over ORMs.",
-    "category": "database",
-    "date": "2025-10-08",
-    "slug": "advanced-php-database-patterns",
-    "readingTime": "18"
+    id: 988,
+    title: 'Advanced PHP Database Patterns: Beyond ORMs for High-Performance Applications',
+    excerpt:
+      'Discover advanced database patterns for PHP including retry mechanisms, bulk updates, statement caching, query classes, generators for memory efficiency, and PHPStan rules for test correctness. Learn when to use PDO directly over ORMs.',
+    category: 'database',
+    date: '2025-10-08',
+    slug: 'advanced-php-database-patterns',
+    readingTime: '18',
   },
   {
-    "id": 237,
-    "title": "Caching vs Memoization: Choosing the Right Optimization Strategy",
-    "excerpt": "Deep dive into caching and memoization strategies, their differences, use cases, anti-patterns, and practical implementation tips across programming languages.",
-    "category": "php",
-    "date": "2025-10-06",
-    "slug": "caching-vs-memoization",
-    "readingTime": "10"
+    id: 237,
+    title: 'Caching vs Memoization: Choosing the Right Optimization Strategy',
+    excerpt:
+      'Deep dive into caching and memoization strategies, their differences, use cases, anti-patterns, and practical implementation tips across programming languages.',
+    category: 'php',
+    date: '2025-10-06',
+    slug: 'caching-vs-memoization',
+    readingTime: '10',
   },
   {
-    "id": 55,
-    "title": "Claude Code Planning and Execution Workflows: From Built-in Modes to Parallel Agents",
-    "excerpt": "A comprehensive guide to Claude Code's planning features, from built-in Plan Mode to formal planning workflows with parallel agent execution for complex development tasks",
-    "category": "ai",
-    "date": "2025-10-01",
-    "slug": "claude-code-planning-execution-workflows",
-    "readingTime": "12"
+    id: 55,
+    title: 'Claude Code Planning and Execution Workflows: From Built-in Modes to Parallel Agents',
+    excerpt:
+      "A comprehensive guide to Claude Code's planning features, from built-in Plan Mode to formal planning workflows with parallel agent execution for complex development tasks",
+    category: 'ai',
+    date: '2025-10-01',
+    slug: 'claude-code-planning-execution-workflows',
+    readingTime: '12',
   },
   {
-    "id": 647,
-    "title": "Reusable OpenAPI Classes: Eliminating Boilerplate in PHP API Documentation",
-    "excerpt": "Learn how to create custom PHP classes that encapsulate OpenAPI specifications, dramatically reducing repetitive attribute definitions while improving maintainability and consistency across your Symfony API.",
-    "category": "php",
-    "date": "2025-09-30",
-    "slug": "reusable-openapi-classes-php-symfony",
-    "readingTime": "12"
+    id: 647,
+    title: 'Reusable OpenAPI Classes: Eliminating Boilerplate in PHP API Documentation',
+    excerpt:
+      'Learn how to create custom PHP classes that encapsulate OpenAPI specifications, dramatically reducing repetitive attribute definitions while improving maintainability and consistency across your Symfony API.',
+    category: 'php',
+    date: '2025-09-30',
+    slug: 'reusable-openapi-classes-php-symfony',
+    readingTime: '12',
   },
   {
-    "id": 955,
-    "title": "PHP Stream Wrappers: Mastering I/O Abstraction and Custom Protocols",
-    "excerpt": "Comprehensive guide to PHP stream wrappers, from built-in protocols like file://, http://, and data:// to implementing custom stream handlers for advanced I/O operations",
-    "category": "php",
-    "date": "2025-09-26",
-    "slug": "php-stream-wrappers",
-    "readingTime": "9"
+    id: 955,
+    title: 'PHP Stream Wrappers: Mastering I/O Abstraction and Custom Protocols',
+    excerpt:
+      'Comprehensive guide to PHP stream wrappers, from built-in protocols like file://, http://, and data:// to implementing custom stream handlers for advanced I/O operations',
+    category: 'php',
+    date: '2025-09-26',
+    slug: 'php-stream-wrappers',
+    readingTime: '9',
   },
   {
-    "id": 736,
-    "title": "How Lenient Regex Patterns Explode Your Code Paths",
-    "excerpt": "Why optional regex patterns create exponential complexity and how strict validation reduces maintenance burden through fail-fast principles.",
-    "category": "php",
-    "date": "2025-09-26",
-    "slug": "regex-strictness-code-paths",
-    "readingTime": "7"
+    id: 736,
+    title: 'How Lenient Regex Patterns Explode Your Code Paths',
+    excerpt:
+      'Why optional regex patterns create exponential complexity and how strict validation reduces maintenance burden through fail-fast principles.',
+    category: 'php',
+    date: '2025-09-26',
+    slug: 'regex-strictness-code-paths',
+    readingTime: '7',
   },
   {
-    "id": 346,
-    "title": "Automating Fedora 42 Desktop Development: Open Source Infrastructure as Code",
-    "excerpt": "Comprehensive guide to transforming a fresh Fedora 42 installation into a fully configured development environment using Ansible automation, exploring the LongTermSupport/fedora-desktop repository and the philosophy of infrastructure-as-code for personal workstations.",
-    "category": "infrastructure",
-    "date": "2025-09-03",
-    "slug": "fedora-desktop-automation-ansible",
-    "readingTime": "12"
+    id: 346,
+    title: 'Automating Fedora 42 Desktop Development: Open Source Infrastructure as Code',
+    excerpt:
+      'Comprehensive guide to transforming a fresh Fedora 42 installation into a fully configured development environment using Ansible automation, exploring the LongTermSupport/fedora-desktop repository and the philosophy of infrastructure-as-code for personal workstations.',
+    category: 'infrastructure',
+    date: '2025-09-03',
+    slug: 'fedora-desktop-automation-ansible',
+    readingTime: '12',
   },
   {
-    "id": 56,
-    "title": "The Overfitting Trap: When LLM Agents Fix One Thing and Break Everything Else",
-    "excerpt": "Explore how LLM agents can over-specialize solutions to handle specific edge cases while destroying generic functionality. Learn to spot and prevent overfitting in AI-generated code.",
-    "category": "ai",
-    "date": "2025-08-26",
-    "slug": "llm-overfitting-trap",
-    "readingTime": "12"
+    id: 56,
+    title: 'The Overfitting Trap: When LLM Agents Fix One Thing and Break Everything Else',
+    excerpt:
+      'Explore how LLM agents can over-specialize solutions to handle specific edge cases while destroying generic functionality. Learn to spot and prevent overfitting in AI-generated code.',
+    category: 'ai',
+    date: '2025-08-26',
+    slug: 'llm-overfitting-trap',
+    readingTime: '12',
   },
   {
-    "id": 685,
-    "title": "Understanding LLM Context: The Hidden Challenge of AI Development",
-    "excerpt": "A comprehensive guide to understanding and managing context when working with Large Language Models, especially in tools like Claude Code. Learn how context works, why it matters, and strategies to optimize your AI interactions.",
-    "category": "ai",
-    "date": "2025-08-20",
-    "slug": "understanding-llm-context-management",
-    "readingTime": "12"
+    id: 685,
+    title: 'Understanding LLM Context: The Hidden Challenge of AI Development',
+    excerpt:
+      'A comprehensive guide to understanding and managing context when working with Large Language Models, especially in tools like Claude Code. Learn how context works, why it matters, and strategies to optimize your AI interactions.',
+    category: 'ai',
+    date: '2025-08-20',
+    slug: 'understanding-llm-context-management',
+    readingTime: '12',
   },
   {
-    "id": 992,
-    "title": "Upgrading Legacy MySQL: From MyISAM to Modern MySQL 8.4",
-    "excerpt": "Technical guide to upgrading legacy MySQL databases from MyISAM with implied foreign keys to modern MySQL 8.4 with InnoDB, proper constraints, and modern features for enhanced security, performance, and data integrity.",
-    "category": "database",
-    "date": "2025-08-18",
-    "slug": "mysql-legacy-to-modern-upgrade",
-    "readingTime": "10"
+    id: 992,
+    title: 'Upgrading Legacy MySQL: From MyISAM to Modern MySQL 8.4',
+    excerpt:
+      'Technical guide to upgrading legacy MySQL databases from MyISAM with implied foreign keys to modern MySQL 8.4 with InnoDB, proper constraints, and modern features for enhanced security, performance, and data integrity.',
+    category: 'database',
+    date: '2025-08-18',
+    slug: 'mysql-legacy-to-modern-upgrade',
+    readingTime: '10',
   },
   {
-    "id": 183,
-    "title": "The Unix Philosophy: A Strategic Guide for Technology Leadership",
-    "excerpt": "How the 50-year-old Unix philosophy drives modern infrastructure success, reduces vendor lock-in, and delivers superior business outcomes through modular, composable systems.",
-    "category": "infrastructure",
-    "date": "2025-08-13",
-    "slug": "unix-philosophy-strategic-guide",
-    "readingTime": "12"
+    id: 183,
+    title: 'The Unix Philosophy: A Strategic Guide for Technology Leadership',
+    excerpt:
+      'How the 50-year-old Unix philosophy drives modern infrastructure success, reduces vendor lock-in, and delivers superior business outcomes through modular, composable systems.',
+    category: 'infrastructure',
+    date: '2025-08-13',
+    slug: 'unix-philosophy-strategic-guide',
+    readingTime: '12',
   },
   {
-    "id": 260,
-    "title": "Dependency Inversion, Final Classes, and Pragmatic Testing in PHP 8.4",
-    "excerpt": "Master dependency inversion with final classes in PHP 8.4, learn when to use real objects vs mocks, and discover the pragmatic testing approach that combines Detroit and London schools for maintainable, testable code.",
-    "category": "php",
-    "date": "2025-08-11",
-    "slug": "dependency-inversion-final-classes-pragmatic-testing",
-    "readingTime": "18"
+    id: 260,
+    title: 'Dependency Inversion, Final Classes, and Pragmatic Testing in PHP 8.4',
+    excerpt:
+      'Master dependency inversion with final classes in PHP 8.4, learn when to use real objects vs mocks, and discover the pragmatic testing approach that combines Detroit and London schools for maintainable, testable code.',
+    category: 'php',
+    date: '2025-08-11',
+    slug: 'dependency-inversion-final-classes-pragmatic-testing',
+    readingTime: '18',
   },
   {
-    "id": 312,
-    "title": "Defensive Programming Principles: YAGNI, Invalid States, and Domain Purity",
-    "excerpt": "Master three fundamental defensive programming principles: YAGNI for avoiding unnecessary complexity, making invalid states unrepresentable through type safety, and maintaining domain object purity for clean architecture.",
-    "category": "php",
-    "date": "2025-08-07",
-    "slug": "defensive-programming-principles",
-    "readingTime": "14"
+    id: 312,
+    title: 'Defensive Programming Principles: YAGNI, Invalid States, and Domain Purity',
+    excerpt:
+      'Master three fundamental defensive programming principles: YAGNI for avoiding unnecessary complexity, making invalid states unrepresentable through type safety, and maintaining domain object purity for clean architecture.',
+    category: 'php',
+    date: '2025-08-07',
+    slug: 'defensive-programming-principles',
+    readingTime: '14',
   },
   {
-    "id": 268,
-    "title": "Fail Fast Programming: Why Your Code Should Crash Spectacularly",
-    "excerpt": "Master the fail-fast programming philosophy with practical examples in PHP 8.4, TypeScript, Bash, and Ansible. Learn to write high-trust code that fails early, clearly, and at the exact point of deviation from expectations.",
-    "category": "php",
-    "date": "2025-08-04",
-    "slug": "fail-fast-programming-philosophy",
-    "readingTime": "12"
+    id: 268,
+    title: 'Fail Fast Programming: Why Your Code Should Crash Spectacularly',
+    excerpt:
+      'Master the fail-fast programming philosophy with practical examples in PHP 8.4, TypeScript, Bash, and Ansible. Learn to write high-trust code that fails early, clearly, and at the exact point of deviation from expectations.',
+    category: 'php',
+    date: '2025-08-04',
+    slug: 'fail-fast-programming-philosophy',
+    readingTime: '12',
   },
   {
-    "id": 416,
-    "title": "Early Return Patterns: Your Code's Best Exit Strategy",
-    "excerpt": "Master guard clauses and early return patterns across PHP, TypeScript, Bash, and Ansible to write cleaner, more maintainable code with reduced cognitive complexity",
-    "category": "php",
-    "date": "2025-07-31",
-    "slug": "early-return-patterns-cleaner-code",
-    "readingTime": "9"
+    id: 416,
+    title: "Early Return Patterns: Your Code's Best Exit Strategy",
+    excerpt:
+      'Master guard clauses and early return patterns across PHP, TypeScript, Bash, and Ansible to write cleaner, more maintainable code with reduced cognitive complexity',
+    category: 'php',
+    date: '2025-07-31',
+    slug: 'early-return-patterns-cleaner-code',
+    readingTime: '9',
   },
   {
-    "id": 223,
-    "title": "Mocking in Tests: Like Hot Sauce - A Little Goes a Long Way",
-    "excerpt": "Learn when to mock and when not to mock in unit tests. Discover why over-mocking creates brittle, unmaintainable tests and how to write better tests with minimal mocking using TypeScript, Vitest, and PHPUnit.",
-    "category": "php",
-    "date": "2025-07-30",
-    "slug": "mocking-best-practices",
-    "readingTime": "10"
+    id: 223,
+    title: 'Mocking in Tests: Like Hot Sauce - A Little Goes a Long Way',
+    excerpt:
+      'Learn when to mock and when not to mock in unit tests. Discover why over-mocking creates brittle, unmaintainable tests and how to write better tests with minimal mocking using TypeScript, Vitest, and PHPUnit.',
+    category: 'php',
+    date: '2025-07-30',
+    slug: 'mocking-best-practices',
+    readingTime: '10',
   },
   {
-    "id": 7,
-    "title": "PHP Magic Constants for Maintainable Logging Systems",
-    "excerpt": "Master PHP magic constants (__FILE__, __METHOD__, __CLASS__, etc.) to build contextual logging systems with Monolog and PSR-3 that automatically track execution flow and debugging information.",
-    "category": "php",
-    "date": "2025-07-28",
-    "slug": "php-magic-constants-maintainable-logging",
-    "readingTime": "12"
+    id: 7,
+    title: 'PHP Magic Constants for Maintainable Logging Systems',
+    excerpt:
+      'Master PHP magic constants (__FILE__, __METHOD__, __CLASS__, etc.) to build contextual logging systems with Monolog and PSR-3 that automatically track execution flow and debugging information.',
+    category: 'php',
+    date: '2025-07-28',
+    slug: 'php-magic-constants-maintainable-logging',
+    readingTime: '12',
   },
   {
-    "id": 999,
-    "title": "PHP-QA-CI: A Comprehensive Quality Assurance Pipeline in a Single Dependency",
-    "excerpt": "Discover how LTS PHP-QA-CI provides a complete, production-ready QA pipeline with 12+ integrated tools through a single Composer dependency. Learn configuration, customization, and CI/CD integration strategies.",
-    "category": "php",
-    "date": "2025-07-25",
-    "slug": "php-qa-ci-comprehensive-quality-pipeline",
-    "readingTime": "15"
+    id: 999,
+    title: 'PHP-QA-CI: A Comprehensive Quality Assurance Pipeline in a Single Dependency',
+    excerpt:
+      'Discover how LTS PHP-QA-CI provides a complete, production-ready QA pipeline with 12+ integrated tools through a single Composer dependency. Learn configuration, customization, and CI/CD integration strategies.',
+    category: 'php',
+    date: '2025-07-25',
+    slug: 'php-qa-ci-comprehensive-quality-pipeline',
+    readingTime: '15',
   },
   {
-    "id": 22,
-    "title": "PHP PER: The Evolution Beyond PSR-12 Coding Standards",
-    "excerpt": "Understanding PHP Evolving Recommendations (PER), how to enforce them with QA tools, and why PER Coding Style is the future of PHP standards.",
-    "category": "php",
-    "date": "2025-07-24",
-    "slug": "php-per-coding-style-evolution",
-    "readingTime": "12"
+    id: 22,
+    title: 'PHP PER: The Evolution Beyond PSR-12 Coding Standards',
+    excerpt:
+      'Understanding PHP Evolving Recommendations (PER), how to enforce them with QA tools, and why PER Coding Style is the future of PHP standards.',
+    category: 'php',
+    date: '2025-07-24',
+    slug: 'php-per-coding-style-evolution',
+    readingTime: '12',
   },
   {
-    "id": 233,
-    "title": "TypeScript Dependency Injection: A PHP Developer's Perspective",
-    "excerpt": "Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardization.",
-    "category": "typescript",
-    "date": "2025-07-23",
-    "slug": "typescript-di-for-php-developers",
-    "readingTime": "15"
+    id: 233,
+    title: "TypeScript Dependency Injection: A PHP Developer's Perspective",
+    excerpt:
+      'Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardization.',
+    category: 'typescript',
+    date: '2025-07-23',
+    slug: 'typescript-di-for-php-developers',
+    readingTime: '15',
   },
   {
-    "id": 473,
-    "title": "oclif: The Open CLI Framework - A Comprehensive Guide",
-    "excerpt": "An in-depth exploration of oclif, the enterprise-grade CLI framework from Salesforce. Learn best practices, pros and cons, and compare with alternatives.",
-    "category": "typescript",
-    "date": "2025-07-22",
-    "slug": "oclif-cli-framework-guide",
-    "readingTime": "12"
+    id: 473,
+    title: 'oclif: The Open CLI Framework - A Comprehensive Guide',
+    excerpt:
+      'An in-depth exploration of oclif, the enterprise-grade CLI framework from Salesforce. Learn best practices, pros and cons, and compare with alternatives.',
+    category: 'typescript',
+    date: '2025-07-22',
+    slug: 'oclif-cli-framework-guide',
+    readingTime: '12',
   },
   {
-    "id": 513,
-    "title": "Dynamic Gradient Headings: A CSS and JavaScript Implementation",
-    "excerpt": "A straightforward approach to creating mouse-responsive gradient text effects using CSS custom properties and vanilla JavaScript",
-    "category": "php",
-    "date": "2025-07-21",
-    "slug": "dynamic-gradient-headings",
-    "readingTime": "6"
+    id: 513,
+    title: 'Dynamic Gradient Headings: A CSS and JavaScript Implementation',
+    excerpt:
+      'A straightforward approach to creating mouse-responsive gradient text effects using CSS custom properties and vanilla JavaScript',
+    category: 'php',
+    date: '2025-07-21',
+    slug: 'dynamic-gradient-headings',
+    readingTime: '6',
   },
   {
-    "id": 824,
-    "title": "Building Better Claude Code Workflows with CC-Commands",
-    "excerpt": "Discover how the CC-Commands repository solves the pain points of managing custom Claude Code commands across multiple projects with elegant automation and intelligent synchronization.",
-    "category": "ai",
-    "date": "2025-07-18",
-    "slug": "claude-code-custom-commands-cc-commands",
-    "readingTime": "5"
+    id: 824,
+    title: 'Building Better Claude Code Workflows with CC-Commands',
+    excerpt:
+      'Discover how the CC-Commands repository solves the pain points of managing custom Claude Code commands across multiple projects with elegant automation and intelligent synchronization.',
+    category: 'ai',
+    date: '2025-07-18',
+    slug: 'claude-code-custom-commands-cc-commands',
+    readingTime: '5',
   },
   {
-    "id": 12,
-    "title": "Fedora 42: The Revolutionary Linux Release That Changes Everything",
-    "excerpt": "Discover the groundbreaking features of Fedora 42, including KDE Plasma promotion to full edition status, the revolutionary COSMIC desktop environment, and the modernized Anaconda WebUI installer that transforms Linux computing.",
-    "category": "infrastructure",
-    "date": "2025-07-18",
-    "slug": "fedora-42-breakthrough-features",
-    "readingTime": "5"
+    id: 12,
+    title: 'Fedora 42: The Revolutionary Linux Release That Changes Everything',
+    excerpt:
+      'Discover the groundbreaking features of Fedora 42, including KDE Plasma promotion to full edition status, the revolutionary COSMIC desktop environment, and the modernized Anaconda WebUI installer that transforms Linux computing.',
+    category: 'infrastructure',
+    date: '2025-07-18',
+    slug: 'fedora-42-breakthrough-features',
+    readingTime: '5',
   },
   {
-    "id": 869,
-    "title": "Ansible Fact Caching: The --limit Problem and Environment Separation Pain Points",
-    "excerpt": "Deep dive into Ansible fact caching limitations with --limit operations and the lack of dynamic cache location configuration for multi-environment deployments.",
-    "category": "infrastructure",
-    "date": "2025-01-29",
-    "slug": "ansible-fact-caching-problems",
-    "readingTime": "10"
+    id: 869,
+    title: 'Ansible Fact Caching: The --limit Problem and Environment Separation Pain Points',
+    excerpt:
+      'Deep dive into Ansible fact caching limitations with --limit operations and the lack of dynamic cache location configuration for multi-environment deployments.',
+    category: 'infrastructure',
+    date: '2025-01-29',
+    slug: 'ansible-fact-caching-problems',
+    readingTime: '10',
   },
   {
-    "id": 459,
-    "title": "Managing Legacy PHP: From Technical Debt to Modern Architecture",
-    "excerpt": "Strategies for modernizing legacy PHP codebases and managing technical debt effectively",
-    "category": "php",
-    "date": "2025-01-15",
-    "slug": "legacy-php-modernization",
-    "readingTime": "5"
+    id: 459,
+    title: 'Managing Legacy PHP: From Technical Debt to Modern Architecture',
+    excerpt:
+      'Strategies for modernizing legacy PHP codebases and managing technical debt effectively',
+    category: 'php',
+    date: '2025-01-15',
+    slug: 'legacy-php-modernization',
+    readingTime: '5',
   },
   {
-    "id": 690,
-    "title": "Ansible Automation for PHP Infrastructure",
-    "excerpt": "Complete guide to automating PHP infrastructure deployment and management using Ansible",
-    "category": "infrastructure",
-    "date": "2025-01-10",
-    "slug": "ansible-php-infrastructure",
-    "readingTime": "5"
+    id: 690,
+    title: 'Ansible Automation for PHP Infrastructure',
+    excerpt:
+      'Complete guide to automating PHP infrastructure deployment and management using Ansible',
+    category: 'infrastructure',
+    date: '2025-01-10',
+    slug: 'ansible-php-infrastructure',
+    readingTime: '5',
   },
   {
-    "id": 656,
-    "title": "Proxmox vs Cloud: Why Private Infrastructure Wins",
-    "excerpt": "Comparative analysis of Proxmox private cloud vs public cloud solutions for enterprise infrastructure",
-    "category": "infrastructure",
-    "date": "2025-01-05",
-    "slug": "proxmox-vs-cloud",
-    "readingTime": "5"
+    id: 656,
+    title: 'Proxmox vs Cloud: Why Private Infrastructure Wins',
+    excerpt:
+      'Comparative analysis of Proxmox private cloud vs public cloud solutions for enterprise infrastructure',
+    category: 'infrastructure',
+    date: '2025-01-05',
+    slug: 'proxmox-vs-cloud',
+    readingTime: '5',
   },
   {
-    "id": 5,
-    "title": "High-Performance PHP: Optimization Strategies",
-    "excerpt": "Advanced PHP optimization techniques for high-performance applications and systems",
-    "category": "php",
-    "date": "2024-12-28",
-    "slug": "high-performance-php",
-    "readingTime": "5"
+    id: 5,
+    title: 'High-Performance PHP: Optimization Strategies',
+    excerpt: 'Advanced PHP optimization techniques for high-performance applications and systems',
+    category: 'php',
+    date: '2024-12-28',
+    slug: 'high-performance-php',
+    readingTime: '5',
   },
   {
-    "id": 155,
-    "title": "MySQL Performance Tuning for Complex PHP Applications",
-    "excerpt": "Database optimization strategies specifically tailored for bespoke PHP systems with complex queries",
-    "category": "database",
-    "date": "2024-12-20",
-    "slug": "mysql-performance-php",
-    "readingTime": "5"
+    id: 155,
+    title: 'MySQL Performance Tuning for Complex PHP Applications',
+    excerpt:
+      'Database optimization strategies specifically tailored for bespoke PHP systems with complex queries',
+    category: 'database',
+    date: '2024-12-20',
+    slug: 'mysql-performance-php',
+    readingTime: '5',
   },
   {
-    "id": 671,
-    "title": "Building Scalable Backend APIs with Modern PHP",
-    "excerpt": "Comprehensive guide to building scalable, maintainable PHP APIs using modern architecture patterns",
-    "category": "php",
-    "date": "2024-12-15",
-    "slug": "scalable-php-apis",
-    "readingTime": "5"
+    id: 671,
+    title: 'Building Scalable Backend APIs with Modern PHP',
+    excerpt:
+      'Comprehensive guide to building scalable, maintainable PHP APIs using modern architecture patterns',
+    category: 'php',
+    date: '2024-12-15',
+    slug: 'scalable-php-apis',
+    readingTime: '5',
   },
   {
-    "id": 675,
-    "title": "AI-Enhanced PHP Development: Tools and Workflows",
-    "excerpt": "Modern PHP development enhanced with AI tools and workflows for increased productivity and code quality",
-    "category": "ai",
-    "date": "2024-12-10",
-    "slug": "ai-enhanced-php-development",
-    "readingTime": "5"
-  }
+    id: 675,
+    title: 'AI-Enhanced PHP Development: Tools and Workflows',
+    excerpt:
+      'Modern PHP development enhanced with AI tools and workflows for increased productivity and code quality',
+    category: 'ai',
+    date: '2024-12-10',
+    slug: 'ai-enhanced-php-development',
+    readingTime: '5',
+  },
 ];
 
 const categories = {
-  "php": {
-    "label": "PHP",
-    "description": "PHP development, frameworks, best practices",
-    "backgroundColor": "#f3e5f5",
-    "textColor": "#7b1fa2"
+  php: {
+    label: 'PHP',
+    description: 'PHP development, frameworks, best practices',
+    backgroundColor: '#f3e5f5',
+    textColor: '#7b1fa2',
   },
-  "infrastructure": {
-    "label": "Infrastructure",
-    "description": "DevOps, hosting, deployment, automation",
-    "backgroundColor": "#e8f5e9",
-    "textColor": "#388e3c"
+  infrastructure: {
+    label: 'Infrastructure',
+    description: 'DevOps, hosting, deployment, automation',
+    backgroundColor: '#e8f5e9',
+    textColor: '#388e3c',
   },
-  "database": {
-    "label": "Database",
-    "description": "MySQL, PostgreSQL, optimization, architecture",
-    "backgroundColor": "#e3f2fd",
-    "textColor": "#1976d2"
+  database: {
+    label: 'Database',
+    description: 'MySQL, PostgreSQL, optimization, architecture',
+    backgroundColor: '#e3f2fd',
+    textColor: '#1976d2',
   },
-  "ai": {
-    "label": "AI",
-    "description": "AI tools, ML integration, automation",
-    "backgroundColor": "#fff3e0",
-    "textColor": "#f57c00"
+  ai: {
+    label: 'AI',
+    description: 'AI tools, ML integration, automation',
+    backgroundColor: '#fff3e0',
+    textColor: '#f57c00',
   },
-  "typescript": {
-    "label": "TypeScript",
-    "description": "TypeScript, Node.js, modern JavaScript",
-    "backgroundColor": "#e1f5fe",
-    "textColor": "#0277bd"
-  }
+  typescript: {
+    label: 'TypeScript',
+    description: 'TypeScript, Node.js, modern JavaScript',
+    backgroundColor: '#e1f5fe',
+    textColor: '#0277bd',
+  },
 };
 
 class ArticleManager {
@@ -387,14 +423,14 @@ class ArticleManager {
     // Check if we're on a static paginated page - if so, don't render
     const grid = document.getElementById('articlesGrid');
     const isStaticPage = grid && grid.classList.contains('static-page');
-    
+
     this.setupEventListeners();
-    
+
     // Only render articles if NOT on a static page
     if (!isStaticPage) {
       this.renderArticles();
     }
-    
+
     this.hideLoadingIndicator();
   }
 
@@ -405,7 +441,7 @@ class ArticleManager {
         this.searchTerm = e.target.value.toLowerCase();
         this.filterArticles();
       };
-      
+
       // Use debounce if available, otherwise use direct handler
       if (window.appUtils && window.appUtils.debounce) {
         searchInput.addEventListener('input', window.appUtils.debounce(handler, 300));
@@ -432,8 +468,10 @@ class ArticleManager {
 
   filterArticles() {
     this.filteredArticles = this.articles.filter(article => {
-      const categoryMatch = this.currentCategory === 'all' || article.category === this.currentCategory;
-      const searchMatch = this.searchTerm === '' || 
+      const categoryMatch =
+        this.currentCategory === 'all' || article.category === this.currentCategory;
+      const searchMatch =
+        this.searchTerm === '' ||
         article.title.toLowerCase().includes(this.searchTerm) ||
         article.excerpt.toLowerCase().includes(this.searchTerm);
       return categoryMatch && searchMatch;
@@ -444,20 +482,20 @@ class ArticleManager {
   renderArticles() {
     const grid = document.getElementById('articlesGrid');
     const noResults = document.getElementById('noResults');
-    
+
     if (!grid) return;
-    
+
     if (this.filteredArticles.length === 0) {
       grid.style.display = 'none';
       if (noResults) noResults.style.display = 'block';
       return;
     }
-    
+
     grid.style.display = 'grid';
     if (noResults) noResults.style.display = 'none';
-    
+
     grid.innerHTML = this.filteredArticles.map(article => this.createArticleCard(article)).join('');
-    
+
     // Animate articles
     requestAnimationFrame(() => {
       grid.querySelectorAll('.article-card').forEach((card, index) => {
@@ -473,11 +511,11 @@ class ArticleManager {
     const date = new Date(article.date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
-    
+
     const categoryLabel = categories[article.category]?.label || article.category;
-    
+
     return `
       <article class="article-card" style="opacity: 0; transform: translateY(20px);">
         <div class="article-meta">
@@ -502,10 +540,10 @@ class ArticleManager {
 }
 
 // Initialize when DOM is ready
-(function() {
+(function () {
   let retryCount = 0;
   const maxRetries = 100; // 5 seconds max wait
-  
+
   function init() {
     if (typeof window.appUtils !== 'undefined') {
       new ArticleManager();

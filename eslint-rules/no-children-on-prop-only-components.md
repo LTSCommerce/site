@@ -49,12 +49,14 @@ gain `children?: never` in their TypeScript interfaces:
 Assuming `SkillBadge` is configured as prop-only:
 
 BAD:
+
 ```tsx
 <SkillBadge>PHP</SkillBadge>
 <StatCard>20+ years</StatCard>
 ```
 
 GOOD:
+
 ```tsx
 <SkillBadge label="PHP" level="expert" />
 <StatCard value="20+" label="Years Experience" />

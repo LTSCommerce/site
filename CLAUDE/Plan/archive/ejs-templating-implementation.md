@@ -7,6 +7,7 @@ Transform the static HTML site into a template-driven system using EJS, maintain
 ## Current State Analysis
 
 ### Existing Architecture
+
 - **Source**: `private_html/` with static HTML files
 - **Build**: Vite processes to `public_html/` with asset optimization
 - **Template System**: Basic placeholder replacement (`{{ARTICLE_TITLE}}`)
@@ -14,6 +15,7 @@ Transform the static HTML site into a template-driven system using EJS, maintain
 - **Build Pipeline**: article registration → code embedding → Vite build → deployment
 
 ### Current Pain Points
+
 - 🔴 **Code Duplication**: Navigation, header, footer repeated in every file
 - 🔴 **Manual HTML**: No template inheritance or component reuse
 - 🔴 **Inconsistent Updates**: Changes require editing multiple files
@@ -22,16 +24,19 @@ Transform the static HTML site into a template-driven system using EJS, maintain
 ## Implementation Strategy
 
 ### Phase 1: Foundation Setup
+
 **Duration**: 2-3 hours
 **Risk**: Low
 **Priority**: High
 
 #### 1.1 Install EJS Plugin
+
 - [ ] Install `vite-plugin-ejs` package
 - [ ] Configure plugin in `vite.config.js`
 - [ ] Test basic EJS processing with simple template
 
 #### 1.2 Directory Structure
+
 ```
 private_html/
 ├── templates/
@@ -64,6 +69,7 @@ private_html/
 ```
 
 #### 1.3 Data Structure Design
+
 ```json
 // data/site.json
 {
@@ -91,11 +97,13 @@ private_html/
 ```
 
 ### Phase 2: Core Template System
+
 **Duration**: 4-5 hours
 **Risk**: Medium
 **Priority**: High
 
 #### 2.1 Base Layout Template
+
 - [ ] Create `templates/layouts/base.ejs` with:
   - HTML5 document structure
   - Dynamic head section inclusion
@@ -104,6 +112,7 @@ private_html/
   - Asset path handling for Vite
 
 #### 2.2 Partial Components
+
 - [ ] Extract navigation to `templates/partials/navigation.ejs`
   - Dynamic active state based on current page
   - Mobile responsive toggle
@@ -113,6 +122,7 @@ private_html/
 - [ ] Extract footer to `templates/partials/footer.ejs`
 
 #### 2.3 Page Layout Templates
+
 - [ ] Create `templates/layouts/page.ejs` for standard pages
 - [ ] Create `templates/layouts/article.ejs` for article pages
   - Article metadata display
@@ -121,6 +131,7 @@ private_html/
   - Related articles section
 
 #### 2.4 Vite Plugin Configuration
+
 ```javascript
 // vite.config.js additions
 import { defineConfig } from 'vite';
@@ -141,20 +152,22 @@ export default defineConfig({
       articles: articlesData,
       // Helper functions
       currentYear: new Date().getFullYear(),
-      formatDate: (date) => new Date(date).toLocaleDateString('en-GB'),
-      isActive: (currentPage, targetPage) => currentPage === targetPage
-    })
+      formatDate: date => new Date(date).toLocaleDateString('en-GB'),
+      isActive: (currentPage, targetPage) => currentPage === targetPage,
+    }),
   ],
   // ... rest of config
 });
 ```
 
 ### Phase 3: Content Migration
+
 **Duration**: 3-4 hours  
 **Risk**: High
 **Priority**: High
 
 #### 3.1 Page Templates Migration
+
 - [ ] Convert `index.html` → `pages/index.ejs`
 - [ ] Convert `about.html` → `pages/about.ejs`
 - [ ] Convert `services.html` → `pages/services.ejs`
@@ -163,6 +176,7 @@ export default defineConfig({
 - [ ] Convert `author.html` → `pages/author.ejs`
 
 #### 3.2 Article Templates Migration
+
 - [ ] Update `templates/article-template.html` → `templates/article-template.ejs`
 - [ ] Migrate existing articles incrementally:
   - Replace navigation with `<%- include('../templates/partials/navigation', { current: 'articles' }) %>`
@@ -170,16 +184,19 @@ export default defineConfig({
   - Use article layout template
 
 #### 3.3 Template Data Integration
+
 - [ ] Integrate with existing `articles.js` data
 - [ ] Ensure auto-registration still works
 - [ ] Update build scripts to work with EJS
 
 ### Phase 4: Advanced Features
+
 **Duration**: 2-3 hours
 **Risk**: Low
 **Priority**: Medium
 
 #### 4.1 Template Components
+
 - [ ] Create `templates/components/article-card.ejs`
   - Reusable article listing component
   - Category badges, reading time display
@@ -188,6 +205,7 @@ export default defineConfig({
   - Language detection integration
 
 #### 4.2 Template Helpers & Functions
+
 ```javascript
 // Helper functions for templates
 {
@@ -195,23 +213,23 @@ export default defineConfig({
   formatDate: (date) => new Date(date).toLocaleDateString('en-GB', {
     year: 'numeric', month: 'long', day: 'numeric'
   }),
-  
+
   // Truncate text for excerpts
   truncate: (text, length = 150) => {
     return text.length > length ? text.substring(0, length) + '...' : text;
   },
-  
+
   // Check if current page for navigation
   isActive: (current, target) => current === target,
-  
+
   // Generate article URL
   articleUrl: (slug) => `/articles/${slug}.html`,
-  
+
   // Filter articles by category
   articlesByCategory: (articles, category) => {
     return articles.filter(article => article.category === category);
   },
-  
+
   // Get recent articles
   recentArticles: (articles, limit = 5) => {
     return articles
@@ -222,11 +240,13 @@ export default defineConfig({
 ```
 
 ### Phase 5: Build System Integration
+
 **Duration**: 3-4 hours
 **Risk**: High
 **Priority**: High
 
 #### 5.1 Build Pipeline Updates
+
 ```javascript
 // Updated build process
 "scripts": {
@@ -237,47 +257,55 @@ export default defineConfig({
 ```
 
 #### 5.2 New Build Scripts
+
 - [ ] Create `scripts/prepare-ejs-data.js`
   - Prepare template data from various sources
   - Merge site config, articles, navigation
   - Generate dynamic data for templates
 
 #### 5.3 Vite Config Updates
+
 - [ ] Update input paths to reference EJS files
 - [ ] Ensure asset processing works with templates
 - [ ] Configure EJS file extensions and processing
 - [ ] Maintain existing HTML comment removal
 
 #### 5.4 Integration Testing
+
 - [ ] Test development server with EJS templates
 - [ ] Test build process produces correct HTML
 - [ ] Verify asset paths and references
 - [ ] Test article auto-registration still works
 
 ### Phase 6: Migration Verification & Optimization
+
 **Duration**: 2-3 hours
 **Risk**: Low
 **Priority**: High
 
 #### 6.1 Content Verification
+
 - [ ] Compare built HTML with original files (automated diff)
 - [ ] Verify all navigation links work
 - [ ] Check asset loading and CSS/JS inclusion
 - [ ] Test responsive navigation and mobile experience
 
 #### 6.2 SEO & Meta Data Verification
+
 - [ ] Verify all meta tags are properly populated
 - [ ] Check structured data is preserved
 - [ ] Test article metadata display
 - [ ] Validate HTML markup
 
 #### 6.3 Performance Testing
+
 - [ ] Compare build times before/after EJS
 - [ ] Test development server performance
 - [ ] Verify asset optimization still works
 - [ ] Check Lighthouse scores are maintained
 
 #### 6.4 CI/CD Integration
+
 - [ ] Test GitHub Actions pipeline with EJS build
 - [ ] Verify deployment process works
 - [ ] Check formatting/linting compatibility
@@ -288,36 +316,46 @@ export default defineConfig({
 ### 🚨 High-Risk Issues
 
 #### 1. **Build Order Dependencies**
+
 **Risk**: EJS processing conflicts with existing build scripts
-**Mitigation**: 
+**Mitigation**:
+
 - Update build scripts to prepare data before EJS processing
 - Test each build step independently
 - Create rollback plan with git branches
 
 #### 2. **Asset Path Resolution**
+
 **Risk**: Template assets fail to load after processing
 **Mitigation**:
+
 - Test asset paths in both dev and build modes
 - Use Vite's asset importing in templates
 - Create path helper functions for consistent URLs
 
 #### 3. **HTML Comment Removal**
+
 **Risk**: EJS comments conflict with existing comment removal
 **Mitigation**:
+
 - Update comment removal plugin to handle EJS
 - Test comment processing in templates
 - Verify metadata comments are preserved where needed
 
 #### 4. **Article Auto-Registration**
+
 **Risk**: EJS conversion breaks existing article system
 **Mitigation**:
+
 - Maintain existing articles.json structure
 - Test auto-registration with EJS files
 - Create migration script for gradual conversion
 
 #### 5. **Development/Build Parity**
+
 **Risk**: Templates work in dev but fail in build
 **Mitigation**:
+
 - Test both modes continuously during development
 - Use same data sources in dev and build
 - Create automated comparison tests
@@ -325,38 +363,45 @@ export default defineConfig({
 ### ⚠️ Medium-Risk Issues
 
 #### 6. **Template Performance**
+
 **Risk**: EJS processing slows build times
 **Solution**: Pre-compile templates, cache data loading
 
 #### 7. **CSS/JS Integration**
+
 **Risk**: Template-specific assets don't load properly  
 **Solution**: Update Vite input config, test asset imports
 
 #### 8. **Mobile Navigation**
+
 **Risk**: JavaScript navigation breaks with templates
 **Solution**: Test interactive components, update JS selectors
 
 ### ✅ Best Practices Implementation
 
 #### Template Organization
+
 - **Consistent naming**: Use kebab-case for files, camelCase for data
 - **Clear separation**: layouts vs partials vs components vs pages
 - **Documentation**: Comment complex template logic
 - **Reusability**: Design components for maximum reuse
 
 #### Data Management
+
 - **Single source of truth**: Centralize site configuration
 - **Type safety**: Document expected data structures
 - **Validation**: Check required data exists before templating
 - **Performance**: Load data once, reuse across templates
 
 #### Development Workflow
+
 - **Incremental migration**: Convert pages one at a time
 - **Testing**: Compare output HTML before/after conversion
 - **Version control**: Use feature branch, test before merging
 - **Rollback plan**: Keep original files until fully tested
 
 #### Production Readiness
+
 - **Error handling**: Graceful fallbacks for missing data
 - **Caching**: Optimize template compilation and data loading
 - **Monitoring**: Track build performance and success rates
@@ -365,6 +410,7 @@ export default defineConfig({
 ## Success Criteria
 
 ### ✅ Functional Requirements
+
 - [ ] All existing pages render identically to current versions
 - [ ] Navigation works correctly with active states
 - [ ] Article system continues to function (auto-registration, metadata)
@@ -373,6 +419,7 @@ export default defineConfig({
 - [ ] CI/CD pipeline deploys successfully
 
 ### ✅ Non-Functional Requirements
+
 - [ ] Build time increase < 20% from baseline
 - [ ] Development server startup < 10 seconds
 - [ ] Template errors fail the build (no silent failures)
@@ -380,6 +427,7 @@ export default defineConfig({
 - [ ] Lighthouse scores maintained or improved
 
 ### ✅ Developer Experience
+
 - [ ] Creating new pages requires only EJS template creation
 - [ ] Common elements (nav, footer) are single-source
 - [ ] Article creation process is unchanged or improved
@@ -396,6 +444,7 @@ export default defineConfig({
 ## Rollback Strategy
 
 ### Emergency Rollback (< 5 minutes)
+
 ```bash
 git checkout main
 npm run build
@@ -403,11 +452,13 @@ git push origin main
 ```
 
 ### Partial Rollback (maintain some templates)
+
 - Keep template system but revert problem areas
 - Use git cherry-pick for selective changes
 - Maintain hybrid approach during debugging
 
 ### Data Preservation
+
 - Backup current `articles.json` before migration
 - Preserve all original HTML files in git history
 - Document any data structure changes for recovery
@@ -417,4 +468,4 @@ git push origin main
 **Plan Status**: Ready for Implementation  
 **Last Updated**: 2025-07-21  
 **Estimated Completion**: 5-7 days with testing  
-**Risk Level**: Medium (manageable with proper testing)  
+**Risk Level**: Medium (manageable with proper testing)
