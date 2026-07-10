@@ -12,7 +12,7 @@ This directory contains all project plans following the Planning Workflow (see `
 - [006: Testing Infrastructure](006-testing-infrastructure/PLAN.md) - 📋 Planned - **Medium Priority** - Set up Vitest + Playwright (smoke tests for all pages); required before Plan 001 Phase 8
 - [007: Component Library Lift from EC Site](007-component-library-lift/PLAN.md) - 📋 Planned - **Medium Priority** - Adopt 6 UI components (BlurText, Typewriter, StatusBadge, ThreeColumnFeatures, MobileCarouselGrid, HighlightTypewriter)
 - [008: ESLint Custom Rules Adoption](008-eslint-custom-rules/PLAN.md) - 📋 Planned - **Medium-High Priority** - Cherry-pick 8 ESLint rules from EC site's 80+ (SEO enforcement, navigation, placeholder prevention)
-- [011: ts-qa-ci — TypeScript QA/CI Harness Package](011-ts-qa-ci-package/PLAN.md) - 📋 Planned - **High Priority** - New `@longtermsupport/ts-qa-ci` package (TS analogue of `lts/php-qa-ci`): orchestrated QA pipeline, CDD ESLint rule tier, Claude Code integration, dogfooded on this repo first
+- [011: ts-qa-ci — TypeScript QA/CI Harness Package](011-ts-qa-ci-package/PLAN.md) - 🔄 In Progress - **High Priority** - New `@longtermsupport/ts-qa-ci` package (TS analogue of `lts/php-qa-ci`): orchestrated QA pipeline, CDD ESLint rule tier, Claude Code integration, dogfooded on this repo first
 
 ## Completed Plans
 
