@@ -293,7 +293,7 @@ Windows/macOS dev machines; prefer a Node-authored CLI over bash for portability
 
 ### 14. `@edmondscommerce/feqa` prior art
 
-Decision 2 rightly notes it. Given ec-site *is* the edmondscommerce codebase and the
+Decision 2 rightly notes it. Given ec-site is closely associated with this scope and is the
 richest reference here, the Phase 1 "look at feqa for reusable ideas" note should be
 folded into the broader ec-site research task (Finding 1) rather than tracked
 separately.

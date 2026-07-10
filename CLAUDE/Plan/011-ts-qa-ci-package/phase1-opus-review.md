@@ -38,10 +38,10 @@ omissions — they do not block starting design work.
    The prose says "all 57 rules live in `eslint-rules/*.js`" and "collectively
    covered 55 distinct named rules from the full 57," which reads as if 2–3 rules
    went unclassified. In fact there are 57 `.js` files but only **54 are actual
-   rules**; the other three are non-rules: `_type-aware-detection-poc.js` (a POC),
-   `load-routes.js` (a helper module, already referenced in row #16), and
-   `no-hardcoded-contact-details.test.js` (a test file). The B.1 table classifies
-   exactly 54 rules (#1–#54; summary counts 8+25+21=54), so coverage is actually
+   rules**; the other three are non-rules: a POC file, a `load-routes.js` helper
+   module (already referenced in row #16), and one `.test.js` test file (paired
+   with an adapted rule already classified in the catalogue). The B.1 table
+   classifies exactly 54 rules (summary counts 8+25+21=54), so coverage is actually
    **complete — every real rule is classified**.
    *Fix*: correct the B.1 preamble to "57 `.js` files = 54 rules + 3 non-rule files
    (POC, `load-routes.js` helper, one `.test.js`); all 54 rules classified below."
