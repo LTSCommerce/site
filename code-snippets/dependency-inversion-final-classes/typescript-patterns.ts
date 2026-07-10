@@ -1,6 +1,6 @@
 /**
  * TypeScript Implementation: Dependency Inversion with Modern Patterns
- * 
+ *
  * Key TypeScript features used:
  * - Readonly classes (similar to PHP final classes)
  * - Union types for flexible testing
@@ -46,17 +46,11 @@ enum CustomerType {
 }
 
 // Result types using discriminated unions
-type ValidationResult = 
-  | { success: true; data: OrderData }
-  | { success: false; errors: string[] };
+type ValidationResult = { success: true; data: OrderData } | { success: false; errors: string[] };
 
-type ProcessingResult = 
-  | { success: true; orderId: OrderId }
-  | { success: false; errors: string[] };
+type ProcessingResult = { success: true; orderId: OrderId } | { success: false; errors: string[] };
 
-type PaymentResult = 
-  | { success: true; transactionId: string }
-  | { success: false; error: string };
+type PaymentResult = { success: true; transactionId: string } | { success: false; error: string };
 
 // Data structures
 interface OrderData {
@@ -125,10 +119,7 @@ class OrderProcessor {
     }
 
     // Calculate tax
-    const tax = this.taxCalculator.calculateTax(
-      orderData.amount,
-      orderData.customerType
-    );
+    const tax = this.taxCalculator.calculateTax(orderData.amount, orderData.customerType);
     const totalAmount = createMoney(orderData.amount + tax);
 
     try {
@@ -145,22 +136,19 @@ class OrderProcessor {
 
       if (paymentResult.success) {
         await this.storage.updateOrderStatus(orderId, OrderStatus.PAID);
-        await this.notificationService.sendOrderConfirmation(
-          orderData.customerEmail,
-          orderId
-        );
+        await this.notificationService.sendOrderConfirmation(orderData.customerEmail, orderId);
         return { success: true, orderId };
       } else {
         await this.storage.updateOrderStatus(orderId, OrderStatus.FAILED);
-        return { 
-          success: false, 
-          errors: [`Payment failed: ${paymentResult.error}`] 
+        return {
+          success: false,
+          errors: [`Payment failed: ${paymentResult.error}`],
         };
       }
     } catch (error) {
-      return { 
-        success: false, 
-        errors: [`Processing error: ${error instanceof Error ? error.message : 'Unknown error'}`] 
+      return {
+        success: false,
+        errors: [`Processing error: ${error instanceof Error ? error.message : 'Unknown error'}`],
       };
     }
   }
@@ -213,9 +201,7 @@ class BasicOrderValidator implements OrderValidator {
       errors.push('Invalid email address');
     }
 
-    return errors.length === 0
-      ? { success: true, data: orderData }
-      : { success: false, errors };
+    return errors.length === 0 ? { success: true, data: orderData } : { success: false, errors };
   }
 }
 
@@ -277,7 +263,7 @@ class StripePaymentGateway implements PaymentGateway {
     try {
       // In real implementation, this would call Stripe API
       const success = Math.random() > 0.1; // 90% success rate
-      
+
       if (success) {
         return {
           success: true,
@@ -370,14 +356,14 @@ function createOrderProcessor(
 async function testWithRealObjects() {
   const storage = new InMemoryOrderStorage();
   const processor = createOrderProcessor({ storage });
-  
+
   const orderData = createTestOrderData();
   const result = await processor.processOrder(orderData);
 
   if (result.success) {
     console.log('✓ Order processed successfully');
     console.log('✓ Order count:', storage.getOrderCount());
-    
+
     const savedOrder = await storage.findOrder(result.orderId);
     console.log('✓ Order status:', savedOrder?.status);
   } else {
@@ -413,7 +399,10 @@ async function testWithMocks() {
   if (result.success) {
     console.log('✓ Mocked order processed successfully');
     console.log('✓ Payment gateway called:', mockPaymentGateway.processPayment.mock.calls.length);
-    console.log('✓ Notification sent:', mockNotificationService.sendOrderConfirmation.mock.calls.length);
+    console.log(
+      '✓ Notification sent:',
+      mockNotificationService.sendOrderConfirmation.mock.calls.length
+    );
   }
 }
 
@@ -428,7 +417,7 @@ async function testHybridApproach() {
   };
 
   const processor = createOrderProcessor({
-    storage: realStorage,      // Real - fast and deterministic
+    storage: realStorage, // Real - fast and deterministic
     paymentGateway: mockPaymentGateway, // Mock - external service
   });
 
@@ -439,7 +428,7 @@ async function testHybridApproach() {
     console.log('✓ Hybrid test passed');
     console.log('✓ Real storage used, order count:', realStorage.getOrderCount());
     console.log('✓ Mock payment gateway called');
-    
+
     const savedOrder = await realStorage.findOrder(result.orderId);
     console.log('✓ Real order status:', savedOrder?.status);
   }
@@ -454,13 +443,15 @@ type ProcessorConfig<T extends Record<string, unknown>> = {
   [K in keyof T]: T[K];
 };
 
-function createConfigurableProcessor<TConfig extends {
-  validator?: OrderValidator;
-  taxCalculator?: TaxCalculator;
-  storage?: OrderStorage;
-  paymentGateway?: PaymentGateway;
-  notificationService?: NotificationService;
-}>(config: TConfig): OrderProcessor {
+function createConfigurableProcessor<
+  TConfig extends {
+    validator?: OrderValidator;
+    taxCalculator?: TaxCalculator;
+    storage?: OrderStorage;
+    paymentGateway?: PaymentGateway;
+    notificationService?: NotificationService;
+  },
+>(config: TConfig): OrderProcessor {
   return new OrderProcessor(
     config.validator || new BasicOrderValidator(),
     config.taxCalculator || new StandardTaxCalculator(),
@@ -475,8 +466,8 @@ type Environment = 'development' | 'testing' | 'production';
 type ServiceConfig<T extends Environment> = T extends 'testing'
   ? { useInMemoryStorage: true; mockExternalServices: true }
   : T extends 'development'
-  ? { useInMemoryStorage: false; mockExternalServices: false; debugMode: true }
-  : { useInMemoryStorage: false; mockExternalServices: false; optimizeForProduction: true };
+    ? { useInMemoryStorage: false; mockExternalServices: false; debugMode: true }
+    : { useInMemoryStorage: false; mockExternalServices: false; optimizeForProduction: true };
 
 function createEnvironmentSpecificProcessor<T extends Environment>(
   env: T,
@@ -489,7 +480,7 @@ function createEnvironmentSpecificProcessor<T extends Environment>(
       // Mock other services in testing
     });
   }
-  
+
   // Production or development configuration
   return createConfigurableProcessor({
     // Real implementations

@@ -18,7 +18,7 @@ describe('OrderService - Minimal Mocking (GOOD)', () => {
     const mockPaymentGateway = {
       processPayment: vi.fn().mockResolvedValue({ success: true, transactionId: 'tx123' }),
       validateCard: vi.fn().mockReturnValue(true),
-      calculateFees: vi.fn().mockReturnValue(2.50),
+      calculateFees: vi.fn().mockReturnValue(2.5),
       // formatAmount: NOT MOCKED - it's a pure function
     } as Partial<IPaymentGateway> as IPaymentGateway;
 
@@ -29,7 +29,7 @@ describe('OrderService - Minimal Mocking (GOOD)', () => {
     } as Partial<IEmailService> as IEmailService;
 
     const mockInventoryService = {
-      checkStock: vi.fn().mockResolvedValue(true),     // External system - mock it
+      checkStock: vi.fn().mockResolvedValue(true), // External system - mock it
       reserveItems: vi.fn().mockResolvedValue({ success: true }), // Side effect - mock it
       // calculatePrice: NOT MOCKED - business logic we want to test
       // applyDiscount: NOT MOCKED - business logic we want to test
@@ -51,7 +51,7 @@ describe('OrderService - Minimal Mocking (GOOD)', () => {
     const orderData = {
       id: '123',
       customerEmail: 'customer@example.com',
-      items: [{ id: 'item1', quantity: 2, price: 50 }]
+      items: [{ id: 'item1', quantity: 2, price: 50 }],
     };
 
     // Act
@@ -61,7 +61,7 @@ describe('OrderService - Minimal Mocking (GOOD)', () => {
     expect(result.success).toBe(true);
     expect(result.orderId).toBe('123');
     expect(result.totalAmount).toBeGreaterThan(0); // Tests real calculation logic
-    
+
     // Verify only critical side effects
     expect(mockPaymentGateway.processPayment).toHaveBeenCalledOnce();
     expect(mockEmailService.sendEmail).toHaveBeenCalledWith(
@@ -79,7 +79,7 @@ describe('OrderService - Minimal Mocking (GOOD)', () => {
     const mockPaymentGateway = {
       processPayment: vi.fn().mockRejectedValue(new Error('Payment failed')),
       validateCard: vi.fn().mockReturnValue(true),
-      calculateFees: vi.fn().mockReturnValue(2.50),
+      calculateFees: vi.fn().mockReturnValue(2.5),
     } as Partial<IPaymentGateway> as IPaymentGateway;
 
     // Use real implementations for everything else
@@ -97,12 +97,12 @@ describe('OrderService - Minimal Mocking (GOOD)', () => {
     const orderData = {
       id: '456',
       customerEmail: 'customer@example.com',
-      items: [{ id: 'item1', quantity: 1, price: 25 }]
+      items: [{ id: 'item1', quantity: 1, price: 25 }],
     };
 
     // Act & Assert
     await expect(orderService.processOrder(orderData)).rejects.toThrow('Payment failed');
-    
+
     // Verify payment was attempted
     expect(mockPaymentGateway.processPayment).toHaveBeenCalledOnce();
   });

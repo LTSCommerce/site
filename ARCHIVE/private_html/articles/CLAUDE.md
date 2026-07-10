@@ -18,6 +18,7 @@ This guide provides instructions for creating high-quality technical articles fo
 ### Research Requirements
 
 Before writing ANY technical content:
+
 1. **Check current version** - Visit npm, GitHub releases, official docs
 2. **Verify features** - Confirm features exist in the current version
 3. **Read recent updates** - Check blog posts from the last 3-6 months
@@ -27,6 +28,7 @@ Before writing ANY technical content:
 ### Research Tools
 
 Use these tools for EVERY article:
+
 - `WebSearch` - Find current documentation and recent articles
 - `WebFetch` - Read official docs, GitHub pages, and release notes
 - Cross-reference multiple sources
@@ -45,6 +47,7 @@ cp private_html/articles/php-magic-constants-maintainable-logging.ejs private_ht
 ```
 
 The `_TEMPLATE-ARTICLE.ejs` includes:
+
 - Complete structure with comments explaining each section
 - Code snippet examples with proper directory path usage
 - Extensive linking examples
@@ -73,6 +76,7 @@ The `_TEMPLATE-ARTICLE.ejs` includes:
 **ALWAYS use the snippet injection system for ALL code examples, no matter how small.**
 
 Embedding code directly in EJS templates causes catastrophic rendering failures:
+
 - Unescaped HTML characters (`<`, `>`, `&`, `<?php`) break page layout
 - Text after embedded code renders in monospace
 - PHP opening tags can be interpreted as HTML, corrupting the entire page
@@ -87,6 +91,7 @@ Embedding code directly in EJS templates causes catastrophic rendering failures:
 5. **IMPORTANT**: Always put closing `</code></pre>` tags on a new line
 
 **Examples of what to put in separate snippet files**:
+
 - ✅ Complete class definitions
 - ✅ Function examples (even single functions)
 - ✅ Configuration file excerpts
@@ -97,26 +102,33 @@ Embedding code directly in EJS templates causes catastrophic rendering failures:
 **Code Examples Requirements - Audience-Dependent**:
 
 ### Developer-Focused Technical Articles
+
 **MANDATORY** - Include examples in ALL of these languages **IN THIS ORDER**:
+
 1. **Pseudocode** (`.txt` files) - Conceptual explanation first
-2. **PHP** (`.php` files) - Current 8.4 syntax and best practices  
+2. **PHP** (`.php` files) - Current 8.4 syntax and best practices
 3. **TypeScript** (`.ts` files) - Modern Node.js/TypeScript examples
 4. **Ansible** (`.yml` files) - Infrastructure automation playbooks
 5. **Bash** (`.sh` files) - Shell scripting with error handling
 
 ### Executive/Strategic Articles (C-level, Business Focus)
+
 **OPTIONAL** - Code examples should be:
+
 - **Minimal or none** - Focus on business concepts, ROI, strategic value
 - **High-level conceptual** - If code is needed, use simple pseudocode or architecture diagrams
 - **Business-relevant** - Only include code that directly supports business decision-making
 
 ### Mixed Technical/Business Articles
+
 **SELECTIVE** - Include code examples that:
+
 - **Support business points** - Code serves to illustrate business concepts
 - **1-3 languages maximum** - Choose most relevant to the business context
 - **Focus on outcomes** - Emphasize results rather than implementation details
 
 **Directory Structure Example**:
+
 ```
 code-snippets/
 ├── defensive-programming-principles/
@@ -133,11 +145,13 @@ code-snippets/
 ```
 
 **Pseudocode File Extension Rule**:
+
 - **ALWAYS use `.txt` extension** for pseudocode files to clearly indicate they are conceptual, not real Python code
 - Use `language-python` for syntax highlighting, but content must be language-agnostic pseudocode
 - Examples: `CLASS UserService`, `METHOD validate() -> boolean`, `IF condition THEN action`
 
 **Article Template Usage**:
+
 ```html
 <!-- ✅ CORRECT: Pseudocode first with .txt extension -->
 <pre><code class="language-python">{{SNIPPET:article-slug/concept-pseudocode.txt}}
@@ -153,11 +167,13 @@ code-snippets/
 ```
 
 **Critical Rules**:
+
 - **Closing tags MUST be on a new line**: If they're on the same line as the last line of code (especially comments), they'll be treated as part of the code
 - **Use full directory paths**: Always include the article directory name in snippet references
 - **Match directory names**: Code snippet directory should match article slug (kebab-case)
 
 **HTML Escaping**: The build process automatically escapes HTML entities in code snippets:
+
 - `<` becomes `&lt;`
 - `>` becomes `&gt;`
 - `&` becomes `&amp;`
@@ -200,12 +216,14 @@ git push origin main # Triggers auto-deployment
 - **Current information** - Check that linked resources are up-to-date
 
 **CRITICAL**: Training data is often months or years out of date. For example:
+
 - Framework versions change frequently (e.g., oclif v4 released June 2024)
 - Best practices evolve rapidly
 - Tool features are added monthly
 - Security recommendations change
 
 Always use WebSearch and WebFetch to verify:
+
 - Current version numbers
 - Latest features and updates
 - Recent breaking changes
@@ -215,6 +233,7 @@ Always use WebSearch and WebFetch to verify:
 ### Research Process Example
 
 **BAD** (using training knowledge):
+
 ```
 "The latest version includes new features like..."
 "This framework recently added support for..."
@@ -222,6 +241,7 @@ Always use WebSearch and WebFetch to verify:
 ```
 
 **GOOD** (after research):
+
 ```
 "Version X.Y.Z (released [exact date from GitHub]) includes..."
 "According to npm, the current version published [days] ago is..."
@@ -231,73 +251,124 @@ Always use WebSearch and WebFetch to verify:
 Examples of well-linked content:
 
 **Basic linking**:
+
 ```html
 <p>
-    <a href="https://oclif.io/" target="_blank" rel="noopener">Oclif</a> is an 
-    open-source framework for building command-line interfaces in 
-    <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> and 
-    <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>.
+  <a href="https://oclif.io/" target="_blank" rel="noopener">Oclif</a> is an open-source framework
+  for building command-line interfaces in
+  <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> and
+  <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>.
 </p>
 ```
 
 **Language feature linking (MANDATORY)**:
+
 ```html
 <p>
-    PHP 8.4 introduces <a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener">property hooks</a> 
-    and <a href="https://wiki.php.net/rfc/asymmetric-visibility" target="_blank" rel="noopener">asymmetric visibility</a>.
-    <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">Final classes</a> 
-    prevent inheritance, encouraging composition over inheritance.
+  PHP 8.4 introduces
+  <a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener"
+    >property hooks</a
+  >
+  and
+  <a href="https://wiki.php.net/rfc/asymmetric-visibility" target="_blank" rel="noopener"
+    >asymmetric visibility</a
+  >.
+  <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener"
+    >Final classes</a
+  >
+  prevent inheritance, encouraging composition over inheritance.
 </p>
 
 <p>
-    TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types" target="_blank" rel="noopener">union types</a> 
-    and <a href="https://egghead.io/blog/using-branded-types-in-typescript" target="_blank" rel="noopener">branded types</a> 
-    provide stronger type safety than traditional approaches.
+  TypeScript's
+  <a
+    href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types"
+    target="_blank"
+    rel="noopener"
+    >union types</a
+  >
+  and
+  <a href="https://egghead.io/blog/using-branded-types-in-typescript" target="_blank" rel="noopener"
+    >branded types</a
+  >
+  provide stronger type safety than traditional approaches.
 </p>
 ```
 
 **Comprehensive linking**:
+
 ```html
 <p>
-    PHP has converged around <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11 Container Interface</a>, 
-    with most frameworks implementing compatible containers. TypeScript? It's the Wild West.
+  PHP has converged around
+  <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener"
+    >PSR-11 Container Interface</a
+  >, with most frameworks implementing compatible containers. TypeScript? It's the Wild West.
 </p>
 
-<h4><a href="https://github.com/inversify/InversifyJS" target="_blank" rel="noopener">InversifyJS</a></h4>
+<h4>
+  <a href="https://github.com/inversify/InversifyJS" target="_blank" rel="noopener">InversifyJS</a>
+</h4>
 <ul>
-    <li>The most mature option, inspired by <a href="https://github.com/ninject/Ninject" target="_blank" rel="noopener">.NET's Ninject</a></li>
-    <li>Heavy use of <a href="https://www.typescriptlang.org/docs/handbook/decorators.html" target="_blank" rel="noopener">decorators</a> and metadata</li>
-    <li>Requires <a href="https://github.com/rbuckton/reflect-metadata" target="_blank" rel="noopener"><code>reflect-metadata</code></a> polyfill</li>
+  <li>
+    The most mature option, inspired by
+    <a href="https://github.com/ninject/Ninject" target="_blank" rel="noopener">.NET's Ninject</a>
+  </li>
+  <li>
+    Heavy use of
+    <a
+      href="https://www.typescriptlang.org/docs/handbook/decorators.html"
+      target="_blank"
+      rel="noopener"
+      >decorators</a
+    >
+    and metadata
+  </li>
+  <li>
+    Requires
+    <a href="https://github.com/rbuckton/reflect-metadata" target="_blank" rel="noopener"
+      ><code>reflect-metadata</code></a
+    >
+    polyfill
+  </li>
 </ul>
 ```
 
 **Even inline code elements can be linked**:
+
 ```html
 <p>
-    In PHP, you might use <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener"><code>final</code></a> to prevent inheritance
+  In PHP, you might use
+  <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener"
+    ><code>final</code></a
+  >
+  to prevent inheritance
 </p>
 ```
 
 ### 2. Content Structure
 
 #### Opening Section
-- **Lead paragraph** in `<div class="intro"><p class="lead">` 
+
+- **Lead paragraph** in `<div class="intro"><p class="lead">`
 - Hook the reader with the problem being solved
 - Establish credibility and scope
 
 #### Body Sections
+
 - Use `<section>` tags for major topics
 - Hierarchical headings: `<h2>` for main sections, `<h3>` for subsections
 - One idea per paragraph
 - Use lists for multiple related points
 
 #### Code Examples
+
 - Always use appropriate language classes: `language-php`, `language-javascript`, etc.
 - Provide context before code blocks
 - Keep examples practical and runnable
 - Comment complex sections
 
 #### Conclusion
+
 - Summarize key takeaways
 - Provide actionable next steps
 - Avoid generic endings
@@ -305,12 +376,14 @@ Examples of well-linked content:
 ### 3. Writing Style
 
 #### Technical Accuracy
+
 - **No fabrication** - Never invent case studies or metrics
 - **Practical focus** - Real-world applications over theory
 - **Honest assessment** - Include limitations and drawbacks
 - **Balanced perspective** - Pros AND cons for tools/approaches
 
 #### Tone and Voice
+
 - **Professional** but approachable
 - **Confident** without being arrogant
 - **Instructive** rather than prescriptive
@@ -325,6 +398,7 @@ Examples of well-linked content:
   - **NO "in conclusion"** - just conclude
 
 #### Formatting Standards
+
 - **Links**: All external links must include `target="_blank" rel="noopener"`
 - **Emphasis**: Use `<strong>` for important terms, not just bold
 - **Lists**: Use `<ul>` for unordered, `<ol>` for sequential steps
@@ -340,6 +414,7 @@ Examples of well-linked content:
 ### 5. Categories
 
 Available categories and their focus:
+
 - **php** - PHP development, frameworks, best practices
 - **infrastructure** - DevOps, hosting, deployment, automation
 - **database** - MySQL, PostgreSQL, optimization, architecture
@@ -349,6 +424,7 @@ Available categories and their focus:
 #### Adding a New Category
 
 1. **Add category to `private_html/data/categories.json`**:
+
    ```json
    "newcategory": {
      "label": "New Category",
@@ -363,6 +439,7 @@ Available categories and their focus:
 3. **Build the site** - Category styles are auto-generated and filters appear automatically!
 
 The system will:
+
 - Validate categories during article registration
 - Generate CSS styles automatically
 - Create filter buttons dynamically
@@ -375,7 +452,8 @@ Before publishing, verify:
 **Code Requirements (Audience-Dependent):**
 
 **For Developer-Focused Articles:**
-- [ ] **PSEUDOCODE FIRST**: Every concept starts with language-agnostic pseudocode explanation  
+
+- [ ] **PSEUDOCODE FIRST**: Every concept starts with language-agnostic pseudocode explanation
 - [ ] **PSEUDOCODE FILE EXTENSION**: All pseudocode files use `.txt` extension (not `.py`)
 - [ ] **PRESENTATION ORDER**: Pseudocode (.txt) → PHP → TypeScript → Ansible → Bash
 - [ ] **PHP examples** using current 8.4 syntax and best practices (shown after pseudocode)
@@ -385,22 +463,26 @@ Before publishing, verify:
 - [ ] All examples demonstrate the same concepts across different implementation approaches
 
 **For Executive/Strategic Articles:**
+
 - [ ] **Minimal or no code** - Focus on business value, ROI, strategic implications
 - [ ] **High-level concepts only** - Use architectural diagrams, flowcharts, or simple pseudocode if needed
 - [ ] **Business-relevant examples** - Only include technical details that support business decisions
 
 **For Mixed Technical/Business Articles:**
+
 - [ ] **Selective code examples** - 1-3 languages maximum, chosen for business relevance
 - [ ] **Focus on outcomes** - Emphasize business results over implementation details
 - [ ] **Support business narrative** - Code serves to illustrate strategic points
 
 **Code Snippet System (CRITICAL):**
+
 - [ ] **🚨 NO EMBEDDED CODE** - Zero code snippets embedded directly in EJS template
 - [ ] **ALL code in separate files** - Every single code example uses `{{SNIPPET:...}}` placeholder
 - [ ] **Snippet directory created** - `code-snippets/article-slug/` exists with all code files
 - [ ] **Closing tags on new lines** - All `</code></pre>` tags are on their own line
 
 **Content Quality:**
+
 - [ ] **Current research completed** - All version numbers and features verified through official sources
 - [ ] **No training data used** - Everything fact-checked with real-time research
 - [ ] **Dates are current** - No references to "recently" or "latest" without specific dates
@@ -425,48 +507,63 @@ Before publishing, verify:
 ### 7. Example Article Sections
 
 #### Well-Researched Tool Comparison
+
 ```html
-<h3><a href="https://github.com/tj/commander.js" target="_blank" rel="noopener">Commander.js</a></h3>
+<h3>
+  <a href="https://github.com/tj/commander.js" target="_blank" rel="noopener">Commander.js</a>
+</h3>
 <p>The lightweight choice for simple CLIs:</p>
 <ul>
-    <li>Minimal learning curve</li>
-    <li>Small footprint (only <a href="https://bundlephobia.com/package/commander" target="_blank" rel="noopener">12KB gzipped</a>)</li>
-    <li>Great for basic scripts</li>
-    <li>Limited plugin support</li>
+  <li>Minimal learning curve</li>
+  <li>
+    Small footprint (only
+    <a href="https://bundlephobia.com/package/commander" target="_blank" rel="noopener"
+      >12KB gzipped</a
+    >)
+  </li>
+  <li>Great for basic scripts</li>
+  <li>Limited plugin support</li>
 </ul>
 ```
 
 #### Resource Section
+
 ```html
 <h3>Official Resources</h3>
 <ul>
-    <li><a href="https://docs.example.com">Official Documentation</a> - Comprehensive API reference</li>
-    <li><a href="https://github.com/example/repo">GitHub Repository</a> - Source code and issues</li>
-    <li><a href="https://example.com/tutorial">Getting Started</a> - Official tutorial</li>
+  <li>
+    <a href="https://docs.example.com">Official Documentation</a> - Comprehensive API reference
+  </li>
+  <li><a href="https://github.com/example/repo">GitHub Repository</a> - Source code and issues</li>
+  <li><a href="https://example.com/tutorial">Getting Started</a> - Official tutorial</li>
 </ul>
 ```
 
 ## Article Types
 
 ### 1. Technical Deep Dives
+
 - Comprehensive exploration of a technology
 - Include architecture, best practices, examples
 - Compare with alternatives
 - Real-world use cases
 
 ### 2. Practical Guides
+
 - Step-by-step implementation
 - Complete, working code examples
 - Common pitfalls and solutions
 - Performance considerations
 
 ### 3. Tool Comparisons
+
 - Objective analysis of competing solutions
 - Benchmarks where applicable
 - Decision matrices
 - Specific use case recommendations
 
 ### 4. Best Practices
+
 - Industry-standard approaches
 - Code organization patterns
 - Security considerations
@@ -487,19 +584,22 @@ Before publishing, verify:
 ### Example: Writing About Any Technical Tool
 
 **❌ WRONG (Using Training Data)**:
+
 ```
-"[Framework] recently released version 3 with [feature]. The latest update 
+"[Framework] recently released version 3 with [feature]. The latest update
 includes new features like [feature that might be outdated]..."
 ```
 
 **✅ CORRECT (After Research)**:
+
 ```
-"[Framework] version [X.Y.Z] (released [exact date]) is the current stable release. 
-Version [X], released in [month year], brought [specific feature] with [details]. 
+"[Framework] version [X.Y.Z] (released [exact date]) is the current stable release.
+Version [X], released in [month year], brought [specific feature] with [details].
 The latest updates include [feature] (v[X.Y.Z]) and [feature] (v[X.Y.Z])..."
 ```
 
 The difference:
+
 - Training data had outdated version info
 - Might miss entire major version releases
 - Vague timeline ("recent" vs specific dates)
@@ -509,6 +609,7 @@ The difference:
 ## Final Notes
 
 The goal is to create articles that:
+
 - Establish technical authority through accuracy and depth
 - Provide genuine value to experienced developers
 - Stand out through comprehensive research and practical insights
@@ -518,4 +619,4 @@ Remember: Quality over quantity. One thoroughly researched, well-linked article 
 
 ---
 
-*Last Updated: 2025-07-22*
+_Last Updated: 2025-07-22_

@@ -8,11 +8,11 @@ function processValue(input: number): number;
 function processValue(input: any): any {
   // We told TypeScript we'd return string|number
   // But implementation can return ANYTHING
-  return { surprise: "object" }; // No error!
+  return { surprise: 'object' }; // No error!
 }
 
 // This LOOKS safe but can explode at runtime
-const result = processValue("test");
+const result = processValue('test');
 const upper = result.toUpperCase(); // Runtime error if result is object
 
 // SNEAKY overload bypass

@@ -336,7 +336,7 @@ Pages live in `src/pages/`:
 ```typescript
 // ❌ WRONG - Replicating actual interface
 export interface ILLMDataDTO {
-  toLLMData(): Record<string, string>
+  toLLMData(): Record<string, string>;
   // ... other methods
 }
 
@@ -361,11 +361,11 @@ All dummy examples must use clear naming conventions:
 
 ```typescript
 // ❌ WRONG - Using actual production constants
-result.addData('PROJECT_COUNT', '5')  // PROJECT_COUNT might be real
+result.addData('PROJECT_COUNT', '5'); // PROJECT_COUNT might be real
 
 // ✅ CORRECT - Clearly dummy examples
-result.addData('EXAMPLE_FIELD', 'sample-value')
-result.addData(ExampleKeys.SAMPLE_FIELD, 'dummy-data')
+result.addData('EXAMPLE_FIELD', 'sample-value');
+result.addData(ExampleKeys.SAMPLE_FIELD, 'dummy-data');
 ```
 
 #### Code Synchronization Rules
@@ -419,8 +419,8 @@ Documentation should follow clear information prioritization:
 
 ---
 
-*Last Updated: 2026-02-22*
-*Version: 4.0 - React/TypeScript SSG*
+_Last Updated: 2026-02-22_
+_Version: 4.0 - React/TypeScript SSG_
 
 ## Recent Updates (v4.0)
 
@@ -942,7 +942,7 @@ At session start this handler reports any **project handlers** (`.claude/project
 1. **Do not assume normal guardrails are in force.** The listed handlers are OFF for this session.
 2. **Diagnose** each failure: `$PYTHON -m claude_code_hooks_daemon.daemon.cli validate-project-handlers` names the file, the missing method, and the daemon version that introduced it.
 3. **Fix** the handler(s) — usually adding a required method stub (e.g. `get_claude_md`) that a daemon upgrade made mandatory.
-4. **Restart the daemon** (`$PYTHON -m claude_code_hooks_daemon.daemon.cli restart`). The alert reflects the *running* daemon, so it clears only after a restart reloads the fixed handlers — fixing the file alone is not enough.
+4. **Restart the daemon** (`$PYTHON -m claude_code_hooks_daemon.daemon.cli restart`). The alert reflects the _running_ daemon, so it clears only after a restart reloads the fixed handlers — fixing the file alone is not enough.
 
 The handler is silent when every project handler loads, so seeing this alert always means real action is required.
 

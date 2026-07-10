@@ -1,8 +1,8 @@
 // Runtime escape hatches - eval, Function constructor, private field access
 
 class SecureData {
-  private secretKey: string = "super-secret";
-  #reallyPrivate: string = "javascript-private";
+  private secretKey: string = 'super-secret';
+  #reallyPrivate: string = 'javascript-private';
 
   getSecret(): string {
     return this.secretKey;
@@ -12,7 +12,7 @@ class SecureData {
 const data = new SecureData();
 
 // BRACKET NOTATION bypasses TypeScript private (but not JavaScript #private)
-const stolen = data["secretKey"]; // Bypasses 'private' keyword at runtime
+const stolen = data['secretKey']; // Bypasses 'private' keyword at runtime
 console.log(stolen); // "super-secret"
 
 // JavaScript private (#) cannot be accessed this way
@@ -34,7 +34,7 @@ interface Fixed {
 
 const obj: Fixed = { value: 42 };
 // At runtime, JavaScript allows this
-Object.setPrototypeOf(obj, { value: "not a number anymore" });
+Object.setPrototypeOf(obj, { value: 'not a number anymore' });
 
 // DELETE operator - removes required properties at runtime
 interface Required {
@@ -42,5 +42,5 @@ interface Required {
   name: string;
 }
 
-const required: Required = { id: 1, name: "Test" };
+const required: Required = { id: 1, name: 'Test' };
 delete (required as any).id; // Now missing 'id' despite type

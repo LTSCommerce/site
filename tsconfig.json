@@ -9,7 +9,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },

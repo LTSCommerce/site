@@ -53,15 +53,15 @@ unresolved**, and each one silently inflates or blocks a phase.
 - **Why it matters:** This is the single biggest efficiency and quality lever in the
   plan. Phase 1/2 as written will spend expensive agent time re-deriving, from a
   PHP reference, answers that already exist in idiomatic TypeScript next door — and
-  will likely derive them *worse* (php-qa-ci cannot show you how to lint JSX or
+  will likely derive them _worse_ (php-qa-ci cannot show you how to lint JSX or
   Tailwind). It also risks divergence from an existing LTS house style the
   maintainer clearly already uses.
 - **Suggested fix:** Add `untracked/ec-site/` as a **first-class Phase 1 research
   target, researched in parallel with (arguably ahead of) php-qa-ci**, with an
-  explicit split of responsibilities: mine **php-qa-ci** for the *orchestration &
-  delivery philosophy* (phasing, fail-fast, read-only/CI-write duality, config
+  explicit split of responsibilities: mine **php-qa-ci** for the _orchestration &
+  delivery philosophy_ (phasing, fail-fast, read-only/CI-write duality, config
   cascade, encapsulation, rule-tiering SSoT) and mine **ec-site** for the
-  *TS-native realisations* (which ESLint rules to lift, the CDD rules, the articles
+  _TS-native realisations_ (which ESLint rules to lift, the CDD rules, the articles
   solution, the orchestrator script shape, the tool set, the meta-rules, the
   sync-handler gotcha). Add a Task 1.x: "Catalogue ec-site's 55 rules; classify
   each as lift-as-is / adapt / drop for ts-qa-ci." Update Goal 1 and Context &
@@ -80,7 +80,7 @@ unresolved**, and each one silently inflates or blocks a phase.
   (grep confirms). ESLint (with the 11 custom rules) and Vitest currently run
   **only locally/manually**; CLAUDE.md's description of CI is aspirational, not real.
 - **Why it matters:** Two consequences. (a) There is nothing to "consolidate" —
-  the real Phase 4 work is *adding* lint + format + test gates to CI for the first
+  the real Phase 4 work is _adding_ lint + format + test gates to CI for the first
   time, alongside build. (b) Dogfooding will surface far more than CDD violations:
   every currently-unenforced ESLint error, every Prettier drift, and every failing
   or absent test becomes a gate for the first time. The plan budgets for CDD volume
@@ -110,7 +110,7 @@ unresolved**, and each one silently inflates or blocks a phase.
   the CI PR. Note that a git dependency ships the repo's source, not a build
   artefact, so the package must run from source or commit its build output.
 
-### 4. The CDD "ban raw HTML" rule collides with articles, AND the collision is worse than the plan states: article HTML lives in template-literal *strings*, invisible to AST/JSX rules
+### 4. The CDD "ban raw HTML" rule collides with articles, AND the collision is worse than the plan states: article HTML lives in template-literal _strings_, invisible to AST/JSX rules
 
 - **What's wrong:** The plan flags (correctly) that a blanket "ban raw HTML" rule
   may collide with `src/data/articles.ts`. Reality is sharper than "may": that file
@@ -179,16 +179,16 @@ unresolved**, and each one silently inflates or blocks a phase.
   of a package globally, so a QA tool's deps conflict with the consumer's) and
   **autoloader pollution**. npm's model is **nested**: a devDependency's transitive
   tools resolve under the package's own subtree and do not fight the consumer's
-  versions. So "one line in package.json, not forty" is *mostly solved by npm itself*
+  versions. So "one line in package.json, not forty" is _mostly solved by npm itself_
   — ship `@longtermsupport/ts-qa-ci` with eslint/prettier/vitest/tsc/plugins as its
   own `dependencies` and the consumer gets them transitively. The genuine, and
   smaller, npm questions are: which tools must be **peerDependencies** to match the
   consumer's version (`typescript`, the `eslint` the flat config loads, `vite`);
   ESLint **plugin resolution** from the consumer's config (flat config's explicit
-  plugin *objects* already sidestep the old resolution problem — ec-site imports
+  plugin _objects_ already sidestep the old resolution problem — ec-site imports
   rule objects directly); and whether `bin` shims resolve the locally-installed tool
   binaries.
-- **Suggested fix:** Downgrade the risk and rewrite it as a *concrete* Phase 2
+- **Suggested fix:** Downgrade the risk and rewrite it as a _concrete_ Phase 2
   design question ("peerDeps vs bundled deps for tsc/eslint/vite; plugin delivery
   via exported flat-config objects"), not an existential unknown. This de-risks the
   framing and points research at the real, tractable decisions. ec-site already
@@ -198,7 +198,7 @@ unresolved**, and each one silently inflates or blocks a phase.
 
 - **What's wrong / why it matters:** Task 2.1 defers "Prettier vs Biome" and other
   choices to research. But two are effectively pre-decided: (a) **ESLint is
-  mandatory**, not optional — the CDD tier is *custom JS-authored rules*, and Biome
+  mandatory**, not optional — the CDD tier is _custom JS-authored rules_, and Biome
   cannot run those (its plugin story is nascent GritQL, not JS rule modules). So
   "Prettier vs Biome" collapses to "keep ESLint (forced) + Prettier (existing), or
   add Biome purely as a formatter" — a minor, deferrable optimisation, not an
@@ -245,15 +245,15 @@ unresolved**, and each one silently inflates or blocks a phase.
 ### 10. Carry over php-qa-ci's "estate-wide checks can't be opt-in rules" lesson to the CDD delivery mechanism
 
 - **What's wrong / why it matters:** php-qa-ci deliberately ships the
-  SensitiveParameter *coverage* check as an **always-on pipeline tool**, not a
+  SensitiveParameter _coverage_ check as an **always-on pipeline tool**, not a
   PHPStan rule, precisely because "PHPStan rules are opt-in (a consumer must include
   them), so they can't be relied on estate-wide." The identical trap exists for
   ts-qa-ci: if the CDD rules are shipped as ESLint rules the consumer must add to
-  *their* flat config, they are opt-in and can be silently dropped. If CDD must be
+  _their_ flat config, they are opt-in and can be silently dropped. If CDD must be
   guaranteed estate-wide, ts-qa must run its **own** ESLint config over the consumer
   (the orchestrator owns the config), not merely publish rules for the consumer to
-  include. Phase 1's rule-tiering bullet captures the *authoring* half but not this
-  *enforcement-delivery* half.
+  include. Phase 1's rule-tiering bullet captures the _authoring_ half but not this
+  _enforcement-delivery_ half.
 - **Suggested fix:** Add to Phase 2 design: decide whether ts-qa **owns and runs**
   the ESLint config (cascade with project overrides, php-qa-ci-style) so always-on
   tiers are truly always-on, vs shipping includable rule sets. This is the direct
@@ -323,14 +323,14 @@ needs a CI-installable ref, not before, and not as a Phase 3 formality.
 >
 > **Research TWO references in parallel, not one:**
 >
-> 1. `untracked/repos/php-qa-ci` — mine for *orchestration & delivery philosophy*:
+> 1. `untracked/repos/php-qa-ci` — mine for _orchestration & delivery philosophy_:
 >    the 4-phase fail-fast pipeline, the read-only/CI-write duality (mutating tools
 >    dry-run and fail in CI, auto-fix locally), the config cascade + per-tool
 >    overrides, dependency encapsulation, the arkitect-vs-phpstan rule-tiering SSoT
 >    ("never enforce one convention in two engines"), and the "estate-wide checks
 >    must be pipeline-owned, not opt-in rules" lesson.
 > 2. `untracked/ec-site` (LongTermSupport, React+TS+Vite+Tailwind) — mine for the
->    *TS-native realisations*: catalogue its **55 custom ESLint rules** (each with a
+>    _TS-native realisations_: catalogue its **55 custom ESLint rules** (each with a
 >    `.md` doc) and classify each as lift/adapt/drop; specifically capture its CDD
 >    rules (`no-html-in-pages`, `no-raw-block-html-in-articles`, width/grid/class
 >    rules, `eslint-plugin-tailwindcss`), its `bin/qa`-equivalent orchestrator
@@ -340,7 +340,7 @@ needs a CI-installable ref, not before, and not as a Phase 3 formality.
 > **Hold these corrected facts about the dogfood target (this repo):**
 >
 > - CI today runs **only `npm run build` + deploy** — there is **no** ESLint,
->   Prettier, type-check, or test gate. Phase 4 *adds* gates; it does not consolidate
+>   Prettier, type-check, or test gate. Phase 4 _adds_ gates; it does not consolidate
 >   existing ones. Size the baseline first (`npm run lint`, `format:check`,
 >   `test:run`) and record failure counts.
 > - Article HTML lives as **~7,180 raw tags inside template-literal strings in the
@@ -358,7 +358,7 @@ needs a CI-installable ref, not before, and not as a Phase 3 formality.
 >   tarball) **before** wiring CI.
 >
 > **De-risk framing:** npm's nested dependency model means the PHIVE/PHAR
-> encapsulation problem is *mostly a non-issue*; treat it as a concrete peerDeps-vs-
+> encapsulation problem is _mostly a non-issue_; treat it as a concrete peerDeps-vs-
 > bundled-deps + ESLint-plugin-delivery decision, not an existential unknown.
 > ESLint is mandatory (custom rules); do not re-open ESLint-vs-Biome.
 >

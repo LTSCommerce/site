@@ -20,7 +20,7 @@ class Widget implements IWidget {
 type WidgetConstructor = new (data: string) => IWidget;
 
 const FakeWidget = Widget as unknown as WidgetConstructor;
-const widget = new FakeWidget("test"); // Bypasses constructor checking
+const widget = new FakeWidget('test'); // Bypasses constructor checking
 
 // NEWABLE type bypass
 interface Newable<T> {

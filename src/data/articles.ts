@@ -521,8 +521,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
   },
   {
     id: 'openapi-automatic-code-generation',
-    title:
-      'OpenAPI and Automatic Code Generation: Define Once, Generate Everywhere',
+    title: 'OpenAPI and Automatic Code Generation: Define Once, Generate Everywhere',
     description:
       'How OpenAPI specifications let you define your API once and automatically generate type-safe client SDKs, server stubs, and models in PHP, TypeScript, Python, and dozens of other languages.',
     date: '2026-03-24',
@@ -1195,8 +1194,7 @@ function loadConfig(string $path): array
   },
   {
     id: 'ansible-vault-strings-vs-file-encryption',
-    title:
-      'Stop Encrypting Entire Files with Ansible Vault. Use Vault Strings Instead.',
+    title: 'Stop Encrypting Entire Files with Ansible Vault. Use Vault Strings Instead.',
     description:
       'Ansible Vault file encryption creates opaque blobs that break git diffs, block code review, and resist AI tooling. Vault encrypted strings keep your keys visible and your values safe. It is a strictly better workflow for infrastructure secrets.',
     date: '2026-03-03',
@@ -6487,7 +6485,7 @@ to explore the full documentation and get started with intelligent command manag
   // Migrating: claude-code-latest-features.ejs
   {
     id: 'claude-code-latest-features',
-    title: 'Claude Code Latest Features: What\'s New in Autumn 2025',
+    title: "Claude Code Latest Features: What's New in Autumn 2025",
     description:
       'Explore the groundbreaking features added to Claude Code in the last three months, including checkpoints for fearless refactoring, autonomous subagents, plugin marketplace, web interface, and more.',
     date: '2025-11-05',
@@ -6838,7 +6836,7 @@ to explore the full documentation and get started with intelligent command manag
     id: 'claude-code-planning-execution-workflows',
     title: 'Claude Code Planning and Execution Workflows: From Built-in Modes to Parallel Agents',
     description:
-      'A comprehensive guide to Claude Code\'s planning features, from built-in Plan Mode to formal planning workflows with parallel agent execution for complex development tasks',
+      "A comprehensive guide to Claude Code's planning features, from built-in Plan Mode to formal planning workflows with parallel agent execution for complex development tasks",
     date: '2025-10-01',
     category: CATEGORIES.ai.id,
     readingTime: 12,
@@ -8782,7 +8780,7 @@ h1, h2 {
   // Migrating: early-return-patterns-cleaner-code.ejs
   {
     id: 'early-return-patterns-cleaner-code',
-    title: 'Early Return Patterns: Your Code\'s Best Exit Strategy',
+    title: "Early Return Patterns: Your Code's Best Exit Strategy",
     description:
       'Master guard clauses and early return patterns across PHP, TypeScript, Bash, and Ansible to write cleaner, more maintainable code with reduced cognitive complexity',
     date: '2025-07-31',
@@ -14260,11 +14258,11 @@ $result = processSomething(
     <pre><code class="language-php">// .php-cs-fixer.php
 &lt;?php
 
-$finder = PhpCsFixer\Finder::create()
+$finder = PhpCsFixerFinder::create()
     ->in(__DIR__)
     ->exclude('vendor');
 
-return (new PhpCsFixer\Config())
+return (new PhpCsFixerConfig())
     ->setRules([
         '@Symfony' => true,  // Includes @PER-CS2.0
         '@PER-CS' => true,   // Explicit PER compliance
@@ -15275,7 +15273,7 @@ class FileLogger {
 
     public function __destruct() {
         if (!$this->closed) {
-            throw new \LogicException(
+            throw new LogicException(
                 'FileLogger not closed. Call close() explicitly.'
             );
         }
@@ -16363,7 +16361,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     <p>
         <a href="https://www.php.net/manual/en/language.attributes.syntax.php" target="_blank" rel="noopener">PHP attributes</a>
         are classes annotated with the <code>#[Attribute]</code> attribute. The OpenAPI attributes in swagger-php are just PHP classes
-        extending base types like <code>OA\Response</code>, <code>OA\Parameter</code>, and <code>OA\RequestBody</code>.
+        extending base types like <code>OAResponse</code>, <code>OAParameter</code>, and <code>OARequestBody</code>.
         You can create your own attributes that extend these base classes, pre-configuring common patterns.
     </p>
 
@@ -16565,7 +16563,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     </p>
     <ul>
         <li><strong>Route constants</strong> - Class constants eliminate duplicated route strings between <code>#[Route]</code>
-            and <code>#[OA\Get]</code> attributes, ensuring the path definition remains synchronized</li>
+            and <code>#[OAGet]</code> attributes, ensuring the path definition remains synchronized</li>
         <li><strong>Consistent documentation</strong> - All five endpoints follow the same patterns</li>
         <li><strong>Minimal boilerplate</strong> - The attributes read almost like plain English</li>
         <li><strong>Customizable defaults</strong> - The <code>listUsers</code> endpoint overrides pagination defaults</li>
@@ -16597,7 +16595,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
         Naming conventions matter:
     </p>
     <ul>
-        <li>Prefix classes with <code>Oa</code> or nest under <code>OpenApi\</code> namespace</li>
+        <li>Prefix classes with <code>Oa</code> or nest under <code>OpenApi</code> namespace</li>
         <li>Use descriptive names that match HTTP semantics (<code>NotFoundResponse</code> not <code>Error404</code>)</li>
         <li>Keep parameter names consistent across endpoints (<code>page</code>, not <code>pageNum</code> or <code>pageNumber</code>)</li>
     </ul>
@@ -16619,7 +16617,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
         <li><strong>Schema attribute</strong> - Defines how the DTO appears in OpenAPI documentation</li>
         <li><strong><a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">Readonly properties</a></strong> -
             Ensures immutability of error objects</li>
-        <li><strong>Property descriptions</strong> - Each field is documented with <code>OA\Property</code> attributes</li>
+        <li><strong>Property descriptions</strong> - Each field is documented with <code>OAProperty</code> attributes</li>
         <li><strong>Optional details</strong> - Allows including field-level validation errors or debug information</li>
         <li><strong>Machine-readable error codes</strong> - The <code>error</code> field uses constants, not free-form text</li>
     </ul>
@@ -16699,11 +16697,11 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
 
 declare(strict_types=1);
 
-namespace App\Tests\OpenApi\Response;
+namespace AppTestsOpenApiResponse;
 
-use App\Dto\UserDto;
-use App\OpenApi\Response\SuccessResponse;
-use PHPUnit\Framework\TestCase;
+use AppDtoUserDto;
+use AppOpenApiResponseSuccessResponse;
+use PHPUnitFrameworkTestCase;
 
 final class SuccessResponseTest extends TestCase
 {
@@ -17730,7 +17728,7 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
   // Migrating: typescript-di-for-php-developers.ejs
   {
     id: 'typescript-di-for-php-developers',
-    title: 'TypeScript Dependency Injection: A PHP Developer\'s Perspective',
+    title: "TypeScript Dependency Injection: A PHP Developer's Perspective",
     description:
       'Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardization.',
     date: '2025-07-23',
@@ -18056,7 +18054,7 @@ yarn add reflect-metadata inversify</code></pre>
   // Migrating: typescript-honesty-system.ejs
   {
     id: 'typescript-honesty-system',
-    title: 'TypeScript\'s Honesty System: Why Type Safety is Optional and How to Enforce It',
+    title: "TypeScript's Honesty System: Why Type Safety is Optional and How to Enforce It",
     description:
       'TypeScript provides zero runtime safety and can be bypassed 25+ different ways. The definitive guide to every bypass mechanism - from any to eval to recursive type limits - and how to defend against them with ESLint.',
     date: '2025-11-18',

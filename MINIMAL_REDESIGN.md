@@ -9,6 +9,7 @@ Pure, minimal design inspired by Swiss typography and Bauhaus principles. Mathem
 ## Design Principles
 
 ### 1. Mathematical Typography
+
 - **Modular Scale**: Typography based on golden ratio (φ)
   - h1: 2.618rem (φ³)
   - h2: 1.618rem (φ²)
@@ -19,12 +20,14 @@ Pure, minimal design inspired by Swiss typography and Bauhaus principles. Mathem
 - **Letter Spacing**: -0.02em optical correction on headings
 
 ### 2. Pure Color Palette
+
 - **Black**: #000000 (text, borders, UI elements)
 - **White**: #ffffff (background, inverse text)
 - **Gray Scale**: 50-900 for subtle variations
 - **No gradients, no colors** - pure monochrome
 
 ### 3. Perfect Spacing
+
 - **8px Grid System**: All spacing in multiples of 8px
   - 1 unit = 8px (0.5rem)
   - 2 units = 16px (1rem)
@@ -34,6 +37,7 @@ Pure, minimal design inspired by Swiss typography and Bauhaus principles. Mathem
 - **No arbitrary values** - everything on the grid
 
 ### 4. Minimal Visual Elements
+
 - **No rounded corners** - pure rectangles
 - **No shadows** (except minimal where necessary)
 - **No gradients** - flat colors only
@@ -62,6 +66,7 @@ Pure, minimal design inspired by Swiss typography and Bauhaus principles. Mathem
 ## Typography System
 
 ### Perfect Modular Scale
+
 ```
 Base: 16px (1rem)
 Ratio: φ (1.618)
@@ -73,6 +78,7 @@ p  = 16 × 1 = 16px (1rem)
 ```
 
 ### Vertical Rhythm
+
 All margins and spacing use multiples of the base line height (1.618rem) to maintain perfect vertical rhythm.
 
 ## Spacing System
@@ -91,18 +97,21 @@ All margins and spacing use multiples of the base line height (1.618rem) to main
 ## Components Changed
 
 ### Hero
+
 - Removed gradient background
 - Removed Flowbite Button component
 - Pure black CTA button with uppercase text
 - Minimal padding and spacing
 
 ### Expertise Cards
+
 - Removed colored SVG icons
 - Removed rounded corners
 - Used 1px black grid system (gap-px bg-black)
 - White cards on black grid
 
 ### Buttons/CTAs
+
 - Pure black background
 - White text
 - Uppercase with letter-spacing
@@ -110,6 +119,7 @@ All margins and spacing use multiples of the base line height (1.618rem) to main
 - No rounded corners
 
 ### Articles
+
 - Removed intro section gradient background
 - Black and white code blocks
 - Simple underlines on links
@@ -118,16 +128,18 @@ All margins and spacing use multiples of the base line height (1.618rem) to main
 ## Technical Implementation
 
 ### CSS Custom Properties
+
 ```css
 :root {
-  --phi: 1.618;           /* Golden ratio */
-  --unit: 0.5rem;         /* 8px base unit */
+  --phi: 1.618; /* Golden ratio */
+  --unit: 0.5rem; /* 8px base unit */
   --transition-fast: 0.15s ease-out;
   --transition-medium: 0.25s ease-out;
 }
 ```
 
 ### Disabled Hooks
+
 - `useMouseResponsiveEffects()` - Removed
 - `useScrollAnimations()` - Removed
 - `useBodyLoaded()` - Kept (prevents FOUC)

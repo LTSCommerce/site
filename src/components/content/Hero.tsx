@@ -9,7 +9,7 @@ import type { RouteEntry } from '@/types/routing';
 import { getLinkPath } from '@/types/routing';
 import { ROUTES } from '@/routes';
 
-interface HeroProps {
+export interface HeroProps {
   title: string;
   subtitle?: string;
   cta?: {
@@ -22,7 +22,6 @@ export function Hero({ title, subtitle, cta }: HeroProps) {
   return (
     <section className="bg-[#0A0A0A] text-white">
       <div className="max-w-5xl mx-auto px-6 py-28 md:py-36 text-center">
-
         {/* Availability badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#2a2a2a] bg-[#111] text-xs text-gray-500 mb-10 font-mono uppercase tracking-widest">
           <span className="w-1.5 h-1.5 rounded-full bg-[#0f4c81] animate-pulse" />
@@ -74,7 +73,6 @@ export function Hero({ title, subtitle, cta }: HeroProps) {
             <div className="text-xs text-gray-600 mt-0.5">Workflows</div>
           </div>
         </div>
-
       </div>
     </section>
   );

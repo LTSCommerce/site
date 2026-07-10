@@ -25,7 +25,7 @@ export type CarouselProps = {
   setApi?: React.Dispatch<React.SetStateAction<CarouselApi | undefined>>;
 };
 
-type CarouselContextProps = {
+type CarouselContextValue = {
   carouselRef: ReturnType<typeof useEmblaCarousel>[0];
   api: ReturnType<typeof useEmblaCarousel>[1];
   scrollPrev: () => void;
@@ -34,7 +34,7 @@ type CarouselContextProps = {
   canScrollNext: boolean;
 } & CarouselProps;
 
-const CarouselContext = React.createContext<CarouselContextProps | null>(null);
+const CarouselContext = React.createContext<CarouselContextValue | null>(null);
 
 function useCarousel() {
   const context = React.useContext(CarouselContext);

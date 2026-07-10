@@ -1,19 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Test Code Highlighting</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
-        code { font-family: monospace; }
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 10px;
+        overflow-x: auto;
+      }
+      code {
+        font-family: monospace;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Test Code Highlighting</h1>
-    
+
     <p>Before code block with inline <code>final</code> keyword.</p>
-    
+
     <pre><code class="language-php"><?php
 final class PaymentProcessor {
     private array $transactions = [];
@@ -26,9 +35,9 @@ final class PaymentProcessor {
 
 // This causes an error - can't extend final class
 // class MockPaymentProcessor extends PaymentProcessor {}</code></pre>
-    
+
     <p>After code block. This text should be normal paragraph style.</p>
-    
+
     <script src="/js/syntax-highlighter.js"></script>
-</body>
+  </body>
 </html>

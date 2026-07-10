@@ -22,7 +22,20 @@ import noUnescapedQuotesInMeta from './eslint-rules/no-unescaped-quotes-in-meta.
 import noChildrenOnPropOnlyComponents from './eslint-rules/no-children-on-prop-only-components.js';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'code-snippets', 'untracked', 'ARCHIVE', 'var', 'tailwind.config.ts', 'vitest.config.ts', 'scripts/', '.claude/'] },
+  {
+    ignores: [
+      'dist',
+      'node_modules',
+      'code-snippets',
+      'untracked',
+      'ARCHIVE',
+      'var',
+      'tailwind.config.ts',
+      'vitest.config.ts',
+      'scripts/',
+      '.claude/',
+    ],
+  },
 
   // Main config: applies to all TypeScript and TSX files
   {
@@ -183,5 +196,5 @@ export default tseslint.config(
       'custom/no-string-link-props': 'off',
       'react-refresh/only-export-components': 'off',
     },
-  },
+  }
 );

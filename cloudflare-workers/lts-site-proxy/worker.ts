@@ -83,7 +83,7 @@ async function handleRequest(request: Request): Promise<Response> {
  */
 function applyHeaders(response: Response, pathname: string): void {
   // Remove unwanted headers
-  HEADERS_TO_REMOVE.forEach((header) => {
+  HEADERS_TO_REMOVE.forEach(header => {
     response.headers.delete(header);
   });
 
@@ -103,11 +103,9 @@ function applyHeaders(response: Response, pathname: string): void {
   if (isHTMLRequest(pathname, contentType)) {
     response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
     response.headers.set('CDN-Cache-Control', 'public, max-age=3600');
-
   } else if (isAssetRequest(pathname)) {
     response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
     response.headers.set('CDN-Cache-Control', 'public, max-age=31536000');
-
   } else {
     response.headers.set('Cache-Control', 'public, max-age=3600');
     response.headers.set('CDN-Cache-Control', 'public, max-age=3600');
@@ -125,7 +123,7 @@ async function handle404(url: URL, originalRequest: Request): Promise<Response> 
   const error404Response = await fetch(error404Url.toString(), {
     headers: {
       'User-Agent': originalRequest.headers.get('User-Agent') || 'Cloudflare-Worker',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     },
   });
 
@@ -133,8 +131,8 @@ async function handle404(url: URL, originalRequest: Request): Promise<Response> 
   if (!error404Response.ok) {
     return new Response(
       '<!DOCTYPE html><html><head><title>404 Not Found</title></head>' +
-      '<body><h1>404 Not Found</h1><p>The page you are looking for does not exist.</p>' +
-      '<p><a href="/">Return to homepage</a></p></body></html>',
+        '<body><h1>404 Not Found</h1><p>The page you are looking for does not exist.</p>' +
+        '<p><a href="/">Return to homepage</a></p></body></html>',
       {
         status: 404,
         headers: {
@@ -188,10 +186,24 @@ function isAssetRequest(pathname: string): boolean {
   }
 
   const assetExtensions = [
-    '.js', '.css', '.jpg', '.jpeg', '.png', '.gif',
-    '.svg', '.webp', '.woff', '.woff2', '.ttf', '.eot',
-    '.ico', '.json', '.xml', '.txt', '.pdf'
+    '.js',
+    '.css',
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.gif',
+    '.svg',
+    '.webp',
+    '.woff',
+    '.woff2',
+    '.ttf',
+    '.eot',
+    '.ico',
+    '.json',
+    '.xml',
+    '.txt',
+    '.pdf',
   ];
 
-  return assetExtensions.some((ext) => pathname.endsWith(ext));
+  return assetExtensions.some(ext => pathname.endsWith(ext));
 }

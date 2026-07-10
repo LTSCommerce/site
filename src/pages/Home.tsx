@@ -37,7 +37,11 @@ const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature
     description:
       'Ansible automation, Proxmox virtualisation, and bare metal server management. Private cloud preferred.',
     icon: Server,
-    items: ['Ansible playbooks and roles', 'Proxmox virtualisation', 'Bare metal server management'],
+    items: [
+      'Ansible playbooks and roles',
+      'Proxmox virtualisation',
+      'Bare metal server management',
+    ],
   },
   {
     title: 'Backend Systems',
@@ -156,11 +160,7 @@ export function Home() {
       {/* Published Author — dark section */}
       <Section spacing="xl" className="bg-[#0A0A0A]">
         <Container size="md">
-          <div
-            ref={authorRef}
-            style={inViewStyle(authorInView)}
-            className="text-center"
-          >
+          <div ref={authorRef} style={inViewStyle(authorInView)} className="text-center">
             <div className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-3">
               Published
             </div>

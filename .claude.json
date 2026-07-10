@@ -60,9 +60,7 @@
   "opus45MigrationComplete": true,
   "thinkingMigrationComplete": true,
   "githubRepoPaths": {
-    "ltscommerce/site": [
-      "/workspace"
-    ]
+    "ltscommerce/site": ["/workspace"]
   },
   "changelogLastFetched": 1768993686869,
   "bypassPermissionsModeAccepted": true,

@@ -43,7 +43,7 @@ omissions — they do not block starting design work.
    with an adapted rule already classified in the catalogue). The B.1 table
    classifies exactly 54 rules (summary counts 8+25+21=54), so coverage is actually
    **complete — every real rule is classified**.
-   *Fix*: correct the B.1 preamble to "57 `.js` files = 54 rules + 3 non-rule files
+   _Fix_: correct the B.1 preamble to "57 `.js` files = 54 rules + 3 non-rule files
    (POC, `load-routes.js` helper, one `.test.js`); all 54 rules classified below."
    This is a framing correction, not new research — do it before Phase 2 so a
    reader doesn't waste time hunting for three "missing" rules or assume they were
@@ -53,7 +53,7 @@ omissions — they do not block starting design work.
    column implies the CI/CLAUDECODE/TTY detection lives in `functions.inc.bash`;
    it is actually in `bin/qa` (lines 77–84) and `includes/generic/setConfig.inc.bash`
    (lines 95–96). The behaviour described is correct — only the file citation is
-   loose. *Fix*: optional; adjust the source note if the Appendix is tidied.
+   loose. _Fix_: optional; adjust the source note if the Appendix is tidied.
    Non-blocking.
 
 ## Conclusion

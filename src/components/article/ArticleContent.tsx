@@ -48,7 +48,7 @@ hljs.registerLanguage(LANG_JSON, json);
 hljs.registerLanguage(LANG_NGINX, nginx);
 hljs.registerLanguage(LANG_PYTHON, python);
 
-interface ArticleContentProps {
+export interface ArticleContentProps {
   /** HTML content to render */
   content: string;
 }
@@ -81,7 +81,7 @@ export function ArticleContent({ content }: ArticleContentProps) {
     if (contentRef.current) {
       // Find all code blocks and apply syntax highlighting
       const codeBlocks = contentRef.current.querySelectorAll('pre code');
-      codeBlocks.forEach((block) => {
+      codeBlocks.forEach(block => {
         hljs.highlightElement(block as HTMLElement);
       });
     }

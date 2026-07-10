@@ -37,6 +37,7 @@ This directory contains the complete legacy build system for the LTS Commerce st
 ## Why Archived?
 
 The site is being migrated to React/TypeScript for:
+
 - **Type safety**: Zero runtime type errors
 - **Component reusability**: Reduce duplication
 - **Better DX**: TypeScript + ESLint + modern tooling
@@ -45,6 +46,7 @@ The site is being migrated to React/TypeScript for:
 ## Technology Comparison
 
 ### Legacy (Archived)
+
 ```
 EJS Templates → Custom Preprocessing → Vite → Static HTML
 - ✅ Simple, no framework overhead
@@ -54,6 +56,7 @@ EJS Templates → Custom Preprocessing → Vite → Static HTML
 ```
 
 ### New (React)
+
 ```
 React Components → TypeScript → Vite → Static HTML (SSG)
 - ✅ Type-safe throughout
@@ -69,6 +72,7 @@ All articles and content from `private_html/articles/` are being migrated to the
 ## Reference
 
 This archive remains for:
+
 - **Content reference**: When migrating articles
 - **Design reference**: Reviewing layout decisions
 - **Build reference**: Understanding previous approach
@@ -82,18 +86,21 @@ This archive remains for:
 ## How to Use This Archive
 
 ### Extract Article Content
+
 ```bash
 # Articles are in ARCHIVE/private_html/articles/
 ls ARCHIVE/private_html/articles/
 ```
 
 ### View Original Styles
+
 ```bash
 # CSS files in ARCHIVE/private_html/css/
 cat ARCHIVE/private_html/css/main.css
 ```
 
 ### Review Build Scripts
+
 ```bash
 # Build utilities in ARCHIVE/scripts/
 cat ARCHIVE/scripts/process-ejs.js
@@ -104,6 +111,7 @@ cat ARCHIVE/scripts/process-ejs.js
 ⚠️ **This system is archived and should NOT be used for new development.**
 
 All new work follows:
+
 - React/TypeScript architecture
 - react-site-skeleton patterns
 - PlanWorkflow system

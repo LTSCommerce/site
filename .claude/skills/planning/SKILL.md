@@ -33,6 +33,7 @@ find CLAUDE/Plan -maxdepth 2 -type d -name '[0-9]*' | grep -oP '/\K\d{3}(?=-)' |
 See @CLAUDE/PlanWorkflow.md for full template.
 
 Key sections:
+
 - Overview
 - Goals / Non-Goals
 - Tasks (with checkboxes and status icons)

@@ -135,6 +135,7 @@ curl -X POST https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "success": true,
@@ -143,6 +144,7 @@ curl -X POST https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec \
 ```
 
 **Check Email:**
+
 - You should receive an email at `hello@ltscommerce.dev`
 - Subject: "Contact Form: Test Submission"
 - Body contains the test data
@@ -192,6 +194,7 @@ If you need to modify the script later:
 **Cause**: Script hasn't been authorised to send emails
 
 **Fix**:
+
 1. Go to Apps Script editor
 2. Run `testFormSubmission` function
 3. Complete authorisation flow (see Step 3)
@@ -222,6 +225,7 @@ If you need to modify the script later:
 **Cause**: Apps Script CORS is restrictive for non-GET requests
 
 **Fix**:
+
 1. Verify deployment settings: **"Who has access: Anyone"**
 2. Ensure you're POSTing to the `/exec` URL (not `/dev`)
 3. If using development deployment URL (ends in `/dev`), switch to production (`/exec`)
@@ -235,6 +239,7 @@ If you need to modify the script later:
 **Cause**: Function name typo or script not saved
 
 **Fix**:
+
 1. Verify function is named exactly `doPost` (case-sensitive)
 2. Save the script
 3. Redeploy (new version)
@@ -246,6 +251,7 @@ If you need to modify the script later:
 **Cause**: Server-side validation is stricter or different
 
 **Fix**:
+
 1. Check `Code.gs` validation rules
 2. Ensure client-side validation matches server-side
 3. Update React validation to match
@@ -308,14 +314,17 @@ Apps Script can email you when executions fail:
 ### Backup Script Code
 
 **Option 1: Manual Backup**
+
 - Copy `Code.gs` contents periodically
 - Save to this repository
 
 **Option 2: Apps Script Version History**
+
 - Apps Script keeps version history automatically
 - View: File -> Version history
 
 **Option 3: Git Integration** (advanced)
+
 - Use [clasp](https://github.com/google/clasp) to sync Apps Script with git
 - Install: `npm install -g @google/clasp`
 - Clone project: `clasp clone <scriptId>`

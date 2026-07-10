@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -34,6 +34,18 @@ jobs:
         run: npm run build
         env:
           VITE_CONTACT_FORM_URL: ${{ vars.VITE_CONTACT_FORM_URL }}
+
+      # QA runs after build, not before: ts-qa's Playwright phase serves the real
+      # dist/ output (via `npm run preview`) rather than a mocked/dev server, so the
+      # build has to exist first. Everything else in the pipeline (lint/type-check/
+      # unit tests) doesn't depend on dist/ but there's no cost to running it after -
+      # GITHUB_ACTIONS=true puts ts-qa in read-only mode automatically (check-only,
+      # never auto-fixes/commits in CI).
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run QA pipeline
+        run: npx ts-qa
 
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'

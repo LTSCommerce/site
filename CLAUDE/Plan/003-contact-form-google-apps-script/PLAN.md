@@ -58,6 +58,7 @@ window.location.href = mailtoLink;
 ```
 
 **Problems with this approach:**
+
 - Requires user to have a configured email client (many don't, especially on mobile)
 - No delivery confirmation -- the form "submits" but the email may never be sent
 - No spam protection whatsoever
@@ -76,6 +77,7 @@ window.location.href = mailtoLink;
 ### Source Reference
 
 All implementation patterns lifted from the EC site:
+
 - **Backend**: `untracked/ec-site/google-apps-script/Code.gs` (v1.6.0)
 - **Frontend**: `untracked/ec-site/src/components/sections/Contact.tsx`
 - **Types**: `untracked/ec-site/src/types/forms.ts`
@@ -191,9 +193,11 @@ All implementation patterns lifted from the EC site:
 ## Technical Decisions
 
 ### Decision 1: Content-Type text/plain for CORS
+
 **Context**: Google Apps Script web apps don't handle CORS OPTIONS preflight requests properly. The infrastructure blocks OPTIONS at the platform level, so browsers sending `application/json` with a preflight will fail.
 
 **Options Considered**:
+
 1. `Content-Type: text/plain` -- Classified as a "simple" request by CORS spec, no preflight needed
 2. CORS proxy -- Adds latency, complexity, and another point of failure
 3. JSONP -- Outdated, security concerns
@@ -203,9 +207,11 @@ All implementation patterns lifted from the EC site:
 **Date**: 2026-02-20
 
 ### Decision 2: Honeypot vs CAPTCHA
+
 **Context**: Need spam protection for the contact form.
 
 **Options Considered**:
+
 1. **Honeypot field** -- Zero user friction, invisible to humans, effective against basic bots
 2. **Cloudflare Turnstile** -- More robust, but adds external dependency, slightly more setup
 3. **Google reCAPTCHA** -- Most common, but user-hostile (image puzzles), privacy concerns
@@ -215,9 +221,11 @@ All implementation patterns lifted from the EC site:
 **Date**: 2026-02-20
 
 ### Decision 3: Rate Limiting Strategy
+
 **Context**: Need to prevent abuse without adding infrastructure.
 
 **Options Considered**:
+
 1. **Apps Script Properties Service** -- Built-in key-value store, tracks submissions per origin per hour
 2. **Client-side rate limiting** -- Easily bypassed, not a real solution
 3. **External rate limiting service** -- Overkill for a portfolio site
@@ -227,9 +235,11 @@ All implementation patterns lifted from the EC site:
 **Date**: 2026-02-20
 
 ### Decision 4: Remove Flowbite Dependency
+
 **Context**: Current Contact.tsx imports `Button`, `Card`, `Label`, `Select`, `Textarea`, `TextInput` from flowbite-react. The new form should use native HTML elements with Tailwind.
 
 **Options Considered**:
+
 1. Keep Flowbite components for the form
 2. Replace with native HTML + Tailwind (matching EC site pattern)
 
@@ -251,14 +261,14 @@ All implementation patterns lifted from the EC site:
 
 ## Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Google Apps Script downtime | High | Low | Gmail/Apps Script has 99.9%+ uptime SLA; show fallback email address on error |
-| CORS issues with text/plain workaround | High | Low | Proven pattern in EC site production; well-documented workaround |
-| Spam overwhelms rate limiting | Medium | Low | Honeypot catches most bots; rate limiting handles the rest; Turnstile available as escalation |
-| Apps Script daily email quota exceeded | Medium | Very Low | Free tier allows 100 emails/day; far more than a portfolio site needs |
-| Honeypot detected by sophisticated bots | Low | Low | Honeypot + rate limiting is defence in depth; Turnstile is ready to enable if needed |
-| Flowbite removal breaks other pages | Medium | Low | Check for Flowbite usage across codebase before removing; scope removal to Contact page only |
+| Risk                                    | Impact | Probability | Mitigation                                                                                    |
+| --------------------------------------- | ------ | ----------- | --------------------------------------------------------------------------------------------- |
+| Google Apps Script downtime             | High   | Low         | Gmail/Apps Script has 99.9%+ uptime SLA; show fallback email address on error                 |
+| CORS issues with text/plain workaround  | High   | Low         | Proven pattern in EC site production; well-documented workaround                              |
+| Spam overwhelms rate limiting           | Medium | Low         | Honeypot catches most bots; rate limiting handles the rest; Turnstile available as escalation |
+| Apps Script daily email quota exceeded  | Medium | Very Low    | Free tier allows 100 emails/day; far more than a portfolio site needs                         |
+| Honeypot detected by sophisticated bots | Low    | Low         | Honeypot + rate limiting is defence in depth; Turnstile is ready to enable if needed          |
+| Flowbite removal breaks other pages     | Medium | Low         | Check for Flowbite usage across codebase before removing; scope removal to Contact page only  |
 
 ## Timeline
 

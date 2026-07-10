@@ -156,5 +156,3 @@ export function MobileCarouselGrid({
     </div>
   );
 }
-
-export default MobileCarouselGrid;

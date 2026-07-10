@@ -7,14 +7,14 @@
   gather_facts: no
   vars:
     environment: "{{ lookup('env', 'ENVIRONMENT') | default('development') }}"
-    cache_path: "/tmp/ansible-facts-{{ environment }}"
+    cache_path: '/tmp/ansible-facts-{{ environment }}'
   tasks:
     # This has no effect - fact_caching_connection is read only at startup
     - name: Try to set cache path dynamically
       set_fact:
-        fact_caching_connection: "{{ cache_path }}"
-      failed_when: false  # This won't work but won't fail the playbook
-      
+        fact_caching_connection: '{{ cache_path }}'
+      failed_when: false # This won't work but won't fail the playbook
+
     - name: Show the harsh reality
       debug:
         msg: |

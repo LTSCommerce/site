@@ -63,14 +63,14 @@ export function useSlideshow<T>({
    * Navigate to next variant (circular)
    */
   const next = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % variants.length);
+    setCurrentIndex(prev => (prev + 1) % variants.length);
   }, [variants.length]);
 
   /**
    * Navigate to previous variant (circular)
    */
   const prev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + variants.length) % variants.length);
+    setCurrentIndex(prev => (prev - 1 + variants.length) % variants.length);
   }, [variants.length]);
 
   /**

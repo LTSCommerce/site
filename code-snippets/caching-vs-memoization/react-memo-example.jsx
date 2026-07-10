@@ -29,13 +29,8 @@ function ParentComponent() {
 
   return (
     <div>
-      <button onClick={() => setCount(count + 1)}>
-        Count: {count}
-      </button>
-      <ExpensiveComponent
-        data={processedData}
-        onProcess={handleProcess}
-      />
+      <button onClick={() => setCount(count + 1)}>Count: {count}</button>
+      <ExpensiveComponent data={processedData} onProcess={handleProcess} />
     </div>
   );
 }

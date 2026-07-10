@@ -2,14 +2,20 @@
 
 // Example 1: Nested conditions (Higher cognitive complexity)
 function validateUserAccess_Nested(user: User, resource: Resource): boolean {
-  if (user !== null) {                    // +1
-    if (user.isActive) {                  // +1  
-      if (user.hasRole('admin')) {        // +1
+  if (user !== null) {
+    // +1
+    if (user.isActive) {
+      // +1
+      if (user.hasRole('admin')) {
+        // +1
         return true;
-      } else if (user.hasRole('user')) {  // +1
-        if (resource.isPublic) {          // +1
+      } else if (user.hasRole('user')) {
+        // +1
+        if (resource.isPublic) {
+          // +1
           return true;
-        } else if (resource.ownerId === user.id) { // +1
+        } else if (resource.ownerId === user.id) {
+          // +1
           return true;
         }
       }
@@ -22,25 +28,29 @@ function validateUserAccess_Nested(user: User, resource: Resource): boolean {
 
 // Example 2: Early returns (Same cyclomatic complexity, lower cognitive load)
 function validateUserAccess_EarlyReturn(user: User, resource: Resource): boolean {
-  if (user === null) return false;        // +1
-  if (!user.isActive) return false;       // +1
-  
-  if (user.hasRole('admin')) {            // +1
+  if (user === null) return false; // +1
+  if (!user.isActive) return false; // +1
+
+  if (user.hasRole('admin')) {
+    // +1
     return true;
   }
-  
-  if (!user.hasRole('user')) {            // +1
+
+  if (!user.hasRole('user')) {
+    // +1
     return false;
   }
-  
-  if (resource.isPublic) {                // +1
+
+  if (resource.isPublic) {
+    // +1
     return true;
   }
-  
-  if (resource.ownerId === user.id) {     // +1
+
+  if (resource.ownerId === user.id) {
+    // +1
     return true;
   }
-  
+
   return false;
 }
 // Cyclomatic Complexity: 7 (6 decision points + 1) - SAME as nested version

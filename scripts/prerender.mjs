@@ -31,17 +31,11 @@ let errorCount = 0;
 for (const route of routes) {
   try {
     const { html, title, description } = render(route);
-    let output = template.replace(
-      '<div id="root"></div>',
-      `<div id="root">${html}</div>`
-    );
+    let output = template.replace('<div id="root"></div>', `<div id="root">${html}</div>`);
 
     // Inject title and meta description into <head>
     if (title) {
-      output = output.replace(
-        /<title>[^<]*<\/title>/,
-        `<title>${title}</title>`
-      );
+      output = output.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
     }
     if (description) {
       const metaTag = `<meta name="description" content="${description.replace(/"/g, '&quot;')}">`;

@@ -48,7 +48,10 @@ export default {
           // Skip if parent interface is RouteEntry or LinkDestination (these are the base types)
           let parent = node.parent;
           while (parent) {
-            if (parent.type === 'TSInterfaceDeclaration' || parent.type === 'TSTypeAliasDeclaration') {
+            if (
+              parent.type === 'TSInterfaceDeclaration' ||
+              parent.type === 'TSTypeAliasDeclaration'
+            ) {
               const interfaceName = parent.id?.name;
               if (interfaceName === 'RouteEntry' || interfaceName === 'LinkDestination') {
                 return;

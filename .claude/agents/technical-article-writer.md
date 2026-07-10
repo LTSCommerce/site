@@ -94,19 +94,19 @@ The path is relative to the `code-snippets/` directory.
 
 ```html
 <div class="intro">
-    <p class="lead">Opening lead paragraph — compelling hook, 2-3 sentences.</p>
+  <p class="lead">Opening lead paragraph — compelling hook, 2-3 sentences.</p>
 </div>
 
 <section>
-    <h2>Section Title</h2>
-    <p>Section content...</p>
+  <h2>Section Title</h2>
+  <p>Section content...</p>
 
-    <pre><code class="language-php">{{SNIPPET:your-article-slug/example-service.php}}</code></pre>
+  <pre><code class="language-php">{{SNIPPET:your-article-slug/example-service.php}}</code></pre>
 </section>
 
 <section>
-    <h2>Next Section</h2>
-    ...
+  <h2>Next Section</h2>
+  ...
 </section>
 ```
 

@@ -1,6 +1,6 @@
 ---
 # Ansible Playbook: Dependency Inversion in Infrastructure Automation
-# 
+#
 # This playbook demonstrates dependency inversion principles in infrastructure:
 # - Abstract roles define interfaces (what should be done)
 # - Concrete implementations handle specifics (how it's done)
@@ -16,24 +16,24 @@
     app_name: order-processor
     app_version: "{{ lookup('env', 'APP_VERSION') | default('latest') }}"
     environment: "{{ lookup('env', 'ENVIRONMENT') | default('development') }}"
-    
+
     # Dependency inversion: depend on abstractions, not concretions
-    database_type: "{{ database_config.type }}"
-    cache_type: "{{ cache_config.type }}"
-    queue_type: "{{ queue_config.type }}"
-    
+    database_type: '{{ database_config.type }}'
+    cache_type: '{{ cache_config.type }}'
+    queue_type: '{{ queue_config.type }}'
+
     # Environment-specific configurations (injected dependencies)
     database_config:
       type: "{{ 'mysql' if environment == 'production' else 'sqlite' }}"
       host: "{{ 'db.prod.example.com' if environment == 'production' else 'localhost' }}"
       port: "{{ 3306 if environment == 'production' else 3306 }}"
-      name: "{{ app_name }}_{{ environment }}"
-    
+      name: '{{ app_name }}_{{ environment }}'
+
     cache_config:
       type: "{{ 'redis' if environment in ['production', 'staging'] else 'memory' }}"
       host: "{{ 'cache.prod.example.com' if environment == 'production' else 'localhost' }}"
       port: 6379
-    
+
     queue_config:
       type: "{{ 'rabbitmq' if environment == 'production' else 'database' }}"
       host: "{{ 'queue.prod.example.com' if environment == 'production' else 'localhost' }}"
@@ -44,31 +44,31 @@
     # Core roles (always needed - stable dependencies)
     - role: system_preparation
       tags: [system, always]
-    
+
     - role: php_runtime
-      php_version: "8.4"
+      php_version: '8.4'
       tags: [php, runtime]
-    
+
     # Conditional roles based on environment (injected dependencies)
     - role: database_service
-      database_implementation: "{{ database_type }}"
+      database_implementation: '{{ database_type }}'
       when: database_type is defined
       tags: [database]
-    
+
     - role: cache_service
-      cache_implementation: "{{ cache_type }}"
+      cache_implementation: '{{ cache_type }}'
       when: cache_type != 'memory'
       tags: [cache]
-    
+
     - role: queue_service
-      queue_implementation: "{{ queue_type }}"
+      queue_implementation: '{{ queue_type }}'
       when: queue_type != 'database'
       tags: [queue]
-    
+
     # Application deployment (depends on abstractions above)
     - role: application_deployment
       tags: [app, deploy]
-    
+
     # Monitoring and health checks (final layer)
     - role: monitoring
       when: environment in ['staging', 'production']
@@ -78,13 +78,13 @@
   post_tasks:
     - name: Verify application health
       uri:
-        url: "http://localhost:8080/health"
+        url: 'http://localhost:8080/health'
         method: GET
         status_code: 200
       register: health_check
       retries: 5
       delay: 10
-      
+
     - name: Display deployment summary
       debug:
         msg: |
@@ -101,14 +101,14 @@
 # roles/database_service/tasks/main.yml
 
 - name: Include database-specific tasks
-  include_tasks: "{{ database_implementation }}.yml"
+  include_tasks: '{{ database_implementation }}.yml'
   when: database_implementation is defined
 
 ---
 # MySQL implementation - roles/database_service/tasks/mysql.yml
 - name: Install MySQL server
   package:
-    name: "{{ mysql_package_name }}"
+    name: '{{ mysql_package_name }}'
     state: present
   vars:
     mysql_package_name: "{{ 'mysql-server' if ansible_os_family == 'Debian' else 'mysql-community-server' }}"
@@ -122,14 +122,14 @@
   vars:
     # PHP 8.4 optimized MySQL configuration
     mysql_config:
-      innodb_buffer_pool_size: "{{ (ansible_memtotal_mb * 0.7) | int }}M"
-      innodb_log_file_size: "256M"
+      innodb_buffer_pool_size: '{{ (ansible_memtotal_mb * 0.7) | int }}M'
+      innodb_log_file_size: '256M'
       max_connections: "{{ 500 if environment == 'production' else 100 }}"
       query_cache_size: "{{ '256M' if environment == 'production' else '64M' }}"
 
 - name: Create application database
   mysql_db:
-    name: "{{ database_config.name }}"
+    name: '{{ database_config.name }}'
     state: present
     encoding: utf8mb4
     collation: utf8mb4_unicode_ci
@@ -137,15 +137,15 @@
 
 - name: Create database user for application
   mysql_user:
-    name: "{{ app_name }}"
+    name: '{{ app_name }}'
     password: "{{ database_password | default(lookup('password', '/dev/null chars=ascii_letters,digits length=32')) }}"
-    priv: "{{ database_config.name }}.*:ALL"
+    priv: '{{ database_config.name }}.*:ALL'
     host: "{{ 'localhost' if database_config.host == 'localhost' else '%' }}"
     state: present
   notify: reload mysql privileges
 
 ---
-# SQLite implementation - roles/database_service/tasks/sqlite.yml  
+# SQLite implementation - roles/database_service/tasks/sqlite.yml
 - name: Install SQLite
   package:
     name: sqlite3
@@ -170,7 +170,7 @@
 # roles/cache_service/tasks/main.yml
 
 - name: Include cache-specific tasks
-  include_tasks: "{{ cache_implementation }}.yml"
+  include_tasks: '{{ cache_implementation }}.yml'
   when: cache_implementation is defined and cache_implementation != 'memory'
 
 ---
@@ -188,9 +188,9 @@
   notify: restart redis
   vars:
     redis_config:
-      maxmemory: "{{ (ansible_memtotal_mb * 0.2) | int }}mb"
-      maxmemory_policy: "allkeys-lru"
-      save: "900 1 300 10 60 10000"  # Persistence configuration
+      maxmemory: '{{ (ansible_memtotal_mb * 0.2) | int }}mb'
+      maxmemory_policy: 'allkeys-lru'
+      save: '900 1 300 10 60 10000' # Persistence configuration
       tcp_keepalive: 300
       timeout: 0
 
@@ -206,7 +206,7 @@
 
 - name: Create application directory structure
   file:
-    path: "{{ item }}"
+    path: '{{ item }}'
     state: directory
     owner: www-data
     group: www-data
@@ -228,21 +228,21 @@
     # Configuration uses abstract dependencies
     config:
       database:
-        driver: "{{ database_type }}"
-        host: "{{ database_config.host }}"
-        port: "{{ database_config.port }}"
-        name: "{{ database_config.name }}"
-        username: "{{ app_name }}"
+        driver: '{{ database_type }}'
+        host: '{{ database_config.host }}'
+        port: '{{ database_config.port }}'
+        name: '{{ database_config.name }}'
+        username: '{{ app_name }}'
       cache:
-        driver: "{{ cache_type }}"
+        driver: '{{ cache_type }}'
         host: "{{ cache_config.host if cache_type != 'memory' else 'localhost' }}"
         port: "{{ cache_config.port if cache_type != 'memory' else null }}"
       queue:
-        driver: "{{ queue_type }}"
+        driver: '{{ queue_type }}'
         host: "{{ queue_config.host if queue_type != 'database' else null }}"
         port: "{{ queue_config.port if queue_type != 'database' else null }}"
       app:
-        environment: "{{ environment }}"
+        environment: '{{ environment }}'
         debug: "{{ environment in ['development', 'testing'] }}"
         log_level: "{{ 'debug' if environment == 'development' else 'warning' }}"
 
@@ -316,7 +316,7 @@
       register: php_version_check
       failed_when: php_version_check.rc != 0
 
-    - name: Validate database connectivity  
+    - name: Validate database connectivity
       shell: |
         php -r "
         try {
@@ -350,10 +350,10 @@
           - PHP Version: {{ php_version_check.stdout | default('FAILED') }}
           - Database: {{ db_connectivity_check.stdout | default('FAILED') }}
           - Cache: {{ cache_connectivity_check.stdout | default('SKIPPED') }}
-      
+
     - name: Stop deployment
       fail:
-        msg: "Pre-deployment validation failed. Deployment aborted."
+        msg: 'Pre-deployment validation failed. Deployment aborted.'
 
 ---
 # Handlers file - roles/database_service/handlers/main.yml
@@ -364,7 +364,7 @@
 
 - name: reload mysql privileges
   mysql_query:
-    query: "FLUSH PRIVILEGES"
+    query: 'FLUSH PRIVILEGES'
 
 - name: restart redis
   systemd:

@@ -109,9 +109,9 @@ Write a single markdown file with this structure:
 
 ## Timeline
 
-| Time | Event | Source |
-|------|-------|--------|
-| ... | ... | daemon log / transcript / git |
+| Time | Event | Source                        |
+| ---- | ----- | ----------------------------- |
+| ...  | ...   | daemon log / transcript / git |
 
 {Chronological table of events leading up to, during, and after the issue.}
 
@@ -148,6 +148,7 @@ Write a single markdown file with this structure:
 ## Analysis
 
 {Detailed analysis of what went wrong:
+
 - What was the immediate cause?
 - What was the root cause?
 - Were there contributing factors?

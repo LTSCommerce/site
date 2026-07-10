@@ -27,12 +27,14 @@ vulnerability (tabnabbing) and performance issue.
 ## Violations and Correct Patterns
 
 BAD - full page reload for internal navigation:
+
 ```ts
 window.location.href = '/about';
 window.location.assign(ROUTES.about.path);
 ```
 
 GOOD - SPA navigation:
+
 ```tsx
 import { useNavigate } from 'react-router-dom';
 const navigate = useNavigate();
@@ -40,19 +42,24 @@ navigate(ROUTES.about.path);
 ```
 
 GOOD - Link component:
+
 ```tsx
 import { Link } from 'react-router-dom';
-<Link to={ROUTES.about.path}>About</Link>
+<Link to={ROUTES.about.path}>About</Link>;
 ```
 
 BAD - external link missing attributes:
+
 ```tsx
 <a href="https://example.com">Link</a>
 ```
 
 GOOD - external link with required attributes:
+
 ```tsx
-<a href="https://example.com" target="_blank" rel="noopener noreferrer">Link</a>
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">
+  Link
+</a>
 ```
 
 ## Exception: mailto: and tel: URIs

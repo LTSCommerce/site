@@ -15,18 +15,18 @@ function isUser(value: unknown): value is User {
 
 // BROKEN type guard - incorrect logic
 function isValidNumber(value: unknown): value is number {
-  return typeof value === "string"; // Wrong check - returns strings as numbers!
+  return typeof value === 'string'; // Wrong check - returns strings as numbers!
 }
 
 // ONE-SIDED type guard - false case is unsafe
 function isBigNumber(value: string | number): value is number {
-  return typeof value === "number" && value > 1000;
+  return typeof value === 'number' && value > 1000;
   // Problem: false means value could be string OR number <= 1000
   // TypeScript assumes false = definitely string (incorrect!)
 }
 
 // Runtime disaster waiting to happen
-const maybeUser = { random: "data" };
+const maybeUser = { random: 'data' };
 if (isUser(maybeUser)) {
   console.log(maybeUser.name.toUpperCase()); // Runtime error!
 }

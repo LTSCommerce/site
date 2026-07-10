@@ -2,13 +2,13 @@
 
 /**
  * Generate paginated article HTML pages
- * 
+ *
  * This script creates static HTML pages for article pagination:
  * - /articles.html (page 1)
  * - /articles/page-2.html
  * - /articles/page-3.html
  * - etc.
- * 
+ *
  * Each page contains a subset of articles for better performance and SEO.
  */
 
@@ -42,11 +42,11 @@ function loadTemplateData() {
   if (fs.existsSync(siteDataPath)) {
     siteData = JSON.parse(fs.readFileSync(siteDataPath, 'utf8'));
   }
-  
+
   if (fs.existsSync(navDataPath)) {
     navigationData = JSON.parse(fs.readFileSync(navDataPath, 'utf8'));
   }
-  
+
   if (fs.existsSync(categoriesPath)) {
     categoriesData = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
   }
@@ -72,37 +72,37 @@ function loadTemplateData() {
     // Helper functions
     currentYear: new Date().getFullYear(),
     deploymentTimestamp: new Date().toISOString(),
-    formatDate: (dateStr) => {
+    formatDate: dateStr => {
       const date = new Date(dateStr);
-      return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
       });
     },
     isActive: (current, target) => current === target,
-    truncate: (text, length) => text.length > length ? text.substring(0, length) + '...' : text,
-    articleUrl: (slug) => `/articles/${slug}.html`,
-    getAssetPath: (originalPath) => {
+    truncate: (text, length) => (text.length > length ? text.substring(0, length) + '...' : text),
+    articleUrl: slug => `/articles/${slug}.html`,
+    getAssetPath: originalPath => {
       if (!viteManifest || Object.keys(viteManifest).length === 0) {
         return originalPath;
       }
-      
+
       let searchKey = originalPath;
       if (originalPath.startsWith('/css/')) {
         searchKey = originalPath.replace('/css/', 'css/').replace('.css', '');
       } else if (originalPath.startsWith('/js/')) {
         searchKey = originalPath.replace('/js/', 'js/').replace('.js', '');
       }
-      
+
       for (const [key, asset] of Object.entries(viteManifest)) {
         if (key === searchKey || key.includes(searchKey)) {
           return '/' + asset.file;
         }
       }
-      
+
       return originalPath;
-    }
+    },
   };
 }
 
@@ -122,14 +122,15 @@ function generatePaginationInfo(articles, currentPage, articlesPerPage) {
     hasNextPage: currentPage < totalPages,
     hasPreviousPage: currentPage > 1,
     nextPage: currentPage + 1,
-    previousPage: currentPage - 1
+    previousPage: currentPage - 1,
   };
 }
 
 // Generate pagination controls HTML
 function generatePaginationControls(paginationInfo) {
-  const { currentPage, totalPages, hasNextPage, hasPreviousPage, nextPage, previousPage } = paginationInfo;
-  
+  const { currentPage, totalPages, hasNextPage, hasPreviousPage, nextPage, previousPage } =
+    paginationInfo;
+
   if (totalPages <= 1) return '';
 
   let controls = '<nav class="pagination-nav" aria-label="Article pagination">\n';
@@ -159,7 +160,7 @@ function generatePaginationControls(paginationInfo) {
     const isActive = page === currentPage;
     const activeClass = isActive ? ' pagination-current' : '';
     const ariaLabel = isActive ? ` aria-current="page"` : '';
-    
+
     controls += `    <li><a href="${url}" class="pagination-link${activeClass}"${ariaLabel}>${page}</a></li>\n`;
   }
 
@@ -210,7 +211,7 @@ function generatePaginatedPages() {
     // Prepare unique categories from ALL articles (build-time generation)
     const allCategories = [...new Set(articles.map(article => article.category))].sort();
     let categoryButtons = '';
-    for (const category of allCategories) { 
+    for (const category of allCategories) {
       const categoryInfo = templateData.categories[category] || { label: category };
       categoryButtons += `<button class="filter-btn" data-category="${category}">${categoryInfo.label}</button>`;
     }
@@ -223,7 +224,7 @@ function generatePaginatedPages() {
       paginationControls,
       categoryButtons,
       currentPage: page,
-      totalPages
+      totalPages,
     };
 
     // Create the page content
@@ -252,7 +253,9 @@ function generatePaginatedPages() {
 
             <div id="articlesGrid" class="articles-grid static-page" data-page="${page}">
                 <!-- Static articles for page ${page} -->
-                ${paginationInfo.pageArticles.map(article => `
+                ${paginationInfo.pageArticles
+                  .map(
+                    article => `
                 <article class="article-card" data-category="${article.category}">
                     <a href="${templateData.articleUrl(article.slug)}" class="article-card-link">
                         <div class="article-meta">
@@ -267,7 +270,9 @@ function generatePaginatedPages() {
                         </div>
                     </a>
                 </article>
-                `).join('')}
+                `
+                  )
+                  .join('')}
             </div>
 
             <div class="pagination-bottom">
@@ -298,19 +303,21 @@ function generatePaginatedPages() {
     try {
       const html = ejs.render(pageHtml, pageTemplateData, {
         views: [path.join(projectRoot, 'private_html/templates')],
-        rmWhitespace: false
+        rmWhitespace: false,
       });
 
       // Determine output filename
       const filename = page === 1 ? 'articles.html' : `page-${page}.html`;
-      const outputPath = page === 1 
-        ? path.join(projectRoot, 'public_html/articles.html')
-        : path.join(projectRoot, 'public_html/articles', filename);
+      const outputPath =
+        page === 1
+          ? path.join(projectRoot, 'public_html/articles.html')
+          : path.join(projectRoot, 'public_html/articles', filename);
 
       // Write the file
       fs.writeFileSync(outputPath, html);
-      console.log(`✓ Generated: ${path.relative(projectRoot, outputPath)} (${paginationInfo.pageArticles.length} articles)`);
-      
+      console.log(
+        `✓ Generated: ${path.relative(projectRoot, outputPath)} (${paginationInfo.pageArticles.length} articles)`
+      );
     } catch (error) {
       console.error(`✗ Error generating page ${page}:`, error.message);
       process.exit(1);

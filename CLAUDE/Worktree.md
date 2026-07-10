@@ -34,6 +34,7 @@ npm run llm:lint
 ```
 
 **How it works**:
+
 - Auto-detects worktree context from cwd
 - Runs ESLint using main workspace's `eslint.config.js`
 - Ensures all worktrees use the same linting rules
@@ -49,6 +50,7 @@ Worktrees support **parent-child relationships** for complex plans:
 - **Child (Task) Worktrees**: Individual tasks within the plan
 
 **Merge Rules:**
+
 - ✅ **ALLOWED**: Child → Parent worktree (automatic, no approval needed)
 - ❌ **NOT ALLOWED**: Parent → Main project (requires human approval)
 
@@ -57,6 +59,7 @@ Worktrees support **parent-child relationships** for complex plans:
 ### 1. Worktree Location
 
 **ALL worktree folders MUST be in:**
+
 ```
 ./untracked/worktrees/<branch-name>/
 ```
@@ -65,6 +68,7 @@ Worktrees support **parent-child relationships** for complex plans:
 ❌ **Wrong**: `../plan-004/`, `/tmp/worktree/`, etc.
 
 **Why**:
+
 - Keeps workspace organised
 - Prevents git confusion
 - Easy cleanup (just delete `untracked/worktrees/`)
@@ -73,11 +77,13 @@ Worktrees support **parent-child relationships** for complex plans:
 ### 2. Branch Naming
 
 **Parent (Plan) Worktrees:**
+
 - Prefix: `worktree-`
 - Format: `worktree-<plan-name>`
 - ✅ Examples: `worktree-plan-004`, `worktree-header-refactor`
 
 **Child (Task) Worktrees:**
+
 - Prefix: `worktree-child-`
 - Format: `worktree-child-<parent-name>-<task-name>`
 - ✅ Examples: `worktree-child-plan-004-component-1`, `worktree-child-plan-004-refactor-about`
@@ -85,6 +91,7 @@ Worktrees support **parent-child relationships** for complex plans:
 ❌ **Wrong**: `plan-004`, `feature/headers`, `temp-work`, `child-component-1`
 
 **Why**:
+
 - Clear identification of worktree hierarchy
 - Easy filtering in `git branch` output
 - Shows parent-child relationships
@@ -96,12 +103,14 @@ Worktrees support **parent-child relationships** for complex plans:
 **Agents working in worktrees MUST stay in their worktree**
 
 When launching sub-agents for worktree tasks:
+
 - Set working directory explicitly
 - Verify agent is in correct worktree
 - Never `cd` back to main workspace
 - All file operations relative to worktree root
 
 **Example agent prompt:**
+
 ```
 You are working in a git worktree at /workspace/untracked/worktrees/worktree-plan-004/
 DO NOT work in /workspace - only work in YOUR worktree directory.
@@ -123,6 +132,7 @@ git merge worktree-child-plan-004-component-1
 ```
 
 **Why allowed:**
+
 - Isolated to plan worktree
 - Doesn't affect main project
 - Part of plan execution workflow
@@ -133,6 +143,7 @@ git merge worktree-child-plan-004-component-1
 ❌ **MUST ask human approval first**
 
 Before merging parent to main:
+
 1. ✋ **STOP** - Ask human for approval
 2. Verify no other agents working in main workspace
 3. Verify no conflicts with main branch
@@ -140,6 +151,7 @@ Before merging parent to main:
 5. Only then proceed with merge
 
 **Why requires approval:**
+
 - Multiple agents may be working simultaneously
 - Main workspace might have uncommitted changes
 - Conflicts need human resolution
@@ -160,6 +172,7 @@ git branch -d worktree-plan-004
 ```
 
 **Why mandatory:**
+
 - Prevents worktree clutter
 - Reduces confusion about active work
 - Frees disk space
@@ -291,6 +304,7 @@ git status  # Confirm everything clean
 ```
 
 **Why this order matters:**
+
 1. **ALWAYS sync worktree first** (`master → worktree`):
    - Prevents conflicts by updating worktree with main's latest changes
    - Lets you resolve conflicts IN THE WORKTREE (isolated, safe)
@@ -486,12 +500,14 @@ $ git worktree list
 ## When to Use Worktrees
 
 ✅ **Use worktrees for:**
+
 - Multi-task plans with parallel phases
 - Component creation that can be done independently
 - Refactoring multiple files simultaneously
 - Any work requiring 2+ parallel agents
 
 ❌ **Don't use worktrees for:**
+
 - Single-file edits
 - Quick fixes
 - Sequential work where context matters
@@ -520,6 +536,7 @@ $ git worktree list
 ```
 
 **Hierarchy:**
+
 - Main project (`/workspace/`) ← Parent worktrees merge here (with approval)
 - Parent worktrees (`worktree-plan-004`) ← Child worktrees merge here (automatic)
 - Child worktrees (`worktree-child-*`) ← Individual tasks worked on here
@@ -527,11 +544,13 @@ $ git worktree list
 ## Verification Checklist
 
 ### Before Creating Parent Worktree:
+
 - [ ] Directory will be `untracked/worktrees/worktree-<plan-name>`
 - [ ] Branch name starts with `worktree-` (not `worktree-child-`)
 - [ ] Branching from main/master
 
 ### Before Creating Child Worktree:
+
 - [ ] Directory will be `untracked/worktrees/worktree-child-<parent>-<task>`
 - [ ] Branch name starts with `worktree-child-`
 - [ ] Branch name includes parent plan name
@@ -539,12 +558,14 @@ $ git worktree list
 - [ ] Agent knows to stay in their child worktree
 
 ### Before Merging Child → Parent:
+
 - [ ] Working in parent worktree directory
 - [ ] Reviewed child changes
 - [ ] No conflicts expected
 - [ ] Ready to cleanup child immediately after merge
 
 ### Before Merging Parent → Main:
+
 - [ ] ✋ **STEP 1**: ⚠️ **MERGED MASTER INTO WORKTREE FIRST** ⚠️ (`cd worktree && git merge master`)
 - [ ] ✋ **STEP 2**: Resolved any conflicts in parent worktree (NOT in main!)
 - [ ] ✋ **STEP 3**: Tested in parent worktree after sync (`npm run build && npm run lint`)
@@ -558,11 +579,13 @@ $ git worktree list
 **REMINDER**: The merge order is ALWAYS: `master → worktree` FIRST, then `worktree → main`
 
 ### After Merging Child → Parent:
+
 - [ ] Removed child worktree folder immediately
 - [ ] Deleted child branch immediately
 - [ ] Verified parent worktree still works
 
 ### After Merging Parent → Main:
+
 - [ ] ✋ **STEP 10**: Verified merge succeeded (`git status` shows clean)
 - [ ] ✋ **STEP 11**: Verified build still works (`npm run build`)
 - [ ] ✋ **STEP 12**: Pushed to origin successfully (`git push`)
@@ -589,6 +612,7 @@ $ git worktree list
 
 **Cause**: Worktree folder wasn't properly removed
 **Solution**: Manual cleanup:
+
 ```bash
 rm -rf untracked/worktrees/worktree-plan-004
 git worktree prune
@@ -598,6 +622,7 @@ git worktree prune
 
 **Symptoms**: Files appearing in main workspace instead of worktree
 **Solution**:
+
 1. Stop agent immediately
 2. Verify agent's working directory
 3. Move files to correct worktree
@@ -607,6 +632,7 @@ git worktree prune
 
 **Symptoms**: Child worktree doesn't have parent's changes
 **Solution**:
+
 1. Remove incorrect child worktree
 2. Recreate child from parent branch:
    ```bash
@@ -620,6 +646,7 @@ git worktree prune
 
 **Symptoms**: Agent attempts `git merge worktree-plan-004` from main workspace
 **Solution**:
+
 1. Stop immediately
 2. Undo merge if it happened: `git merge --abort`
 3. Ask human for approval
@@ -643,12 +670,12 @@ Child Worktrees (worktree-child-plan-004-*)
 
 ### Key Rules Summary
 
-| Action | Approval Required | Cleanup |
-|--------|------------------|---------|
-| Create parent worktree | No | After merge to main |
-| Create child worktree | No | After merge to parent |
-| Merge child → parent | **NO** | Immediate |
-| Merge parent → main | **YES** | Immediate |
+| Action                 | Approval Required | Cleanup               |
+| ---------------------- | ----------------- | --------------------- |
+| Create parent worktree | No                | After merge to main   |
+| Create child worktree  | No                | After merge to parent |
+| Merge child → parent   | **NO**            | Immediate             |
+| Merge parent → main    | **YES**           | Immediate             |
 
 ### Naming Cheat Sheet
 
@@ -701,6 +728,7 @@ git branch -d worktree-plan-004
 ---
 
 **Remember**:
+
 - Worktrees are for **parallel execution** on complex plans
 - **Parent worktrees** isolate entire plans from main project
 - **Child worktrees** allow parallel work within a plan

@@ -114,13 +114,13 @@ Fix `.claude/hooks-daemon.yaml`:
 handlers:
   pre_tool_use:
     my_handler:
-      priority: "50"  # String
+      priority: '50' # String
 
 # RIGHT
 handlers:
   pre_tool_use:
     my_handler:
-      priority: 50  # Integer
+      priority: 50 # Integer
 ```
 
 ## Upgrade Failures
@@ -261,7 +261,7 @@ handlers:
   pre_tool_use:
     my_handler:
       enabled: true
-      priority: 50  # REQUIRED
+      priority: 50 # REQUIRED
 ```
 
 ## Performance Issues

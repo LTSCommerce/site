@@ -13,12 +13,9 @@ interface ButtonProps {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary:
-    'bg-blue-600 text-white hover:bg-blue-700 border border-blue-600',
-  secondary:
-    'bg-white text-blue-600 hover:bg-blue-50 border border-blue-600',
-  ghost:
-    'bg-transparent text-blue-600 hover:bg-blue-50 border border-transparent',
+  primary: 'bg-blue-600 text-white hover:bg-blue-700 border border-blue-600',
+  secondary: 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-600',
+  ghost: 'bg-transparent text-blue-600 hover:bg-blue-50 border border-transparent',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

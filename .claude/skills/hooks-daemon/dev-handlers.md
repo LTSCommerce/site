@@ -138,7 +138,7 @@ project_handlers:
   enabled: true
   path: .claude/project-handlers
   handlers:
-    {event_type}:
+    { event_type }:
       my_custom:
         enabled: true
         priority: 50

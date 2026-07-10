@@ -5,11 +5,19 @@
  * Brand left, nav + connect columns right, copyright bar.
  */
 
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  // null on both server render and initial client render (matching output,
+  // no hydration mismatch); the effect fills in the real year post-mount.
+  // Avoids reading new Date() during render, which can differ between the
+  // SSG build and the client if they straddle a year boundary.
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   return (
     <footer className="bg-[#0A0A0A] text-gray-400 border-t border-[#1a1a1a]">

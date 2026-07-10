@@ -27,6 +27,7 @@ npm install
 ## Step 2: Update Project Info
 
 **package.json**:
+
 ```json
 {
   "name": "my-new-site",
@@ -37,6 +38,7 @@ npm install
 ```
 
 **index.html**:
+
 - Update `<title>` tag
 - Update meta description
 - Replace favicon
@@ -64,8 +66,8 @@ Edit `src/routes.ts` with your site's pages:
 export const ROUTES = {
   home: { path: '/', label: 'Home' },
   about: { path: '/about', label: 'About' },
-  services: { path: '/services', label: 'Services' },  // NEW
-  portfolio: { path: '/portfolio', label: 'Portfolio' },  // NEW
+  services: { path: '/services', label: 'Services' }, // NEW
+  portfolio: { path: '/portfolio', label: 'Portfolio' }, // NEW
   contact: { path: '/contact', label: 'Contact' },
 } as const satisfies Record<string, RouteEntry>;
 ```
@@ -85,7 +87,7 @@ export const CATEGORIES = {
   design: { id: 'design' as const, label: 'Design', color: '#8B5CF6' },
 } as const;
 
-export type CategoryId = typeof CATEGORIES[keyof typeof CATEGORIES]['id'];
+export type CategoryId = (typeof CATEGORIES)[keyof typeof CATEGORIES]['id'];
 ```
 
 **2. Configure ESLint** to enforce usage (`eslint.config.js`):
@@ -107,7 +109,7 @@ export type CategoryId = typeof CATEGORIES[keyof typeof CATEGORIES]['id'];
 ```typescript
 import { CATEGORIES } from '@/data/categories';
 
-const category = CATEGORIES.web.id;  // Type-safe!
+const category = CATEGORIES.web.id; // Type-safe!
 const color = CATEGORIES[category].color;
 ```
 
@@ -140,7 +142,7 @@ export function Header() {
 // ❌ WRONG
 interface NavItemProps {
   label: string;
-  link: string;  // Magic string!
+  link: string; // Magic string!
 }
 
 // ✅ CORRECT
@@ -148,7 +150,7 @@ import type { RouteEntry } from '@/types/routing';
 
 interface NavItemProps {
   label: string;
-  link: RouteEntry;  // Type-safe!
+  link: RouteEntry; // Type-safe!
 }
 ```
 
@@ -216,6 +218,7 @@ npm install react-router-dom
 Choose your styling approach:
 
 **Option A: Tailwind CSS**
+
 ```bash
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
@@ -225,6 +228,7 @@ npx tailwindcss init -p
 Already supported by Vite - just create `Component.module.css` files.
 
 **Option C: Styled Components**
+
 ```bash
 npm install styled-components
 npm install -D @types/styled-components
@@ -235,16 +239,19 @@ Update `src/styles/global.css` with your design system.
 ## Step 10: Customize Claude Code
 
 **Agents**: Add project-specific agents to `.claude/agents/`
+
 - Design system expert
 - API integration specialist
 - SEO specialist
 
 **Skills**: Add project-specific skills to `.claude/skills/`
+
 - Component generation
 - Page creation
 - Testing workflows
 
 **Hooks**: Add validation hooks to `.claude/hooks/`
+
 - Prevent accidental git force-push
 - Enforce British/American English consistency
 - Run tests before commits
@@ -281,6 +288,7 @@ git commit -m "Initial site setup from skeleton"
 ### Add More Components
 
 Build your component library in `src/components/`:
+
 - UI components (Button, Card, Modal, etc.)
 - Form components (Input, Select, TextArea)
 - Content components (ArticleList, Gallery, Testimonials)
@@ -308,7 +316,7 @@ const FORM_FIELDS = {
   email: { id: 'email' as const, label: 'Email', type: 'email' },
 } as const;
 
-type FormFieldId = typeof FORM_FIELDS[keyof typeof FORM_FIELDS]['id'];
+type FormFieldId = (typeof FORM_FIELDS)[keyof typeof FORM_FIELDS]['id'];
 
 function ContactForm() {
   const [formData, setFormData] = useState<Record<FormFieldId, string>>({
@@ -347,7 +355,7 @@ const EVENTS = {
   change: 'change' as const,
 } as const;
 
-type EventType = typeof EVENTS[keyof typeof EVENTS];
+type EventType = (typeof EVENTS)[keyof typeof EVENTS];
 
 function trackEvent(event: EventType, data: Record<string, unknown>) {
   console.log(`Event: ${event}`, data);

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
@@ -13,6 +13,10 @@ export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
     react(),
     // Skip visualizer for SSR builds — only needed for client bundle analysis
+    // rollup-plugin-visualizer's own types import Plugin from "rollup", which Vite 8
+    // no longer depends on directly (it moved to rolldown) - that import resolves to
+    // `any`, cascading into an unsafe-any spread below. The runtime value is still a
+    // legitimate plugin object; casting to Vite's own Plugin type is a type-only fix.
     ...(!isSsrBuild
       ? [
           visualizer({
@@ -20,7 +24,7 @@ export default defineConfig(({ isSsrBuild }) => ({
             open: false,
             gzipSize: true,
             brotliSize: true,
-          }),
+          }) as Plugin,
         ]
       : []),
   ],
@@ -47,43 +51,40 @@ export default defineConfig(({ isSsrBuild }) => ({
     reportCompressedSize: false,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
-      output: {
-        // manualChunks only applies to the client build
-        ...(isSsrBuild
-          ? {}
-          : {
-              manualChunks: (id: string) => {
-                if (
-                  id.includes('node_modules/react/') ||
-                  id.includes('node_modules/react-dom/') ||
-                  id.includes('node_modules/scheduler/')
-                ) {
-                  return 'react-core';
-                }
-                if (
-                  id.includes('node_modules/react-router-dom/') ||
-                  id.includes('node_modules/react-router/') ||
-                  id.includes('node_modules/@remix-run/')
-                ) {
-                  return 'react-router';
-                }
-                if (id.includes('node_modules/highlight.js/')) {
-                  return 'highlight-js';
-                }
-                if (
-                  id.includes('node_modules/react-hook-form/') ||
-                  id.includes('node_modules/zod/') ||
-                  id.includes('node_modules/@hookform/')
-                ) {
-                  return 'ui-libs';
-                }
-                if (id.includes('node_modules/')) {
-                  return 'vendor';
-                }
-              },
-              chunkFileNames: 'assets/[name]-[hash].js',
-            }),
-      },
+      output: isSsrBuild
+        ? {}
+        : {
+            manualChunks: (id: string) => {
+              if (
+                id.includes('node_modules/react/') ||
+                id.includes('node_modules/react-dom/') ||
+                id.includes('node_modules/scheduler/')
+              ) {
+                return 'react-core';
+              }
+              if (
+                id.includes('node_modules/react-router-dom/') ||
+                id.includes('node_modules/react-router/') ||
+                id.includes('node_modules/@remix-run/')
+              ) {
+                return 'react-router';
+              }
+              if (id.includes('node_modules/highlight.js/')) {
+                return 'highlight-js';
+              }
+              if (
+                id.includes('node_modules/react-hook-form/') ||
+                id.includes('node_modules/zod/') ||
+                id.includes('node_modules/@hookform/')
+              ) {
+                return 'ui-libs';
+              }
+              if (id.includes('node_modules/')) {
+                return 'vendor';
+              }
+            },
+            chunkFileNames: 'assets/[name]-[hash].js',
+          },
     },
   },
 }));

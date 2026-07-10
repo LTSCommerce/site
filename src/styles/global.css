@@ -148,7 +148,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-feature-settings: 'kern' 1, 'liga' 1;
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1;
     opacity: 0;
     transition: opacity 0.2s ease-out;
   }
@@ -243,7 +245,9 @@
   color: #171717;
   font-size: 0.875em;
   font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
-  font-feature-settings: 'liga' 0, 'calt' 0;
+  font-feature-settings:
+    'liga' 0,
+    'calt' 0;
   font-variant-ligatures: none;
 }
 
@@ -264,7 +268,9 @@
   color: inherit;
   font-size: 0.875rem;
   font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
-  font-feature-settings: 'liga' 0, 'calt' 0;
+  font-feature-settings:
+    'liga' 0,
+    'calt' 0;
   font-variant-ligatures: none;
 }
 

@@ -6,7 +6,7 @@ function processData<T = any>(data: T): T {
   return data;
 }
 
-const result = processData({ anything: "goes" }); // result is 'any'
+const result = processData({ anything: 'goes' }); // result is 'any'
 
 // EXPLICIT any in generic
 function dangerousTransform<T>(input: any): T {
@@ -14,7 +14,7 @@ function dangerousTransform<T>(input: any): T {
   return input as T; // Double lie: any input, unchecked output
 }
 
-const fakeUser = dangerousTransform<{ id: number }>({ id: "not-a-number" });
+const fakeUser = dangerousTransform<{ id: number }>({ id: 'not-a-number' });
 
 // GENERIC constraint bypass
 interface Validated<T extends object> {
@@ -22,7 +22,7 @@ interface Validated<T extends object> {
 }
 
 // Bypass constraint with any
-const invalid: Validated<any> = { data: "not an object" };
+const invalid: Validated<any> = { data: 'not an object' };
 
 // GENERIC with unknown-as trick
 function coerce<TOut>(input: unknown): TOut {

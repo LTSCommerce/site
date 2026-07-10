@@ -45,7 +45,7 @@ export function useCTARotation<T>({
     }
 
     const timer = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % variants.length);
+      setCurrentIndex(prevIndex => (prevIndex + 1) % variants.length);
     }, interval);
 
     return () => {

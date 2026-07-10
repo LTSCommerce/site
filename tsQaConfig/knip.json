@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/entry-server.tsx",
+    "scripts/*.mjs",
+    "tsQaConfig/eslint.config.js",
+    "src/components/ui/index.ts",
+    "src/hooks/index.ts",
+    "src/routes.ts",
+    "src/types/routing.ts",
+    "src/types/article.ts"
+  ],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignoreDependencies": ["@longtermsupport/ts-qa-ci"]
+}

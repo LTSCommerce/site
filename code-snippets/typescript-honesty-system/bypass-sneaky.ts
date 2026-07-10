@@ -12,4 +12,4 @@ interface User {
   email: string;
 }
 
-const maybeUser = { name: "Alice" } as User; // Missing email!
+const maybeUser = { name: 'Alice' } as User; // Missing email!

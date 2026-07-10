@@ -48,22 +48,22 @@ The EC site hooks are production-proven and well-documented. Rather than writing
 
 The EC site has four custom hooks in `untracked/ec-site/src/hooks/`:
 
-| Hook | Purpose | Lines | Dependencies |
-|------|---------|-------|-------------|
-| `useInView` | Intersection Observer for scroll-triggered animations | 75 | React only |
-| `useMediaQuery` | Responsive breakpoint detection via `matchMedia` | 73 | React, `@/utils/ssr` |
-| `useCTARotation` | Auto-rotating CTA text with interval timer | 67 | React, `CTAVariant` type |
-| `useSlideshow` | Full slideshow state with nav controls and auto-advance | 148 | React, `HeroVariant` type |
+| Hook             | Purpose                                                 | Lines | Dependencies              |
+| ---------------- | ------------------------------------------------------- | ----- | ------------------------- |
+| `useInView`      | Intersection Observer for scroll-triggered animations   | 75    | React only                |
+| `useMediaQuery`  | Responsive breakpoint detection via `matchMedia`        | 73    | React, `@/utils/ssr`      |
+| `useCTARotation` | Auto-rotating CTA text with interval timer              | 67    | React, `CTAVariant` type  |
+| `useSlideshow`   | Full slideshow state with nav controls and auto-advance | 148   | React, `HeroVariant` type |
 
 ### LTS Site Hooks (Existing)
 
 The LTS site already has three hooks in `src/hooks/`:
 
-| Hook | Purpose | Notes |
-|------|---------|-------|
-| `useBodyLoaded` | FOUC prevention via body class | LTS-specific, no overlap |
-| `useMouseResponsiveEffects` | Dynamic gradient/shadow from mouse position | LTS-specific, no overlap |
-| `useScrollAnimations` | Scroll-triggered fade-in via Intersection Observer | Partial overlap with `useInView` |
+| Hook                        | Purpose                                            | Notes                            |
+| --------------------------- | -------------------------------------------------- | -------------------------------- |
+| `useBodyLoaded`             | FOUC prevention via body class                     | LTS-specific, no overlap         |
+| `useMouseResponsiveEffects` | Dynamic gradient/shadow from mouse position        | LTS-specific, no overlap         |
+| `useScrollAnimations`       | Scroll-triggered fade-in via Intersection Observer | Partial overlap with `useInView` |
 
 ### Key Observation: `useInView` vs `useScrollAnimations`
 
@@ -76,6 +76,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **What it does**: Wraps the Intersection Observer API in a React hook. Returns a `ref` to attach to any element and an `isInView` boolean that becomes `true` when the element enters the viewport. Supports configurable threshold, root margin, and a `triggerOnce` option that disconnects the observer after first intersection.
 
 **Why it's useful for LTS Commerce**:
+
 - Scroll-triggered animations on the Home page (expertise cards, article grid, author section)
 - Lazy loading content sections
 - More React-idiomatic than the existing `useScrollAnimations` class-based approach
@@ -84,6 +85,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **Adaptation needed**: None -- this hook is pure React with no external dependencies. Can be copied as-is.
 
 **Components that would use it**:
+
 - `Home.tsx` -- fade-in sections as user scrolls (expertise cards, latest articles, author section)
 - `ArticleList.tsx` -- animate article cards on scroll
 - `About.tsx` -- section reveal animations
@@ -94,6 +96,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **What it does**: Uses `window.matchMedia` with React's `useSyncExternalStore` for proper SSR/hydration support. Subscribes to media query changes and returns a boolean indicating whether the query matches. Handles SSR by returning `false` on the server.
 
 **Why it's useful for LTS Commerce**:
+
 - Responsive behaviour in components (show/hide elements, change layouts)
 - Replace any manual `window.innerWidth` checks with reactive media queries
 - Proper hydration support via `useSyncExternalStore` (React 18+ best practice)
@@ -102,6 +105,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **Adaptation needed**: Moderate -- the EC version imports `SSR` utility from `@/utils/ssr`. The LTS version should use inline `typeof window !== 'undefined'` checks instead, keeping the hook self-contained. The `useSyncExternalStore` pattern and overall structure remain the same.
 
 **Components that would use it**:
+
 - `Navigation.tsx` -- responsive menu behaviour (hamburger vs full nav)
 - `Home.tsx` -- responsive layout adjustments
 - `ArticleList.tsx` -- grid column changes
@@ -112,6 +116,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **What it does**: Manages automatic rotation through an array of CTA (Call-to-Action) variants at a configurable interval. Uses `setInterval` with proper cleanup. Supports autoplay toggle. Returns the current variant object.
 
 **Why it's useful for LTS Commerce**:
+
 - Rotating taglines or CTAs on the Home page hero section
 - Cycling through service highlights or testimonial snippets
 - Any content that benefits from periodic rotation
@@ -119,6 +124,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **Adaptation needed**: Moderate -- the EC version imports `CTAVariant` type from `@/pages/cta-variants`, which is EC-specific. The LTS version should use a generic type parameter `<T>` so it works with any array of items, making it more reusable.
 
 **Components that would use it**:
+
 - `Home.tsx` -- rotating hero taglines or expertise highlights
 - Future footer CTA section
 - Any component with cycling content
@@ -128,6 +134,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **What it does**: Full slideshow state machine with auto-advance, manual navigation (next/prev/goTo), pause/resume, and circular wrapping. Uses `useCallback` for stable function references and proper interval cleanup. Returns current variant, index, and all control functions.
 
 **Why it's useful for LTS Commerce**:
+
 - Image/content slideshow on any page
 - Project showcase carousel
 - Article highlights rotation with manual override
@@ -136,6 +143,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **Adaptation needed**: Moderate -- same as `useCTARotation`, it imports an EC-specific `HeroVariant` type. The LTS version should use a generic type parameter `<T>` for reusability. The rest of the logic is framework-agnostic and can be copied directly.
 
 **Components that would use it**:
+
 - Future project showcase component
 - Home page content carousel (if added)
 - Any component needing slideshow behaviour with full controls
@@ -186,6 +194,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **Context**: The EC site's `useMediaQuery` imports a comprehensive `SSR` utility class. Should we lift that too?
 
 **Options Considered**:
+
 1. **Lift the full SSR utility** -- brings in a large, feature-rich module (320+ lines) with many hooks the LTS site doesn't need yet
 2. **Inline `typeof window` guards** -- simple, self-contained, sufficient for current needs
 
@@ -198,6 +207,7 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 **Context**: `useCTARotation` and `useSlideshow` import EC-specific types (`CTAVariant`, `HeroVariant`). How should we handle this?
 
 **Options Considered**:
+
 1. **Create equivalent LTS types** -- define `CTAVariant` and `HeroVariant` for LTS
 2. **Use generic type parameter `<T>`** -- make hooks work with any item type
 3. **Use `unknown`** -- lose type safety
@@ -218,13 +228,13 @@ The LTS site already has `useScrollAnimations` which uses Intersection Observer,
 
 ## Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| SSR/hydration mismatch with `useMediaQuery` | Medium | Low | Use `useSyncExternalStore` with server snapshot (proven pattern from EC site) |
-| Overlap between `useInView` and existing `useScrollAnimations` | Low | Medium | Document that both coexist -- different use cases (per-component vs page-level) |
-| Generic type parameter makes hooks less ergonomic | Low | Low | TypeScript inference handles most cases; add explicit examples in JSDoc |
-| Lifted hooks may have subtle bugs in new context | Medium | Low | Thorough testing in Phase 4; hooks are well-tested in EC site already |
-| Bundle size increase from additional hooks | Low | Low | Hooks are small (75-148 lines each); tree-shaking removes unused hooks |
+| Risk                                                           | Impact | Probability | Mitigation                                                                      |
+| -------------------------------------------------------------- | ------ | ----------- | ------------------------------------------------------------------------------- |
+| SSR/hydration mismatch with `useMediaQuery`                    | Medium | Low         | Use `useSyncExternalStore` with server snapshot (proven pattern from EC site)   |
+| Overlap between `useInView` and existing `useScrollAnimations` | Low    | Medium      | Document that both coexist -- different use cases (per-component vs page-level) |
+| Generic type parameter makes hooks less ergonomic              | Low    | Low         | TypeScript inference handles most cases; add explicit examples in JSDoc         |
+| Lifted hooks may have subtle bugs in new context               | Medium | Low         | Thorough testing in Phase 4; hooks are well-tested in EC site already           |
+| Bundle size increase from additional hooks                     | Low    | Low         | Hooks are small (75-148 lines each); tree-shaking removes unused hooks          |
 
 ## Timeline
 
@@ -254,12 +264,14 @@ Analysed all four EC site hooks and three existing LTS hooks. Key findings:
 All four phases executed in worktree `worktree-plan-004`. Summary of work done:
 
 **Phase 1 (Audit)**: Read all EC site source hooks and existing LTS hooks. Confirmed adaptation points:
+
 - `useInView`: zero changes needed
 - `useMediaQuery`: replace `SSR` class import with `typeof window !== 'undefined'` inline guards
 - `useCTARotation`: replace `CTAVariant` with generic `<T>` parameter; handle `noUncheckedIndexedAccess` with explicit `undefined` guard
 - `useSlideshow`: replace `HeroVariant` with generic `<T>` parameter; same `undefined` guard pattern
 
 **Phase 2 (Copy & Adapt)**: Created four hook files and updated barrel export:
+
 - `/workspace/untracked/worktrees/worktree-plan-004/src/hooks/useInView.ts` -- copied as-is
 - `/workspace/untracked/worktrees/worktree-plan-004/src/hooks/useMediaQuery.ts` -- SSR utility replaced with inline `typeof window` checks; `useSyncExternalStore` pattern preserved
 - `/workspace/untracked/worktrees/worktree-plan-004/src/hooks/useCTARotation.ts` -- fully generic `<T>`, strict null handling
@@ -267,11 +279,13 @@ All four phases executed in worktree `worktree-plan-004`. Summary of work done:
 - `/workspace/untracked/worktrees/worktree-plan-004/src/hooks/index.ts` -- all four hooks added to barrel export
 
 **Phase 3 (Integration)**:
+
 - `useInView` integrated into `src/pages/Home.tsx`: three `useInView` instances for Core Expertise grid, Latest Articles section, and Published Author box. Fade-in + slide-up CSS transition on scroll.
 - `useMediaQuery` integrated into `src/components/layout/Navigation.tsx`: detects `(min-width: 768px)` desktop breakpoint; `NavbarToggle` is conditionally rendered only on mobile.
 - `useCTARotation` and `useSlideshow`: deferred -- no suitable rotating content or carousel component exists yet. Both available for Plan 007.
 
 **Phase 4 (QA)**:
+
 - `npx tsc --noEmit`: 0 errors (strict mode, `noUncheckedIndexedAccess`, all flags)
 - ESLint on all new/modified files: 0 violations
 - `npm run build`: success (chunk size warning is pre-existing Flowbite bundle, not introduced here)

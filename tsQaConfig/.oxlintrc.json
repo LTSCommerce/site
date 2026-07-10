@@ -1,0 +1,13 @@
+{
+  "ignorePatterns": [
+    "dist",
+    "dist-server",
+    "node_modules",
+    "var",
+    "untracked",
+    "code-snippets",
+    "ARCHIVE",
+    ".claude",
+    "cloudflare-workers"
+  ]
+}

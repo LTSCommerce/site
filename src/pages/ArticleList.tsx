@@ -84,8 +84,7 @@ export function ArticleList() {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Technical Articles</h1>
                 <p className="text-sm text-gray-500 mt-1">
-                  {filteredArticles.length}{' '}
-                  {filteredArticles.length === 1 ? 'article' : 'articles'}
+                  {filteredArticles.length} {filteredArticles.length === 1 ? 'article' : 'articles'}
                   {isFiltered ? ' found' : ''}
                 </p>
               </div>

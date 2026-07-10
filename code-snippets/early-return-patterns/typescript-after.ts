@@ -22,15 +22,14 @@ type UpdateResult = {
 
 class UserService {
   async updateUserProfile(
-    userId: string, 
+    userId: string,
     profileData: Partial<UserProfile>
   ): Promise<UpdateResult> {
-    
     // Guard clauses with modern syntax - handle edge cases first
     if (!userId?.trim()) {
       return {
         success: false,
-        message: 'User ID is required'
+        message: 'User ID is required',
       };
     }
 
@@ -38,21 +37,21 @@ class UserService {
     if (!user) {
       return {
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       };
     }
 
     if (!user.isActive) {
       return {
         success: false,
-        message: 'User account is inactive'
+        message: 'User account is inactive',
       };
     }
 
     if (!user.permissions.includes('profile:update')) {
       return {
         success: false,
-        message: 'Insufficient permissions to update profile'
+        message: 'Insufficient permissions to update profile',
       };
     }
 
@@ -61,21 +60,21 @@ class UserService {
     if (!hasValidData) {
       return {
         success: false,
-        message: 'Profile data is required'
+        message: 'Profile data is required',
       };
     }
 
     if (!this.validateProfileData(profileData)) {
       return {
         success: false,
-        message: 'Invalid profile data provided'
+        message: 'Invalid profile data provided',
       };
     }
 
     if (!user.profile) {
       return {
         success: false,
-        message: 'User profile does not exist'
+        message: 'User profile does not exist',
       };
     }
 
@@ -89,7 +88,7 @@ class UserService {
     return {
       success: true,
       message: 'Profile updated successfully',
-      user
+      user,
     };
   }
 

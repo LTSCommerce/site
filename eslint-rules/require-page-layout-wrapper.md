@@ -7,12 +7,14 @@
 ## What It Catches
 
 Page files in `src/pages/` that either:
+
 1. Do not import `Page` from `@/components/layout/Page` (or relative equivalent)
 2. Import `Page` but don't use `<Page>` in their JSX return
 
 ## Why It Was Added
 
 The `Page` layout component provides the entire page structure:
+
 - Sticky navigation header with active state tracking
 - Main content wrapper with flex layout
 - Footer
@@ -31,10 +33,7 @@ import { Page } from '@/components/layout/Page';
 
 export function About() {
   return (
-    <Page
-      title="About Joseph - Bespoke PHP Developer | LTSCommerce"
-      description="..."
-    >
+    <Page title="About Joseph - Bespoke PHP Developer | LTSCommerce" description="...">
       <Section>...</Section>
       <Container>...</Container>
     </Page>
@@ -45,6 +44,7 @@ export function About() {
 ## Violations
 
 BAD - no Page import:
+
 ```tsx
 export function About() {
   return (
@@ -56,6 +56,7 @@ export function About() {
 ```
 
 BAD - Page imported but not used:
+
 ```tsx
 import { Page } from '@/components/layout/Page';
 

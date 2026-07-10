@@ -29,6 +29,7 @@ truncated in search results.
 ## Violations and Correct Patterns
 
 BAD - single-quoted string with double quotes inside:
+
 ```tsx
 <Page
   title={'Expert "PHP" Developer | LTSCommerce'}
@@ -40,6 +41,7 @@ The string `'Expert "PHP" Developer'` contains unescaped double quotes that will
 break the HTML meta attribute.
 
 GOOD - use single quotes inside the string instead:
+
 ```tsx
 <Page
   title="Expert PHP Developer | LTSCommerce"
@@ -48,6 +50,7 @@ GOOD - use single quotes inside the string instead:
 ```
 
 GOOD - avoid quotes in SEO metadata altogether:
+
 ```tsx
 <Page
   title="Expert PHP Developer | LTSCommerce"

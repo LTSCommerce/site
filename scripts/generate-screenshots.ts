@@ -107,9 +107,7 @@ function parseArgs(): { pages: string[]; devices: DeviceName[] } {
   const pagesArg = args.find(a => a.startsWith('--pages='));
   const devicesArg = args.find(a => a.startsWith('--devices='));
 
-  const pages = pagesArg
-    ? pagesArg.replace('--pages=', '').split(',')
-    : ALL_PAGES.map(p => p.path);
+  const pages = pagesArg ? pagesArg.replace('--pages=', '').split(',') : ALL_PAGES.map(p => p.path);
 
   const allDevices = Object.keys(VIEWPORTS) as DeviceName[];
   const devices = devicesArg
@@ -156,9 +154,15 @@ async function cleanup() {
   }
 }
 
-process.on('exit', () => { void cleanup(); });
-process.on('SIGINT', () => { void cleanup().then(() => process.exit(0)); });
-process.on('SIGTERM', () => { void cleanup().then(() => process.exit(0)); });
+process.on('exit', () => {
+  void cleanup();
+});
+process.on('SIGINT', () => {
+  void cleanup().then(() => process.exit(0));
+});
+process.on('SIGTERM', () => {
+  void cleanup().then(() => process.exit(0));
+});
 
 async function buildSite(): Promise<void> {
   console.log('🔨 Building site...');
@@ -221,9 +225,11 @@ async function screenshotPage(
   await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
 
   // Wait for body.loaded (our fade-in class)
-  await page.waitForFunction(() => document.body.classList.contains('loaded'), { timeout: 5000 }).catch(() => {
-    // Not critical if it doesn't appear
-  });
+  await page
+    .waitForFunction(() => document.body.classList.contains('loaded'), { timeout: 5000 })
+    .catch(() => {
+      // Not critical if it doesn't appear
+    });
 
   // Wait for CSS animations to complete (ThreeColumnFeatures delays up to ~1.5s)
   await page.waitForTimeout(2000);

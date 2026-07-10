@@ -7,12 +7,14 @@
 ## What It Catches
 
 Page files in `src/pages/` that use a `<Page>` component without both required SEO props:
+
 - Missing `title` prop
 - Missing `description` prop
 
 ## Why It Was Added
 
 Every page on LTS Commerce needs proper SEO metadata for:
+
 - Browser tab display (title)
 - Search engine indexing (title + description)
 - Social sharing previews
@@ -28,6 +30,7 @@ LTS Commerce passes SEO data inline as props to the `<Page>` layout component.
 This differs from the EC site pattern of separate `-meta.ts` files.
 
 GOOD:
+
 ```tsx
 import { Page } from '@/components/layout/Page';
 
@@ -44,6 +47,7 @@ export function About() {
 ```
 
 BAD - missing description:
+
 ```tsx
 export function About() {
   return (
@@ -55,6 +59,7 @@ export function About() {
 ```
 
 BAD - missing both props:
+
 ```tsx
 export function About() {
   return (

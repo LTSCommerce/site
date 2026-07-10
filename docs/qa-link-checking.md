@@ -3,6 +3,7 @@
 ## Problem
 
 Articles can contain broken links due to:
+
 - URLs changing or being deprecated
 - Repository names/paths changing (e.g., OpenCoder-8B → OpenCoder-llm)
 - Sites blocking automated scrapers (403 errors for legitimate URLs)
@@ -27,12 +28,13 @@ Add link checking to `.github/workflows/ci.yml`:
 ```yaml
 - name: Check article links
   run: node scripts/check-links-ci.js
-  continue-on-error: true  # Don't block deployment, but flag issues
+  continue-on-error: true # Don't block deployment, but flag issues
 ```
 
 ### 3. Automated Link Extraction
 
 The `scripts/check-links.js` script should:
+
 - Extract links from EJS article templates
 - Validate HTTP status codes
 - Report broken links with context
@@ -52,6 +54,7 @@ Schedule monthly checks for link rot:
 ### Enhanced Link Checker (`scripts/check-links-ci.js`)
 
 Features needed:
+
 1. **Parse EJS templates** to extract all `href` attributes
 2. **Smart retries** with user-agent headers for 403s
 3. **Whitelist known false positives** (Wikipedia, some documentation sites)
@@ -89,6 +92,7 @@ These sites may return 403 for automated requests but work fine for users:
 - **Medium** - Rate limiting
 
 For these, the link checker should:
+
 1. Attempt with proper User-Agent header
 2. If still 403, mark as "Likely OK (protected)" instead of "Broken"
 3. Include manual verification reminder in output
@@ -96,16 +100,19 @@ For these, the link checker should:
 ### Error Categories
 
 **Critical (Break build):**
+
 - 404 Not Found
 - 410 Gone
 - 500+ Server errors
 
 **Warning (Flag but don't fail):**
+
 - 403 Forbidden (may be false positive)
 - Timeouts (may be temporary)
 - Redirects to different domain (verify intentional)
 
 **Info:**
+
 - 301/302 Redirects (update to final URL)
 - 429 Rate Limited (retry later)
 
@@ -126,4 +133,4 @@ For these, the link checker should:
 
 ---
 
-*Created: 2025-11-20*
+_Created: 2025-11-20_

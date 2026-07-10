@@ -156,7 +156,7 @@ export default {
         if (node.name.name !== 'a') return;
 
         const hrefAttr = node.attributes.find(
-          (attr) => attr.type === 'JSXAttribute' && attr.name.name === 'href'
+          attr => attr.type === 'JSXAttribute' && attr.name.name === 'href'
         );
         if (!hrefAttr || !hrefAttr.value) return;
 
@@ -174,23 +174,18 @@ export default {
         if (!hrefValue || typeof hrefValue !== 'string') return;
 
         // Check if external link (http/https)
-        const isExternal =
-          hrefValue.startsWith('http://') || hrefValue.startsWith('https://');
+        const isExternal = hrefValue.startsWith('http://') || hrefValue.startsWith('https://');
 
         if (isExternal) {
           const targetAttr = node.attributes.find(
-            (attr) => attr.type === 'JSXAttribute' && attr.name.name === 'target'
+            attr => attr.type === 'JSXAttribute' && attr.name.name === 'target'
           );
           const relAttr = node.attributes.find(
-            (attr) => attr.type === 'JSXAttribute' && attr.name.name === 'rel'
+            attr => attr.type === 'JSXAttribute' && attr.name.name === 'rel'
           );
 
           // Check for target="_blank"
-          if (
-            !targetAttr ||
-            !targetAttr.value ||
-            targetAttr.value.value !== '_blank'
-          ) {
+          if (!targetAttr || !targetAttr.value || targetAttr.value.value !== '_blank') {
             context.report({
               node,
               messageId: 'externalLinkMissingTarget',

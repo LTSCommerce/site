@@ -78,7 +78,6 @@ async function main() {
     console.log(articleData.content);
     console.log(`    \`,`);
     console.log('  },');
-
   } catch (error) {
     console.error('Error migrating article:', error.message);
     process.exit(1);

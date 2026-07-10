@@ -10,11 +10,7 @@ import {
   type SubmissionStatus,
 } from '@/types/forms';
 
-function getInputClassName(
-  hasError: boolean,
-  isValid: boolean,
-  isTouched: boolean,
-): string {
+function getInputClassName(hasError: boolean, isValid: boolean, isTouched: boolean): string {
   const base =
     'w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 transition-colors disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed';
   if (hasError) {
@@ -26,7 +22,12 @@ function getInputClassName(
   return `${base} border-gray-300 focus:ring-blue-300`;
 }
 
-const SERVICE_AREAS = [
+interface ServiceArea {
+  title: string;
+  description: string;
+}
+
+const SERVICE_AREAS: ServiceArea[] = [
   {
     title: 'Development',
     description:
@@ -49,7 +50,7 @@ const SERVICE_AREAS = [
   },
 ];
 
-const TECH_TAGS = [
+const TECH_TAGS: string[] = [
   'PHP',
   'TypeScript',
   'MySQL',
@@ -90,14 +91,12 @@ export function Contact() {
         // Fake success after a realistic delay
         setStatus('submitting');
         const delay = 1800 + Math.random() * 400;
-        await new Promise((resolve) => setTimeout(resolve, delay));
+        await new Promise(resolve => setTimeout(resolve, delay));
         setStatus('success');
         return;
       }
 
-      const contactFormUrl = import.meta.env['VITE_CONTACT_FORM_URL'] as
-        | string
-        | undefined;
+      const contactFormUrl = import.meta.env['VITE_CONTACT_FORM_URL'] as string | undefined;
 
       if (!contactFormUrl) {
         const mailto = `mailto:hello@ltscommerce.dev?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(`Name: ${data.name}\n\n${data.message}`)}`;
@@ -137,25 +136,24 @@ export function Contact() {
         } else {
           setStatus('error');
           setServerError(
-            json.error ??
-              'Something went wrong. Please try again or email hello@ltscommerce.dev.',
+            json.error ?? 'Something went wrong. Please try again or email hello@ltscommerce.dev.'
           );
         }
       } catch {
         setStatus('error');
         setServerError(
-          'Unable to send your message. Please try again or email hello@ltscommerce.dev directly.',
+          'Unable to send your message. Please try again or email hello@ltscommerce.dev directly.'
         );
       }
     },
-    [reset],
+    [reset]
   );
 
   const handleFormSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       void handleSubmit(onSubmit)(e);
     },
-    [handleSubmit, onSubmit],
+    [handleSubmit, onSubmit]
   );
 
   const handleSendAnother = useCallback(() => {
@@ -166,7 +164,7 @@ export function Contact() {
 
   return (
     <Page
-      title="Hire Joseph Edmonds - Senior Developer & Technical Leader | LTSCommerce"
+      title="Hire Joseph Edmonds - Developer & Technical Leader | LTSCommerce"
       description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 20+ years experience. 150/hr."
     >
       {/* Hero + Services + Details - single flow */}
@@ -175,14 +173,14 @@ export function Contact() {
           <div className="text-center mb-6">
             <h1 className="text-4xl font-bold mb-3">Hire Me</h1>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
-              Senior developer and technical leader with over 20 years of experience.
-              I work across the full stack and can operate at both the code level
-              and the strategic level depending on what you need.
+              Senior developer and technical leader with over 20 years of experience. I work across
+              the full stack and can operate at both the code level and the strategic level
+              depending on what you need.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6 items-start">
-            {SERVICE_AREAS.map((service) => (
+            {SERVICE_AREAS.map(service => (
               <div
                 key={service.title}
                 className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200"
@@ -194,7 +192,7 @@ export function Contact() {
           </div>
 
           <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {TECH_TAGS.map((tag) => (
+            {TECH_TAGS.map(tag => (
               <span
                 key={tag}
                 className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
@@ -214,7 +212,9 @@ export function Contact() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#0f4c81] font-bold shrink-0">Location</span>
-                  <span>Remote only, UK timezone. Flexible on hours for international clients.</span>
+                  <span>
+                    Remote only, UK timezone. Flexible on hours for international clients.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#0f4c81] font-bold shrink-0">Engagement</span>
@@ -232,9 +232,16 @@ export function Contact() {
               <ul className="space-y-1.5 text-sm text-gray-700">
                 <li>20+ years hands-on experience across PHP, TypeScript, Linux, and databases.</li>
                 <li>Published author of "The Art of Modern PHP 8". Zend Certified Engineer.</li>
-                <li>Proven track record with large-scale, high-pressure systems and legacy codebases.</li>
-                <li>Comfortable at the keyboard and the whiteboard. I can write the code or lead the team.</li>
-                <li>Active AI adopter. I use Claude Code daily and can help your team do the same.</li>
+                <li>
+                  Proven track record with large-scale, high-pressure systems and legacy codebases.
+                </li>
+                <li>
+                  Comfortable at the keyboard and the whiteboard. I can write the code or lead the
+                  team.
+                </li>
+                <li>
+                  Active AI adopter. I use Claude Code daily and can help your team do the same.
+                </li>
               </ul>
             </div>
           </div>
@@ -262,9 +269,7 @@ export function Contact() {
                         />
                       </svg>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                      Message Sent!
-                    </h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Message Sent!</h3>
                     <p className="text-gray-600 mb-6">
                       Thanks for reaching out. I'll get back to you within 24 hours.
                     </p>
@@ -323,15 +328,11 @@ export function Contact() {
                         className={getInputClassName(
                           Boolean(errors.name),
                           !errors.name && Boolean(dirtyFields.name),
-                          Boolean(touchedFields.name),
+                          Boolean(touchedFields.name)
                         )}
                       />
                       {errors.name && (
-                        <p
-                          id="name-error"
-                          role="alert"
-                          className="mt-1 text-sm text-red-600"
-                        >
+                        <p id="name-error" role="alert" className="mt-1 text-sm text-red-600">
                           {errors.name.message}
                         </p>
                       )}
@@ -357,15 +358,11 @@ export function Contact() {
                         className={getInputClassName(
                           Boolean(errors.email),
                           !errors.email && Boolean(dirtyFields.email),
-                          Boolean(touchedFields.email),
+                          Boolean(touchedFields.email)
                         )}
                       />
                       {errors.email && (
-                        <p
-                          id="email-error"
-                          role="alert"
-                          className="mt-1 text-sm text-red-600"
-                        >
+                        <p id="email-error" role="alert" className="mt-1 text-sm text-red-600">
                           {errors.email.message}
                         </p>
                       )}
@@ -390,15 +387,11 @@ export function Contact() {
                         className={getInputClassName(
                           Boolean(errors.subject),
                           !errors.subject && Boolean(dirtyFields.subject),
-                          Boolean(touchedFields.subject),
+                          Boolean(touchedFields.subject)
                         )}
                       />
                       {errors.subject && (
-                        <p
-                          id="subject-error"
-                          role="alert"
-                          className="mt-1 text-sm text-red-600"
-                        >
+                        <p id="subject-error" role="alert" className="mt-1 text-sm text-red-600">
                           {errors.subject.message}
                         </p>
                       )}
@@ -424,15 +417,11 @@ export function Contact() {
                         className={getInputClassName(
                           Boolean(errors.message),
                           !errors.message && Boolean(dirtyFields.message),
-                          Boolean(touchedFields.message),
+                          Boolean(touchedFields.message)
                         )}
                       />
                       {errors.message && (
-                        <p
-                          id="message-error"
-                          role="alert"
-                          className="mt-1 text-sm text-red-600"
-                        >
+                        <p id="message-error" role="alert" className="mt-1 text-sm text-red-600">
                           {errors.message.message}
                         </p>
                       )}

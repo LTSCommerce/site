@@ -16,6 +16,7 @@ Plans should be optimized for parallel agent execution with clear dependency cha
 
 ### Execution Overview
 ```
+
 Phase 1: Foundation (BLOCKING - Must complete first)
 ├── Agent A: Core contracts/interfaces
 └── Agent B: Shared configurations
@@ -31,7 +32,9 @@ Phase 3: Integration (BLOCKING - Requires Phase 2)
 
 Phase 4: Deployment (BLOCKING - Requires Phase 3)
 └── Agent H: Deploy to production
+
 ```
+
 ```
 
 ### Phase Definitions
@@ -40,14 +43,18 @@ Each phase should include:
 
 ```markdown
 ### Phase N: [Name] [BLOCKING|NON-BLOCKING]
+
 **Dependencies**: What must complete before this phase starts
 **Can run in parallel with**: Other phases that can execute simultaneously
 
 #### Agent X: [Task Name]
+
 **Dependencies**: Specific prerequisites (e.g., "Phase 1 types only")
 **Output Required**: Exact deliverables
 ```
+
 [List of files/packages to create]
+
 ```
 **Libraries/Tools**: External dependencies needed
 **Can work independently**: Yes/No

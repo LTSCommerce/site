@@ -15,7 +15,7 @@ export class GoodMockingExamples {
   static mockDatabase() {
     const database = {
       query: vi.fn().mockResolvedValue([{ id: 1, name: 'Test User' }]),
-      transaction: vi.fn().mockImplementation(async (callback) => {
+      transaction: vi.fn().mockImplementation(async callback => {
         return callback(); // Simple transaction mock
       }),
     };
@@ -38,7 +38,7 @@ export class GoodMockingExamples {
       charge: vi.fn().mockResolvedValue({
         success: true,
         transactionId: 'tx_123',
-        amount: 1000
+        amount: 1000,
       }),
     };
     return paymentGateway;
@@ -54,7 +54,7 @@ export class BadMockingExamples {
       add: vi.fn().mockReturnValue(5), // Why mock this?
       multiply: vi.fn().mockReturnValue(10),
     };
-    
+
     // GOOD - use the real implementation
     const realCalculator = new Calculator();
     expect(realCalculator.add(2, 3)).toBe(5);
@@ -95,8 +95,8 @@ export class BadMockingExamples {
     const userService = {
       findById: vi.fn(),
       validateEmail: vi.fn(), // Pure function - don't mock!
-      hashPassword: vi.fn(),  // Pure function - don't mock!
-      saveUser: vi.fn(),      // Database call - OK to mock
+      hashPassword: vi.fn(), // Pure function - don't mock!
+      saveUser: vi.fn(), // Database call - OK to mock
       sendWelcomeEmail: vi.fn(), // External service - OK to mock
     };
 
@@ -112,24 +112,30 @@ export const MockingDecisionTree = {
   shouldMock(dependency: any): boolean {
     // External system (database, API, file system)?
     if (this.isExternalSystem(dependency)) return true;
-    
+
     // Has side effects (logging, messaging, notifications)?
     if (this.hasSideEffects(dependency)) return true;
-    
+
     // Slow or expensive to create?
     if (this.isSlowOrExpensive(dependency)) return true;
-    
+
     // Non-deterministic (random, time-based)?
     if (this.isNonDeterministic(dependency)) return true;
-    
+
     // Otherwise, use the real implementation
     return false;
   },
 
   isExternalSystem(dependency: any): boolean {
     const externalIndicators = [
-      'client', 'gateway', 'api', 'repository', 
-      'database', 'cache', 'queue', 'storage'
+      'client',
+      'gateway',
+      'api',
+      'repository',
+      'database',
+      'cache',
+      'queue',
+      'storage',
     ];
     const name = dependency.constructor?.name?.toLowerCase() || '';
     return externalIndicators.some(indicator => name.includes(indicator));
@@ -137,8 +143,13 @@ export const MockingDecisionTree = {
 
   hasSideEffects(dependency: any): boolean {
     const sideEffectIndicators = [
-      'logger', 'mailer', 'notifier', 'publisher',
-      'tracker', 'monitor', 'reporter'
+      'logger',
+      'mailer',
+      'notifier',
+      'publisher',
+      'tracker',
+      'monitor',
+      'reporter',
     ];
     const name = dependency.constructor?.name?.toLowerCase() || '';
     return sideEffectIndicators.some(indicator => name.includes(indicator));
@@ -146,20 +157,16 @@ export const MockingDecisionTree = {
 
   isSlowOrExpensive(dependency: any): boolean {
     // Check for expensive operations
-    const expensiveIndicators = [
-      'processor', 'generator', 'builder', 'compiler'
-    ];
+    const expensiveIndicators = ['processor', 'generator', 'builder', 'compiler'];
     const name = dependency.constructor?.name?.toLowerCase() || '';
     return expensiveIndicators.some(indicator => name.includes(indicator));
   },
 
   isNonDeterministic(dependency: any): boolean {
-    const nonDeterministicIndicators = [
-      'random', 'uuid', 'timestamp', 'clock', 'timer'
-    ];
+    const nonDeterministicIndicators = ['random', 'uuid', 'timestamp', 'clock', 'timer'];
     const name = dependency.constructor?.name?.toLowerCase() || '';
     return nonDeterministicIndicators.some(indicator => name.includes(indicator));
-  }
+  },
 };
 
 // Example usage in tests
@@ -167,9 +174,9 @@ export class SmartMockingTest {
   static createTestSubject() {
     // Only mock what needs mocking
     const httpClient = vi.fn(); // External - mock it
-    const database = vi.fn();   // External - mock it
-    const logger = vi.fn();     // Side effect - mock it
-    
+    const database = vi.fn(); // External - mock it
+    const logger = vi.fn(); // Side effect - mock it
+
     // Use real implementations for business logic
     const calculator = new PriceCalculator();
     const validator = new OrderValidator();
@@ -179,9 +186,9 @@ export class SmartMockingTest {
       httpClient,
       database,
       logger,
-      calculator,  // Real implementation
-      validator,   // Real implementation  
-      formatter    // Real implementation
+      calculator, // Real implementation
+      validator, // Real implementation
+      formatter // Real implementation
     );
   }
 }
@@ -190,16 +197,16 @@ export class SmartMockingTest {
 export const HotSaucePrinciple = {
   // Like hot sauce, mocks should enhance the test, not overpower it
   // Too much mocking makes tests inedible (unmaintainable)
-  
+
   tooLittleMocking: 'Tests are slow, flaky, or coupled to external systems',
   justRightMocking: 'Tests are fast, reliable, and focus on behavior',
   tooMuchMocking: 'Tests are brittle, unclear, and test implementation details',
-  
+
   advice: [
     'Mock external dependencies and side effects',
     'Use real implementations for business logic',
     'Prefer test doubles over complex mocks',
     'Focus on testing outcomes, not implementation',
-    'If your test is mostly mocks, reconsider your architecture'
-  ]
+    'If your test is mostly mocks, reconsider your architecture',
+  ],
 };

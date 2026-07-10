@@ -9,14 +9,14 @@ interface User {
 // Runtime type guard
 function isUser(value: unknown): value is User {
   return (
-    typeof value === "object" &&
+    typeof value === 'object' &&
     value !== null &&
-    "id" in value &&
-    typeof (value as any).id === "number" &&
-    "name" in value &&
-    typeof (value as any).name === "string" &&
-    "email" in value &&
-    typeof (value as any).email === "string"
+    'id' in value &&
+    typeof (value as any).id === 'number' &&
+    'name' in value &&
+    typeof (value as any).name === 'string' &&
+    'email' in value &&
+    typeof (value as any).email === 'string'
   );
 }
 
@@ -26,7 +26,7 @@ function processUserData(data: unknown): void {
     // TypeScript KNOWS data is User here
     console.log(`User: ${data.name} (${data.email})`);
   } else {
-    console.error("Invalid user data");
+    console.error('Invalid user data');
   }
 }
 

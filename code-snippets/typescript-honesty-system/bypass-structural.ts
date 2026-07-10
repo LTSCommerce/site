@@ -16,9 +16,9 @@ interface FlexibleObject {
 }
 
 const flex: FlexibleObject = {
-  anything: "goes",
+  anything: 'goes',
   here: 123,
-  evenThis: () => "functions!"
+  evenThis: () => 'functions!',
 };
 
 // Excess property checking can be bypassed
@@ -27,5 +27,5 @@ interface StrictConfig {
   port: number;
 }
 
-const intermediate = { host: "localhost", port: 3000, extra: "oops" };
+const intermediate = { host: 'localhost', port: 3000, extra: 'oops' };
 const strictConfig: StrictConfig = intermediate; // No error!

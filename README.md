@@ -19,6 +19,7 @@ This is a statically generated portfolio site built with modern web technologies
 ## 🏗️ Architecture
 
 ### Technology Stack
+
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
 - **Templating**: EJS (Embedded JavaScript templates)
 - **Build Tool**: Vite 5.x (ES module bundler)
@@ -28,6 +29,7 @@ This is a statically generated portfolio site built with modern web technologies
 - **Hosting**: GitHub Pages
 
 ### Project Structure
+
 ```
 ├── private_html/        # Source files (development)
 │   ├── templates/       # EJS template system
@@ -49,29 +51,35 @@ This is a statically generated portfolio site built with modern web technologies
 ## 🛠️ Development Setup
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - Git
 
 ### Local Development
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd site
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start development server**
+
    ```bash
    npm run dev
    ```
+
    The site will be available at `http://localhost:3000`
 
 4. **Build for production**
+
    ```bash
    npm run build
    ```
@@ -96,11 +104,13 @@ The site uses a three-stage build process:
 Articles are created using EJS templates with automated metadata extraction:
 
 1. **Create article template**
+
    ```bash
    cp private_html/articles/example-article.ejs private_html/articles/your-article-slug.ejs
    ```
 
 2. **Edit the EJS template**
+
    ```ejs
    <%- include('../templates/layouts/article', {
        articleTitle: 'Your Article Title',
@@ -121,6 +131,7 @@ Articles are created using EJS templates with automated metadata extraction:
    ```
 
 3. **Test locally**
+
    ```bash
    npm run dev
    ```
@@ -133,6 +144,7 @@ Articles are created using EJS templates with automated metadata extraction:
    ```
 
 ### Supported Code Languages
+
 - CSS, JavaScript, PHP, Bash, SQL, YAML, JSON, Nginx
 
 ## 🚀 Deployment
@@ -151,6 +163,7 @@ Every push to the `main` branch triggers the automated CI/CD pipeline:
 ### Manual Deployment
 
 Force deployment using GitHub Actions UI:
+
 ```bash
 gh workflow run "Deploy static content to Pages"
 ```

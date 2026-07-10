@@ -38,7 +38,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
  */
 function customRender(
   ui: ReactElement,
-  { initialEntries = ['/'], ...options }: CustomRenderOptions = {},
+  { initialEntries = ['/'], ...options }: CustomRenderOptions = {}
 ) {
   return render(ui, {
     wrapper: ({ children }) => (

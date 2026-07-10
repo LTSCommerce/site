@@ -143,5 +143,3 @@ export function Typewriter({
     </Tag>
   );
 }
-
-export default Typewriter;

@@ -20,14 +20,13 @@ export class InsufficientStockError extends AppError {
     public readonly sku: string,
     public readonly requested: number,
     public readonly available: number,
-    options?: { cause?: unknown },
+    options?: { cause?: unknown }
   ) {
     super(
-      InsufficientStockError.MESSAGE_FORMAT
-        .replace('%s', sku)
+      InsufficientStockError.MESSAGE_FORMAT.replace('%s', sku)
         .replace('%d', String(requested))
         .replace('%d', String(available)),
-      options,
+      options
     );
   }
 
@@ -39,7 +38,7 @@ export class InsufficientStockError extends AppError {
     sku: string,
     requested: number,
     available: number,
-    cause: unknown,
+    cause: unknown
   ): InsufficientStockError {
     return new InsufficientStockError(sku, requested, available, { cause });
   }
@@ -50,7 +49,10 @@ try {
   await orderService.place(order);
 } catch (err) {
   if (err instanceof InsufficientStockError) {
-    return { status: 409, body: { sku: err.sku, requested: err.requested, available: err.available } };
+    return {
+      status: 409,
+      body: { sku: err.sku, requested: err.requested, available: err.available },
+    };
   }
   throw err; // bubble anything we did not reason about
 }

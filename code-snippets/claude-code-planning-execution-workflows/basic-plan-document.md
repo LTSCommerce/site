@@ -1,6 +1,7 @@
 # Feature Implementation Plan
 
 Ensure all the following have been read:
+
 - @CLAUDE/PlanWorkflow.md
 - @CLAUDE/Core/CodeStandards.md
 - @CLAUDE/Core/TestingStandards.md
