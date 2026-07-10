@@ -13,6 +13,7 @@ This directory contains all project plans following the Planning Workflow (see `
 - [007: Component Library Lift from EC Site](007-component-library-lift/PLAN.md) - 📋 Planned - **Medium Priority** - Adopt 6 UI components (BlurText, Typewriter, StatusBadge, ThreeColumnFeatures, MobileCarouselGrid, HighlightTypewriter)
 - [008: ESLint Custom Rules Adoption](008-eslint-custom-rules/PLAN.md) - 📋 Planned - **Medium-High Priority** - Cherry-pick 8 ESLint rules from EC site's 80+ (SEO enforcement, navigation, placeholder prevention)
 - [011: ts-qa-ci — TypeScript QA/CI Harness Package](011-ts-qa-ci-package/PLAN.md) - 🔄 In Progress - **High Priority** - New `@longtermsupport/ts-qa-ci` package (TS analogue of `lts/php-qa-ci`): orchestrated QA pipeline, CDD ESLint rule tier, Claude Code integration, dogfooded on this repo first
+- [012: Migrate ec-site onto ts-qa-ci](012-ecsite-ts-qa-ci-migration/PLAN.md) - 📋 Planned - **Medium Priority** - Refactor ec-site to consume `ts-qa-ci` for generic QA/CI, keep private/brand rules local via the project-override layer; depends on Plan 011
 
 ## Completed Plans
 
