@@ -204,7 +204,7 @@ ec-site (`edmonds-commerce-site`, confirmed `"private": true` in `package.json`)
 
 ### B.1 Master ESLint rule catalogue — all rules covered across the research batches
 
-All 57 rules live in `/workspace/untracked/ec-site/eslint-rules/*.js`, each paired with a `.md` doc. Three independent research batches (18 rules each) plus the CDD deep-dive (6 rules, 5 of which overlap with the batches and are reconciled below) collectively covered 55 distinct named rules from the full 57. Verdicts below merge all batches; where the CDD deep-dive additionally examined a rule already in a batch table, both angles are folded into one row (noted).
+57 files live in `/workspace/untracked/ec-site/eslint-rules/*.js`, each paired with a `.md` doc — but only **54 are real named rules**; the other 3 are a POC file, a `load-routes.js` helper, and one `.test.js` file (Task 1.2 review fix, applied 2026-07-10 — this line was previously missed by that fix, per pass-2 Fable audit finding M1). Three independent research batches plus the CDD deep-dive collectively covered all 54 real rules. Verdicts below merge all batches; where the CDD deep-dive additionally examined a rule already in a batch table, both angles are folded into one row (noted).
 
 **Verdict key**: **lift-as-is** = usable near-verbatim; **adapt** = real portable concept, needs de-hardcoding of ec-site vocabulary/paths/business logic (or, in one case, safety hardening) before it's package-worthy; **drop** = ec-site business/content/brand logic with no reusable core.
 

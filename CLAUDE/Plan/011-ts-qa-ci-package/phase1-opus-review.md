@@ -4,6 +4,7 @@
 
 **Reviewer**: Opus review pass, 2026-07-10
 **Reviewed**: `untracked/plan-011-phase1-concept-report.md` against Task 1.1's requirements and against the actual source in `untracked/repos/php-qa-ci` and `untracked/ec-site`.
+**Provenance note**: this file cites the report's original `untracked/` path — the document itself was later moved into this plan folder as [`phase1-concept-report.md`](phase1-concept-report.md); there is no second, divergent copy left in `untracked/`.
 
 ## Summary
 

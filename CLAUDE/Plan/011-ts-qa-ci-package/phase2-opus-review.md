@@ -2,6 +2,7 @@
 
 **Reviewed**: `untracked/plan-011-phase2-design.md` for BUILDABILITY, against the plan (`CLAUDE/Plan/011-ts-qa-ci-package/PLAN.md`), the Phase 1 concept report, and real source in `untracked/repos/php-qa-ci` + `untracked/ec-site`.
 **Date**: 2026-07-10
+**Provenance note**: this file cites the design doc's original `untracked/` path — the document itself was later moved into this plan folder as [`phase2-design.md`](phase2-design.md); there is no second, divergent copy left in `untracked/`. Its blocking finding was subsequently found incomplete by a pass-2 Fable audit — see [`plan-audit-fable-1.md`](plan-audit-fable-1.md) finding B1 and `phase2-design.md`'s current §2.4 for the corrected mechanism.
 
 ## Verdict: NEEDS REVISION
 
