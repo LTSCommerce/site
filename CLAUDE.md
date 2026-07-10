@@ -942,7 +942,7 @@ At session start this handler reports any **project handlers** (`.claude/project
 1. **Do not assume normal guardrails are in force.** The listed handlers are OFF for this session.
 2. **Diagnose** each failure: `$PYTHON -m claude_code_hooks_daemon.daemon.cli validate-project-handlers` names the file, the missing method, and the daemon version that introduced it.
 3. **Fix** the handler(s) — usually adding a required method stub (e.g. `get_claude_md`) that a daemon upgrade made mandatory.
-4. **Restart the daemon** (`$PYTHON -m claude_code_hooks_daemon.daemon.cli restart`). The alert reflects the _running_ daemon, so it clears only after a restart reloads the fixed handlers — fixing the file alone is not enough.
+4. **Restart the daemon** (`$PYTHON -m claude_code_hooks_daemon.daemon.cli restart`). The alert reflects the *running* daemon, so it clears only after a restart reloads the fixed handlers — fixing the file alone is not enough.
 
 The handler is silent when every project handler loads, so seeing this alert always means real action is required.
 
