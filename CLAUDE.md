@@ -486,6 +486,18 @@ The following git commands are permanently blocked and will always be denied:
 
 If the user needs to run one of these, ask them to do it manually. Do not attempt to work around the block.
 
+**To delete a branch, ALWAYS try `git branch -d` first.** It is allowed, it is battle-tested, and it refuses unless the branch is genuinely merged. Reach for anything else only once it has actually refused:
+
+```
+git branch -d <name>                          # ALWAYS TRY THIS FIRST
+hooks-daemon delete-branch --dry-run <name>    # only if -d refused
+hooks-daemon delete-branch <name>              # deletes only if provably safe
+```
+
+`git branch -d` refuses a branch whose commits are not ancestors of the target, which after a history rewrite or a squash merge means EVERY branch — the content is upstream but the ancestry is severed. That specific gap is what `delete-branch` fills; it is not a general replacement. It refuses by default and deletes only what it can prove is recoverable: merged, or every commit already upstream by patch-id, or every file version byte-identical to a blob still reachable from `main`. For a merged branch it delegates to `git branch -d` anyway, so git re-checks the work independently. A recovery bundle is written first unless you pass `--no-bundle`. If it refuses, it names the files whose CONTENT exists nowhere else.
+
+**Abandoning unmerged work is human-gated and you cannot complete it.** When no proof holds, the branch holds the only copy of real work, so `--allow-unproven --reason` is not enough: the command also requires a human to type a confirmation at an interactive terminal, which your non-interactive shell does not have. Those flags declare intent; consent is separate and cannot be self-granted. Report the named files to the user and ask them to run the command themselves — do not hunt for a way around it.
+
 **Safe alternatives**: `git stash` (recoverable), `git diff` / `git status` (inspect first), `git commit` (save changes permanently first).
 
 ## sed_blocker — sed is forbidden for file modification
@@ -518,9 +530,9 @@ Bash commands that change directory into `.claude/hooks-daemon/` (or `cd` into a
 **Run daemon CLI from the project root instead** — it always works regardless of cwd:
 
 ```
-$PYTHON -m claude_code_hooks_daemon.daemon.cli status
-$PYTHON -m claude_code_hooks_daemon.daemon.cli restart
-$PYTHON -m claude_code_hooks_daemon.daemon.cli logs
+/workspace/.claude/hooks-daemon/bin/hooks-daemon status
+/workspace/.claude/hooks-daemon/bin/hooks-daemon restart
+/workspace/.claude/hooks-daemon/bin/hooks-daemon logs
 ```
 
 If you need to inspect daemon source for debugging, use `Read` from the project root with the absolute path — never `cd` in. Do NOT edit anything inside `.claude/hooks-daemon/`; changes will be overwritten on the next upgrade.
@@ -547,6 +559,8 @@ Writing code that silently swallows errors is blocked. All errors must be handle
 
 **Required action**: Handle errors explicitly — log them, return them to the caller, or propagate them. Silent error suppression masks bugs and makes debugging impossible.
 
+**Excluded paths**: vendor/, node_modules/, and test-fixture dirs (tests/fixtures/, tests/assets/, __fixtures__/) are skipped by default. Exempt more paths with glob patterns via `handlers.pre_tool_use.error_hiding_blocker.options.exclude_paths` or the project-wide `daemon.exclude_paths` — use these for fixtures of deliberately-broken code instead of disabling the handler.
+
 ## curl_pipe_shell — never pipe curl/wget to bash/sh
 
 Piping network content directly to a shell is blocked. It executes untrusted remote code without any inspection.
@@ -567,30 +581,59 @@ Writing code that contains security antipatterns is blocked across all supported
 
 **Blocked categories**:
 
-- SQL injection: building queries via string concatenation (use parameterised queries)
-- Command injection: passing unvalidated input to subprocess (use argument lists)
-- Hardcoded credentials: API keys, passwords, tokens embedded in source code
-- Weak cryptography: MD5 or SHA1 for password hashing (use bcrypt/argon2)
-- Path traversal: unvalidated user input used in file paths
+- Code injection: `eval`, `exec`, `new Function`, `__import__`, `instance_eval`, `yaml.load` — dynamic execution of a string
+- Command injection: `os.system`, `subprocess(..., shell=True)`, `shell_exec`, `proc_open`, `Runtime.exec`, `Process.Start`, `IO.popen`
+- Unsafe deserialization: `pickle.load`, `Marshal.load`, `unserialize`, `ObjectInputStream`, `XMLDecoder`, `BinaryFormatter`
+- XSS: `innerHTML`, `dangerouslySetInnerHTML`, `document.write`, `template.HTML`/`JS`/`URL`
+- Hardcoded credentials: AWS access keys, GitHub tokens, Stripe keys, private key blocks
 
-**Supported languages**: Python, JavaScript/TypeScript, Go, PHP, Ruby, Java, Kotlin, C#, Rust, Swift, Dart.
+**This is pattern matching on known-dangerous constructs, not analysis.** It does NOT detect SQL injection, weak hashing, or path traversal — those are properties of how a value FLOWS, which a regex cannot see. Do not read a passing write as 'this code is secure'.
+
+**Supported languages**: Python, JavaScript/TypeScript, Go, PHP, Ruby, Java, Kotlin, C#, Rust, Swift, Dart. Coverage varies by language — a construct blocked in one is not necessarily blocked in another.
+
+**Excluded paths**: vendor/, node_modules/, and test fixtures are skipped by default. Exempt more paths with glob patterns via `handlers.pre_tool_use.security_antipattern.options.exclude_paths` or the project-wide `daemon.exclude_paths`.
+
+## sensitive_content — blocked patterns and secret terms are never written
+
+Writing content that matches a configured public pattern or a gitignored secret word list is blocked. Two sources, two different disclosure rules:
+
+**Public patterns** (`handlers.pre_tool_use.sensitive_content.options.public_patterns`): named regexes safe to name — the deny reason shows the pattern name and the exact matched text so you can fix it.
+
+**Secret word list** (`options.secret_word_list_path`, default `.claude/block-words.secret`, gitignored): a term never appears anywhere — not in the deny reason, not in any log, not in payload capture, not in a transcript archive. The deny reason names only an index (`entry N of M in the secret word list`), which is meaningless without the gitignored file. **Do NOT try to guess or work around the block** — open the secret word list file (if you have access) to see what matched, or ask the user. Only the ADDED text is checked on `Edit` (`new_string`) — removing sensitive content is never blocked.
+
+**Git metadata is checked too.** File contents and file PATHS are only two of the seven places a term can enter a repository — the other five are git metadata, and none of them is a file write. So a `Bash` command that records metadata is also checked: `git commit` (messages), `git tag` (names and messages), `git branch` / `checkout -b` / `switch -c` (branch names), `git config user.name|user.email` (author identity), `git merge -m`. A match denies the command.
+
+**Reading is never blocked.** Only commands that WRITE metadata are candidates, so `grep`, `cat`, `git log --grep=`, `git show`, `git branch --list` and `git tag -l` stay allowed even when the term is right there on the command line — searching for a term and removing it are exactly the work of cleaning a repository.
+
+If a compound command is denied because an unrelated part of it carries a term (`grep <term> f && git commit -m 'clean'`), split it into two calls rather than trying to disguise the term.
+
+Missing/empty/comments-only secret file = this source is silently inert.
 
 ### Pipe Blocker
 
 Commands piped to `tail` or `head` are **blocked** — piping truncates output and causes information loss.
 
-**Use a temp file instead:**
+**Do NOT do the theatre** of capturing output to a file and then echoing the WHOLE file to stdout — that defeats the point and just bloats tokens.
+
+**Preferred — `echd-capture`**: capture the FULL output, see only a preview. When the block fires it prints the exact invocation to use — an ABSOLUTE path to the deployed helper, not a bare name — so copy the path from the block message (the helper is not guaranteed to be on `PATH`). If no helper path can be resolved, the block recommends the temp-file redirect below instead.
 
 ```bash
-# WRONG — blocked:
+# WRONG — blocked (and truncates):
 pytest tests/ 2>&1 | tail -20
 
-# RIGHT — redirect to temp file:
-pytest tests/ > /tmp/pytest_out.txt 2>&1
-# Then read selectively if needed
+# RIGHT — full capture, bounded preview + path to the rest. Use the ABSOLUTE
+# echd-capture path from the block message (shown here as /…/scripts/echd-capture):
+set -o pipefail
+pytest tests/ 2>&1 | /…/scripts/echd-capture 20
+# prints the last 20 lines + '(full output: /…/command-output-….txt)'.
+# Use --head N for the first N lines. pipefail keeps pytest's exit code visible.
 ```
 
+**Always-works alternative** (no helper, no pipe): `pytest tests/ > /tmp/out.txt 2>&1` then read the file selectively.
+
 **Allowed** (whitelisted): `grep`, `rg`, `awk`, `sed`, `jq`, `ls`, `cat`, `git log`, `git tag`, `git branch`, and other cheap filtering commands.
+
+**Only PIPES are restricted — reading a file directly is not.** `tail -n 40 <file>`, `head -n 40 <file>` and `grep pattern <file>` take the path as an ARGUMENT, so no pipe exists and this handler never sees them. That is the supported way to sample a large append-only file such as a plan's `JOURNAL/` day-file — which you should tail or grep rather than read whole.
 
 **Add to whitelist** (if safe to pipe): set `extra_whitelist` in `.claude/hooks-daemon.yaml` under `pipe_blocker`.
 
@@ -748,9 +791,22 @@ commit with a TODO list of what the commit must also contain.
   changes should also update that plan's PLAN.md
   (`same-commit-plan-doc`); reference plans as `Plan NNNNN:`
   (`plan-ref-format`)
+- (advise-only, Plan 00163) a commit that changes a plan's PLAN.md
+  tasks should stage a `JOURNAL/` entry recording what changed
+  (`journal-entry-with-progress`); a terminal-status flip should
+  stage a closing journal entry when
+  `plan_workflow.qa.journal.enforce_on_completion` is on
+  (`journal-completion-entry`)
+- (advise-only, Plan 00190) a commit whose PLAN.md loses 2,000+
+  bytes while staging NO journal entry is flagged
+  (`plan-shrink-without-journal`): that shape usually means
+  narrative was DELETED rather than relocated into `JOURNAL/`.
+  If the content was genuinely obsolete this is fine as it stands
+  — git keeps the history; the check exists so you notice which
+  of the two you just did
 
 Check the staged tree any time without committing:
-`$PYTHON -m claude_code_hooks_daemon.daemon.cli plan-qa --check-staged`.
+`/workspace/.claude/hooks-daemon/bin/hooks-daemon plan-qa --check-staged`.
 Commits inside nested/vendor repos or foreign worktrees are exempt.
 
 ## plan_qa_edit — PLAN.md writes are linted in real time
@@ -772,6 +828,16 @@ call with the exact remediation; fix the content and retry.
   (`header-body-coherence`)
 - use the template task grammar `- [ ] ⬜ **Task N.N**:` — not
   ad-hoc markers like `[✓]`/`[⏳]` (`task-grammar`)
+- a `PLAN.md` must stay under the size tiers (`plan-doc-size`):
+  advisory above 18,000 bytes / 350 lines, escalated warning above
+  25,000 / 500, and edits BLOCKED above 35,000 / 900. The two
+  remedies are RELOCATE the narrative into this plan's `JOURNAL/`
+  or SPLIT the plan — never delete content. Only an edit that
+  GROWS the file can be blocked (shrinking is silent, same-size
+  only advises), so an oversized plan can always be updated and
+  refactored down; declare a genuine exception in the file with
+  `<!-- MUST_EXCEED_PLAN_SIZE_BECAUSE: <reason> -->`. Journals and
+  the plan-index README are exempt at any size.
 
 **Advisory rules**: missing Created/Owner/Priority headers on new
 plans; a terminal status set while the folder is still in the plan
@@ -779,9 +845,42 @@ root (the same commit must `git mv` it to the archive dir and
 update the README row); edits to archived plans; backticked
 `src/...` paths that no longer exist.
 
+**Journal day-files** (`JOURNAL/NNNNN-Journal-YY-MM-DD.md`) are also
+linted: the name must match the grammar and the enclosing plan
+number (`journal-dayfile-naming`, ADVISE), and edits must APPEND —
+never rewrite or remove earlier entries (`journal-append-only`,
+ADVISE). Corrections are new dated entries at the bottom, not edits
+to old ones.
+
+**A Write/Edit to a journal day-file dated anything other than
+TODAY is BLOCKED by default** (`journal-dayfile-is-today`) — this
+includes yesterday's date. A session that spans midnight must start
+TODAY's day-file, not keep appending to yesterday's; the block
+message names the exact today-dated filename to write instead.
+Controlled independently of the other journal checks via
+`plan_workflow.qa.journal.today_only_mode` (advise | block | off;
+default block).
+
+A journal is **unbounded by design** — its length is never a problem
+and it must not be tidied or trimmed. It is safe to grow forever
+precisely because it is never read whole: grep it, `tail -n N` the
+newest day-file directly, or send a sub-agent. `PLAN.md` is the
+opposite — read in full every session, so keep it lean and curated,
+with history in git rather than in the file body.
+
 Grandfathered plans in `plan_workflow.qa.legacy_plan_allowlist`
 only ever advise. Lint any file on demand:
-`$PYTHON -m claude_code_hooks_daemon.daemon.cli plan-qa --lint <file>`.
+`/workspace/.claude/hooks-daemon/bin/hooks-daemon plan-qa --lint <file>`.
+
+## agent_isolation_advisor — isolate concurrent agents
+
+When more than one agent thread is live in this checkout, spawning another Agent without isolation is flagged (advisory, never blocked).
+
+Agents in one working tree share a single `.git/index`, so a peer's bare `git commit` can silently absorb another agent's staged work.
+
+**Prefer**: `isolation: "worktree"` on the Agent tool, then `git merge` or `git cherry-pick` to bring work back.
+
+**Keep the shared tree** for agents that need the real project root — daemon restart verification and client-mode testing do not work in a worktree.
 
 ## article-snippet-enforcer — articles must use the snippet system
 
@@ -803,7 +902,7 @@ A PostToolUse advisory that fires when a Bash call backgrounds a process (`run_i
 
 When you background a long-lived process:
 
-- Create a non-durable recurring **watchdog cron** (CronCreate, durable:false) whose prompt runs `$PYTHON -m claude_code_hooks_daemon.daemon.cli harvest-background` and acts on any runaway — this covers the idle/compaction window a tool-call hook cannot. Do NOT wait for the cron; keep working.
+- Create a non-durable recurring **watchdog cron** (CronCreate, durable:false) whose prompt runs `/workspace/.claude/hooks-daemon/bin/hooks-daemon harvest-background` and acts on any runaway — this covers the idle/compaction window a tool-call hook cannot. Do NOT wait for the cron; keep working.
 - Check on demand: run `harvest-background` (exit 1 == runaways surfaced).
 - Reap a runaway by its **process group**: `kill -- -<pgid>` (not just the pid).
 - Keep a wanted long task: note `KEEP_RUNNING_BECAUSE="reason"`.
@@ -826,10 +925,12 @@ After every `Write` or `Edit` of a `.md` or `.markdown` file, the content is re-
 - `---` thematic breaks are preserved (mdformat's 70-underscore default is post-processed back).
 - Asterisks in table cells are escaped (`*` → `\*`) as required by GFM.
 
+**Exempt:** anything under a plan's `JOURNAL/` directory is NEVER reformatted — day-files (`JOURNAL/NNNNN-Journal-YY-MM-DD.md`, Plan 00163) and any other file in there. A journal is an append-only, byte-stable log; rewriting it would trip the `journal-append-only` check. The exemption is by LOCATION as well as by filename, so a mis-named day-file is still safe.
+
 **Ad-hoc formatting of existing files:**
 
 ```
-$PYTHON -m claude_code_hooks_daemon.daemon.cli format-markdown <path>
+/workspace/.claude/hooks-daemon/bin/hooks-daemon format-markdown <path>
 ```
 
 ## recovery_cron_advisor — failsafe recovery cron lifecycle advisory
@@ -843,11 +944,11 @@ recovery cron.
 Three lifecycle phases are detected from Write/Edit to `CLAUDE/Plan/<digits>-<name>/PLAN.md`
 (never from files inside `Completed/`) and from `mkplan.bash` Bash invocations:
 
-| Phase          | Trigger                                                                               | Guidance injected                                                                                                                                                                                                                                         |
-| -------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Creation**   | New PLAN.md written, or `mkplan.bash` invoked                                         | Create a non-durable hourly cron now (CronCreate, durable:false); record the ID in the plan; do NOT wait for the cron.                                                                                                                                    |
-| **Progress**   | Edit to PLAN.md touching task-status icons (⬜/🔄/✅) or `## Notes & Updates` section | Confirm the recovery cron is still running (CronList); recreate if missing; keep working.                                                                                                                                                                 |
-| **Completion** | `**Status**: Complete[d]` written/edited                                              | Plan complete — **warns first**: deleting now leaves the still-live session with no recovery coverage. Keep the cron if any further work may happen (it is non-durable and dies on session exit); `CronDelete` only when certain the session is finished. |
+| Phase          | Trigger                                               | Guidance injected                                                                                                                                                                                                                                         |
+| -------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Creation**   | New PLAN.md written, or `mkplan.bash` invoked         | Create a non-durable hourly cron now (CronCreate, durable:false); record the ID in the plan's `JOURNAL/` day-file (NOT in PLAN.md); do NOT wait for the cron.                                                                                             |
+| **Progress**   | Edit to PLAN.md touching task-status icons (⬜/🔄/✅) | Confirm the recovery cron is still running (CronList); recreate if missing; keep working.                                                                                                                                                                 |
+| **Completion** | `**Status**: Complete[d]` written/edited              | Plan complete — **warns first**: deleting now leaves the still-live session with no recovery coverage. Keep the cron if any further work may happen (it is non-durable and dies on session exit); `CronDelete` only when certain the session is finished. |
 
 Progress reminders are rate-limited per plan: the handler advises on the first
 progress edit and then once every few progress edits for that plan, so it does
@@ -902,9 +1003,9 @@ At session start this handler reports any **project handlers** (`.claude/project
 ### When you see `🚨 PROJECT PROTECTION DEGRADED 🚨`
 
 1. **Do not assume normal guardrails are in force.** The listed handlers are OFF for this session.
-2. **Diagnose** each failure: `$PYTHON -m claude_code_hooks_daemon.daemon.cli validate-project-handlers` names the file, the missing method, and the daemon version that introduced it.
+2. **Diagnose** each failure: `/workspace/.claude/hooks-daemon/bin/hooks-daemon validate-project-handlers` names the file, the missing method, and the daemon version that introduced it.
 3. **Fix** the handler(s) — usually adding a required method stub (e.g. `get_claude_md`) that a daemon upgrade made mandatory.
-4. **Restart the daemon** (`$PYTHON -m claude_code_hooks_daemon.daemon.cli restart`). The alert reflects the *running* daemon, so it clears only after a restart reloads the fixed handlers — fixing the file alone is not enough.
+4. **Restart the daemon** (`/workspace/.claude/hooks-daemon/bin/hooks-daemon restart`). The alert reflects the *running* daemon, so it clears only after a restart reloads the fixed handlers — fixing the file alone is not enough.
 
 The handler is silent when every project handler loads, so seeing this alert always means real action is required.
 
@@ -921,9 +1022,25 @@ On every new session this handler audits hook configuration across `.claude/sett
 ### Remediation
 
 - **Hooks in `settings.local.json`**: move each `hooks` entry to `settings.json`, then delete the `hooks` key from `settings.local.json`. Confirm no duplicates remain.
-- **Legacy-style commands**: replace them with a project-level handler. Run `$PYTHON -m claude_code_hooks_daemon.daemon.cli init-project-handlers` to scaffold `.claude/project-handlers/`, port the logic into a handler class, then restore the daemon wrapper in `settings.json`. The daemon will auto-discover the new handler on restart.
-- **Missing hooks**: the daemon's installer writes the full set. If any are missing, re-run `install.py` or manually add the missing `{event_name}` entry pointing at `"$CLAUDE_PROJECT_DIR"/.claude/hooks/{bash-key}`.
-- **Duplicate hooks**: a hook registered in both files fires twice. Keep the `settings.json` entry, delete from `settings.local.json`.
+- **Legacy-style commands**: replace them with a project-level handler. Run `/workspace/.claude/hooks-daemon/bin/hooks-daemon init-project-handlers` to scaffold `.claude/project-handlers/`, port the logic into a handler class, then restore the daemon wrapper in `settings.json`. The daemon will auto-discover the new handler on restart.
+- **Missing hooks**: by default this handler SELF-HEALS — it merges the full wired registration set into `settings.json` on session start (additive; preserves `permissions`/`env`/`statusLine` and any custom hooks; one-shot backup to `settings.json.bak.pre-registration-repair`), so the flood stops without a reinstall. Opt out with `handlers.session_start.hook_registration_checker.options.auto_repair_registrations: false`, then re-run the installer or add the missing `{event_name}` entry manually.
+- **Duplicate hooks**: a hook registered in both files fires twice. Keep the `settings.json` entry and remove the duplicate in `settings.local.json`.
+
+## git_upstream_checker — additive fetch + pull/cleanup advice on session start
+
+On each new session the daemon runs an **additive** `git fetch --all` (never `--prune` — it never removes anything automatically) and then:
+
+**If your branch is behind its upstream**, acts on the configured `mode`:
+
+- `warn` (default): strongly advises you to run `git pull`.
+- `agent-pull`: instructs you to run `git pull` as your first action.
+- `auto-pull`: the daemon runs `git pull --ff-only` for you on a clean, non-diverged tree; if it cannot fast-forward (dirty tree or diverged history) it degrades to a warning and you pull manually.
+
+**If the upstream was REWRITTEN**, every mode above is overridden and NO pull is advised in any wording. The signal is a divergence whose two sides share no commit shas yet resolve to the SAME tree: identical content, so there is nothing to merge and each local commit is a pre-rewrite duplicate. Pulling would merge the entire pre-rewrite history back in and republish whatever the rewrite (a `filter-repo` secret-strip, say) was run to remove. The advisory instead asks a human to realign the branch onto its upstream and to re-fetch tags with `--force`, since a rewrite moves every tag to a new sha. Do NOT work around this by pulling — if you believe the divergence is genuine, check the trees yourself before merging.
+
+**If local branches track a remote branch that was deleted**, it lists them (marked merged = safe vs not-merged = has unique commits) and asks you to clean up AFTER checking: `git branch -d <name>` for merged branches, ask the human for the rest, and optionally `git fetch --prune` the stale remote-tracking refs. The daemon never prunes or deletes a branch itself; never use `git branch -D`.
+
+It is silent when up to date with no gone branches, not in a git repo, on a detached HEAD, or without an upstream. Configure via `handlers.session_start.git_upstream_checker.options.mode`.
 
 ## plan_qa_sweep — plan-tree drift report at session start
 
@@ -938,7 +1055,7 @@ its exact remediation) as part of your plan housekeeping, then
 re-check with:
 
 ```
-$PYTHON -m claude_code_hooks_daemon.daemon.cli plan-qa --sweep
+/workspace/.claude/hooks-daemon/bin/hooks-daemon plan-qa --sweep
 ```
 
 The CLI exits 1 while findings remain (CI-able). Single-file lint:
@@ -946,9 +1063,38 @@ The CLI exits 1 while findings remain (CI-able). Single-file lint:
 Policy lives under `plan_workflow.qa` in `.claude/hooks-daemon.yaml`
 (archive dir names, staleness window, legacy/collision allowlists).
 
+## ccy_supervisor_integrity — keep the ccy supervisor properly set up
+
+At session start this handler checks a ccy project (`.claude/ccy/`) whose supervisor is **armed** (`ccy.env` exports `CCY_CLAUDE_WRAPPER` referencing `claude-supervise.py`). It warns — never blocks — when the setup is brick-risky:
+
+- **`claude-supervise.py` missing** → the launcher's `exec` fails. Redeploy via a daemon upgrade or restore from git.
+- **not executable** → `chmod +x .claude/ccy/claude-supervise.py`.
+- **git-ignored** → it won't be committed; teammates get a broken supervisor. Add a `!claude-supervise.py` / `!ccy.env` whitelist line to `.claude/ccy/.gitignore` and commit the files.
+- **`ccy.deploy_supervisor: false` while armed+present** → the installer skips deploy on `false`, so upgrades never refresh `claude-supervise.py` and the project runs an increasingly stale supervisor. Set it to `true` (or disarm `CCY_CLAUDE_WRAPPER` if you truly want it off).
+
+It also detects a **stale running supervisor** (Plan 00164): when a daemon upgrade has put a NEWER `claude-supervise.py` on disk than the live process (compared by source fingerprint, not just version), it advises restarting ccy so the wrapper re-execs the updated supervisor. Nothing is broken meanwhile — the old supervisor keeps working until the session is relaunched.
+
+When you see this alert, fix the listed item(s) and commit the ccy files so the supervisor works for everyone.
+
+## plan_workflow_asset_checker — plan tooling provisioning alert
+
+At session start, when the plan workflow is enabled but the daemon-owned `mkplan.bash` is missing from the plan directory, this advisory fires (it never blocks). A missing `mkplan.bash` means `CLAUDE.md` and `plan_number_helper` reference a scaffolder that does not exist and journalling is inert.
+
+**Fix**: (re)deploy the assets on demand —
+
+```
+/workspace/.claude/hooks-daemon/bin/hooks-daemon deploy-plan-workflow
+```
+
+The deploy is idempotent (fills gaps only, never overwrites client-owned files). Silent when `mkplan.bash` is present or the workflow is disabled.
+
 ## ts-qa-ci
 
 This project uses `ts-qa-ci` for QA/CI. Run `npx ts-qa` for the full pipeline, or `npx ts-qa -t <tool>` to run a single tool. See `node_modules/@longtermsupport/ts-qa-ci/docs/` for the full docs set.
+
+## idle_housekeeping_advisory — report-first idle housekeeping (beta, opt-in)
+
+When the session is idle and caught up (repeated no-op failsafe-recovery ticks), this advisory suggests a bounded HOUSEKEEPING MODE: dispatch specialist housekeeping sub-agents that run read-only audits and write shareable **markdown report files** (default `untracked/reports/`). It is REPORT-ONLY — never auto-fix or auto-commit — and strictly lower priority than real work (a real user prompt aborts it). Off by default; enable via `handlers.user_prompt_submit.idle_housekeeping_advisory.enabled: true`. A project can point it at its own doc via the `custom_guidance_doc` option (`custom_guidance_mode: additive` appends it to the default, `replace` uses only the project doc). See docs/guides/CREATING_REPORTS.md.
 
 ## auto_approve_reads — gated on bypassPermissions mode
 
@@ -977,6 +1123,7 @@ STOPPING BECAUSE: all tasks complete, QA passes, daemon restart verified.
 
 - Stop mid-task without explanation
 - Ask confirmation questions and then stop (the hook auto-continues those)
+- Smuggle a rhetorical continue question inside a `STOPPING BECAUSE:` message ('STOPPING BECAUSE: slice 1 done. Want me to build slice 2?') — this is HARD-BLOCKED; the prefix does not exempt tautological questions. Just continue with the next unit of work
 - Use `AUTO-CONTINUE` unless you intend to keep working indefinitely
 
 **Before asking a question, evaluate it critically**:
@@ -999,7 +1146,7 @@ Some tool errors require an explicit recovery action, not a halt. The most commo
 
 ## dismissive_language_detector — do not deflect or prematurely halt
 
-Stop-time advisory that fires on language patterns signalling avoidance of work. The handler does NOT block the stop, but injects context for the next turn so the agent self-corrects.
+Stop-time advisory that fires on language patterns signalling avoidance of work. The handler does NOT block the stop, but injects context for the next turn so the agent self-corrects. Identical advisories (same session, same phrase set) are emitted once, not repeated on every subsequent stop.
 
 **Avoid**:
 
@@ -1008,5 +1155,9 @@ Stop-time advisory that fires on language patterns signalling avoidance of work.
 - Speculative `should be fine` or `probably works` when verification is cheap (run the test, read the file).
 
 **Do**: acknowledge the issue, fix it, or — if it genuinely is out of scope — say so once with the specific reason and continue with the in-scope work.
+
+## worktree_create — semantic worktree naming
+
+When Claude Code creates a worktree (an `isolation: "worktree"` agent or `--worktree` session), the daemon creates it at a human-friendly path `.claude/worktrees/<slug-of-name>-<shorthash>/` and echoes that path. Name an agent semantically (the Agent tool's `name:`) to get a readable worktree directory (e.g. `refactor-auth-4f2a1c9b`) instead of an opaque `wf_<hash>`. The short hash suffix keeps identically-named agents from colliding.
 
 </hooksdaemon>
