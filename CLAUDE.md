@@ -732,6 +732,26 @@ pip install --user <package>
 
 Even in a container running as root, `sudo` adds nothing — drop it and use a venv.
 
+## plan_number_helper — use `mkplan.bash` to create a plan
+
+**To create a new plan, run the deployed scaffolding script:**
+
+```
+CLAUDE/Plan/mkplan.bash "descriptive-kebab-name"
+```
+
+(Use the project's configured plan directory if it is not `CLAUDE/Plan/`.) The script takes a lock, reads the same authoritative git counter (`hooksdaemon.latestPlanNumber`), assigns the next number atomically, creates the `NNNNN-name/` folder, scaffolds `PLAN.md`, and advances the counter — so concurrent runs can never collide on a number. It prints the new folder path on stdout. You still add the README index row yourself (the script reminds you).
+
+**If you only need the *number* (not a folder)**, read the counter and add 1 — this is the fallback, not the primary path:
+
+```
+git config --local hooksdaemon.latestPlanNumber
+```
+
+Add 1 to that value (zero-pad to 5 digits, e.g. counter `117` → next plan `00118`). The git counter is the source of truth; the daemon keeps it correct across branches.
+
+**Do NOT** scan `CLAUDE/Plan/` with `ls`/`find`/glob pipelines to discover the next number. Folder scans miss plans in `Completed/` and other subdirectories, and disagree across branches. The folder scan is only used to bootstrap the counter when the git key is unset (which `mkplan.bash` and the daemon both handle).
+
 ## lsp_enforcement — use LSP tools for code symbol lookups
 
 Using `Grep` or `Bash` (grep/rg) to find class definitions, function signatures, or symbol references is blocked or redirected to LSP tools, which are faster and semantically accurate.
@@ -871,6 +891,30 @@ with history in git rather than in the file body.
 Grandfathered plans in `plan_workflow.qa.legacy_plan_allowlist`
 only ever advise. Lint any file on demand:
 `/workspace/.claude/hooks-daemon/bin/hooks-daemon plan-qa --lint <file>`.
+
+## plan_workflow — PLAN.md and JOURNAL/ obey OPPOSITE contracts
+
+Confusing these two is the single most common plan-hygiene failure: narrative gets appended to `PLAN.md` until it is tens of KB of stale log. Each file has a WRITE contract and a READ contract, and the read contract is what justifies the write contract.
+
+|             | `PLAN.md`                                                                                | `JOURNAL/NNNNN-Journal-YY-MM-DD.md`                                                                  |
+| ----------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Write**   | Commit if dirty, EDIT IN PLACE, commit. Rewrite freely — git holds the history           | APPEND ONLY. Never edit or remove an earlier entry; corrections are new dated entries at the bottom  |
+| **Content** | LEAN, surgical, always correct — current truth only: goals, decisions, task tree, status | What actually happened: dated progress, findings, incidents, hand-offs                               |
+| **Read**    | Read IN FULL every session — it is your grounding                                        | NEVER read whole. `tail -n N` the newest day-file, grep it, or send a sub-agent for deep archaeology |
+| **Size**    | Bounded — see tiers below                                                                | UNBOUNDED by design. Length is never a problem; never tidy or trim a journal                         |
+
+**Why the asymmetry**: a plan is re-read in full at the start of every session that touches it, so every KB is a recurring context cost paid before any work starts. A journal is only ever sampled, so it is safe to grow forever.
+
+**Size tiers on `PLAN.md`** (bytes OR lines, whichever trips first): advisory above 18,000 bytes / 350 lines; escalated warning above 25,000 / 500; edits BLOCKED above 35,000 / 900.
+
+**When a plan gets too big there are exactly two remedies, and NEITHER is deletion**:
+
+1. **Relocate** the narrative into this plan's `JOURNAL/` day-file.
+2. **Split** the plan if the task tree itself is the bulk — an over-scoped plan is not fixed by better journalling.
+
+**Only an edit that GROWS the file can be blocked.** Shrinking it is silent and a same-size edit (ticking a checkbox) only advises — so an oversized plan can always be updated and refactored down. If a plan genuinely warrants its size, record why in the file: `<!-- MUST_EXCEED_PLAN_SIZE_BECAUSE: <reason> -->`.
+
+**Task status icons**: ⬜ not started, 🔄 in progress, ✅ complete. Include a Success Criteria section and break work into phases.
 
 ## agent_isolation_advisor — isolate concurrent agents
 
