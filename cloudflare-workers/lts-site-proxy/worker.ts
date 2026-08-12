@@ -30,6 +30,7 @@ const SECURITY_HEADERS = {
 const PATH_REDIRECTS: Readonly<Record<string, string>> = {
   '/author.html': '/about',
   '/author': '/about',
+  '/articles/defense-before-fix-static-analysis': '/articles/defence-before-fix-static-analysis',
 };
 
 // Vanity headers

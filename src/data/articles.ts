@@ -2684,7 +2684,7 @@ processOrderId(42);
 
     <p>A test catches one specific manifestation of a bug. If that bug was caused by a systemic pattern — <code>?? ''</code> used across dozens of files — fixing one instance does nothing about the others scattered through the codebase, written by different developers at different times, in code that has never been tested.</p>
 
-    <p><strong>Defence Before Fix</strong> adds one step before the test:</p>
+    <p><strong>Defence Before Fix</strong> (US spelling: Defense Before Fix) adds one step before the test:</p>
 
     <ol>
         <li><strong>Analyse the pattern.</strong> What coding pattern allowed this bug to exist? Is this a one-off mistake, or is it a class of mistakes the codebase may contain more of?</li>

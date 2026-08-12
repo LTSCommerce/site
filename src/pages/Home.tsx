@@ -31,7 +31,7 @@ const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature
   {
     title: 'Fractional CTO & Technical Leadership',
     description:
-      'Sole technical lead for a mid-market e-commerce operation — I own the architecture, run the infrastructure it trades on, and direct the external agencies that deliver.',
+      'Sole technical lead for a mid-market e-commerce operation — I own the architecture, run the infrastructure it trades on, and deliver the changes that ship: agent-driven, gated by my own tooling. External agencies work alongside me, to standards I set.',
     icon: Brain,
     items: [
       'Technical strategy & roadmapping',

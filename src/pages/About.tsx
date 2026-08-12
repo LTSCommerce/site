@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Page } from '../components/layout/Page';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
-import { ROUTES } from '../routes';
+import { ROUTES, getArticleRoute } from '../routes';
 
 export function About() {
   return (
@@ -39,8 +39,9 @@ export function About() {
                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                   <li>
                     Sole technical lead for a mid-market e-commerce operation — I own the
-                    architecture, run the infrastructure it trades on, and direct the external
-                    agencies that deliver.
+                    architecture, run the infrastructure it trades on, and deliver the changes that
+                    ship: agent-driven, gated by my own tooling. External agencies work alongside
+                    me, to standards I set.
                   </li>
                   <li>4-node high-availability Proxmox cluster, managed entirely as code.</li>
                   <li>
@@ -91,7 +92,14 @@ export function About() {
                 <p className="text-gray-700">
                   I write clean, maintainable code that lasts. Every solution should be scalable,
                   secure, and simple to understand. Technology should serve the business, not
-                  complicate it.
+                  complicate it. Every bug I fix gets a static analysis rule too, following{' '}
+                  <Link
+                    to={getArticleRoute('defence-before-fix-static-analysis').path}
+                    className="text-[#0f4c81] underline"
+                  >
+                    Defence Before Fix
+                  </Link>
+                  .
                 </p>
               </div>
 
@@ -130,16 +138,9 @@ export function About() {
                     </h3>
                     <p className="text-gray-700">
                       Sole technical lead for a mid-market e-commerce operation — I own the
-                      architecture, run the infrastructure it trades on, and direct the external
-                      agencies that deliver.
-                    </p>
-                  </div>
-
-                  <div className="bg-white p-6 rounded-lg border border-gray-200">
-                    <h3 className="text-xl font-bold mb-2">AI-Enhanced Development</h3>
-                    <p className="text-gray-700">
-                      Actively embracing AI tools for development efficiency and implementing AI
-                      into business processes. Modern workflows with traditional reliability.
+                      architecture, run the infrastructure it trades on, and deliver the changes
+                      that ship: agent-driven, gated by my own tooling. External agencies work
+                      alongside me, to standards I set.
                     </p>
                   </div>
                 </div>
