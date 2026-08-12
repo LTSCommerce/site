@@ -134,66 +134,66 @@ rather than the parent. VAT status remains unknown for either entity.
 ### Phase 2 — highest-value content (no blockers)
 
 - [x] ✅ **Task 2.1**: `/open-source` populated — 10 full project entries + 24-repo archive list,
-  three-layer `ProjectLayer` grouping added to the data model, `ProjectList.tsx` restructured
-  into Containment/Policy/Gates/Supporting/Archive sections. `doctrine-static-meta` marked
-  archived, `mock-server` given lifetime-only framing (0/month, no growth story to tell)
+      three-layer `ProjectLayer` grouping added to the data model, `ProjectList.tsx` restructured
+      into Containment/Policy/Gates/Supporting/Archive sections. `doctrine-static-meta` marked
+      archived, `mock-server` given lifetime-only framing (0/month, no growth story to tell)
 - [x] ✅ **Task 2.2**: `Privacy.tsx` built — confirmed the contact form posts to a Google Apps
-  Script endpoint per `Contact.tsx`, named as the processor. Route + Footer link wired; also
-  needed adding to `entry-server.tsx`'s route list and PAGE_META (the layer that actually
-  drives prerendered SEO tags — `Page.tsx` props alone don't reach the static HTML)
+      Script endpoint per `Contact.tsx`, named as the processor. Route + Footer link wired; also
+      needed adding to `entry-server.tsx`'s route list and PAGE_META (the layer that actually
+      drives prerendered SEO tags — `Page.tsx` props alone don't reach the static HTML)
 - [x] ✅ **Task 2.3**: CI/test-infrastructure history added — new paragraph in About's "My Journey"
 - [x] ✅ **Task 2.4**: Capability statement added — new "What This Looks Like in Practice" section, About page
 
 ### Phase 3 — positioning-driven copy (now unblocked)
 
 - [x] ✅ **Task 3.1**: Hero rewritten, then revised twice more for voice (see the Voice pass entry
-  below) — final: "Ship Agent-Written Code You Can Actually Trust", links to `/open-source`
+      below) — final: "Ship Agent-Written Code You Can Actually Trust", links to `/open-source`
 - [x] ✅ **Task 3.2**: Service cards restructured on both Home and About — new "Agentic Delivery
-  Governance" card leads, PHP merged into one "Backend & PHP Engineering" card, no new route added
+      Governance" card leads, PHP merged into one "Backend & PHP Engineering" card, no new route added
 - [x] ✅ **Task 3.3**: "Fractional CTO & Technical Leadership" is now a lead-tier card on both
-  Home and About (was buried in a Contact.tsx bullet list)
+      Home and About (was buried in a Contact.tsx bullet list)
 - [x] ✅ **Task 3.4**: Disqualifying line added under the Home hero
 
 ### Phase 4 — conversion & remaining trust items
 
 - [x] ✅ **Task 4.1**: "Fixed-Scope Engagements" section added to Contact.tsx — two offer cards,
-  prices explicitly "get in touch for a quote" (no fabricated numbers)
+      prices explicitly "get in touch for a quote" (no fabricated numbers)
 - [x] ✅ **Task 4.2**: "Capacity" bullet added to Contact's "How I Work" — describes the
-  monthly-band model, no invented hour figures
+      monthly-band model, no invented hour figures
 - [x] ✅ **Task 4.3**: Visible `mailto:hello@ltscommerce.dev` link added to Contact sidebar
 - [x] ✅ **Task 4.4**: `scripts/generate-feed.mjs` built (mirrors `generate-sitemap.mjs`), wired
-  into `package.json`'s build chain, RSS `<link>` added to root `index.html`. Verified:
-  `dist/feed.xml` generates with 44 correctly-sorted items
+      into `package.json`'s build chain, RSS `<link>` added to root `index.html`. Verified:
+      `dist/feed.xml` generates with 44 correctly-sorted items
 - [x] ✅ **Task 4.5**: `/articles/category/:categoryId` route added, `ArticleList.tsx` extended to
-  read it via `useParams` (search-param interaction still takes precedence once used), category
-  routes added to `entry-server.tsx`'s prerender list + given their own SEO meta. Verified: all 6
-  category pages prerender with correct per-category titles
+      read it via `useParams` (search-param interaction still takes precedence once used), category
+      routes added to `entry-server.tsx`'s prerender list + given their own SEO meta. Verified: all 6
+      category pages prerender with correct per-category titles
 - [x] ✅ **Task 4.6**: New shared `ArticleNextStep.tsx` component, category-keyed CTA rendered
-  after every article's content — avoided hand-editing all 44 `articles.ts` entries
+      after every article's content — avoided hand-editing all 44 `articles.ts` entries
 - [x] ✅ **Task 4.7**: Footer copyright bar now reads "LTS Commerce Ltd. Company No. 16618262.
-  Registered in England & Wales. VAT registered." Joseph confirmed fully VAT registered; no VAT
-  number given so none is displayed (not legally required in a website footer, only on invoices).
-  Same phrase added to Privacy.tsx's "Who this is" section
+      Registered in England & Wales. VAT registered." Joseph confirmed fully VAT registered; no VAT
+      number given so none is displayed (not legally required in a website footer, only on invoices).
+      Same phrase added to Privacy.tsx's "Who this is" section
 - [x] ✅ **Task 4.8**: `public/.well-known/security.txt` added (RFC 9116: Contact, Expires 1yr out,
-  Preferred-Languages, Canonical). Verified present in `dist/`
+      Preferred-Languages, Canonical). Verified present in `dist/`
 
 ### Phase 5 — external surfaces (explicit go-ahead per item, not bundled into blanket approval)
 
 - [ ] 🔄 **Task 5.1**: Drafted — "Fractional CTO & PHP Engineer — building the guardrails (containment, policy, QA gates) that make AI-assisted delivery safe to ship. 20+ years backend. Long Term Support Ltd." Joseph pastes it himself (no API access to LinkedIn). **Correction**: there are actually _two_ LinkedIn profiles — the known `linkedin.com/in/edmondscommerce` (stale "Magento and E-Commerce Web Development Agency UK" headline) and a second, previously-undiscovered one, `linkedin.com/in/lts-joseph` (113 followers, headline just "Long Term Support LTD", featured posts still Magento/PHP-anchored). Neither shows any sign of repositioning yet. Flag both to Joseph — draft copy should probably go on whichever one he actually treats as primary, which only he can say.
 - [x] ✅ **Voice pass** (added mid-execution, not in original brief): user asked for all copy to be filtered through Joseph's actual writing voice rather than generic marketing register. LinkedIn's activity feed is auth-walled (confirmed via real browser, no way through without his login — did not attempt). Real signal instead came from a LinkedIn Pulse article and featured-post snippets that _did_ come through via WebFetch: plain, clipped, self-deprecating, British-colloquial ("if you fancy a change", "100% X certified, 100% Y certified"), "get in touch" as his actual recurring CTA phrase.
-  A background agent separately git-blame-verified that his own CCY docs are literally `Co-Authored-By: Claude Opus 5` in the commit history, and flagged (via stylistic fingerprinting) that **this site's pre-existing copy is itself probably AI-written** — so "preserve the existing voice" was never a safe default here.
-  Best source, per Joseph's own suggestion: cloned the private `LongTermSupport/php-book` manuscript repo (`gh repo clone`, accessible via this container's `gh` auth) into `untracked/repos/php-book/` and read Chapter 1 directly — genuine, unfiltered, pre-LLM (2021) prose. Real pattern: long, loosely-built, comma-heavy sentences, British idiom ("the big daddy", "kick the tyres", "jump in at the deep end"), hedges and asides ("Whilst...", "I seriously hope...", "I think it would be fair to say..."), direct reader address, opinions stated plainly — nothing like the short-punchy-aphorism cadence AI text (including this site's prior copy) tends toward.
-  Applied to Home/About/Contact hero copy and CTAs: swapped "Work With Me"/"Start a Conversation" for "Get In Touch" throughout, removed "X, not Y" balanced-clause constructions, loosened some sentences toward his looser connective style ("...so that's what I build..."). Deliberately did **not** touch Privacy.tsx — a GDPR notice shouldn't chase brand voice at the expense of precision. Not exhaustively re-passed over every card/bullet on the site (diminishing returns) — hit hero copy, CTAs, and the most visible prose blocks.
+      A background agent separately git-blame-verified that his own CCY docs are literally `Co-Authored-By: Claude Opus 5` in the commit history, and flagged (via stylistic fingerprinting) that **this site's pre-existing copy is itself probably AI-written** — so "preserve the existing voice" was never a safe default here.
+      Best source, per Joseph's own suggestion: cloned the private `LongTermSupport/php-book` manuscript repo (`gh repo clone`, accessible via this container's `gh` auth) into `untracked/repos/php-book/` and read Chapter 1 directly — genuine, unfiltered, pre-LLM (2021) prose. Real pattern: long, loosely-built, comma-heavy sentences, British idiom ("the big daddy", "kick the tyres", "jump in at the deep end"), hedges and asides ("Whilst...", "I seriously hope...", "I think it would be fair to say..."), direct reader address, opinions stated plainly — nothing like the short-punchy-aphorism cadence AI text (including this site's prior copy) tends toward.
+      Applied to Home/About/Contact hero copy and CTAs: swapped "Work With Me"/"Start a Conversation" for "Get In Touch" throughout, removed "X, not Y" balanced-clause constructions, loosened some sentences toward his looser connective style ("...so that's what I build..."). Deliberately did **not** touch Privacy.tsx — a GDPR notice shouldn't chase brand voice at the expense of precision. Not exhaustively re-passed over every card/bullet on the site (diminishing returns) — hit hero copy, CTAs, and the most visible prose blocks.
 - [x] ✅ **Task 5.2**: `github.com/LTSCommerce` profile name/bio updated via `gh api user -X PATCH`
-  after Joseph restarted the session with a token carrying the `user` scope (confirmed via
-  `gh auth status`) — name → "Joseph Edmonds", bio → "PHP engineer & fractional CTO. Building the
-  guardrails that make AI-assisted delivery safe to ship. 20+ years backend engineering." Verified
-  via the PATCH response. **Pinning repos is not possible via API** — the GitHub GraphQL schema
-  has no `pinItem`/pinned-items mutation for user profiles (confirmed by introspecting
-  `__schema.mutationType.fields`; only issue/environment pinning exist). Pinning
-  `php-qa-ci`/`ts-qa-ci`/`claude-code-hooks-daemon`/`fedora-desktop` (phpqa dropped — "its
-  ancient") is web-UI-only: Joseph needs to do it himself via
-  github.com/LTSCommerce → Customize your pins.
+      after Joseph restarted the session with a token carrying the `user` scope (confirmed via
+      `gh auth status`) — name → "Joseph Edmonds", bio → "PHP engineer & fractional CTO. Building the
+      guardrails that make AI-assisted delivery safe to ship. 20+ years backend engineering." Verified
+      via the PATCH response. **Pinning repos is not possible via API** — the GitHub GraphQL schema
+      has no `pinItem`/pinned-items mutation for user profiles (confirmed by introspecting
+      `__schema.mutationType.fields`; only issue/environment pinning exist). Pinning
+      `php-qa-ci`/`ts-qa-ci`/`claude-code-hooks-daemon`/`fedora-desktop` (phpqa dropped — "its
+      ancient") is web-UI-only: Joseph needs to do it himself via
+      github.com/LTSCommerce → Customize your pins.
 
 ### Not in this pass (blocked or out of scope per the brief itself)
 
