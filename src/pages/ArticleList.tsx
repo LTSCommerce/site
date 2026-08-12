@@ -5,19 +5,33 @@
  */
 
 import { useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Page } from '@/components/layout/Page';
 import { Container } from '@/components/layout/Container';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import { getAllArticles } from '@/data/articles';
-import { getAllCategories, type CategoryId, isCategoryId } from '@/data/categories';
+import {
+  getAllCategories,
+  getCategoryById,
+  type CategoryId,
+  isCategoryId,
+} from '@/data/categories';
 
 export function ArticleList() {
+  const { categoryId: routeCategoryId } = useParams<{ categoryId?: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const routeCategory: CategoryId | null =
+    routeCategoryId && isCategoryId(routeCategoryId) ? routeCategoryId : null;
   const categoryParam = searchParams.get('category');
-  const selectedCategory: CategoryId | 'all' = (categoryParam as CategoryId | null) ?? 'all';
+  const selectedCategory: CategoryId | 'all' =
+    (categoryParam as CategoryId | null) ?? routeCategory ?? 'all';
   const searchQuery = searchParams.get('search') ?? '';
+
+  // A dedicated /articles/category/:id landing page — used for its title/intro
+  // and for SEO (a real prerendered path with its own meta), independent of
+  // whatever the interactive pill filter currently shows.
+  const landingCategory = routeCategory ? getCategoryById(routeCategory) : null;
 
   const allArticles = getAllArticles();
   const categories = getAllCategories();
@@ -72,8 +86,16 @@ export function ArticleList() {
 
   return (
     <Page
-      title="Technical Articles - PHP, Infrastructure & AI | LTSCommerce"
-      description="In-depth technical articles on PHP, infrastructure, databases, AI, and TypeScript. Expert insights from 20+ years of hands-on backend development."
+      title={
+        landingCategory
+          ? `${landingCategory.label} Articles - LTSCommerce`
+          : 'Technical Articles - PHP, Infrastructure & AI | LTSCommerce'
+      }
+      description={
+        landingCategory
+          ? `Everything written on ${landingCategory.label}: ${landingCategory.description}`
+          : 'In-depth technical articles on PHP, infrastructure, databases, AI, and TypeScript. Expert insights from 20+ years of hands-on backend development.'
+      }
     >
       {/* Controls bar — title, search, category filters in one compact block */}
       <div className="border-b border-gray-200 bg-white">
@@ -82,7 +104,9 @@ export function ArticleList() {
             {/* Title row + search */}
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-5">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Technical Articles</h1>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {landingCategory ? `${landingCategory.label} Articles` : 'Technical Articles'}
+                </h1>
                 <p className="text-sm text-gray-500 mt-1">
                   {filteredArticles.length} {filteredArticles.length === 1 ? 'article' : 'articles'}
                   {isFiltered ? ' found' : ''}

@@ -1,225 +1,99 @@
 # LTS Commerce Portfolio
 
-Professional freelance PHP engineer portfolio website showcasing expertise in modern PHP development, infrastructure automation, and high-performance web applications with hybrid pagination system.
+Professional freelance PHP engineer and agentic-delivery-governance portfolio site, built as a
+statically-generated React/TypeScript application.
 
 ## 🚀 Live Site
 
-The portfolio is automatically deployed to GitHub Pages at: **[ltscommerce.dev](https://ltscommerce.dev)**
-
-## 📋 Overview
-
-This is a statically generated portfolio site built with modern web technologies and automated CI/CD deployment. The site features:
-
-- **Modern Build System**: Vite 5.x with ES modules and asset optimization
-- **Template-Driven Development**: EJS templating system for maintainable code
-- **Automated Deployment**: GitHub Actions CI/CD with quality gates
-- **Performance Optimized**: Lighthouse-tested with automated performance monitoring
-- **Content Management**: Dynamic article system with syntax highlighting
+Deployed at **[ltscommerce.dev](https://ltscommerce.dev)**, fronted by a Cloudflare Worker
+(`cloudflare-workers/lts-site-proxy/`) that sits in front of GitHub Pages.
 
 ## 🏗️ Architecture
 
-### Technology Stack
+- **Frontend**: React 18, TypeScript (strict mode), Tailwind CSS v4
+- **Routing**: React Router v7, type-safe route constants in `src/routes.ts`
+- **Rendering**: SSG — Vite SSR + a custom prerender script renders every route to static HTML
+- **Build tool**: Vite 6
+- **Syntax highlighting**: Highlight.js
+- **CI/CD**: GitHub Actions (`.github/workflows/ci.yml`) → GitHub Pages
 
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Templating**: EJS (Embedded JavaScript templates)
-- **Build Tool**: Vite 5.x (ES module bundler)
-- **Package Manager**: npm with lockfile
-- **Syntax Highlighting**: Highlight.js
-- **CI/CD**: GitHub Actions
-- **Hosting**: GitHub Pages
-
-### Project Structure
+### Project structure
 
 ```
-├── private_html/        # Source files (development)
-│   ├── templates/       # EJS template system
-│   │   ├── layouts/     # Base layouts (base.ejs, page.ejs, article.ejs)
-│   │   ├── partials/    # Reusable components (navigation.ejs, footer.ejs)
-│   │   └── components/  # Smaller components (article-card.ejs)
-│   ├── pages/           # EJS page templates
-│   ├── data/            # Template data (site.json, navigation.json)
-│   ├── articles/        # Article EJS templates
-│   ├── css/             # Stylesheets
-│   ├── js/              # JavaScript modules
-│   └── images/          # Static assets
-├── public_html/         # Built files (production)
-├── scripts/             # Build utilities
-├── .github/workflows/   # CI/CD configuration
-└── qa-tools/           # Code quality tools
+├── src/                 # React/TypeScript source
+│   ├── pages/           # Page components (Home, About, ArticleList, ArticleDetail, Contact, ...)
+│   ├── components/      # Reusable React components
+│   ├── data/            # Site data — articles.ts, categories.ts, projects.ts, snippets.ts (generated)
+│   ├── types/           # TypeScript type definitions
+│   ├── hooks/           # React hooks
+│   └── routes.ts        # Type-safe route definitions
+├── code-snippets/       # External code snippet files (auto-imported into articles)
+├── scripts/             # Build utilities (snippet/sitemap/feed generation, prerender)
+├── cloudflare-workers/  # Cloudflare Worker fronting the site (redirects, security headers)
+├── dist/                # Built output (gitignored)
+├── dist-server/         # SSR build output (gitignored)
+├── public/              # Static assets copied verbatim into dist/
+└── untracked/           # Local notes/scratch (gitignored)
 ```
 
-## 🛠️ Development Setup
+Full architecture and content-authoring documentation lives in `CLAUDE.md`.
+
+## 🛠️ Development
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 22+ and npm
 - Git
 
-### Local Development
-
-1. **Clone the repository**
-
-   ```bash
-   git clone <repository-url>
-   cd site
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-
-   ```bash
-   npm run dev
-   ```
-
-   The site will be available at `http://localhost:3000`
-
-4. **Build for production**
-
-   ```bash
-   npm run build
-   ```
-
-5. **Preview production build**
-   ```bash
-   npm run preview
-   ```
-
-### Build Process
-
-The site uses a three-stage build process:
-
-1. **Article Registration** - Scans EJS templates and extracts metadata
-2. **Vite Asset Processing** - Bundles and optimizes CSS/JS with hashing
-3. **EJS Template Processing** - Converts templates to static HTML
-
-## 📝 Content Management
-
-### Creating New Articles
-
-Articles are created using EJS templates with automated metadata extraction:
-
-1. **Create article template**
-
-   ```bash
-   cp private_html/articles/example-article.ejs private_html/articles/your-article-slug.ejs
-   ```
-
-2. **Edit the EJS template**
-
-   ```ejs
-   <%- include('../templates/layouts/article', {
-       articleTitle: 'Your Article Title',
-       articleDescription: 'SEO meta description',
-       articleDate: '2025-07-25',
-       articleCategory: 'php|infrastructure|database|ai',
-       articleReadingTime: '6',
-       articleContent: `
-           <div class="intro">
-               <p class="lead">Lead paragraph...</p>
-           </div>
-           <section>
-               <h2>Section Title</h2>
-               <pre><code class="language-php"><?php echo "Hello World"; ?></code></pre>
-           </section>
-       `
-   }) %>
-   ```
-
-3. **Test locally**
-
-   ```bash
-   npm run dev
-   ```
-
-4. **Deploy** (articles are automatically registered!)
-   ```bash
-   git add .
-   git commit -m "Add new article: Your Article Title"
-   git push origin main
-   ```
-
-### Supported Code Languages
-
-- CSS, JavaScript, PHP, Bash, SQL, YAML, JSON, Nginx
-
-## 🚀 Deployment
-
-### Automated Deployment
-
-Every push to the `main` branch triggers the automated CI/CD pipeline:
-
-1. **Auto-Format** - Prettier formats all code and commits changes
-2. **Quality Checks** - Linting and code style validation
-3. **Build Process** - Three-stage build with asset optimization
-4. **Deploy** - Built files committed to repository
-5. **GitHub Pages** - Site deployment (triggered only on CI success)
-6. **Performance Audit** - Lighthouse testing post-deployment
-
-### Manual Deployment
-
-Force deployment using GitHub Actions UI:
+### Local development
 
 ```bash
-gh workflow run "Deploy static content to Pages"
+npm install              # Install dependencies
+npm run build            # Full production build (snippets → tsc → vite → SSR → prerender → sitemap → feed)
+npm run preview           # Serve the dist/ build locally (optional)
+npm run dev               # Vite dev server with HMR (optional, not required for most tasks)
 ```
 
-## 🔧 Development Scripts
+After a build, read the generated HTML directly from `dist/` to verify output — e.g.
+`dist/articles/<slug>/index.html`.
+
+### Code quality
+
+**This project uses CI-only formatting — do not run local formatting commands.** Prettier and
+ESLint run automatically in CI on every push to `main`; deployment is blocked if quality checks
+fail. Reference-only scripts:
 
 ```bash
-npm run dev              # Start development server
-npm run build            # Build for production
-npm run preview          # Preview built site
-npm run format:check     # Check code formatting (CI only)
-npm run lint:check       # Check linting (CI only)
-npm run syntax-highlight # Process code syntax highlighting
+npm run format:check    # Check formatting (used by CI)
+npm run lint:check      # Check linting (used by CI)
+npm run type-check      # tsc --noEmit
+npx ts-qa                # Full QA/CI pipeline (lint, type-check, tests, Playwright)
 ```
 
-## 📊 Code Quality
+### Debugging
 
-**Important**: This project uses CI-only formatting. Do NOT run local formatting commands.
-
-- **Auto-Formatting**: Prettier automatically formats code on push
-- **Auto-Fixing**: PHP-CS-Fixer automatically fixes PHP code style
-- **Quality Gates**: Deployment blocked if CI checks fail
-- **Performance Monitoring**: Automated Lighthouse auditing
-
-## 🐛 Debugging
-
-### Taking Screenshots
-
-Debug layout issues by taking screenshots of live pages:
+Take Playwright screenshots of live pages for layout debugging:
 
 ```bash
 node scripts/screenshot.js
-# Modify the URL in the script as needed
 ```
 
-Screenshots are saved to the `var/` directory (gitignored).
+Output goes to `var/` (gitignored).
 
-## 🤝 Contributing
+## 📝 Content management
 
-1. Fork the repository
-2. Create a feature branch
-3. Make changes and test locally with `npm run dev`
-4. Push to your fork - CI will handle formatting and quality checks
-5. Create a pull request
+Articles are TypeScript objects in `src/data/articles.ts` (single source of truth — no EJS
+templates). Code blocks reference external files under `code-snippets/` via a
+`{{SNIPPET:path}}` placeholder, auto-escaped and compiled into `src/data/snippets.ts` at build
+time. See `CLAUDE.md` for the full authoring workflow.
 
-### Code Style
+## 🚀 Deployment
 
-- Focus on functionality - CI handles all formatting automatically
-- Use semantic HTML and accessible markup
-- Follow the existing EJS template patterns
-- Include proper syntax highlighting for code blocks
+Push to `main` triggers CI: auto-format → TypeScript/ESLint quality gates → build → prerender →
+deploy to GitHub Pages. The Cloudflare Worker in `cloudflare-workers/lts-site-proxy/` is deployed
+separately and manually (`npm run deploy` from that directory) — it is not part of the GitHub
+Actions pipeline.
 
 ## 📄 License
 
 This is a personal portfolio project. Please respect the content and code structure.
-
----
-
-**Portfolio Site** | Built with ♥️ using modern web technologies

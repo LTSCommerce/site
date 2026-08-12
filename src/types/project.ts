@@ -2,8 +2,10 @@
  * Open Source Project Type Definitions
  *
  * Type-safe data structures for the public-repo catalogue (LTS-published
- * open source packages/tools). Distinct from client work — this catalogue
- * exists only for repos genuinely published under the LongTermSupport org.
+ * open source packages/tools). Distinct from client work — covers repos
+ * genuinely published by Joseph Edmonds, across whichever GitHub account or
+ * org actually hosts each one (LongTermSupport, Edmonds-Commerce-Limited,
+ * edmondscommerce — `githubUrl` is always the source of truth per project).
  */
 
 /**
@@ -14,6 +16,13 @@ export interface ProjectHighlight {
   readonly title: string;
   readonly detail: string;
 }
+
+/**
+ * Which layer of the "containment / policy / gates" thesis a project
+ * belongs to, for grouping on the catalogue index page. Omitted for
+ * projects that don't fit the thesis (they render in a general list).
+ */
+export type ProjectLayer = 'containment' | 'policy' | 'gates' | 'supporting';
 
 export interface OpenSourceProject {
   /** Unique project identifier (URL slug), matches the GitHub repo name */
@@ -48,6 +57,16 @@ export interface OpenSourceProject {
 
   /** Feature/pipeline-phase highlights shown as a bulleted list */
   readonly highlights: readonly ProjectHighlight[];
+
+  /** Thesis layer for grouping on the catalogue index (see ProjectLayer) */
+  readonly layer?: ProjectLayer;
+}
+
+/** A historical/archive-tier repo — lighter weight than a full catalogue entry, no detail page */
+export interface ArchiveProject {
+  readonly name: string;
+  readonly url: string;
+  readonly note: string;
 }
 
 /**

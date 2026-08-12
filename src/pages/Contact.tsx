@@ -173,9 +173,8 @@ export function Contact() {
           <div className="text-center mb-6">
             <h1 className="text-4xl font-bold mb-3">Hire Me</h1>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
-              Senior developer and technical leader with over 20 years of experience. I work across
-              the full stack and can operate at both the code level and the strategic level
-              depending on what you need.
+              Senior developer and technical leader, 20+ years in. I'll work at the code level or
+              the strategic level — whatever the job actually needs.
             </p>
           </div>
 
@@ -224,6 +223,13 @@ export function Contact() {
                   <span className="text-[#0f4c81] font-bold shrink-0">Response</span>
                   <span>Within 24 hours on business days.</span>
                 </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c81] font-bold shrink-0">Capacity</span>
+                  <span>
+                    For ongoing work: an agreed monthly minimum and maximum, billed hourly. Capacity
+                    is reserved, you only pay for what's used. Get in touch for specifics.
+                  </span>
+                </li>
               </ul>
             </div>
 
@@ -243,6 +249,38 @@ export function Contact() {
                   Active AI adopter. I use Claude Code daily and can help your team do the same.
                 </li>
               </ul>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4 text-center">Fixed-Scope Engagements</h2>
+            <p className="text-center text-gray-600 text-sm max-w-2xl mx-auto mb-6">
+              A fixed-price alternative to open-ended hourly work — for when you want a defined
+              deliverable instead of an open-ended clock.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
+                <h3 className="text-base font-bold mb-1">Technology &amp; Infrastructure Review</h3>
+                <p className="text-gray-700 text-sm leading-snug mb-2">
+                  A structured 5-day audit of your codebase, infrastructure, and delivery pipeline.
+                  Fixed scope, fixed price, a written report with prioritised findings — not an
+                  open-ended hourly engagement.
+                </p>
+                <p className="text-xs text-gray-500 font-medium">
+                  Fixed price — get in touch for a quote
+                </p>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
+                <h3 className="text-base font-bold mb-1">Agentic Delivery Readiness Assessment</h3>
+                <p className="text-gray-700 text-sm leading-snug mb-2">
+                  Same format, one tier up: how ready is your team's AI-assisted delivery pipeline
+                  for production intensity — where the guardrails are missing, and what breaks
+                  first.
+                </p>
+                <p className="text-xs text-gray-500 font-medium">
+                  Fixed price — get in touch for a quote
+                </p>
+              </div>
             </div>
           </div>
 
@@ -493,6 +531,12 @@ export function Contact() {
               <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
                 <h3 className="text-xl font-bold mb-3">Connect</h3>
                 <div className="flex flex-col gap-3">
+                  <a
+                    href="mailto:hello@ltscommerce.dev"
+                    className="text-[#0f4c81] hover:text-[#1e6ba5] transition-colors"
+                  >
+                    hello@ltscommerce.dev
+                  </a>
                   <a
                     href="https://linkedin.com/in/edmondscommerce"
                     target="_blank"

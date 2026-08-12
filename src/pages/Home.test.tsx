@@ -6,7 +6,7 @@ describe('Home', () => {
   it('renders without crashing', () => {
     render(<Home />);
     expect(
-      screen.getByRole('heading', { level: 1, name: /bespoke php development/i })
+      screen.getByRole('heading', { level: 1, name: /ship agent-written code/i })
     ).toBeInTheDocument();
   });
 });

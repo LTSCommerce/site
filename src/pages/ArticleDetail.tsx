@@ -10,6 +10,7 @@ import { Container } from '@/components/layout/Container';
 import { Section } from '@/components/layout/Section';
 import { CategoryBadge } from '@/components/content/CategoryBadge';
 import { ArticleContent } from '@/components/article/ArticleContent';
+import { ArticleNextStep } from '@/components/article/ArticleNextStep';
 import { getCategoryById } from '@/data/categories';
 import { getArticleById } from '@/data/articles';
 
@@ -158,6 +159,8 @@ export function ArticleDetail() {
                 </p>
               </div>
             )}
+
+            <ArticleNextStep category={article.category} />
           </article>
         </Section>
       </Container>

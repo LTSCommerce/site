@@ -22,7 +22,14 @@ const SECURITY_HEADERS = {
   'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
 } as const;
+
+// Legacy/external paths that need a specific redirect target rather than the
+// generic .html-strip below (e.g. old URLs still linked from outside this repo)
+const PATH_REDIRECTS: Readonly<Record<string, string>> = {
+  '/author.html': '/about',
+};
 
 // Vanity headers
 const VANITY_HEADERS = {
@@ -52,6 +59,15 @@ async function handleRequest(request: Request): Promise<Response> {
   // Redirect www to non-www (301 permanent)
   if (url.hostname === 'www.ltscommerce.dev') {
     const redirectUrl = 'https://ltscommerce.dev' + url.pathname + url.search + url.hash;
+    return Response.redirect(redirectUrl, 301);
+  }
+
+  // Redirect specific legacy paths to a different destination (301 permanent).
+  // Must run before the generic .html-strip below, which would otherwise send
+  // these to their own stripped-extension path instead of the real target.
+  const specificRedirect = PATH_REDIRECTS[url.pathname];
+  if (specificRedirect) {
+    const redirectUrl = 'https://ltscommerce.dev' + specificRedirect + url.search + url.hash;
     return Response.redirect(redirectUrl, 301);
   }
 

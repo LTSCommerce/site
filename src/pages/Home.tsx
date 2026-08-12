@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Code2, Server, Database, Brain, Cpu, Terminal } from 'lucide-react';
+import { Code2, Server, Brain, Cpu, Terminal, Shield } from 'lucide-react';
 
 import { Hero } from '../components/content/Hero';
 import { Page } from '../components/layout/Page';
@@ -22,14 +22,21 @@ function inViewStyle(isInView: boolean): React.CSSProperties {
 
 const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature] = [
   {
-    title: 'Bespoke PHP Development',
+    title: 'Agentic Delivery Governance',
     description:
-      'Complex, modern PHP systems built to last. Legacy code transformation and high-pressure delivery.',
-    icon: Code2,
+      'Containment, policy enforcement, and automated quality gates for AI-assisted development. This is the infrastructure that catches a problem before it ships.',
+    icon: Shield,
+    items: ['Guardrail & policy design', 'Sandboxed agent environments', 'Automated QA/CI gates'],
+  },
+  {
+    title: 'Fractional CTO & Technical Leadership',
+    description:
+      'Architecture decisions, hiring guidance, and technical roadmapping without a full-time hire. Strategic input when you need it.',
+    icon: Brain,
     items: [
-      'Custom PHP 8.x architecture',
-      'Legacy system modernisation',
-      'High-throughput backend systems',
+      'Technical strategy & roadmapping',
+      'Architecture & code review',
+      'Hiring & team standards',
     ],
   },
   {
@@ -43,22 +50,15 @@ const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature
       'Bare metal server management',
     ],
   },
-  {
-    title: 'Backend Systems',
-    description:
-      'Pure backend development focused on scalable, maintainable PHP architecture. No design work.',
-    icon: Database,
-    items: ['Scalable API design', 'Database optimisation', 'Microservices architecture'],
-  },
 ];
 
 const expertiseRow2: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature] = [
   {
-    title: 'CTO-Level Services',
+    title: 'Backend & PHP Engineering',
     description:
-      'Strategic guidance, hiring support, and team training. Technical leadership for complex projects.',
-    icon: Brain,
-    items: ['Technical strategy', 'Team hiring and training', 'Architecture review'],
+      'Complex, modern PHP systems built to last — legacy transformation, scalable API design, and high-throughput backend architecture.',
+    icon: Code2,
+    items: ['Custom PHP 8.x architecture', 'Legacy system modernisation', 'Database optimisation'],
   },
   {
     title: 'AI-Enhanced Development',
@@ -86,17 +86,21 @@ export function Home() {
 
   return (
     <Page
-      title="LTSCommerce - Bespoke PHP Development"
-      description="LTSCommerce delivers bespoke PHP development and infrastructure solutions for high-complexity, large-scale systems. AI-enhanced workflows. No bullshit, just results."
+      title="LTSCommerce - Agentic Delivery Governance & PHP Engineering"
+      description="Containment, policy, and quality-gate infrastructure for AI-assisted delivery, built on 20+ years of PHP and backend engineering. No bullshit, just results."
     >
       <Hero
-        title="Bespoke PHP Development for Complex Systems"
-        subtitle="Large-scale, high-throughput backend systems. AI-enhanced workflows. 18+ years of serious PHP engineering."
+        title="Ship Agent-Written Code You Can Actually Trust"
+        subtitle="AI-assisted delivery breaks in production because nobody built the guardrails first, so that's what I build — sandboxing, policy enforcement, quality gates — and then I help your team actually run it. 20+ years of backend engineering underneath, PHP included."
         cta={{
-          text: 'Work With Me',
+          text: 'Get In Touch',
           link: ROUTES.contact,
         }}
       />
+
+      <p className="text-center text-sm text-gray-500 italic px-4 -mt-2 mb-2">
+        If your problem is managing thirty in-house engineers, I&apos;m the wrong person.
+      </p>
 
       {/* Core Expertise — dark section, cards designed for dark bg */}
       <Section spacing="xl" className="bg-[#0A0A0A]">
@@ -119,12 +123,23 @@ export function Home() {
             />
           </div>
 
-          <ThreeColumnFeatures
-            features={expertiseRow2}
-            animationDelay={600}
-            stagger={150}
-            showHoverEffect={true}
-          />
+          <div className="mb-10">
+            <ThreeColumnFeatures
+              features={expertiseRow2}
+              animationDelay={600}
+              stagger={150}
+              showHoverEffect={true}
+            />
+          </div>
+
+          <div className="text-center">
+            <Link
+              to={ROUTES.openSource.path}
+              className="inline-block px-8 py-3 border border-gray-700 hover:border-gray-500 text-white font-medium transition-colors rounded-md text-sm"
+            >
+              See the Actual Tooling
+            </Link>
+          </div>
         </Container>
       </Section>
 
@@ -168,11 +183,11 @@ export function Home() {
               The Art of Modern PHP&nbsp;8
             </h2>
             <p className="text-gray-400 text-lg leading-relaxed max-w-xl mx-auto mb-10">
-              Co-authored and published by Packt Publishing. Helps developers worldwide upgrade
-              legacy PHP applications to modern standards.
+              Written by Joseph Edmonds, published by Packt Publishing. Helps developers worldwide
+              upgrade legacy PHP applications to modern standards.
             </p>
             <a
-              href="https://www.packtpub.com/product/the-art-of-modern-php-8/9781800566156"
+              href="https://www.packtpub.com/en-us/product/the-art-of-modern-php-8-9781800566156"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block px-8 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium transition-colors rounded-md text-sm"

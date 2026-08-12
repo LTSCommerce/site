@@ -24,6 +24,7 @@ export const ROUTES = {
   articles: { path: '/articles', label: 'Articles' },
   openSource: { path: '/open-source', label: 'Open Source' },
   contact: { path: '/contact', label: 'Contact' },
+  privacy: { path: '/privacy', label: 'Privacy Policy' },
   notFound: { path: '/errors/404', label: '404' },
 } as const satisfies Record<string, RouteEntry>;
 

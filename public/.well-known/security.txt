@@ -1,0 +1,4 @@
+Contact: mailto:hello@ltscommerce.dev
+Expires: 2027-08-12T10:57:08.000Z
+Preferred-Languages: en
+Canonical: https://ltscommerce.dev/.well-known/security.txt

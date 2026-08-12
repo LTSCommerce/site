@@ -3,6 +3,7 @@ import { StaticRouter } from 'react-router-dom';
 import { AppContent } from './App';
 import { getAllArticles, getArticleById } from './data/articles';
 import { getAllProjects, getProjectById } from './data/projects';
+import { getAllCategories, getCategoryById, isCategoryId } from './data/categories';
 
 export interface RenderResult {
   html: string;
@@ -14,19 +15,24 @@ const SITE_NAME = 'LTS Commerce';
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
   '/': {
-    title: `${SITE_NAME} - Bespoke PHP Development & Infrastructure`,
+    title: `${SITE_NAME} - Agentic Delivery Governance & PHP Engineering`,
     description:
-      'Expert PHP development, infrastructure automation, and AI-enhanced workflows. 18+ years of production experience.',
+      'Containment, policy, and quality-gate infrastructure for AI-assisted delivery, built on 20+ years of PHP and backend engineering. No bullshit, just results.',
   },
   '/about': {
     title: `About - ${SITE_NAME}`,
     description:
-      'Joseph Edmonds - Senior PHP engineer with 18+ years experience in complex backend systems, infrastructure automation, and AI-driven development.',
+      "Joseph Edmonds - technical leader with 20+ years' experience in PHP engineering, infrastructure automation, and agentic delivery governance.",
   },
   '/contact': {
     title: `Contact - ${SITE_NAME}`,
     description:
       'Get in touch for PHP development, infrastructure automation, or technical consultancy.',
+  },
+  '/privacy': {
+    title: `Privacy Policy - ${SITE_NAME} Ltd`,
+    description:
+      "How LTS Commerce Ltd collects, uses, and protects personal data submitted through this site's contact form — what's collected, why, and your rights under UK GDPR.",
   },
   '/articles': {
     title: `Technical Articles - PHP, Infrastructure & AI | ${SITE_NAME}`,
@@ -36,7 +42,7 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
   '/open-source': {
     title: `Open Source Projects - ${SITE_NAME}`,
     description:
-      'Public repositories published by LTS Commerce — QA/CI tooling and other open source packages for PHP and TypeScript projects.',
+      'Public repositories published by Joseph Edmonds — agentic-delivery guardrail tooling plus eleven years of PHP, TypeScript, and test-infrastructure packages.',
   },
   '/errors/404': {
     title: `Page Not Found | ${SITE_NAME}`,
@@ -74,6 +80,16 @@ function getMetaForRoute(url: string): { title: string; description: string } {
     }
   }
 
+  // Check article category landing pages
+  const categoryMatch = url.match(/^\/articles\/category\/(.+)$/);
+  if (categoryMatch && categoryMatch[1] && isCategoryId(categoryMatch[1])) {
+    const category = getCategoryById(categoryMatch[1]);
+    return {
+      title: `${category.label} Articles - ${SITE_NAME}`,
+      description: `Everything written on ${category.label}: ${category.description}`,
+    };
+  }
+
   return { title: SITE_NAME, description: '' };
 }
 
@@ -90,10 +106,19 @@ export function render(url: string): RenderResult {
 }
 
 export function getRoutes(): string[] {
-  const staticRoutes = ['/', '/about', '/contact', '/articles', '/open-source', '/errors/404'];
+  const staticRoutes = [
+    '/',
+    '/about',
+    '/contact',
+    '/privacy',
+    '/articles',
+    '/open-source',
+    '/errors/404',
+  ];
   const articleRoutes = getAllArticles().map(a => `/articles/${a.id}`);
   const projectRoutes = getAllProjects().map(p => `/open-source/${p.id}`);
-  return [...staticRoutes, ...articleRoutes, ...projectRoutes];
+  const categoryRoutes = getAllCategories().map(c => `/articles/category/${c.id}`);
+  return [...staticRoutes, ...articleRoutes, ...projectRoutes, ...categoryRoutes];
 }
 
 export { getAllArticles } from './data/articles';

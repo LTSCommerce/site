@@ -29,8 +29,8 @@ export function Footer() {
               <img src="/logo-mono-light.svg" alt="LTS Commerce" className="h-8 w-auto" />
             </Link>
             <p className="text-sm leading-relaxed text-gray-500 max-w-xs">
-              Bespoke PHP development and infrastructure for complex, high-throughput backend
-              systems. 18+ years. No bullshit.
+              Agentic delivery governance and PHP engineering for complex, high-throughput backend
+              systems. 20+ years. No bullshit.
             </p>
           </div>
 
@@ -40,16 +40,18 @@ export function Footer() {
               Navigation
             </h3>
             <ul className="space-y-3 list-none p-0 m-0">
-              {[ROUTES.home, ROUTES.articles, ROUTES.about, ROUTES.contact].map(route => (
-                <li key={route.path}>
-                  <Link
-                    to={route.path}
-                    className="text-sm text-gray-500 hover:text-white transition-colors"
-                  >
-                    {route.label}
-                  </Link>
-                </li>
-              ))}
+              {[ROUTES.home, ROUTES.articles, ROUTES.about, ROUTES.contact, ROUTES.privacy].map(
+                route => (
+                  <li key={route.path}>
+                    <Link
+                      to={route.path}
+                      className="text-sm text-gray-500 hover:text-white transition-colors"
+                    >
+                      {route.label}
+                    </Link>
+                  </li>
+                )
+              )}
             </ul>
           </div>
 
@@ -84,9 +86,10 @@ export function Footer() {
         </div>
 
         {/* Copyright bar */}
-        <div className="border-t border-[#1a1a1a] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-600">
-            &copy; {currentYear} LTS Commerce Ltd. All rights reserved.
+        <div className="border-t border-[#1a1a1a] pt-8 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
+          <p className="text-xs text-gray-600 text-center sm:text-left">
+            &copy; {currentYear} LTS Commerce Ltd. Company No. 16618262. Registered in England &amp;
+            Wales. VAT registered.
           </p>
           <p className="text-xs text-gray-600">TypeScript &amp; React</p>
         </div>
