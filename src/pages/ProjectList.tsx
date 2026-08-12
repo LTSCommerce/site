@@ -151,7 +151,7 @@ export function ProjectList() {
                   >
                     {project.name}
                   </a>
-                  <span className="text-gray-400"> — {project.note}</span>
+                  <span className="text-gray-400">: {project.note}</span>
                 </li>
               ))}
             </ul>

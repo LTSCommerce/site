@@ -20,7 +20,7 @@ const distDir = resolve(__dirname, '../dist');
 const serverDir = resolve(__dirname, '../dist-server');
 
 const SITE_URL = 'https://ltscommerce.dev';
-const SITE_TITLE = 'LTS Commerce — Joseph Edmonds';
+const SITE_TITLE = 'LTS Commerce: Joseph Edmonds';
 const SITE_DESCRIPTION =
   'Articles on PHP, infrastructure automation, databases, agentic delivery governance, and TypeScript.';
 

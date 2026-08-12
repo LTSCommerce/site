@@ -246,6 +246,17 @@ async function screenshotPage(
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(300);
 
+  // Chromium's fullPage capture path can leave CSS-animation-driven reveals
+  // (ThreeColumnFeatures' animate-fade-in-up, animation-fill-mode: forwards)
+  // stuck invisible even though they're genuinely opacity:1 in a normal
+  // viewport screenshot. Force the settled end-state before capturing so
+  // the screenshot matches what a real visitor sees.
+  await page.addStyleTag({
+    content:
+      '.animate-fade-in-up { opacity: 1 !important; transform: none !important; animation: none !important; }',
+  });
+  await page.waitForTimeout(100);
+
   const files: string[] = [];
 
   const filename = `full.png`;
