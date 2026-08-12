@@ -37,6 +37,19 @@ interface ProfessionalServiceJsonLd {
   founder: { '@type': 'Person'; name: string };
 }
 
+interface OpenSourceWebPageJsonLd {
+  '@context': string;
+  '@type': 'WebPage';
+  name: string;
+  url: string;
+  author: { '@type': 'Person'; name: string };
+  mainEntity: {
+    '@type': 'DefinedTerm';
+    name: string;
+    description: string;
+  };
+}
+
 const PERSON_JSON_LD: PersonJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -57,9 +70,25 @@ const PROFESSIONAL_SERVICE_JSON_LD: ProfessionalServiceJsonLd = {
   founder: { '@type': 'Person', name: 'Joseph Edmonds' },
 };
 
+const OPEN_SOURCE_JSON_LD: OpenSourceWebPageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Open Source',
+  url: `${SITE_URL}/open-source`,
+  author: { '@type': 'Person', name: 'Joseph Edmonds' },
+  mainEntity: {
+    '@type': 'DefinedTerm',
+    name: 'Defence Before Fix',
+    description:
+      "A static-analysis-first bug-fixing method: write the rule that catches a bug's whole class before treating the individual instance, then use that rule to find and fix every other occurrence.",
+  },
+};
+
 const JSON_LD_BY_ROUTE: Record<string, unknown> = {
   '/': PROFESSIONAL_SERVICE_JSON_LD,
   '/about': PERSON_JSON_LD,
+  '/contact': PROFESSIONAL_SERVICE_JSON_LD,
+  '/open-source': OPEN_SOURCE_JSON_LD,
 };
 
 const PAGE_META: Record<string, { title: string; description: string }> = {

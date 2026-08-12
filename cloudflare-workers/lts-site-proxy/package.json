@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsx build.ts",
-    "deploy": "npm run build && npx wrangler deploy"
+    "deploy": "./deploy.sh"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",

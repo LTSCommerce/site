@@ -92,7 +92,8 @@ export function About() {
                 <p className="text-gray-700">
                   I write clean, maintainable code that lasts. Every solution should be scalable,
                   secure, and simple to understand. Technology should serve the business, not
-                  complicate it. Every bug I fix gets a static analysis rule too, following{' '}
+                  complicate it. When I fix a bug I write the rule that catches its whole class
+                  first, then use it to find every other instance,{' '}
                   <Link
                     to={getArticleRoute('defence-before-fix-static-analysis').path}
                     className="text-[#0f4c81] underline"
@@ -137,10 +138,9 @@ export function About() {
                       Fractional CTO & Technical Leadership
                     </h3>
                     <p className="text-gray-700">
-                      Sole technical lead for a mid-market e-commerce operation. I own the
-                      architecture, run the infrastructure it trades on, and I'm the one who
-                      delivers what actually ships, agent-driven work gated by my own tooling.
-                      External agencies come in alongside me, working to standards I set.
+                      Architecture ownership, technical roadmapping, code review culture and
+                      engineering standards, for teams that need a senior technical lead without a
+                      full-time hire.
                     </p>
                   </div>
                 </div>

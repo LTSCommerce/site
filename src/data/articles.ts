@@ -2684,16 +2684,18 @@ processOrderId(42);
 
     <p>A test catches one specific manifestation of a bug. If that bug was caused by a systemic pattern, say <code>?? ''</code> used across dozens of files, fixing one instance does nothing about the others scattered through the codebase, written by different developers at different times, in code that has never been tested.</p>
 
-    <p><strong>Defence Before Fix</strong> (US spelling: Defense Before Fix) adds one step before the test:</p>
+    <p><strong>Defence Before Fix</strong> (US spelling: Defense Before Fix) inverts the usual order. The static analysis rule comes first, not the test, and the rule is what catches the bug, not a reproduction of it:</p>
 
     <ol>
-        <li><strong>Analyse the pattern.</strong> What coding pattern allowed this bug to exist? Is this a one-off mistake, or is it a class of mistakes the codebase may contain more of?</li>
-        <li><strong>Defend against the class.</strong> Create a static analysis rule that catches every instance of this pattern across the entire codebase, on every future commit, for every future developer.</li>
-        <li><strong>Then</strong> write the failing test for the specific bug.</li>
-        <li><strong>Then</strong> fix the specific bug.</li>
+        <li><strong>Analyse the class.</strong> What pattern allowed this bug, not what went wrong in this one instance.</li>
+        <li><strong>Catch it with the QA tool, not a test.</strong> The static analysis rule is the detector.</li>
+        <li><strong>Run the rule across the whole codebase</strong> to find every other instance.</li>
+        <li><strong>Fix all of them.</strong></li>
+        <li><strong>Leave the rule enforcing on every commit,</strong> so the class cannot recur.</li>
+        <li><strong>Make the failure message explain the better approach,</strong> not just name the pattern.</li>
     </ol>
 
-    <p>The key leverage: a static analysis rule is a force multiplier. A test catches one bug in one file. A lint rule catches every future instance of that bug pattern, including instances that already exist in untested code paths, and instances that have not been written yet.</p>
+    <p>The key leverage: a static analysis rule is a force multiplier. A test catches one bug in one file. A lint rule catches every future instance of that bug pattern, including instances that already exist in untested code paths, and instances that have not been written yet. The worked examples below walk through each step against a real pattern.</p>
 
     <h3>Why Static Analysis Before Tests?</h3>
 
