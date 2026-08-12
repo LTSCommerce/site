@@ -10,7 +10,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     id: 'component-driven-design-react-typescript-storybook',
     title: 'Component-Driven Design with React, TypeScript, and Storybook',
     description:
-      'How building UIs as a hierarchy of typed, isolated components — where styling is controlled entirely through declared props — produces design systems that stay coherent, testable, and maintainable at scale.',
+      'How building UIs as a hierarchy of typed, isolated components, with styling controlled entirely through declared props, produces design systems that stay coherent, testable, and maintainable at scale.',
     date: '2026-05-29',
     category: CATEGORIES.typescript.id,
     readingTime: 12,
@@ -127,7 +127,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-typescript">{{SNIPPET:component-driven-design-react-typescript-storybook/screen-composition-example.tsx}}</code></pre>
 
-    <p>No <code>&lt;div&gt;</code>, no <code>&lt;h2&gt;</code>, no <code>&lt;p&gt;</code>. The screen is a wiring diagram — routing data to components that already know how to display it. Visual decisions live inside the components. The screen owns structure and data flow, and nothing else.</p>
+    <p>No <code>&lt;div&gt;</code>, no <code>&lt;h2&gt;</code>, no <code>&lt;p&gt;</code>. The screen is a wiring diagram, routing data to components that already know how to display it. Visual decisions live inside the components. The screen owns structure and data flow, and nothing else.</p>
 
     <p>Component libraries formalise this into a five-tier hierarchy: primitives (buttons, inputs, badges), layout components (structural containers and spacing utilities), composite components (assembled patterns like a form field with its label and error message), feature components (domain-aware UI like a booking calendar or payment form), and screens (full pages wiring everything together). Dependencies run strictly downward: screens import from the feature and layout tiers, never the reverse.</p>
 </section>
@@ -135,7 +135,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>Making the Rules Stick: ESLint as the Enforcer</h2>
 
-    <p>Conventions erode. A rule documented in a README is forgotten by the third developer who joins, misunderstood by the fourth, and quietly ignored by the fifth. The no-arbitrary-CSS discipline, the five-tier hierarchy, the ban on raw HTML in screens — these only stay coherent if something enforces them mechanically: not guidelines people might follow, but gates the build will not pass without satisfying.</p>
+    <p>Conventions erode. A rule documented in a README is forgotten by the third developer who joins, misunderstood by the fourth, and quietly ignored by the fifth. The no-arbitrary-CSS discipline, the five-tier hierarchy, the ban on raw HTML in screens. None of them stay coherent unless something enforces them mechanically: not guidelines people might follow, but gates the build will not pass without satisfying.</p>
 
     <p>One effective approach treats every CDD violation as the trigger for a static analysis rule rather than just a one-time code fix. The pattern is called Defence Before Fix: when a violation appears, the first question is not "how do I fix this instance?" but "what rule would have caught this before it was written?" Create the lint rule first, then fix the instance. Next time, the rule catches it in the editor before it reaches review.</p>
 
@@ -145,7 +145,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>The rule scans every file in the screens directory and reports an error the moment a raw HTML element appears: <code>&lt;div&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;form&gt;</code>, all of them. The error message does not just say "this is wrong"; it names the component to reach for instead. Screens stay pure composition by structural impossibility.</p>
 
-    <p>This pairs naturally with TypeScript's enforcement at the component boundary. TypeScript prevents invalid props; ESLint prevents raw HTML in screens. Together they make the architecture self-defending — the codebase pushes back on violations the moment they are written, before a pull request, before a review, before a test run. The discipline scales to teams of any size because it lives in tooling, not in institutional memory.</p>
+    <p>This pairs naturally with TypeScript's enforcement at the component boundary. TypeScript prevents invalid props; ESLint prevents raw HTML in screens. Together they make the architecture self-defending. The codebase pushes back on violations the moment they are written, before a pull request, before a review, before a test run. The discipline scales to teams of any size because it lives in tooling, not in institutional memory.</p>
 </section>
 
 <section>
@@ -182,7 +182,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     tags: [],
     subreddit: 'PHP',
     content: `<div class="intro">
-    <p class="lead">Exceptions are the primary way PHP code communicates that something has gone wrong. Get them right and the stack trace, the log line, and the API error response all tell the same coherent story. Get them wrong and you end up parsing human-readable messages with regex, swallowing errors "temporarily", and turning every production incident into an archaeology dig. This article lays out a set of simple hard rules, with a PHP 8.4 implementation pattern that makes them trivial to follow. Python and TypeScript get a cursory section at the end — the principles transfer directly.</p>
+    <p class="lead">Exceptions are the primary way PHP code communicates that something has gone wrong. Get them right and the stack trace, the log line, and the API error response all tell the same coherent story. Get them wrong and you end up parsing human-readable messages with regex, swallowing errors "temporarily", and turning every production incident into an archaeology dig. This article lays out a set of simple hard rules, with a PHP 8.4 implementation pattern that makes them trivial to follow. Python and TypeScript get a cursory section at the end. The principles transfer directly.</p>
 </div>
 
 <section>
@@ -192,20 +192,20 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <ol>
         <li><strong>\\RuntimeException is reserved for the truly unexpected.</strong> If any layer other than the outermost handler is catching one, something is wrong. Either the failure mode is expected and deserves a proper project-level exception, or nobody should be catching it.</li>
-        <li><strong>\\LogicException is for impossible states.</strong> Type guards, invariant checks, "this branch should be unreachable" — things that, if they ever throw in production, mean the code is wrong.</li>
+        <li><strong>\\LogicException is for impossible states.</strong> Type guards, invariant checks, "this branch should be unreachable". If any of these ever throw in production, the code is wrong.</li>
         <li><strong>\\InvalidArgumentException is for argument validation at the boundary.</strong> Throw as early as possible, so invalid values never enter the domain.</li>
         <li><strong>Always chain the previous exception.</strong> Never swallow debugging information by dropping the original cause.</li>
         <li><strong>Never encode data inside message strings.</strong> Data belongs on typed properties. The message is synthesised from those properties via a published sprintf constant.</li>
-        <li><strong>Use named static factory methods</strong> — <code>create</code> and <code>createWithPrevious</code>. No more wondering which constructor overload you are looking at.</li>
+        <li><strong>Use named static factory methods:</strong> <code>create</code> and <code>createWithPrevious</code>. No more wondering which constructor overload you are looking at.</li>
         <li><strong>Messages live in class constants as sprintf formats.</strong> One source of truth. Tests reuse the constant, so changing wording never breaks a test and never creates a magic string to hunt down.</li>
-        <li><strong>Never, ever, ever swallow an exception.</strong> Catching without rethrowing, recovering, or translating is fraud — the caller is told everything worked when it did not.</li>
+        <li><strong>Never, ever, ever swallow an exception.</strong> Catching without rethrowing, recovering, or translating is fraud. The caller is told everything worked when it did not.</li>
     </ol>
 
     <p>The rest of this article is the machinery that makes all of the above easy.</p>
 </section>
 
 <section>
-    <h2>The SPL Hierarchy — What to Extend and When</h2>
+    <h2>The SPL Hierarchy: What to Extend and When</h2>
 
     <p>PHP's built-in exception classes form a small tree that encodes a useful distinction. Use it.</p>
 
@@ -215,14 +215,14 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <ul>
         <li><strong>\\LogicException</strong> means <em>the code is wrong</em>. This should never happen. If it does, a developer needs to fix the code. No amount of retrying or recovery will help.</li>
-        <li><strong>\\RuntimeException</strong> means <em>the environment is wrong</em>. The database went away. The network timed out. The disk is full. The code is fine — the world is misbehaving.</li>
+        <li><strong>\\RuntimeException</strong> means <em>the environment is wrong</em>. The database went away. The network timed out. The disk is full. The code is fine. The world is misbehaving.</li>
     </ul>
 
     <p>Here is the distinction in practice:</p>
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/runtime-vs-logic.php}}</code></pre>
 
-    <p>And <code>InvalidArgumentException</code> — a subclass of <code>LogicException</code> — covers the canonical "you passed me rubbish" case:</p>
+    <p>And <code>InvalidArgumentException</code>, a subclass of <code>LogicException</code>, covers the canonical "you passed me rubbish" case:</p>
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/invalid-argument.php}}</code></pre>
 </section>
@@ -246,15 +246,15 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/project-hierarchy.php}}</code></pre>
 
-    <p>The marker interfaces pay for themselves instantly. The kernel exception listener can match on <code>UserFacingExceptionInterface</code> and return a structured 4xx without caring what the specific subclass is. The security logger listens for <code>SecurityExceptionInterface</code>. A retry middleware loops when it sees <code>RetryableExceptionInterface</code>. None of those components need to know about every concrete exception class — they react to capability.</p>
+    <p>The marker interfaces pay for themselves instantly. The kernel exception listener can match on <code>UserFacingExceptionInterface</code> and return a structured 4xx without caring what the specific subclass is. The security logger listens for <code>SecurityExceptionInterface</code>. A retry middleware loops when it sees <code>RetryableExceptionInterface</code>. None of those components need to know about every concrete exception class. They react to capability.</p>
 
     <p>The <code>AppExceptionInterface</code> root marker is the one that really earns its keep. If an exception reaching the top handler does not implement it, that is a signal: the code threw something it did not reason about. Either promote the exception to a proper domain class, or wrap it at the boundary where it originated.</p>
 </section>
 
 <section>
-    <h2>Composition Over Inheritance — Keep the Tree Shallow</h2>
+    <h2>Composition Over Inheritance: Keep the Tree Shallow</h2>
 
-    <p>PHP forces you to extend <code>Exception</code> (or one of its subclasses) because <code>throw</code> only accepts a <code>Throwable</code>. That is the one piece of inheritance you cannot avoid. Everything else — categorisation, shared behaviour, rich context — should be composed, not inherited.</p>
+    <p>PHP forces you to extend <code>Exception</code> (or one of its subclasses) because <code>throw</code> only accepts a <code>Throwable</code>. That is the one piece of inheritance you cannot avoid. Categorisation, shared behaviour and rich context should all be composed rather than inherited.</p>
 
     <p>The common trap is using deep inheritance chains to "share a bit of behaviour" or to "group related exceptions". It looks tidy on a class diagram and falls apart in practice:</p>
 
@@ -268,7 +268,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/shared-behavior-trait.php}}</code></pre>
 
-    <p>A concrete exception stays one level deep (<code>extends AppException</code>), <code>use</code>s the trait for boilerplate, declares its <code>MESSAGE_FORMAT</code> constant, and implements whichever marker interfaces describe its capabilities. Behaviour is composed from three orthogonal axes — class (for <code>throw</code> compatibility), interfaces (for categorisation), trait (for boilerplate) — not stacked up in an inheritance chain.</p>
+    <p>A concrete exception stays one level deep (<code>extends AppException</code>), <code>use</code>s the trait for boilerplate, declares its <code>MESSAGE_FORMAT</code> constant, and implements whichever marker interfaces describe its capabilities. Behaviour is composed from three orthogonal axes rather than stacked up in an inheritance chain: class (for <code>throw</code> compatibility), interfaces (for categorisation), and trait (for boilerplate).</p>
 
     <h3>Compose Rich Context via Value Objects</h3>
 
@@ -276,16 +276,16 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/composition-value-object.php}}</code></pre>
 
-    <p>Now the same <code>PaymentAttemptContext</code> value object is reused by the exception, the audit log writer, the analytics publisher, and anywhere else that needs to represent a payment attempt. Adding a new field to the context does not ripple through every exception constructor — the exception's public surface stays stable. This is the same argument for composition over inheritance that applies to any other class in the system; it just holds doubly for exceptions because inheritance is already load-bearing for the <code>throw</code> contract.</p>
+    <p>Now the same <code>PaymentAttemptContext</code> value object is reused by the exception, the audit log writer, the analytics publisher, and anywhere else that needs to represent a payment attempt. Adding a new field to the context does not ripple through every exception constructor, and the exception's public surface stays stable. This is the same argument for composition over inheritance that applies to any other class in the system; it just holds doubly for exceptions because inheritance is already load-bearing for the <code>throw</code> contract.</p>
 
     <h3>Three Axes, Not One Chain</h3>
 
     <p>Put it all together and every concrete exception composes along three independent axes:</p>
 
     <ul>
-        <li><strong>Class</strong> — exactly one level below an abstract base (<code>AppException</code> or <code>AppLogicException</code>). This is the only inheritance in play, and it exists solely because <code>throw</code> requires a <code>Throwable</code>.</li>
-        <li><strong>Marker interfaces</strong> — orthogonal capabilities (<code>UserFacing</code>, <code>Retryable</code>, <code>Security</code>). An exception can be any combination of these. Try expressing "retryable AND user-facing" with class inheritance and you will see why interfaces win.</li>
-        <li><strong>Traits and value objects</strong> — reusable mechanical pieces. The sprintf/factory boilerplate lives in a trait. Rich context lives in a composed value object.</li>
+        <li><strong>Class:</strong> exactly one level below an abstract base (<code>AppException</code> or <code>AppLogicException</code>). This is the only inheritance in play, and it exists solely because <code>throw</code> requires a <code>Throwable</code>.</li>
+        <li><strong>Marker interfaces:</strong> orthogonal capabilities (<code>UserFacing</code>, <code>Retryable</code>, <code>Security</code>). An exception can be any combination of these. Try expressing "retryable AND user-facing" with class inheritance and you will see why interfaces win.</li>
+        <li><strong>Traits and value objects:</strong> reusable mechanical pieces. The sprintf/factory boilerplate lives in a trait. Rich context lives in a composed value object.</li>
     </ul>
 
     <p>The inheritance tree is two levels deep and stays that way forever. Every other axis of variation is handled by composition.</p>
@@ -298,13 +298,13 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/data-in-message-bad.php}}</code></pre>
 
-    <p>Every piece of data in that message is valuable — the SKU, the requested quantity, the available quantity, the order ID, the customer ID. Downstream code will want to react to those values specifically. Logs want to index them. API responses want to return them as structured fields. But all of it is trapped inside a string, recoverable only by fragile regex that breaks the first time someone improves the wording.</p>
+    <p>Every piece of data in that message is valuable: the SKU, the requested quantity, the available quantity, the order ID, the customer ID. Downstream code will want to react to those values specifically. Logs want to index them. API responses want to return them as structured fields. But all of it is trapped inside a string, recoverable only by fragile regex that breaks the first time someone improves the wording.</p>
 
     <p>The fix is simple: put the data on the exception as typed properties, and synthesise the message from them via a published <code>sprintf</code> format constant.</p>
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/data-in-properties-good.php}}</code></pre>
 
-    <p>PHP 8.4's asymmetric visibility — <code>public private(set)</code> — is perfect here. The properties are freely readable anywhere (no boilerplate getters), but only the exception itself can set them. No accidental mutation, no <code>readonly</code> gotchas around inheritance.</p>
+    <p>PHP 8.4's asymmetric visibility, <code>public private(set)</code>, is perfect here. The properties are freely readable anywhere (no boilerplate getters), but only the exception itself can set them. No accidental mutation, no <code>readonly</code> gotchas around inheritance.</p>
 
     <p>Downstream code becomes clean and type-safe:</p>
 
@@ -318,11 +318,11 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/factory-call-sites.php}}</code></pre>
 
-    <p>They also give you a natural place to add convenience constructors later — <code>fromApiResponse(array $body)</code>, <code>forOrder(OrderId $id)</code>, and so on — without bloating the main constructor signature.</p>
+    <p>They also give you a natural place to add convenience constructors later, such as <code>fromApiResponse(array $body)</code> or <code>forOrder(OrderId $id)</code>, without bloating the main constructor signature.</p>
 </section>
 
 <section>
-    <h2>Message Constants — The Single Source of Truth</h2>
+    <h2>Message Constants: The Single Source of Truth</h2>
 
     <p>Exception messages are a surprisingly common source of magic strings scattered through codebases. Every test that asserts on a specific wording becomes a fragile coupling to the exact phrasing. Change the wording and seventeen unrelated tests turn red.</p>
 
@@ -346,15 +346,15 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>PHP's <code>Exception</code> constructor takes a <code>?Throwable $previous</code> argument specifically for this. Use it. Every. Single. Time.</p>
 
-    <p>When you translate a low-level exception into a domain-meaningful one at a boundary, the low-level exception is not noise to be discarded — it is the root cause of the failure. Stack traces, connection IDs, driver error codes, provider-specific details all live on that original throwable. Throw it away and future you will be guessing.</p>
+    <p>When you translate a low-level exception into a domain-meaningful one at a boundary, the low-level exception is not noise to be discarded. It is the root cause of the failure. Stack traces, connection IDs, driver error codes, provider-specific details all live on that original throwable. Throw it away and future you will be guessing.</p>
 
-    <p>Monolog's default formatter walks the entire previous chain. Symfony's profiler shows every level. PHPUnit's <code>expectException</code> output includes it. All of this works automatically — if you chain.</p>
+    <p>Monolog's default formatter walks the entire previous chain. Symfony's profiler shows every level. PHPUnit's <code>expectException</code> output includes it. All of this works automatically, provided you chain.</p>
 
     <p>The boundary conversion pattern looks like this:</p>
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/boundary-conversion.php}}</code></pre>
 
-    <p>The rule in one sentence: <em>the rest of the application never sees <code>PDOException</code>, <code>RedisException</code>, or HTTP client exceptions — it sees <code>AppException</code> subclasses, and the original exception is always chained.</em></p>
+    <p>The rule in one sentence: <em>the rest of the application never sees <code>PDOException</code>, <code>RedisException</code>, or HTTP client exceptions; it sees <code>AppException</code> subclasses, and the original exception is always chained.</em></p>
 </section>
 
 <section>
@@ -378,7 +378,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>The Outermost Handler — Where Generic Catches Belong</h2>
+    <h2>The Outermost Handler: Where Generic Catches Belong</h2>
 
     <p>Given all of the above, there is exactly one place in the application where a generic catch of <code>Throwable</code> makes sense: the kernel-level exception listener. That is the place that decides what a user sees when something goes wrong, and it is the only place that is allowed to deal in generic base types.</p>
 
@@ -400,12 +400,12 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <ul>
         <li><strong>Dedicated <code>exception</code> channel</strong> with its own rotating log file, separate from the main application log.</li>
-        <li><strong>JSON formatter</strong> — exception properties (the structured data we put on the class) get serialised as queryable fields, not flattened into a message string.</li>
-        <li><strong>Fingers-crossed handler on main</strong> — a single error triggers the whole request's debug log being flushed, so you get full context around the failure without drowning in noise during healthy requests.</li>
+        <li><strong>JSON formatter:</strong> exception properties (the structured data we put on the class) get serialised as queryable fields, not flattened into a message string.</li>
+        <li><strong>Fingers-crossed handler on main:</strong> a single error triggers the whole request's debug log being flushed, so you get full context around the failure without drowning in noise during healthy requests.</li>
         <li><strong>Separate <code>security</code> channel</strong> for anything implementing <code>SecurityExceptionInterface</code>, with longer retention.</li>
     </ul>
 
-    <p>The top-level kernel listener injects a channel-specific logger — Symfony auto-wires the channel by argument name (<code>exceptionLogger</code> resolves to the <code>exception</code> channel). Every thrown-and-logged exception ends up in <code>var/log/exception.log</code> as structured JSON.</p>
+    <p>The top-level kernel listener injects a channel-specific logger, and Symfony auto-wires the channel by argument name (<code>exceptionLogger</code> resolves to the <code>exception</code> channel). Every thrown-and-logged exception ends up in <code>var/log/exception.log</code> as structured JSON.</p>
 </section>
 
 <section>
@@ -427,15 +427,15 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>PHPStan — Making @throws a Type Constraint</h2>
+    <h2>PHPStan: Making @throws a Type Constraint</h2>
 
-    <p>PHP has no checked exceptions in the language, but PHPStan can simulate them. With the right configuration, every exception class in your project hierarchy is treated as "checked" — meaning PHPStan will fail the build if a function throws (or calls a function that throws) one of your exceptions without declaring it in <code>@throws</code>.</p>
+    <p>PHP has no checked exceptions in the language, but PHPStan can simulate them. With the right configuration, every exception class in your project hierarchy is treated as "checked", meaning PHPStan will fail the build if a function throws (or calls a function that throws) one of your exceptions without declaring it in <code>@throws</code>.</p>
 
     <pre><code class="language-yaml">{{SNIPPET:php-exception-best-practices/phpstan-throws.neon}}</code></pre>
 
-    <p>Combined with the project-level hierarchy and typed properties, this closes the loop. The set of exceptions a function can throw is now part of its signature. Static analysis enforces it. Adding a new throw somewhere deep in the call graph surfaces as a required <code>@throws</code> update everywhere the exception can propagate — or a required <code>try</code> / <code>catch</code> at a natural boundary.</p>
+    <p>Combined with the project-level hierarchy and typed properties, this closes the loop. The set of exceptions a function can throw is now part of its signature. Static analysis enforces it. Adding a new throw somewhere deep in the call graph surfaces as a required <code>@throws</code> update everywhere the exception can propagate, or a required <code>try</code> / <code>catch</code> at a natural boundary.</p>
 
-    <p>Bare <code>RuntimeException</code> and <code>LogicException</code> are left in <code>uncheckedExceptionClasses</code> on purpose — you do not want the type-checker demanding that every function declare that it might throw one. They are truly unexpected by definition. The outer handler catches them.</p>
+    <p>Bare <code>RuntimeException</code> and <code>LogicException</code> are left in <code>uncheckedExceptionClasses</code> on purpose. You do not want the type-checker demanding that every function declare that it might throw one. They are truly unexpected by definition. The outer handler catches them.</p>
 </section>
 
 <section>
@@ -452,7 +452,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
         <li>Data is on typed properties, not in the message.</li>
         <li>Asymmetric visibility means those properties are read-only from outside, without the <code>readonly</code> pitfalls.</li>
         <li>A property hook gives us a computed <code>summary</code> attribute with no getter boilerplate.</li>
-        <li>Named static factories — <code>create</code> and <code>createWithPrevious</code> — for self-documenting call sites.</li>
+        <li>Named static factories, <code>create</code> and <code>createWithPrevious</code>, for self-documenting call sites.</li>
         <li>The message is synthesised from a <code>MESSAGE_FORMAT</code> constant that tests can reuse.</li>
         <li>The previous exception is always chainable via the dedicated factory.</li>
     </ul>
@@ -461,13 +461,13 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>Exceptions Are Not For Control Flow</h2>
 
-    <p>If "not found" is an expected outcome of a finder method, do not throw — return null, or a result object. Exceptions are for <em>failure</em>, not for signalling a normal code path that happened to yield no result.</p>
+    <p>If "not found" is an expected outcome of a finder method, do not throw. Return null, or a result object. Exceptions are for <em>failure</em>, not for signalling a normal code path that happened to yield no result.</p>
 
     <p>The moment "throw and catch" becomes part of the happy path, the signal value of exceptions degrades. Logs fill with noise. Stack traces become routine. The outer handler stops meaning "something genuinely went wrong" and starts meaning "one of fifty expected things happened". Every rule in this article depends on exceptions being rare and meaningful. Using them for control flow breaks that assumption at the root.</p>
 </section>
 
 <section>
-    <h2>Python — Same Principles, Different Syntax</h2>
+    <h2>Python: Same Principles, Different Syntax</h2>
 
     <p>The principles port directly. Python's <code>raise ... from previous</code> is the language-level equivalent of PHP's <code>previous</code> constructor argument. Data goes on instance attributes, <code>__str__</code> synthesises the message from them.</p>
 
@@ -482,18 +482,18 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>TypeScript — Error.cause and Nominal Typing via Class</h2>
+    <h2>TypeScript: Error.cause and Nominal Typing via Class</h2>
 
-    <p>TypeScript's story is cleaner than you might expect. ES2022 added <code>Error.cause</code> — the direct analogue of PHP's previous exception — and the <code>Error</code> constructor accepts it as a second argument via an options object.</p>
+    <p>TypeScript's story is cleaner than you might expect. ES2022 added <code>Error.cause</code>, the direct analogue of PHP's previous exception, and the <code>Error</code> constructor accepts it as a second argument via an options object.</p>
 
     <pre><code class="language-typescript">{{SNIPPET:php-exception-best-practices/typescript-exceptions.ts}}</code></pre>
 
     <p>Three TypeScript-specific notes:</p>
 
     <ul>
-        <li><code>instanceof</code> works for domain error classes at runtime — use it in catch blocks, never parse the message.</li>
+        <li><code>instanceof</code> works for domain error classes at runtime. Use it in catch blocks, and never parse the message.</li>
         <li>Set <code>this.name</code> explicitly. The default <code>"Error"</code> string makes all errors look alike in logs.</li>
-        <li>The caught value in a catch block is <code>unknown</code> in modern TypeScript. Narrow with <code>instanceof</code> before accessing properties — the type system will force you to be honest about what you actually know.</li>
+        <li>The caught value in a catch block is <code>unknown</code> in modern TypeScript. Narrow with <code>instanceof</code> before accessing properties. The type system will force you to be honest about what you actually know.</li>
     </ul>
 </section>
 
@@ -509,13 +509,13 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
         <li>All domain data lives on typed properties (PHP 8.4 <code>public private(set)</code>).</li>
         <li>Message is synthesised from a <code>MESSAGE_FORMAT</code> class constant via <code>sprintf</code>.</li>
         <li>Named static factories: <code>create</code> and <code>createWithPrevious</code>.</li>
-        <li>The previous exception is accepted and forwarded to the parent constructor — never dropped.</li>
+        <li>The previous exception is accepted and forwarded to the parent constructor, never dropped.</li>
         <li>Low-level third-party exceptions are wrapped at the boundary, not leaked to the domain.</li>
         <li>Declared in <code>@throws</code> on every function that throws or propagates it.</li>
         <li>Tested by asserting on properties, and on messages built from the published constant.</li>
     </ul>
 
-    <p>Do this consistently and exceptions stop being an afterthought. They become a structured, testable, observable part of the system's contract — and the outer exception handler genuinely does mean "something unexpected happened" when it fires.</p>
+    <p>Do this consistently and exceptions stop being an afterthought. They become a structured, testable, observable part of the system's contract, and the outer exception handler genuinely does mean "something unexpected happened" when it fires.</p>
 </section>
 `,
   },
@@ -814,7 +814,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     tags: [],
     subreddit: 'programming',
     content: `<div class="intro">
-    <p class="lead">Software fails. That is not the interesting part. The interesting part is <em>how</em> it fails, because not all failures are the same. There is a fundamental distinction between two kinds of failure — <strong>errors</strong> and <strong>bugs</strong> — and most developers use these words interchangeably despite them meaning completely different things. Getting clear on this distinction will change how you write code, how you handle failures, and how much time you spend staring at production logs at two in the morning.</p>
+    <p class="lead">Software fails. That is not the interesting part. The interesting part is <em>how</em> it fails, because not all failures are the same. There is a fundamental distinction between two kinds of failure: <strong>errors</strong> and <strong>bugs</strong>. Most developers use these words interchangeably despite them meaning completely different things. Getting clear on this distinction will change how you write code, how you handle failures, and how much time you spend staring at production logs at two in the morning.</p>
 </div>
 
 <section>
@@ -822,7 +822,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>An error is a failure that the system knows about. Something went wrong, the system detected it, and it told you. You get a message, a location, a stack trace, context. The system is shouting: "This broke, here is where, here is why."</p>
 
-    <p>When you receive an error, you are not investigating. You are <em>responding</em>. The hard work of figuring out what happened has already been done — by the code that threw the error in the first place.</p>
+    <p>When you receive an error, you are not investigating. You are <em>responding</em>. The hard work of figuring out what happened has already been done by the code that threw the error in the first place.</p>
 
     <p>In PHP, the typical mechanism is an exception:</p>
 
@@ -950,7 +950,7 @@ app.put('/preferences', (req, res) =&gt; {
   res.json(updated);
 });</code></pre>
 
-    <p>No runtime error. TypeScript is satisfied at compile time. But <code>req.body</code> can contain anything — <code>{ theme: "rainbow", isAdmin: true }</code> — and the spread operator will blindly merge it all. There is no validation at the system boundary. Data gets silently corrupted, and you will not discover it until some other part of the system tries to use those preferences and encounters values it does not expect.</p>
+    <p>No runtime error. TypeScript is satisfied at compile time. But <code>req.body</code> can contain anything, <code>{ theme: "rainbow", isAdmin: true }</code> included, and the spread operator will blindly merge it all. There is no validation at the system boundary. Data gets silently corrupted, and you will not discover it until some other part of the system tries to use those preferences and encounters values it does not expect.</p>
 </section>
 
 <section>
@@ -975,7 +975,7 @@ app.put('/preferences', (req, res) =&gt; {
         <li>A developer tries to reproduce it (hours)</li>
         <li>The developer traces the symptom back through layers of code to find the cause (hours to days)</li>
         <li>A fix is written that addresses the root cause, not just the symptom (hours)</li>
-        <li>The blast radius is assessed — what else did this affect? (hours)</li>
+        <li>The blast radius is assessed: what else did this affect? (hours)</li>
         <li>Data cleanup and remediation, if needed (hours to days)</li>
     </ol>
 
@@ -995,7 +995,7 @@ app.put('/preferences', (req, res) =&gt; {
 
     <pre><code class="language-php">&lt;?php
 
-// Without strict_types — a bug
+// Without strict_types: a bug
 function calculateTax(float $amount, float $rate): float
 {
     return $amount * $rate;
@@ -1005,7 +1005,7 @@ calculateTax("not a number", 0.2);
 // PHP coerces the string to 0.0, returns 0.0
 // No warning. No exception. Just wrong.
 
-// With strict_types — an error
+// With strict_types: an error
 declare(strict_types=1);
 
 calculateTax("not a number", 0.2);
@@ -1048,7 +1048,7 @@ final class DiscountCalculator
     }
 }</code></pre>
 
-    <p>The original bug is now structurally impossible. The <code>Percentage</code> value object guarantees float arithmetic and validates the range at construction time. Pass in <code>new Percentage(150)</code> and you get a <code>DomainException</code> — an error, not a bug.</p>
+    <p>The original bug is now structurally impossible. The <code>Percentage</code> value object guarantees float arithmetic and validates the range at construction time. Pass in <code>new Percentage(150)</code> and you get a <code>DomainException</code>: an error, not a bug.</p>
 
     <h3>Boundary Validation</h3>
 
@@ -1099,8 +1099,8 @@ function findUser(array $users, string $email): User
     }
     // PHPStan: Method findUser() should return User
     //          but return statement is missing.
-    // Without PHPStan, this silently returns null — a bug.
-    // With PHPStan, this is caught at development time — an error.
+    // Without PHPStan, this silently returns null: a bug.
+    // With PHPStan, this is caught at development time: an error.
 }</code></pre>
 
     <pre><code class="language-typescript">// @typescript-eslint/switch-exhaustiveness-check
@@ -1117,7 +1117,7 @@ function getStatusLabel(status: Status): string {
   }
 }</code></pre>
 
-    <p>Every static analysis rule you enable is another class of bug that gets promoted to an error before it can ever reach a user. PHPStan, Psalm, ESLint, TypeScript strict mode — they all serve the same purpose. They turn silent wrongness into loud complaints.</p>
+    <p>Every static analysis rule you enable is another class of bug that gets promoted to an error before it can ever reach a user. PHPStan, Psalm, ESLint and TypeScript strict mode all serve the same purpose. They turn silent wrongness into loud complaints.</p>
 </section>
 
 <section>
@@ -1186,7 +1186,7 @@ function loadConfig(string $path): array
 
     <p>Once you internalise the error vs bug distinction, it changes how you think about every line of code you write. Error handling stops looking like defensive overhead and starts looking like an investment that pays for itself many times over.</p>
 
-    <p>The goal is not to write code that never fails. That is impossible and not even desirable. The goal is to write code that <strong>fails loudly, clearly, and early</strong>. A system full of well-crafted errors is a system that is cheap to operate. A system full of silent bugs is a system that is slowly, invisibly rotting — and every rotten piece is a future investigation waiting to consume someone's week.</p>
+    <p>The goal is not to write code that never fails. That is impossible and not even desirable. The goal is to write code that <strong>fails loudly, clearly, and early</strong>. A system full of well-crafted errors is a system that is cheap to operate. A system full of silent bugs is a system that is slowly, invisibly rotting, and every rotten piece is a future investigation waiting to consume someone's week.</p>
 
     <p>The question to ask yourself when writing any piece of logic is not "what if this fails?" It is: "if this fails silently, how long before anyone notices, and how much damage will it do in the meantime?" If the answer makes you uncomfortable, add a check. Turn that potential bug into an error. Your future self will thank you for it.</p>
 </section>
@@ -1343,7 +1343,7 @@ group_vars/staging/main.yml:db_password: !vault |
 
 # This tells you nothing with file-level encryption
 $ grep -r "db_password" group_vars/
-# (no output — the variable name is encrypted too)</code></pre>
+# (no output: the variable name is encrypted too)</code></pre>
 
     <h3>Values Stay Encrypted Throughout Development</h3>
 
@@ -1453,8 +1453,8 @@ vault_identity_list = production@~/.vault_pass_prod, staging@~/.vault_pass_stagi
 
     <pre><code class="language-bash">group_vars/
   production/
-    vars.yml          # Unencrypted — references vault_ prefixed variables
-    vault.yml         # Fully encrypted — contains actual secret values</code></pre>
+    vars.yml          # Unencrypted: references vault_ prefixed variables
+    vault.yml         # Fully encrypted: contains actual secret values</code></pre>
 
     <p>In <code>vars.yml</code>:</p>
 
@@ -1722,7 +1722,7 @@ ansible-vault encrypt_string \\
     tags: [],
     subreddit: 'sysadmin',
     content: `<div class="intro">
-    <p class="lead">Cron is one of the oldest and most reliable tools in the Unix toolkit — it has been scheduling tasks since the 1970s, and it works. But "works" is doing a lot of heavy lifting there. Cron has no structured logging, no dependency management, no built-in protection against overlapping runs, and zero security isolation. It runs your scripts as your full user with every privilege and capability you possess, with no record of what happened unless you wrote the logging yourself. systemd timers, introduced with systemd and now standard across every major enterprise Linux distribution, solve all of these problems — and on Red Hat Enterprise Linux, Rocky Linux, and Fedora, they are already running dozens of system tasks that used to live in crontabs.</p>
+    <p class="lead">Cron is one of the oldest and most reliable tools in the Unix toolkit. It has been scheduling tasks since the 1970s, and it works. But "works" is doing a lot of heavy lifting there. Cron has no structured logging, no dependency management, no built-in protection against overlapping runs, and zero security isolation. It runs your scripts as your full user with every privilege and capability you possess, with no record of what happened unless you wrote the logging yourself. systemd timers, introduced with systemd and now standard across every major enterprise Linux distribution, solve all of these problems, and on Red Hat Enterprise Linux, Rocky Linux, and Fedora, they are already running dozens of system tasks that used to live in crontabs.</p>
 </div>
 
 <section>
@@ -1730,17 +1730,17 @@ ansible-vault encrypt_string \\
 
     <p>Before dismissing cron unfairly, it is worth being precise about what it does well. A crontab entry is five fields of schedule followed by a command. It is universally understood, requires no service files, and can be written in thirty seconds. For a developer who needs to run a script at 3am and never thinks about it again, cron is perfectly adequate.</p>
 
-    <p>The problems emerge at scale and in production. When a cron job fails, the output goes to the local mailbox of the running user — which nobody reads — or into <code>/dev/null</code>. There is no centralised log. There is no way to query "when did this last run and what was its exit code?" without implementing that infrastructure yourself. If the server was off at 3am, the job simply did not run, with no record that it was missed. And if the job takes longer than its schedule interval, cron will cheerfully launch a second (and third) instance alongside the first.</p>
+    <p>The problems emerge at scale and in production. When a cron job fails, the output goes into <code>/dev/null</code>, or to the local mailbox of the running user, which nobody reads. There is no centralised log. There is no way to query "when did this last run and what was its exit code?" without implementing that infrastructure yourself. If the server was off at 3am, the job simply did not run, with no record that it was missed. And if the job takes longer than its schedule interval, cron will cheerfully launch a second (and third) instance alongside the first.</p>
 
-    <p>systemd timers are not a drop-in replacement for cron's syntax — they require two unit files instead of one line. But what you gain is worth the ceremony.</p>
+    <p>systemd timers are not a drop-in replacement for cron's syntax. They require two unit files instead of one line. But what you gain is worth the ceremony.</p>
 </section>
 
 <section>
     <h2>The Timer + Service Unit Model</h2>
 
-    <p>Every systemd timer consists of exactly two unit files: a <code>.timer</code> unit that defines <em>when</em> to run, and a <code>.service</code> unit that defines <em>what</em> to run. They are linked by name — <code>backup.timer</code> activates <code>backup.service</code> automatically. You can override this with <code>Unit=</code> in the timer if you need a different pairing.</p>
+    <p>Every systemd timer consists of exactly two unit files: a <code>.timer</code> unit that defines <em>when</em> to run, and a <code>.service</code> unit that defines <em>what</em> to run. They are linked by name, so <code>backup.timer</code> activates <code>backup.service</code> automatically. You can override this with <code>Unit=</code> in the timer if you need a different pairing.</p>
 
-    <p>The service unit is a perfectly ordinary systemd service. This is the key insight: every hardening directive, every resource limit, every dependency declaration available to long-running services is equally available to timer-activated services. You are not working with a stripped-down scheduler — you have the full systemd service model available to you.</p>
+    <p>The service unit is a perfectly ordinary systemd service. This is the key insight: every hardening directive, every resource limit, every dependency declaration available to long-running services is equally available to timer-activated services. You are not working with a stripped-down scheduler. You have the full systemd service model available to you.</p>
 
     <p>A minimal example pair:</p>
 
@@ -1813,11 +1813,11 @@ OnUnitInactiveSec=30min
 # 5 minutes after this timer unit itself started
 OnActiveSec=5min</code></pre>
 
-    <p>Monotonic timers stop counting when the system is suspended. If a laptop suspends and resumes, <code>OnUnitActiveSec=1h</code> does not fire because an hour has elapsed on the wall clock — it fires one hour after the timer was last active, which resets on resume.</p>
+    <p>Monotonic timers stop counting when the system is suspended. If a laptop suspends and resumes, <code>OnUnitActiveSec=1h</code> does not fire because an hour has elapsed on the wall clock. It fires one hour after the timer was last active, which resets on resume.</p>
 
     <h3>Persistent Timers: Replacing Missed Runs</h3>
 
-    <p><code>Persistent=true</code> instructs systemd to record the last time the timer activated. On next boot, if the scheduled time was missed while the system was off, the timer fires immediately. This is the equivalent of <code>anacron</code> behaviour — and it is one line in your timer file rather than a separate tool to install and configure.</p>
+    <p><code>Persistent=true</code> instructs systemd to record the last time the timer activated. On next boot, if the scheduled time was missed while the system was off, the timer fires immediately. This is the equivalent of <code>anacron</code> behaviour, and it is one line in your timer file rather than a separate tool to install and configure.</p>
 
     <pre><code class="language-bash">[Timer]
 OnCalendar=daily
@@ -1833,7 +1833,7 @@ Persistent=true</code></pre>
 OnCalendar=daily
 RandomizedDelaySec=1800</code></pre>
 
-    <p>This fires the timer somewhere in a 30-minute window after midnight, distributing load across machines and avoiding simultaneous database hammering. The <code>dnf-automatic</code> timer on RHEL uses exactly this pattern — it is configured with a random delay so that a fleet of servers does not all hit the update mirrors at the same second.</p>
+    <p>This fires the timer somewhere in a 30-minute window after midnight, distributing load across machines and avoiding simultaneous database hammering. The <code>dnf-automatic</code> timer on RHEL uses exactly this pattern. It is configured with a random delay so that a fleet of servers does not all hit the update mirrors at the same second.</p>
 </section>
 
 <section>
@@ -1898,7 +1898,7 @@ Normalized form: *-*-* *:00/15:00
 <section>
     <h2>System-Level Timers: Running as Root</h2>
 
-    <p>System-level timer units live in <code>/etc/systemd/system/</code> (for locally created units) or <code>/usr/lib/systemd/system/</code> (for units shipped by packages). The <code>/etc/systemd/system/</code> path takes precedence over the package-supplied path, which is how you override vendor defaults without editing package files — a crucial pattern on RHEL and Rocky Linux where packages may be updated by DNF.</p>
+    <p>System-level timer units live in <code>/etc/systemd/system/</code> (for locally created units) or <code>/usr/lib/systemd/system/</code> (for units shipped by packages). The <code>/etc/systemd/system/</code> path takes precedence over the package-supplied path, which is how you override vendor defaults without editing package files. This is a crucial pattern on RHEL and Rocky Linux where packages may be updated by DNF.</p>
 
     <p>The full lifecycle for a system timer:</p>
 
@@ -1929,7 +1929,7 @@ journalctl -u mytask.service -f
 # Show logs from the last run only
 journalctl -u mytask.service --since today</code></pre>
 
-    <p>The <code>systemctl list-timers</code> output is one of the most immediately useful commands when inheriting a server. It shows every timer, when it last fired, when it will next fire, and what service it triggers — information that is simply not available with <code>crontab -l</code>.</p>
+    <p>The <code>systemctl list-timers</code> output is one of the most immediately useful commands when inheriting a server. It shows every timer, when it last fired, when it will next fire, and what service it triggers. None of that is available with <code>crontab -l</code>.</p>
 </section>
 
 <section>
@@ -1968,7 +1968,7 @@ journalctl --user -u sync-files.service</code></pre>
 
     <h3>loginctl enable-linger: The Critical Server Setting</h3>
 
-    <p>By default, the systemd user instance for a given user only runs while that user has an active login session. Log out and your user timers stop. On a server where you deploy an application as a non-root service account, this makes user timers seemingly useless — the deploy user has no interactive session.</p>
+    <p>By default, the systemd user instance for a given user only runs while that user has an active login session. Log out and your user timers stop. On a server where you deploy an application as a non-root service account, this makes user timers seemingly useless, because the deploy user has no interactive session.</p>
 
     <p>The solution is <code>loginctl enable-linger</code>. This instructs systemd to start the user instance at boot and keep it running indefinitely, regardless of whether the user is logged in:</p>
 
@@ -1983,7 +1983,7 @@ loginctl show-user deploy | grep Linger
 ls /var/lib/systemd/linger/
 # deploy</code></pre>
 
-    <p>Once linger is enabled for the <code>deploy</code> user, that user's timers in <code>~/.config/systemd/user/</code> will run on schedule even when nobody is logged in. This is the correct way to run application-level scheduled tasks as a non-root service account on a server — not by adding entries to root's crontab or using <code>sudo</code>.</p>
+    <p>Once linger is enabled for the <code>deploy</code> user, that user's timers in <code>~/.config/systemd/user/</code> will run on schedule even when nobody is logged in. This is the correct way to run application-level scheduled tasks as a non-root service account on a server, rather than by adding entries to root's crontab or using <code>sudo</code>.</p>
 
     <p>One important caveat: the user systemd instance does not inherit environment variables from <code>.bashrc</code> or <code>.profile</code>. Set any required environment variables explicitly in the <code>[Service]</code> section with <code>Environment=</code> or <code>EnvironmentFile=</code>.</p>
 </section>
@@ -2003,7 +2003,7 @@ User=backup
 Group=backup
 ExecStart=/usr/local/bin/run-backup.sh</code></pre>
 
-    <p>For tasks that need no persistent user identity at all, <code>DynamicUser=yes</code> creates an ephemeral user at service start and discards it when the service exits. The UID is allocated from a reserved range and never reused concurrently — but it may differ between runs, so it is unsuitable for services that write persistent data owned by a specific UID:</p>
+    <p>For tasks that need no persistent user identity at all, <code>DynamicUser=yes</code> creates an ephemeral user at service start and discards it when the service exits. The UID is allocated from a reserved range and never reused concurrently, but it may differ between runs, so it is unsuitable for services that write persistent data owned by a specific UID:</p>
 
     <pre><code class="language-bash">[Service]
 Type=oneshot
@@ -2040,7 +2040,7 @@ CapabilityBoundingSet=
 # CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 # AmbientCapabilities=CAP_NET_BIND_SERVICE</code></pre>
 
-    <p><code>NoNewPrivileges=true</code> is the single most important hardening directive for any service that does not need to escalate privileges. It prevents <code>execve()</code> from granting new capabilities via setuid bits on executables — even if the script calls a setuid binary, it cannot gain root through it.</p>
+    <p><code>NoNewPrivileges=true</code> is the single most important hardening directive for any service that does not need to escalate privileges. It prevents <code>execve()</code> from granting new capabilities via setuid bits on executables. Even if the script calls a setuid binary, it cannot gain root through it.</p>
 
     <h3>Namespace and Kernel Restrictions</h3>
 
@@ -2115,7 +2115,7 @@ IPAddressDeny=any</code></pre>
 <section>
     <h2>Red Hat, Fedora, and Rocky Linux: The Native Ecosystem</h2>
 
-    <p>On RHEL-family systems, systemd timers are not a curiosity — they are the standard. Several core system functions ship as timer units out of the box, and understanding them is useful both as documentation of the pattern and as a source of real-world examples to learn from.</p>
+    <p>On RHEL-family systems, systemd timers are not a curiosity. They are the standard. Several core system functions ship as timer units out of the box, and understanding them is useful both as documentation of the pattern and as a source of real-world examples to learn from.</p>
 
     <h3>Timers That Ship with RHEL 9 / Rocky Linux 9</h3>
 
@@ -2124,15 +2124,15 @@ systemctl list-timers --all
 
 # Key system timers you will find on a fresh RHEL/Rocky install:</code></pre>
 
-    <p><strong>fstrim.timer</strong> — Runs <code>fstrim -av</code> weekly to discard unused blocks on SSD filesystems. Enabled by default on Rocky Linux 9. The timer uses <code>ConditionVirtualization=!container</code> to skip TRIM inside containers where it has no meaning, and <code>RandomizedDelaySec=6000</code> to spread load across a fleet.</p>
+    <p><strong>fstrim.timer</strong> runs <code>fstrim -av</code> weekly to discard unused blocks on SSD filesystems. Enabled by default on Rocky Linux 9. The timer uses <code>ConditionVirtualization=!container</code> to skip TRIM inside containers where it has no meaning, and <code>RandomizedDelaySec=6000</code> to spread load across a fleet.</p>
 
-    <p><strong>dnf-makecache.timer</strong> — Refreshes DNF package metadata periodically. Runs as a system timer, keeping the package cache warm so <code>dnf install</code> commands are fast.</p>
+    <p><strong>dnf-makecache.timer</strong> refreshes DNF package metadata periodically. Runs as a system timer, keeping the package cache warm so <code>dnf install</code> commands are fast.</p>
 
-    <p><strong>logrotate.timer</strong> — Replaces the traditional <code>/etc/cron.daily/logrotate</code> cron entry. Runs daily with a randomised delay. On RHEL 8 this was still a cron job; RHEL 9 ships it as a timer unit.</p>
+    <p><strong>logrotate.timer</strong> replaces the traditional <code>/etc/cron.daily/logrotate</code> cron entry. Runs daily with a randomised delay. On RHEL 8 this was still a cron job; RHEL 9 ships it as a timer unit.</p>
 
-    <p><strong>updatedb.timer</strong> — Rebuilds the <code>mlocate</code>/<code>plocate</code> database daily so <code>locate</code> commands stay current.</p>
+    <p><strong>updatedb.timer</strong> rebuilds the <code>mlocate</code>/<code>plocate</code> database daily so <code>locate</code> commands stay current.</p>
 
-    <p><strong>systemd-tmpfiles-clean.timer</strong> — Cleans temporary files per the rules in <code>/etc/tmpfiles.d/</code> and <code>/usr/lib/tmpfiles.d/</code>. Runs daily and on boot. This replaces the old <code>tmpwatch</code> cron job from RHEL 6.</p>
+    <p><strong>systemd-tmpfiles-clean.timer</strong> cleans temporary files per the rules in <code>/etc/tmpfiles.d/</code> and <code>/usr/lib/tmpfiles.d/</code>. Runs daily and on boot. This replaces the old <code>tmpwatch</code> cron job from RHEL 6.</p>
 
     <h3>dnf-automatic: Automated Security Updates</h3>
 
@@ -2140,7 +2140,7 @@ systemctl list-timers --all
 
     <pre><code class="language-bash">dnf install dnf-automatic
 
-# Four timer variants — enable exactly one:
+# Four timer variants, enable exactly one:
 # Downloads AND installs security updates
 systemctl enable --now dnf-automatic-install.timer
 
@@ -2195,7 +2195,7 @@ Description=Sync data to remote server
 After=network-online.target
 Wants=network-online.target</code></pre>
 
-    <p>On RHEL 9 / Rocky Linux 9 with NetworkManager, <code>network-online.target</code> is reached after NetworkManager has confirmed that at least one network interface is online. Note that <code>network.target</code> is weaker — it only guarantees that networking <em>configuration</em> has been applied, not that connectivity exists.</p>
+    <p>On RHEL 9 / Rocky Linux 9 with NetworkManager, <code>network-online.target</code> is reached after NetworkManager has confirmed that at least one network interface is online. Note that <code>network.target</code> is weaker: it only guarantees that networking <em>configuration</em> has been applied, not that connectivity exists.</p>
 
     <h3>RHEL 8 vs RHEL 9 / Rocky 8 vs Rocky 9</h3>
 
@@ -2205,7 +2205,7 @@ Wants=network-online.target</code></pre>
 <section>
     <h2>Preventing Overlapping Execution</h2>
 
-    <p>Cron has no mechanism to prevent a second instance of a job from starting if the first is still running. This is a genuine operational hazard: a backup job that normally takes 20 minutes, triggered at an unusual time by a large dataset, will have a second instance start 60 minutes in if the schedule is hourly — and the two instances will fight over the same files.</p>
+    <p>Cron has no mechanism to prevent a second instance of a job from starting if the first is still running. This is a genuine operational hazard: a backup job that normally takes 20 minutes, triggered at an unusual time by a large dataset, will have a second instance start 60 minutes in if the schedule is hourly, and the two instances will fight over the same files.</p>
 
     <p>systemd's solution is elegant: set <code>Type=oneshot</code> on the service. A <code>oneshot</code> service is considered "active" from start until the process exits. If the timer fires while the previous run is still active, systemd queues the activation rather than launching a second instance.</p>
 
@@ -2442,7 +2442,7 @@ ExecStart=/usr/local/bin/cleanup-old-files.sh
 StandardOutput=journal
 StandardError=journal</code></pre>
 
-    <p>Notice the elimination of the <code>&gt;&gt; /var/log/cleanup.log 2&gt;&amp;1</code> redirect. Journald captures all output automatically — queried with <code>journalctl -u cleanup-old-files.service</code>. You gain timestamped, structured, queryable logs with zero effort, and the log is automatically rotated by journald's size and time limits.</p>
+    <p>Notice the elimination of the <code>&gt;&gt; /var/log/cleanup.log 2&gt;&amp;1</code> redirect. Journald captures all output automatically, queried with <code>journalctl -u cleanup-old-files.service</code>. You gain timestamped, structured, queryable logs with zero effort, and the log is automatically rotated by journald's size and time limits.</p>
 </section>
 
 <section>
@@ -2483,17 +2483,17 @@ systemd-analyze security myapp-sync.service
 # Validate a calendar expression
 systemd-analyze calendar "Mon..Fri *-*-* 08:30:00"</code></pre>
 
-    <p>When a service fails, <code>systemctl status</code> shows the last few lines of output inline — enough to diagnose most failures without needing to query the journal separately. The exit code is recorded, and if you have set <code>OnFailure=</code> on the service unit, a notification or recovery action fires automatically.</p>
+    <p>When a service fails, <code>systemctl status</code> shows the last few lines of output inline, which is enough to diagnose most failures without needing to query the journal separately. The exit code is recorded, and if you have set <code>OnFailure=</code> on the service unit, a notification or recovery action fires automatically.</p>
 
     <h3>Common Troubleshooting Scenarios</h3>
 
-    <p><strong>Timer is enabled but never fires</strong> — Check <code>systemctl list-timers</code> to confirm the next trigger time. Validate the <code>OnCalendar=</code> expression with <code>systemd-analyze calendar</code>. Check that the timer unit is active, not just enabled: <code>systemctl is-active myapp.timer</code>.</p>
+    <p><strong>Timer is enabled but never fires.</strong> Check <code>systemctl list-timers</code> to confirm the next trigger time. Validate the <code>OnCalendar=</code> expression with <code>systemd-analyze calendar</code>. Check that the timer unit is active, not just enabled: <code>systemctl is-active myapp.timer</code>.</p>
 
-    <p><strong>Service starts but fails immediately</strong> — Run <code>systemctl status myapp.service</code> to see the exit code and recent output. Check <code>journalctl -u myapp.service -n 50</code> for more context. If you are running with <code>ProtectSystem=strict</code>, the service may be failing because it is trying to write to a path not listed in <code>ReadWritePaths=</code>.</p>
+    <p><strong>Service starts but fails immediately.</strong> Run <code>systemctl status myapp.service</code> to see the exit code and recent output. Check <code>journalctl -u myapp.service -n 50</code> for more context. If you are running with <code>ProtectSystem=strict</code>, the service may be failing because it is trying to write to a path not listed in <code>ReadWritePaths=</code>.</p>
 
-    <p><strong>SELinux denials on Rocky/RHEL</strong> — Run <code>ausearch -m avc -ts recent</code> to see AVC denials. Use <code>audit2why</code> to get a human-readable explanation, and <code>audit2allow -a -M mypolicy</code> to generate a permissive policy for the denied operations.</p>
+    <p><strong>SELinux denials on Rocky/RHEL.</strong> Run <code>ausearch -m avc -ts recent</code> to see AVC denials. Use <code>audit2why</code> to get a human-readable explanation, and <code>audit2allow -a -M mypolicy</code> to generate a permissive policy for the denied operations.</p>
 
-    <p><strong>User timer not running when not logged in</strong> — Confirm lingering is enabled: <code>loginctl show-user username | grep Linger</code>. The user instance must be running: <code>systemctl --user is-active default.target</code> (run as that user, or check via <code>loginctl</code>).</p>
+    <p><strong>User timer not running when not logged in.</strong> Confirm lingering is enabled: <code>loginctl show-user username | grep Linger</code>. The user instance must be running: <code>systemctl --user is-active default.target</code> (run as that user, or check via <code>loginctl</code>).</p>
 </section>
 
 <section>
@@ -2566,9 +2566,9 @@ WantedBy=timers.target</code></pre>
 <section>
     <h2>The Verdict</h2>
 
-    <p>The case for systemd timers over cron is not that cron is broken. Cron works. The case is that cron was designed for a simpler era, and the assumptions it makes — that logging is optional, that security isolation is someone else's problem, that missed runs are acceptable, that all jobs run in a homogeneous environment — are increasingly at odds with how production infrastructure is managed.</p>
+    <p>The case for systemd timers over cron is not that cron is broken. Cron works. The case is that cron was designed for a simpler era, and its assumptions are increasingly at odds with how production infrastructure is managed: that logging is optional, that security isolation is someone else's problem, that missed runs are acceptable, that all jobs run in a homogeneous environment.</p>
 
-    <p>systemd timers require more upfront work: two files instead of one line, four commands to enable instead of one <code>crontab -e</code>. But every hour saved debugging "why did this job not run?" or "what output did last night's backup produce?" pays that cost back with interest. On RHEL 9 and Rocky Linux 9, the system itself has already made the migration — your application jobs should follow.</p>
+    <p>systemd timers require more upfront work: two files instead of one line, four commands to enable instead of one <code>crontab -e</code>. But every hour saved debugging "why did this job not run?" or "what output did last night's backup produce?" pays that cost back with interest. On RHEL 9 and Rocky Linux 9, the system itself has already made the migration. Application jobs should follow.</p>
 
     <p>Start with your most critical production cron jobs: the ones where a missed run or a silent failure has real consequences. Convert those first, apply the hardening directives, and observe. The difference in operational clarity is immediate and difficult to argue against once you have experienced it.</p>
 </section>
@@ -2586,7 +2586,7 @@ WantedBy=timers.target</code></pre>
     tags: [],
     subreddit: 'PHP',
     content: `<div class="intro">
-    <p class="lead">Your test suite is green. TypeScript is satisfied. PHPStan reports zero errors. CI passes. And somewhere in production, a customer's payment silently failed, their data shows blank where their name should be, or a permission check quietly granted access it should have denied. This is the most dangerous class of software bug: not the crash that triggers an alert, but the failure that keeps running while producing wrong results. The cause is almost always the same — code written to hide errors rather than handle them.</p>
+    <p class="lead">Your test suite is green. TypeScript is satisfied. PHPStan reports zero errors. CI passes. And somewhere in production, a customer's payment silently failed, their data shows blank where their name should be, or a permission check quietly granted access it should have denied. This is the most dangerous class of software bug: not the crash that triggers an alert, but the failure that keeps running while producing wrong results. The cause is almost always the same: code written to hide errors rather than handle them.</p>
 </div>
 
 <section>
@@ -2617,11 +2617,11 @@ const emailBody = 'Dear ' + customerName + ', your order has shipped.';
 // TypeScript is satisfied. The test passes. The customer gets a broken email.
 </code></pre>
 
-    <p>The distinction between "this value is legitimately empty" and "this value is missing because of a bug" has been erased. A renamed API field, a failed database lookup, a wrong property path — all produce the same result: empty string. And empty string looks valid enough to pass any test that checks "does this return a string".</p>
+    <p>The distinction between "this value is legitimately empty" and "this value is missing because of a bug" has been erased. A renamed API field, a failed database lookup, a wrong property path: all produce the same result, an empty string. And empty string looks valid enough to pass any test that checks "does this return a string".</p>
 
     <h3>Pattern 2: The Empty Catch</h3>
 
-    <p>Exception handling exists so that errors propagate up the call stack until something can meaningfully deal with them. An empty catch block does the opposite — it intercepts the error and discards it.</p>
+    <p>Exception handling exists so that errors propagate up the call stack until something can meaningfully deal with them. An empty catch block does the opposite. It intercepts the error and discards it.</p>
 
     <pre><code class="language-php">&lt;?php
 // Anti-pattern: the payment disappears silently
@@ -2637,7 +2637,7 @@ try {
 // The payment never happened.
 </code></pre>
 
-    <p>These originate as temporary scaffolding during rapid development. "I'll add proper handling later." Later never comes because the code appears to work — no uncaught exceptions, no test failures. The bomb ticks silently.</p>
+    <p>These originate as temporary scaffolding during rapid development. "I'll add proper handling later." Later never comes because the code appears to work: no uncaught exceptions, no test failures. The bomb ticks silently.</p>
 
     <h3>Pattern 3: Implicit Type Coercion</h3>
 
@@ -2672,7 +2672,7 @@ processOrderId(42);
 
     <p>The result is a system where every test passes because every error is converted into a valid-looking result. A test that checks "the API returns a string" passes whether that string is the customer's real name or an empty string caused by a renamed field. The test is technically correct and practically useless.</p>
 
-    <p>This is worse than having no tests. Untested code is obviously unverified. Code covered by error-hiding tests produces active false confidence — the conviction that "the tests pass, so it works." That conviction is what allows silent data corruption to run for weeks before a human notices something is wrong.</p>
+    <p>This is worse than having no tests. Untested code is obviously unverified. Code covered by error-hiding tests produces active false confidence: the conviction that "the tests pass, so it works." That conviction is what allows silent data corruption to run for weeks before a human notices something is wrong.</p>
 
     <p>The debugging economics are brutal. Error-hiding code takes 5–10x longer to diagnose because the error and the symptom are separated by layers of silent conversions. The database returned null at layer 1. The null became empty string at layer 2. Empty string was treated as "no value configured" at layer 3. The wrong behaviour surfaced at layer 4. Tracing that chain backwards is archaeology.</p>
 </section>
@@ -2682,18 +2682,18 @@ processOrderId(42);
 
     <p>The conventional response to a discovered bug is: write a failing test, fix the code, verify the test passes. This is good practice. It is also incomplete.</p>
 
-    <p>A test catches one specific manifestation of a bug. If that bug was caused by a systemic pattern — <code>?? ''</code> used across dozens of files — fixing one instance does nothing about the others scattered through the codebase, written by different developers at different times, in code that has never been tested.</p>
+    <p>A test catches one specific manifestation of a bug. If that bug was caused by a systemic pattern, say <code>?? ''</code> used across dozens of files, fixing one instance does nothing about the others scattered through the codebase, written by different developers at different times, in code that has never been tested.</p>
 
     <p><strong>Defence Before Fix</strong> (US spelling: Defense Before Fix) adds one step before the test:</p>
 
     <ol>
         <li><strong>Analyse the pattern.</strong> What coding pattern allowed this bug to exist? Is this a one-off mistake, or is it a class of mistakes the codebase may contain more of?</li>
-        <li><strong>Defend against the class.</strong> Create a static analysis rule that catches every instance of this pattern — across the entire codebase, on every future commit, for every future developer.</li>
+        <li><strong>Defend against the class.</strong> Create a static analysis rule that catches every instance of this pattern across the entire codebase, on every future commit, for every future developer.</li>
         <li><strong>Then</strong> write the failing test for the specific bug.</li>
         <li><strong>Then</strong> fix the specific bug.</li>
     </ol>
 
-    <p>The key leverage: a static analysis rule is a force multiplier. A test catches one bug in one file. A lint rule catches every future instance of that bug pattern — including instances that already exist in untested code paths, and instances that have not been written yet.</p>
+    <p>The key leverage: a static analysis rule is a force multiplier. A test catches one bug in one file. A lint rule catches every future instance of that bug pattern, including instances that already exist in untested code paths, and instances that have not been written yet.</p>
 
     <h3>Why Static Analysis Before Tests?</h3>
 
@@ -2704,7 +2704,7 @@ processOrderId(42);
         <li><strong>Tests</strong> ask: "Does this code produce correct output for specific inputs?"</li>
     </ul>
 
-    <p>Static analysis is preventive medicine. Tests are diagnostic. Static analysis runs on every file in every build — it cannot miss a file because nobody thought to write a test for it. A developer who writes <code>?? ''</code> gets immediate feedback from the linter before the code is even committed. They would only get feedback from a test if someone had specifically written a test covering that null path, in which case the pattern probably would not have spread through the codebase in the first place.</p>
+    <p>Static analysis is preventive medicine. Tests are diagnostic. Static analysis runs on every file in every build, so it cannot miss a file because nobody thought to write a test for it. A developer who writes <code>?? ''</code> gets immediate feedback from the linter before the code is even committed. They would only get feedback from a test if someone had specifically written a test covering that null path, in which case the pattern probably would not have spread through the codebase in the first place.</p>
 </section>
 
 <section>
@@ -2713,10 +2713,10 @@ processOrderId(42);
     <p>Defence Before Fix sits within a broader quality hierarchy where each level must pass before the next is attempted:</p>
 
     <ol>
-        <li><strong>Static analysis</strong> — Type checking, linting, custom rules</li>
-        <li><strong>Automated tests</strong> — Unit, integration, functional</li>
-        <li><strong>Build verification</strong> — Services start, dependencies resolve</li>
-        <li><strong>Human acceptance testing</strong> — Visual review, workflow validation</li>
+        <li><strong>Static analysis:</strong> type checking, linting, custom rules</li>
+        <li><strong>Automated tests:</strong> unit, integration, functional</li>
+        <li><strong>Build verification:</strong> services start, dependencies resolve</li>
+        <li><strong>Human acceptance testing:</strong> visual review, workflow validation</li>
     </ol>
 
     <p>This ordering prevents a common failure mode: running integration tests on code that does not type-check, or reviewing code with unresolved linting errors. Failures at lower levels produce confusing results at higher levels. A test that fails because of a type coercion issue in production code will send you debugging in the wrong direction. Run static analysis first, always.</p>
@@ -2783,9 +2783,9 @@ warn_unused_ignores = true
 <section>
     <h2>Writing Custom Rules: Where the Real Leverage Lives</h2>
 
-    <p>Off-the-shelf static analysis catches generic mistakes. But the most dangerous patterns in a codebase are often domain-specific or team-specific — patterns that general-purpose rules will never flag because they are not universally wrong, only wrong in your specific context.</p>
+    <p>Off-the-shelf static analysis catches generic mistakes. But the most dangerous patterns in a codebase are often domain-specific or team-specific, patterns that general-purpose rules will never flag because they are not universally wrong, only wrong in your specific context.</p>
 
-    <p>Custom rules are where static analysis becomes genuinely powerful. Each one encodes hard-won engineering knowledge — a lesson from a production incident, a pattern identified in code review, an anti-pattern that keeps appearing despite documentation — and converts it into automation. Not through documentation that nobody reads, but through a build error that blocks the commit and explains why.</p>
+    <p>Custom rules are where static analysis becomes genuinely powerful. Each one encodes hard-won engineering knowledge and converts it into automation: a lesson from a production incident, a pattern identified in code review, an anti-pattern that keeps appearing despite documentation. Not through documentation that nobody reads, but through a build error that blocks the commit and explains why.</p>
 
     <h3>PHPStan Custom Rule: Banning Null Coalescing to Empty String</h3>
 
@@ -2933,7 +2933,7 @@ final class NoEmptyCatchRule implements Rule
 
     <h3>Incident: Customer emails arriving with blank names</h3>
 
-    <p>A support ticket arrives: customers are receiving emails that begin "Dear ," — the name field is blank. You trace it to this code:</p>
+    <p>A support ticket arrives: customers are receiving emails that begin "Dear ," because the name field is blank. You trace it to this code:</p>
 
     <pre><code class="language-php">&lt;?php
 $name = $this->customerRepository->find($id)?->getFullName() ?? '';
@@ -2942,9 +2942,9 @@ $email->setBody("Dear {$name},\\n\\n{$body}");
 
     <p>The customer had been soft-deleted. <code>find()</code> returned null. <code>getFullName()</code> was never reached. <code>?? ''</code> converted null into empty string. The email sent successfully from the application's perspective. No exception was thrown. No test caught it.</p>
 
-    <p><strong>Step 1 — Analyse the pattern.</strong> This is not a one-off. The <code>?? ''</code> pattern appears throughout the codebase as a standard approach to nullable return values. Every instance is a potential silent failure of the same type.</p>
+    <p><strong>Step 1: analyse the pattern.</strong> This is not a one-off. The <code>?? ''</code> pattern appears throughout the codebase as a standard approach to nullable return values. Every instance is a potential silent failure of the same type.</p>
 
-    <p><strong>Step 2 — Defend against the class.</strong> Write the PHPStan rule above, then run it against the full codebase:</p>
+    <p><strong>Step 2: defend against the class.</strong> Write the PHPStan rule above, then run it against the full codebase:</p>
 
     <pre><code class="language-bash">vendor/bin/phpstan analyse src/
 
@@ -2961,9 +2961,9 @@ $email->setBody("Dear {$name},\\n\\n{$body}");
 
     <p>23 instances. The one you found was a symptom. The other 22 are bugs waiting to surface in different contexts, reported by different customers, at different times.</p>
 
-    <p><strong>Step 3 — Write the failing test</strong> for the original bug. A deleted customer's order should throw an exception when the email is prepared, not send a blank-named message.</p>
+    <p><strong>Step 3: write the failing test</strong> for the original bug. A deleted customer's order should throw an exception when the email is prepared, not send a blank-named message.</p>
 
-    <p><strong>Step 4 — Fix all 23 instances.</strong> Each one requires a deliberate decision: throw an exception, return a meaningful non-empty default that signals intent, or propagate null explicitly. The decision is now forced into the open rather than silently made by the language runtime.</p>
+    <p><strong>Step 4: fix all 23 instances.</strong> Each one requires a deliberate decision: throw an exception, return a meaningful non-empty default that signals intent, or propagate null explicitly. The decision is now forced into the open rather than silently made by the language runtime.</p>
 
     <p>After this process: one static analysis rule that prevents this class of bug permanently, one test that documents the correct behaviour, and 23 latent bugs fixed rather than one.</p>
 </section>
@@ -2985,11 +2985,11 @@ $email->setBody("Dear {$name},\\n\\n{$body}");
 <section>
     <h2>Rules That Reason Across the Whole Codebase</h2>
 
-    <p>Most static analysis rules examine a single file in isolation. But some of the most valuable custom rules cross file boundaries — they check whether code is properly connected to the rest of the system, not just whether it is internally correct.</p>
+    <p>Most static analysis rules examine a single file in isolation. But some of the most valuable custom rules cross file boundaries. They check whether code is properly connected to the rest of the system, not just whether it is internally correct.</p>
 
     <p>The sharpest illustration of why this matters: a service that is entirely correct, thoroughly tested, and never called in production.</p>
 
-    <p>On a production Symfony project processing supplier product data, a preprocessing service existed with working SQL logic and a green test suite. But it was never injected as a constructor dependency into the pipeline meant to call it. Symfony's autowiring did not wire it in automatically; the service lived in isolation. During a scheduled Christmas shutdown where stock quantities were zeroed, prices the service should have cleared stayed set — because the service was never wired in. The code was correct. The tests verified the code. The pipeline never ran it.</p>
+    <p>On a production Symfony project processing supplier product data, a preprocessing service existed with working SQL logic and a green test suite. But it was never injected as a constructor dependency into the pipeline meant to call it. Symfony's autowiring did not wire it in automatically; the service lived in isolation. During a scheduled Christmas shutdown where stock quantities were zeroed, prices the service should have cleared stayed set, because the service was never wired in. The code was correct. The tests verified the code. The pipeline never ran it.</p>
 
     <p>A custom PHPStan rule now catches this entire class of failure. At analysis time, it runs <code>grep</code> across the production source directory to check whether a class is actually used anywhere as a dependency:</p>
 
@@ -3026,9 +3026,9 @@ public function processNode(Node $node, Scope $scope): array
 
     <p>This catches a type of bug that no test can reach. Tests exercise the service class directly and correctly. Only something that reasons about the full production dependency graph can detect that the service is never invoked when the application actually runs. Green tests. Working code. Zero production usage.</p>
 
-    <p>Production codebases with many rules of this type tend to develop <strong>rule clusters</strong> — a suite of complementary rules that enforce a single pattern from multiple angles. A domain-specific database access pattern, for example, might accumulate: a rule that prevents query objects being created inside loops, a companion rule that catches prepared statements also being created inside loops, a third that detects a prepared statement used only once in a method body (it should be a simpler query class instead), and a fourth that requires a performance-monitoring dependency be injected into every prepared statement class. Each rule catches a different failure mode of the same pattern. Together they make misuse structurally difficult.</p>
+    <p>Production codebases with many rules of this type tend to develop <strong>rule clusters</strong>: a suite of complementary rules that enforce a single pattern from multiple angles. A domain-specific database access pattern, for example, might accumulate: a rule that prevents query objects being created inside loops, a companion rule that catches prepared statements also being created inside loops, a third that detects a prepared statement used only once in a method body (it should be a simpler query class instead), and a fourth that requires a performance-monitoring dependency be injected into every prepared statement class. Each rule catches a different failure mode of the same pattern. Together they make misuse structurally difficult.</p>
 
-    <p>The same cross-file analysis approach works in TypeScript. An ESLint rule can read route definitions from a separate file at lint time and validate every internal link reference against those registered routes. If a developer renames a route without updating all references, the build fails — without any test needing to cover that navigation path:</p>
+    <p>The same cross-file analysis approach works in TypeScript. An ESLint rule can read route definitions from a separate file at lint time and validate every internal link reference against those registered routes. If a developer renames a route without updating all references, the build fails, without any test needing to cover that navigation path:</p>
 
     <pre><code class="language-javascript">const fs   = require('fs');
 const path = require('path');
@@ -3056,19 +3056,19 @@ module.exports = {
 };
 </code></pre>
 
-    <p>Rules that grep the codebase or read external files are more expensive to write and slower to run than single-file rules. Write them for failure modes that are severe and that tests genuinely cannot reach: services disconnected from pipelines, broken internal navigation, sitemap documentation that has drifted from implemented pages. These are the bugs that slip through green test suites because tests model code in isolation — not how the full system is assembled and wired.</p>
+    <p>Rules that grep the codebase or read external files are more expensive to write and slower to run than single-file rules. Write them for failure modes that are severe and that tests genuinely cannot reach: services disconnected from pipelines, broken internal navigation, sitemap documentation that has drifted from implemented pages. These are the bugs that slip through green test suites because tests model code in isolation, not how the full system is assembled and wired.</p>
 </section>
 
 <section>
     <h2>The Ratchet Effect</h2>
 
-    <p>The goal is not zero bugs — that is not achievable. The goal is that every bug makes the system more resilient. Each production incident leaves behind not just a fix and a test, but a defence. The categories of bugs that can survive in the codebase shrink over time. The quality ratchet only turns one way.</p>
+    <p>The goal is not zero bugs, which is not achievable. The goal is that every bug makes the system more resilient. Each production incident leaves behind not just a fix and a test, but a defence. The categories of bugs that can survive in the codebase shrink over time. The quality ratchet only turns one way.</p>
 
     <p>A codebase with mature custom static analysis rules has a different character from one without. Code review focuses on logic and architecture rather than catching patterns the linter could find automatically. New developers are constrained to the team's established safe patterns from their first commit. Silent failures become structurally harder to introduce, because the patterns that cause them are banned at the tool level.</p>
 
     <p>Start with what you have. Enable <code>strict: true</code> in TypeScript and add the additional compiler flags. Add <code>declare(strict_types=1)</code> to PHP files and enable PHPStan at max level. Enable mypy strict in Python projects. These steps alone will surface a backlog of latent bugs that exist right now in tested, passing code.</p>
 
-    <p>Then, the next time a bug reaches production — before you write the test — ask the question: what pattern allowed this to happen? Can a machine detect every future instance of this pattern automatically? If yes, and it usually is, write the rule first. Fix the bug second. Leave the codebase permanently better than you found it.</p>
+    <p>Then, the next time a bug reaches production, before you write the test, ask the question: what pattern allowed this to happen? Can a machine detect every future instance of this pattern automatically? If yes, and it usually is, write the rule first. Fix the bug second. Leave the codebase permanently better than you found it.</p>
 </section>
 `,
   },
@@ -6094,7 +6094,7 @@ But as projects grow and multiply, a critical problem emerges. How do you manage
 <section>
 <h2>The Multi-Project Command Management Nightmare</h2>
 <p>
-Every developer who has worked with Claude Code across multiple projects has experienced this frustration. You create a brilliant command in one project—perhaps a sophisticated deployment script or a comprehensive testing workflow—and then face the painful reality of maintaining it across your entire codebase.
+Every developer who has worked with Claude Code across multiple projects has experienced this frustration. You create a brilliant command in one project, perhaps a sophisticated deployment script or a comprehensive testing workflow, and then face the painful reality of maintaining it across your entire codebase.
 </p>
 <h3>The Copy-Paste Spiral</h3>
 <p>
@@ -7659,7 +7659,7 @@ Create a comprehensive architecture document from the findings."
     
     <h3>YAGNI in PHP: A Real-World Example</h3>
     <p>
-        Here's how the YAGNI violation looks in actual PHP code—an over-engineered caching system built 
+        Here's how the YAGNI violation looks in actual PHP code: an over-engineered caching system built
         for requirements that don't exist:
     </p>
     
@@ -7709,7 +7709,7 @@ Create a comprehensive architecture document from the findings."
     <blockquote>
         "Yagni only applies to capabilities built into the software to support a presumptive feature, 
         it does not apply to effort to make the software easier to modify." 
-        <cite>— Martin Fowler</cite>
+        <cite>Martin Fowler</cite>
     </blockquote>
 </section>
 
@@ -7897,7 +7897,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     
     <h3>Understanding Domain Purity Through Pseudocode</h3>
     <p>
-        Domain purity is about architectural separation—keeping business logic isolated from infrastructure 
+        Domain purity is about architectural separation: keeping business logic isolated from infrastructure
         concerns. Here's how impure domain objects create problems and how clean boundaries solve them:
     </p>
     
@@ -8491,7 +8491,7 @@ $processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</cod
             <h3>Mock-Heavy Tests</h3>
             
             <p><strong>Problem</strong>: Mocking everything leads to brittle tests that break on refactoring.</p>
-            <p><strong>Solution</strong>: Use the pragmatic approach—mock external dependencies, use real objects for internal logic.</p>
+            <p><strong>Solution</strong>: Use the pragmatic approach: mock external dependencies, use real objects for internal logic.</p>
 
             <h3>Inheritance Instead of Composition</h3>
             
@@ -8792,7 +8792,7 @@ h1, h2 {
     content: `
 <div class="intro">
     <p class="lead">
-        Think of early return patterns as your code's bouncer – they check credentials at the door and politely 
+        Think of early return patterns as your code's bouncer. They check credentials at the door and politely
         escort troublemakers out before they can cause chaos inside. By handling exceptional cases upfront with 
         guard clauses, your main business logic flows clean and uninterrupted, like a VIP section free from drama.
     </p>
@@ -9044,7 +9044,7 @@ h1, h2 {
     <h3>Consider the Happy Path</h3>
     <p>
         Design guard clauses to handle edge cases and exceptional conditions, leaving the main function body 
-        focused on the primary use case – the "happy path" where everything works as expected.
+        focused on the primary use case: the "happy path" where everything works as expected.
     </p>
 </section>
 
@@ -9065,7 +9065,7 @@ h1, h2 {
     <p>
         Whether you're writing PHP APIs, TypeScript applications, Bash deployment scripts, or Ansible playbooks, 
         the guard clause pattern provides a universal approach to cleaner, more maintainable code. Your future 
-        self – and your teammates – will thank you for choosing the early exit strategy.
+        self, and your teammates, will thank you for choosing the early exit strategy.
     </p>
 </section>
     `,
@@ -9950,7 +9950,7 @@ download_file() {
             <h3>Separation of Concerns: Desktop vs. Project Stacks</h3>
             
             <p>
-                The fedora-desktop repository handles universal needs—system packages, shell 
+                The fedora-desktop repository handles universal needs: system packages, shell
                 configuration, Git setup, container support, and development fundamentals. 
                 Project-specific technology stacks are intentionally left to separate Ansible 
                 projects that can provision <a href="https://linuxcontainers.org/lxc/" target="_blank" rel="noopener">LXC</a> 
@@ -9979,7 +9979,7 @@ download_file() {
             <p>
                 Forking the fedora-desktop repository makes tremendous sense for personalization 
                 and organizational customization. Your fork becomes your organization's 
-                "known good desktop state"—a guaranteed foundation that all team members share. 
+                "known good desktop state", a guaranteed foundation that all team members share.
                 From this common base, project-specific automation can make reliable assumptions 
                 about available tools and configurations.
             </p>
@@ -10131,8 +10131,8 @@ download_file() {
             
             <p>
                 The fedora-desktop repository showcases how modern open source tools integrate 
-                seamlessly to create powerful automation workflows. This isn't just about Ansible 
-                and Fedora—it's about an ecosystem approach to infrastructure management.
+                seamlessly to create powerful automation workflows. This is about more than Ansible
+                and Fedora. It's an ecosystem approach to infrastructure management.
             </p>
 
             <h3>Tool Ecosystem Synergy</h3>
@@ -10327,7 +10327,7 @@ download_file() {
             
             <p>
                 The <a href="https://github.com/LongTermSupport/fedora-desktop" target="_blank" rel="noopener">LongTermSupport/fedora-desktop</a> 
-                repository represents more than just a collection of Ansible playbooks—it embodies 
+                repository represents more than just a collection of Ansible playbooks. It embodies
                 a fundamental shift in how we think about personal computing environments. By applying 
                 infrastructure-as-code principles to desktop automation, it demonstrates that the 
                 same engineering practices that revolutionized server management can transform 
@@ -10355,7 +10355,7 @@ download_file() {
                 seeking consistent development environments, or an organization looking to 
                 streamline onboarding, the patterns demonstrated in the fedora-desktop repository 
                 provide a proven foundation for success. The future of personal computing is 
-                declarative, version-controlled, and automated—and that future is available today 
+                declarative, version-controlled, and automated, and that future is available today
                 for anyone willing to treat their desktop as code.
             </p>
 
@@ -14479,7 +14479,7 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
     </p>
     
     <p>
-        The key insight: PER isn't just about coding style—it's about creating living standards that 
+        The key insight: PER goes beyond coding style. It creates living standards that
         grow with PHP. As PHP continues its renaissance with performance improvements, type safety, and 
         modern features, PER ensures our standards keep pace. With PHP 8.5 on the horizon 
         and new features constantly being added, PER's evolutionary approach is more important than ever.
@@ -15850,7 +15850,7 @@ final class QueryInLoopRuleTest extends RuleTestCase
     content: `
 <section class="intro">
 <p class="lead">Real-world comparison of Proxmox private cloud infrastructure versus public cloud solutions for PHP applications.</p>
-<p>After years of managing both public cloud and private infrastructure, I've become a strong advocate for Proxmox-based private cloud solutions. While public cloud has its place, for many PHP applications—especially those with predictable workloads and specific performance requirements—private infrastructure offers superior cost-effectiveness, performance, and control.</p>
+<p>After years of managing both public cloud and private infrastructure, I've become a strong advocate for Proxmox-based private cloud solutions. While public cloud has its place, for many PHP applications, especially those with predictable workloads and specific performance requirements, private infrastructure offers superior cost-effectiveness, performance, and control.</p>
 <p>Let me break down the comparison based on technical analysis and infrastructure considerations.</p>
 </section>
 <section>
@@ -16910,7 +16910,7 @@ Architectural patterns and best practices for creating robust, scalable backend 
 </p>
 </section>
 <section>
-<p>Building scalable APIs is about more than just handling high traffic—it's about creating systems that can grow with your business while maintaining performance, reliability, and maintainability. Modern PHP provides excellent tools for building enterprise-grade APIs that can handle millions of requests.</p>
+<p>Building scalable APIs is about more than just handling high traffic. It is about creating systems that can grow with your business while maintaining performance, reliability, and maintainability. Modern PHP provides excellent tools for building enterprise-grade APIs that can handle millions of requests.</p>
 <p>This article covers architectural patterns, design principles, and implementation strategies I've used to build APIs that scale from thousands to millions of users.</p>
 <h2>API Architecture Principles</h2>
 <h3>Layered Architecture</h3>
@@ -17721,7 +17721,7 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
 <li><strong>Monitoring:</strong> Collect metrics and logs</li>
 <li><strong>Testing:</strong> Comprehensive testing strategy</li>
 </ul>
-<p>Building scalable APIs requires careful planning and implementation of proven patterns. Start with a solid architectural foundation, implement proper caching and rate limiting, and continuously monitor and optimize performance. Remember that scalability is not just about handling more requests—it's about building systems that can evolve and grow with your business needs.</p>
+<p>Building scalable APIs requires careful planning and implementation of proven patterns. Start with a solid architectural foundation, implement proper caching and rate limiting, and continuously monitor and optimize performance. Remember that scalability is not just about handling more requests. It is about building systems that can evolve and grow with your business needs.</p>
 </section>
     `,
   },
@@ -18424,7 +18424,7 @@ yarn add reflect-metadata inversify</code></pre>
         <section>
             <h2>The Defence: ESLint to the Rescue</h2>
             <p>
-                The solution is to treat TypeScript like PHPStan—static analysis that <strong>must be hardened with strict enforcement rules</strong>. Enter <a href="https://typescript-eslint.io/" target="_blank" rel="noopener">typescript-eslint</a>, a suite of ESLint rules specifically designed to enforce type safety.
+                The solution is to treat TypeScript like PHPStan: static analysis that <strong>must be hardened with strict enforcement rules</strong>. Enter <a href="https://typescript-eslint.io/" target="_blank" rel="noopener">typescript-eslint</a>, a suite of ESLint rules specifically designed to enforce type safety.
             </p>
 
             <h3>Essential Rules to Enable</h3>
@@ -18772,16 +18772,16 @@ yarn add reflect-metadata inversify</code></pre>
     subreddit: 'LLMDevs',
     content: `
 <div class="intro">
-            <p class="lead">You're debugging a complex issue with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a>. After 30 messages back and forth, you notice the AI seems confused, mixing up earlier solutions with current problems. What happened? You've just experienced the hidden challenge of context management—the invisible force that can make or break your AI development experience.</p>
+            <p class="lead">You're debugging a complex issue with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a>. After 30 messages back and forth, you notice the AI seems confused, mixing up earlier solutions with current problems. What happened? You've just experienced the hidden challenge of context management, the invisible force that can make or break your AI development experience.</p>
         </div>
         
         <section>
             <h2>The Restaurant Conversation Analogy</h2>
             <p>Imagine you're having dinner with a friend at a restaurant. When you say "pass the salt," your friend doesn't need you to specify which salt, from which table, in which restaurant. The <strong>context</strong> is clear from your shared environment and conversation history.</p>
             
-            <p>Now imagine if every time you spoke, your friend forgot everything—the restaurant, your previous conversations, even why you're there. You'd have to explain everything from scratch each time. This is what working with an <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> would be like without context.</p>
+            <p>Now imagine if every time you spoke, your friend forgot everything: the restaurant, your previous conversations, even why you're there. You'd have to explain everything from scratch each time. This is what working with an <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> would be like without context.</p>
             
-            <p>Context in <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> works like your friend's memory of the entire dinner conversation. Every message you send isn't processed in isolation—it includes everything that came before it, creating a continuous narrative thread.</p>
+            <p>Context in <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> works like your friend's memory of the entire dinner conversation. Every message you send isn't processed in isolation. It includes everything that came before it, creating a continuous narrative thread.</p>
         </section>
 
         <section>
@@ -18789,7 +18789,7 @@ yarn add reflect-metadata inversify</code></pre>
             <p>When you type a message into <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> or any <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> interface, here's what actually happens:</p>
             
             <h3>The Context Assembly Process</h3>
-            <p>Think of context like a rolling transcript of a meeting. Every time you speak (send a message), the AI doesn't just hear your latest words—it reviews the entire meeting transcript first:</p>
+            <p>Think of context like a rolling transcript of a meeting. Every time you speak (send a message), the AI doesn't just hear your latest words. It reviews the entire meeting transcript first:</p>
             
             <pre><code class="language-javascript">// What gets assembled for EVERY single request
 const contextSentToLLM = {
@@ -18816,7 +18816,7 @@ const contextSentToLLM = {
   currentMessage: { role: "user", content: "What about line 42?" }
 }</code></pre>
             
-            <p>This entire package—system instructions, <strong>the ENTIRE conversation history from message #1</strong>, and your new message—gets sent to the <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM's</a> servers as one massive input. After 100 messages, you might be sending 100,000+ tokens with every single request! The model then generates a response based on <em>everything</em> in this increasingly bloated context.</p>
+            <p>This entire package, meaning system instructions, <strong>the ENTIRE conversation history from message #1</strong>, and your new message, gets sent to the <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM's</a> servers as one massive input. After 100 messages, you might be sending 100,000+ tokens with every single request! The model then generates a response based on <em>everything</em> in this increasingly bloated context.</p>
             
             <div class="callout">
                 <h4>The Exponential Growth Problem</h4>
@@ -18844,7 +18844,7 @@ const contextSentToLLM = {
         <section>
             <h2>The Context Window: Your Conversation's Memory Limit</h2>
             
-            <p>Every <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> has a "context window"—the maximum amount of information it can process at once. Think of it like <a href="https://en.wikipedia.org/wiki/Random-access_memory" target="_blank" rel="noopener">RAM</a> in a computer or the number of items you can juggle simultaneously.</p>
+            <p>Every <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> has a "context window", the maximum amount of information it can process at once. Think of it like <a href="https://en.wikipedia.org/wiki/Random-access_memory" target="_blank" rel="noopener">RAM</a> in a computer or the number of items you can juggle simultaneously.</p>
             
             <h3>Current Context Window Sizes (2025)</h3>
             <p>The context window arms race has led to impressive numbers:</p>
@@ -18865,7 +18865,7 @@ const contextSentToLLM = {
             <p>Imagine trying to find a specific recipe in a cookbook, but someone has randomly inserted pages from repair manuals, poetry collections, and tax forms throughout it. This is what happens when your <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> context becomes bloated with irrelevant information.</p>
             
             <h3>The Noisy Room Problem</h3>
-            <p>Context bloat is like trying to have a focused conversation in an increasingly noisy room. At first, with just a few people talking, you can easily focus. But as more conversations start around you—some relevant, some not—it becomes harder to maintain clarity.</p>
+            <p>Context bloat is like trying to have a focused conversation in an increasingly noisy room. At first, with just a few people talking, you can easily focus. But as more conversations start around you, some relevant, some not, it becomes harder to maintain clarity.</p>
             
             <h3>Common Context Polluters</h3>
             <ul>
@@ -18894,10 +18894,10 @@ $ npm test --verbose  # Even more detail
             <h2>The Hidden Costs of Bloated Context</h2>
             
             <h3>Performance Degradation</h3>
-            <p>Studies suggest that model accuracy can significantly degrade with extremely large contexts—dropping by as much as 40% when approaching maximum context limits. It's like asking someone to remember a phone number after reading an entire encyclopedia—the important information gets lost in the noise.</p>
+            <p>Studies suggest that model accuracy can significantly degrade with extremely large contexts, dropping by as much as 40% when approaching maximum context limits. It's like asking someone to remember a phone number after reading an entire encyclopedia: the important information gets lost in the noise.</p>
             
             <h3>Attention Dilution</h3>
-            <p>LLMs use <a href="https://en.wikipedia.org/wiki/Attention_(machine_learning)" target="_blank" rel="noopener">attention mechanisms</a> to focus on relevant parts of the context. Think of attention like a spotlight in a theater—it can illuminate the important actors, but if the stage becomes too crowded, the spotlight can't cover everything effectively, and crucial details fall into shadow.</p>
+            <p>LLMs use <a href="https://en.wikipedia.org/wiki/Attention_(machine_learning)" target="_blank" rel="noopener">attention mechanisms</a> to focus on relevant parts of the context. Think of attention like a spotlight in a theater. It can illuminate the important actors, but if the stage becomes too crowded, the spotlight can't cover everything effectively, and crucial details fall into shadow.</p>
             
             <h3>Confusion and Hallucination</h3>
             <p>When context contains contradictory information, <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> may blend incompatible instructions or fabricate responses to reconcile conflicts:</p>
@@ -19047,7 +19047,7 @@ $ npm test --verbose  # Even more detail
             
             <h3>2. Plan Documents as Context Anchors</h3>
             
-            <p>Plan documents act as persistent memory across context resets—like a GPS route that survives even when you restart your phone:</p>
+            <p>Plan documents act as persistent memory across context resets, like a GPS route that survives even when you restart your phone:</p>
             
             <div class="workflow-diagram">
                 <pre><code class="language-markdown">📍 PHASE 1: Planning Session
@@ -19131,7 +19131,7 @@ Implement user authentication system
             
             <h3>Sub-Agent Delegation in Claude Code</h3>
             
-            <p><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code's sub-agents</a> are like sending a research assistant to the library—they do the messy work and return only the essential findings:</p>
+            <p><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code's sub-agents</a> are like sending a research assistant to the library. They do the messy work and return only the essential findings:</p>
             
             <div class="terminal-window">
                 <div class="terminal-header">
@@ -19207,7 +19207,7 @@ hmm not that... what about... oh wait I found it!"
             </ul>
             
             <h3>The Goldilocks Zone</h3>
-            <p>The ideal context size is "just right"—enough to maintain continuity and necessary information, but not so much that it becomes unwieldy. For most development tasks, 10,000-50,000 tokens of well-curated context outperforms 200,000 tokens of chaotic conversation history.</p>
+            <p>The ideal context size is "just right": enough to maintain continuity and necessary information, but not so much that it becomes unwieldy. For most development tasks, 10,000-50,000 tokens of well-curated context outperforms 200,000 tokens of chaotic conversation history.</p>
         </section>
 
         <section>
@@ -19224,7 +19224,7 @@ hmm not that... what about... oh wait I found it!"
 - Next: Build user profile management</code></pre>
             
             <h3>The Context Budget</h3>
-            <p>Treat context like a budget—allocate tokens to different purposes:</p>
+            <p>Treat context like a budget and allocate tokens to different purposes:</p>
             
             <pre><code class="language-markdown">## Context Budget Allocation
 
@@ -19304,17 +19304,17 @@ hmm not that... what about... oh wait I found it!"
         <section>
             <h2>Practical Takeaways</h2>
             
-            <p>Working effectively with <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> like <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> isn't about using all available context—it's about using context wisely. Remember:</p>
+            <p>Working effectively with <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> like <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> isn't about using all available context. It's about using context wisely. Remember:</p>
             
             <ol>
                 <li><strong>Quality over quantity:</strong> 10,000 tokens of focused context beats 100,000 tokens of noise</li>
-                <li><strong>Regular maintenance:</strong> Clean context like you'd refactor code—frequently and purposefully</li>
+                <li><strong>Regular maintenance:</strong> Clean context like you'd refactor code, frequently and purposefully</li>
                 <li><strong>Strategic delegation:</strong> Use sub-agents to keep your main context clean</li>
                 <li><strong>Plan-driven development:</strong> Let documents guide your work across context boundaries</li>
                 <li><strong>Conscious boundaries:</strong> Know when to reset and start fresh</li>
             </ol>
             
-            <p>Understanding context isn't just about technical knowledge—it's about developing an intuition for information flow and cognitive load. Master this, and you'll unlock the true potential of AI-assisted development.</p>
+            <p>Understanding context goes beyond technical knowledge. It means developing an intuition for information flow and cognitive load. Master this, and you'll unlock the true potential of AI-assisted development.</p>
         </section>
 
         <section>
@@ -19322,7 +19322,7 @@ hmm not that... what about... oh wait I found it!"
             
             <p>Context in <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> is like the stage upon which your entire conversation performs. Too cluttered, and the actors stumble over props. Too sparse, and they forget their lines. But when managed thoughtfully, context becomes the invisible foundation that enables AI to truly understand and assist with complex development tasks.</p>
             
-            <p>The next time you interact with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> or any <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a>, remember: you're not just sending messages—you're conducting an orchestra of information. The quality of the performance depends not on the size of the orchestra, but on how well you conduct it.</p>
+            <p>The next time you interact with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> or any <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a>, remember: you're not just sending messages, you're conducting an orchestra of information. The quality of the performance depends not on the size of the orchestra, but on how well you conduct it.</p>
         </section>
     `,
   },
@@ -19435,7 +19435,7 @@ hmm not that... what about... oh wait I found it!"
             
             <ul>
                 <li><strong>Market Responsiveness</strong>: Deploy new features and content recommendations in real-time based on viewing patterns</li>
-                <li><strong>Global Resilience</strong>: Business continuity through distributed architecture—evacuate an entire AWS region in under 40 minutes</li>
+                <li><strong>Global Resilience</strong>: Business continuity through distributed architecture, evacuating an entire AWS region in under 40 minutes</li>
                 <li><strong>Innovation Velocity</strong>: Engineers deploy code thousands of times per day without business disruption</li>
                 <li><strong>Scale Economics</strong>: Support 238 million subscribers while achieving <a href="https://www.cloudzero.com/blog/netflix-aws/" target="_blank" rel="noopener">10% reduction in data warehouse costs</a> through architectural efficiency</li>
             </ul>
@@ -19477,7 +19477,7 @@ hmm not that... what about... oh wait I found it!"
             <p>Unix principles create measurable operational advantages that translate to competitive positioning:</p>
             
             <ul>
-                <li><strong>Business Continuity</strong>: Service failures are isolated—customer experience remains intact during incidents</li>
+                <li><strong>Business Continuity</strong>: Service failures are isolated, so customer experience remains intact during incidents</li>
                 <li><strong>Innovation Velocity</strong>: Independent team deployment eliminates coordination bottlenecks</li>
                 <li><strong>Market Response Speed</strong>: Deploy competitive responses in weeks, not quarters</li>
                 <li><strong>Talent Optimization</strong>: Teams focus on specific business domains, improving expertise and productivity</li>
