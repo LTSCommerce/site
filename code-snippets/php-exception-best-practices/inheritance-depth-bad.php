@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// ❌ ANTI-PATTERN — deep inheritance tree used to share behaviour.
+// ❌ ANTI-PATTERN: deep inheritance tree used to share behaviour.
 //
 // Every concrete exception lives at the bottom of a chain of bases that
 // each add "a little bit" to the previous. You can no longer tell what
@@ -17,9 +17,9 @@ final class InsufficientStockException extends OrderStockException {}
 //  5 levels deep just to say "order failed because of stock".
 //  Worse: subclassing `InsufficientStockException` to add a "partial"
 //  variant creates a 6th level, and now a `catch` on the parent silently
-//  also catches the child — rarely what you want.
+//  also catches the child, rarely what you want.
 
-// ❌ Also an anti-pattern — subclassing a *concrete* exception to tweak it.
+// ❌ Also an anti-pattern: subclassing a *concrete* exception to tweak it.
 final class PartialStockException extends InsufficientStockException {}
 
 // The catch block below catches BOTH concretes. The developer who added

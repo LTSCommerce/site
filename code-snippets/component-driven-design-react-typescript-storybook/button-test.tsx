@@ -34,6 +34,6 @@ describe('Button', () => {
   });
 
   // TypeScript enforces at compile time that invalid props cannot be passed,
-  // so there is no need to test for "what happens with an unknown variant" —
+  // so there is no need to test for "what happens with an unknown variant":
   // that scenario literally cannot be compiled.
 });

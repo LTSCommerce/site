@@ -7,7 +7,7 @@ namespace App\Exception;
 /**
  * Root marker interface for every exception this project throws itself.
  *
- * Anything that implements this is *expected* — it describes a known
+ * Anything that implements this is *expected*: it describes a known
  * failure mode the code has reasoned about. A bare \RuntimeException or
  * \Exception reaching the outer handler means we hit something we did not
  * anticipate and should add a proper exception class for.
@@ -20,7 +20,7 @@ interface UserFacingExceptionInterface extends AppExceptionInterface {}
 /** Anything worth retrying automatically (transient). */
 interface RetryableExceptionInterface extends AppExceptionInterface {}
 
-/** Security-relevant — always logged to the security channel. */
+/** Security-relevant: always logged to the security channel. */
 interface SecurityExceptionInterface extends AppExceptionInterface {}
 
 /**

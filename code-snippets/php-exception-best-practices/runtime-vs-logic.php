@@ -30,7 +30,7 @@ final class PaymentProcessor
         } catch (GatewayTimeoutException $previous) {
             // RuntimeException: the network is flaky, the gateway is down,
             // or the provider returned a 500. Nothing in our code can
-            // prevent this. Bubble it up — only the outermost layer should
+            // prevent this. Bubble it up. Only the outermost layer should
             // translate it into a user-facing "something went wrong" message.
             throw new RuntimeException(
                 'Payment gateway did not respond in time.',

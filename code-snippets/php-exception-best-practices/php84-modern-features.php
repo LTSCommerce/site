@@ -13,14 +13,14 @@ use Throwable;
 /**
  * A fully modern PHP 8.4 exception using:
  *
- *   - Asymmetric visibility  — `public private(set)` so properties are
+ *   - Asymmetric visibility:   `public private(set)` so properties are
  *                              readable anywhere but only this class
  *                              can set them (during construction).
- *   - Property hooks         — a computed `summary` property, derived
+ *   - Property hooks:          a computed `summary` property, derived
  *                              from the typed data. No getter soup.
- *   - `new` without parens   — chainable construction syntax.
- *   - Typed class constants  — `const string` for the sprintf template.
- *   - Named arguments        — clear call sites at factories.
+ *   - `new` without parens:    chainable construction syntax.
+ *   - Typed class constants:   `const string` for the sprintf template.
+ *   - Named arguments:         clear call sites at factories.
  */
 final class OrderRejectedException extends AppException implements UserFacingExceptionInterface
 {
@@ -67,8 +67,8 @@ final class OrderRejectedException extends AppException implements UserFacingExc
     }
 }
 
-// Call sites read naturally — no getters, no casts.
+// Call sites read naturally: no getters, no casts.
 // $e = OrderRejectedException::create($orderId, $customerId, 'duplicate');
 // $e->summary;          // computed
 // $e->orderId->value;   // readable
-// $e->orderId = ...;    // ❌ compile error — asymmetric visibility
+// $e->orderId = ...;    // ❌ compile error: asymmetric visibility

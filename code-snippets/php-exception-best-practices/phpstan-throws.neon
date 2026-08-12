@@ -1,4 +1,4 @@
-# phpstan.neon — enforce that every thrown exception is declared via @throws.
+# phpstan.neon: enforce that every thrown exception is declared via @throws.
 #
 # Combined with typed exception properties, this closes the loop: the set
 # of exceptions a function can throw is part of its signature, and the
@@ -19,10 +19,10 @@ parameters:
             tooWideThrowType: true
         implicitThrows: false
         uncheckedExceptionClasses:
-            # Truly unexpected — the outer handler deals with these.
+            # Truly unexpected. The outer handler deals with these.
             - LogicException
             - RuntimeException
         checkedExceptionClasses:
-            # Every project exception is a "checked" exception — PHPStan
+            # Every project exception is a "checked" exception. PHPStan
             # will require @throws on every function in its call path.
             - App\Exception\AppExceptionInterface

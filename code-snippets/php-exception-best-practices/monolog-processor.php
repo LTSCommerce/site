@@ -9,7 +9,7 @@ use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 /**
- * Monolog processor — enriches every log record that carries an
+ * Monolog processor: enriches every log record that carries an
  * AppExceptionInterface with its typed properties.
  *
  * Because exceptions carry data as real properties (not inside message
@@ -27,7 +27,7 @@ final class AppExceptionProcessor implements ProcessorInterface
 
         $properties = [];
         foreach ((new \ReflectionObject($exception))->getProperties() as $property) {
-            // Skip Exception base properties — monolog's own formatter covers those.
+            // Skip Exception base properties: monolog's own formatter covers those.
             if ($property->getDeclaringClass()->getName() === \Exception::class) {
                 continue;
             }

@@ -12,7 +12,7 @@ try {
 // ❌ Also never. `@` is swallowing with extra steps.
 $handle = @fopen($path, 'r');
 
-// ❌ Logging without rethrowing is still swallowing — the caller is lied to.
+// ❌ Logging without rethrowing is still swallowing: the caller is lied to.
 try {
     $this->syncCustomer($customer);
 } catch (\Throwable $e) {
@@ -28,7 +28,7 @@ try {
 try {
     $this->syncCustomer($customer);
 } catch (CustomerApiTimeoutException $previous) {
-    // Recovery path — explicitly requested by the caller via a retry policy.
+    // Recovery path: explicitly requested by the caller via a retry policy.
     // NOT "we hope it worked". The exception is replaced with a known state.
     $this->retryQueue->enqueue($customer);
     throw CustomerSyncDeferredException::createWithPrevious($customer->id, $previous);

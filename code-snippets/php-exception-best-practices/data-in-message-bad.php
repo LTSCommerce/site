@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// ❌ ANTI-PATTERN — data encoded into the message string.
+// ❌ ANTI-PATTERN: data encoded into the message string.
 //
 // The only way to test, log, or react to the specifics is to parse
 // the message back out again. Change the wording and every test that

@@ -1,4 +1,4 @@
-// The constrained Button: only accepts declared props — no escape hatches.
+// The constrained Button: only accepts declared props, no escape hatches.
 // Every valid visual state is enumerable from the type definitions alone.
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost';

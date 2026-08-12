@@ -13,7 +13,7 @@ final class EmailAddress
     ) {
         // InvalidArgumentException: the argument is structurally wrong.
         // Caller passed something that could never be valid for this type.
-        // Throw at the boundary — as early as possible — so the wrong value
+        // Throw at the boundary, as early as possible, so the wrong value
         // never enters the domain.
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException(

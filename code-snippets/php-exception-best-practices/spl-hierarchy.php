@@ -3,12 +3,12 @@
 // PHP's SPL exception hierarchy (simplified).
 //
 // \Throwable (interface)
-//   ├── \Error                        // engine-level failures — rarely caught
+//   ├── \Error                        // engine-level failures, rarely caught
 //   │   ├── \TypeError
 //   │   ├── \ValueError
 //   │   └── \AssertionError
 //   └── \Exception
-//       ├── \LogicException           // programmer bugs — impossible states
+//       ├── \LogicException           // programmer bugs, impossible states
 //       │   ├── \BadFunctionCallException
 //       │   │   └── \BadMethodCallException
 //       │   ├── \DomainException      // value outside its domain

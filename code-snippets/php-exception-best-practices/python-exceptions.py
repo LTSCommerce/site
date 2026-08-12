@@ -1,8 +1,8 @@
-"""Python parallels — the same principles, different syntax.
+"""Python parallels: the same principles, different syntax.
 
 - Subclass domain exceptions from `Exception`, never `BaseException`.
 - Keep data in attributes, not f-strings inside the message.
-- Use `raise ... from previous` to chain — the equivalent of PHP's
+- Use `raise ... from previous` to chain: the equivalent of PHP's
   `$previous` argument. Never `raise ... from None` unless you are
   deliberately hiding a noisy cause (rarely the right call).
 """
@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 
 class AppError(Exception):
-    """Root of the project's exception tree — catch-all marker."""
+    """Root of the project's exception tree, catch-all marker."""
 
 
 @dataclass
@@ -32,7 +32,7 @@ class InsufficientStockError(AppError):
         )
 
 
-# Usage — always chain with `from`:
+# Usage: always chain with `from`:
 def place_order(sku: str, qty: int, available: int) -> None:
     if qty > available:
         try:

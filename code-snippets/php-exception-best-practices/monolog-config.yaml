@@ -10,7 +10,7 @@ monolog:
     - security
 
   handlers:
-    # 1. Dedicated exception log — rotated daily, 30 day retention.
+    # 1. Dedicated exception log: rotated daily, 30 day retention.
     #    Uses the JSON formatter so structured data (including exception
     #    properties) is queryable in log aggregation tooling.
     exception_file:
@@ -21,7 +21,7 @@ monolog:
       channels: ['exception']
       formatter: monolog.formatter.json
 
-    # 2. fingers_crossed on the main channel — a single error triggers
+    # 2. fingers_crossed on the main channel: a single error triggers
     #    the whole request's debug log being flushed, giving you the
     #    full context around the exception.
     main:
@@ -37,7 +37,7 @@ monolog:
       path: '%kernel.logs_dir%/%kernel.environment%.log'
       level: debug
 
-    # 3. Security channel — authentication failures, authorisation
+    # 3. Security channel: authentication failures, authorisation
     #    failures, anything implementing SecurityExceptionInterface.
     security:
       type: rotating_file

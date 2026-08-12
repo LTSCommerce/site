@@ -12,14 +12,14 @@ use App\Value\PaymentAttemptContext;
 use Throwable;
 
 /**
- * Composition — when an exception would otherwise need eight flat properties,
+ * Composition: when an exception would otherwise need eight flat properties,
  * compose a typed value object instead. The exception carries ONE `context`
  * property whose fields are all typed, all readable, all testable.
  *
  * Benefits:
  *   - Exception signature stays tiny regardless of how rich the context is.
  *   - The context object can be reused by other parts of the system
- *     (logs, analytics, audit trail) — it is not trapped inside the
+ *     (logs, analytics, audit trail): it is not trapped inside the
  *     exception class.
  *   - Adding a new field does not change the exception's constructor
  *     signature or break any factory call site.
@@ -65,7 +65,7 @@ final class PaymentFailedException extends AppException implements
 }
 
 /**
- * The composed value object lives in App\Value\PaymentAttemptContext —
+ * The composed value object lives in App\Value\PaymentAttemptContext:
  * reused by the exception, the audit log writer, and the analytics event
  * publisher. Each consumer gets the typed fields it cares about without
  * the exception having to grow N public properties.

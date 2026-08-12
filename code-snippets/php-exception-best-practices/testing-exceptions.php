@@ -17,7 +17,7 @@ final class InsufficientStockExceptionTest extends TestCase
         $sku = new Sku('ABC-42');
         $exception = InsufficientStockException::create($sku, requested: 10, available: 3);
 
-        // Assert on PROPERTIES — not message strings.
+        // Assert on PROPERTIES, not message strings.
         self::assertSame($sku, $exception->sku);
         self::assertSame(10, $exception->requested);
         self::assertSame(3, $exception->available);

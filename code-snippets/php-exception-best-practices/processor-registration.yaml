@@ -1,4 +1,4 @@
-# config/services.yaml — register the processor and tag it for Monolog.
+# config/services.yaml: register the processor and tag it for Monolog.
 
 services:
   App\Logging\AppExceptionProcessor:

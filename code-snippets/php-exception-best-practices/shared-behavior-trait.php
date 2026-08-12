@@ -7,7 +7,7 @@ namespace App\Exception;
 use Throwable;
 
 /**
- * Composition — a trait that gives any exception the standard boilerplate:
+ * Composition: a trait that gives any exception the standard boilerplate:
  *
  *   - a MESSAGE_FORMAT constant contract (enforced at compile time)
  *   - named static factories that synthesise the message for you

@@ -1,9 +1,9 @@
-// TypeScript parallels — same rules, ES2022 gives us `Error.cause`
+// TypeScript parallels: same rules, ES2022 gives us `Error.cause`
 // which is the direct analogue of PHP's `$previous`.
 //
 // - Extend `Error` (or a project base class) for every domain failure.
 // - Put data on typed properties; synthesise the message from them.
-// - Always pass `{ cause }` — never discard the underlying error.
+// - Always pass `{ cause }`, never discard the underlying error.
 // - Use `instanceof` at the boundary, not string matching on messages.
 
 export abstract class AppError extends Error {
@@ -44,7 +44,7 @@ export class InsufficientStockError extends AppError {
   }
 }
 
-// At the boundary, narrow on the type — never parse message strings.
+// At the boundary, narrow on the type. Never parse message strings.
 try {
   await orderService.place(order);
 } catch (err) {

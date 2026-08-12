@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Attribute\AsEventListener;
  *
  * By the time an exception reaches here, everything below has had its
  * chance to recover or translate. This listener decides what the user
- * sees and what gets logged — nothing in the middle of the stack may
+ * sees and what gets logged. Nothing in the middle of the stack may
  * catch `\Throwable`, `\Exception`, or `\RuntimeException` generically.
  */
 #[AsEventListener]
@@ -30,7 +30,7 @@ final class KernelExceptionListener
     {
         $throwable = $event->getThrowable();
 
-        // Always log — never swallow at the top either.
+        // Always log, never swallow at the top either.
         $this->exceptionLogger->error($throwable->getMessage(), [
             'exception' => $throwable, // Monolog's built-in exception formatter
                                        // walks the whole previous chain.
@@ -45,7 +45,7 @@ final class KernelExceptionListener
                 ['error' => 'application_error'],
                 status: 500,
             ),
-            // Truly unexpected — a bare \RuntimeException, \Error, etc.
+            // Truly unexpected: a bare \RuntimeException, \Error, etc.
             // The user gets a generic message. The full trace is in the log.
             default => new JsonResponse(
                 ['error' => 'something_went_wrong'],

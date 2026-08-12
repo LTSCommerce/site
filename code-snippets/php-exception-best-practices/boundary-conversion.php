@@ -14,7 +14,7 @@ use App\Value\Money;
  *   domain-meaningful exceptions at the boundary where they originate.
  *
  * The rest of the application never sees \PDOException, \Redis\RedisException,
- * Symfony\HttpClientException, etc. — it sees AppException subclasses that
+ * Symfony\HttpClientException, etc. It sees AppException subclasses that
  * describe what failed in domain terms, with the original exception chained.
  */
 final class StripePaymentGateway implements PaymentGateway
@@ -38,7 +38,7 @@ final class StripePaymentGateway implements PaymentGateway
                 previous: $previous,
             );
         } catch (ClientExceptionInterface $previous) {
-            // 4xx from Stripe — card declined, insufficient funds, etc.
+            // 4xx from Stripe: card declined, insufficient funds, etc.
             $body = $previous->getResponse()->toArray(throw: false);
             throw PaymentDeclinedException::createWithPrevious(
                 reasonCode: $body['error']['code'] ?? 'unknown',
