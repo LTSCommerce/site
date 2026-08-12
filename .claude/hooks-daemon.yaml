@@ -91,7 +91,7 @@ handlers:
 
     # WORKFLOW HANDLERS (Priority 30-50) - Enable based on your workflow
     plan_number_helper: # Provides correct next plan number
-      enabled: false # Enable when using CLAUDE/Plan/ structure
+      enabled: true # This project uses CLAUDE/Plan/NNN-name/ structure
       priority: 33
       options:
         track_plans_in_project: 'CLAUDE/Plan' # Must match markdown_organization setting
@@ -105,7 +105,7 @@ handlers:
       priority: 40
 
     validate_plan_number: # Validates plan number format (001-, 002-, etc)
-      enabled: false # Enable for projects using CLAUDE/Plan/
+      enabled: true # This project uses CLAUDE/Plan/NNN-name/ structure
       priority: 38
 
     global_npm_advisor: # Advises against global npm installs
@@ -117,11 +117,11 @@ handlers:
       priority: 45
 
     plan_workflow: # Provides guidance when creating plans
-      enabled: false # Enable for projects using CLAUDE/Plan/
+      enabled: true # This project uses CLAUDE/Plan/NNN-name/ structure
       priority: 44
 
     plan_completion_advisor: # Advises on plan completion workflow
-      enabled: false # Enable for projects using CLAUDE/Plan/
+      enabled: true # This project uses CLAUDE/Plan/NNN-name/ structure
       priority: 48
 
     validate_instruction_content: # Blocks ephemeral content in CLAUDE.md/README.md
@@ -205,6 +205,11 @@ handlers:
       enabled: true # Notifies on new sessions if updates available (24h cache)
       priority: 56
 
+    git_upstream_checker: # Checks branch vs upstream at session start
+      enabled: true
+      options:
+        mode: agent-pull # Auto-pull as first action when behind upstream
+
   # PreCompact handlers (run before conversation compaction)
   pre_compact:
     transcript_archiver: # Archives transcripts before compaction
@@ -280,7 +285,7 @@ handlers:
       priority: 25
 
     daemon_stats: # Shows daemon uptime, memory, log level
-      enabled: true
+      enabled: false # Upgrade arrow moved to upgrade_notifier (on by default); this is dev-only noise
       priority: 30
 
     account_display: # Shows account information
@@ -306,3 +311,7 @@ handlers:
 project_handlers:
   enabled: true
   path: .claude/project-handlers
+
+# ccy (Claude Code YOLO container) integration
+ccy:
+  deploy_supervisor: true # Auto-deploy + arm claude-supervise.py on install/upgrade (this project uses .claude/ccy/)

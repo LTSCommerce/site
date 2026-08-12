@@ -102,7 +102,9 @@ emit_hook_error() {
             "Then inform the user if the issue persists.")
     fi
 
-    # Event-specific JSON formatting using jq (already a dependency)
+    # Event-specific JSON formatting. jq is used only on this pure-error path
+    # (the hot-path transport is jq-free since Plan 00156); a jq-less fallback
+    # follows below for hosts without it.
     # Stop/SubagentStop: top-level decision only (deny to show error)
     # Other events: hookSpecificOutput with context (fail-open allow)
     if command -v jq &>/dev/null; then
@@ -139,10 +141,41 @@ emit_hook_error() {
             fi
         fi
     else
-        # Fallback if jq not available (should not happen - jq is required)
-        cat <<FALLBACK_EOF
-{"hookSpecificOutput":{"hookEventName":"$event_name","additionalContext":"HOOKS DAEMON ERROR: $error_type - $error_details"}}
-FALLBACK_EOF
+        # Fallback when jq is absent. Plan 00156 removed jq from the hot-path
+        # transport, so a genuinely jq-less host is now plausible and this path
+        # can really fire. Encode with python3 (already the transport dependency,
+        # so a host without it cannot send any hook request anyway): every value
+        # passes via argv, so json.dumps escapes quotes/newlines/backslashes and
+        # they can neither break the JSON document nor inject into the source.
+        # Mirrors the jq branch's policy exactly — Stop/SubagentStop fail CLOSED
+        # (decision=block); other events fail open with context.
+        python3 -c '
+import json
+import sys
+
+event_name, context_msg, ci_enforced, not_installed = sys.argv[1:5]
+stop_events = ("Stop", "SubagentStop")
+
+if ci_enforced == "true":
+    if event_name == "PreToolUse":
+        resp = {"decision": "deny", "reason": context_msg}
+    elif event_name in stop_events:
+        resp = {"decision": "block", "reason": "Hooks daemon REQUIRED (ci_enabled: true) but not installed"}
+    else:
+        resp = {"hookSpecificOutput": {"hookEventName": event_name, "additionalContext": context_msg}}
+elif not_installed == "true":
+    if event_name in stop_events:
+        resp = {"decision": "block", "reason": "Hooks daemon not installed - protection not active"}
+    else:
+        resp = {"hookSpecificOutput": {"hookEventName": event_name, "additionalContext": context_msg}}
+else:
+    if event_name in stop_events:
+        resp = {"decision": "block", "reason": "Hooks daemon not running - protection not active"}
+    else:
+        resp = {"hookSpecificOutput": {"hookEventName": event_name, "additionalContext": context_msg}}
+
+print(json.dumps(resp))
+' "$event_name" "$context_msg" "$_HOOKS_DAEMON_CI_ENFORCED" "$_HOOKS_DAEMON_NOT_INSTALLED"
     fi
 }
 
@@ -242,8 +275,8 @@ fi
 #
 # Plan 00103 Decision 2: when none of the above resolve, fail loudly with
 # return 5 + stderr directive. The pre-v3.7.0 unversioned legacy
-# `untracked/venv/bin/python` is no longer accepted as a silent fallback —
-# it hid the v3.9.0 field-bug regression where operators saw "venv not
+# `untracked/venv/bin/python` is no longer a silent fallback  # python-var-guidance-exempt: names the retired path to document its rejection
+# — it hid the v3.9.0 field-bug regression where operators saw "venv not
 # found" while the real cause was a 3.9-vs-3.11 `import tomllib` crash.
 #
 # Plan 00103 Decision 3 Rule A: no `${VAR:-python3}` parameter expansion —
@@ -318,9 +351,12 @@ _get_hostname_suffix() {
         hostname="localhost"
     fi
 
-    # Sanitize hostname for filesystem safety: lowercase, no spaces
-    local sanitized
-    sanitized=$(echo "$hostname" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+    # Sanitize hostname for filesystem safety: lowercase, no spaces. The
+    # space->hyphen pass uses bash parameter expansion (no process spawn); the
+    # lowercase pass stays on tr for bash 3.2 compatibility (macOS ships no
+    # ${var,,}). One tr spawn instead of two, and no echo pipeline (Plan 00156 T3).
+    local sanitized="${hostname// /-}"
+    sanitized=$(tr '[:upper:]' '[:lower:]' <<< "$sanitized")
     echo "-${sanitized}"
 }
 
@@ -369,6 +405,26 @@ _exec_bit_selfheal() {
         notification
         pre-compact
         permission-request
+        setup
+        permission-denied
+        cwd-changed
+        worktree-create
+        worktree-remove
+        user-prompt-expansion
+        post-tool-use-failure
+        post-tool-batch
+        subagent-start
+        task-created
+        task-completed
+        stop-failure
+        teammate-idle
+        instructions-loaded
+        config-change
+        file-changed
+        post-compact
+        elicitation
+        elicitation-result
+        message-display
     )
     local h
     for h in "${hooks[@]}"; do
@@ -392,8 +448,9 @@ _exec_bit_selfheal() {
 # Use HOOKS_DAEMON_ROOT_DIR (set by .env in self-install, defaults to .claude/hooks-daemon)
 _untracked_dir="${HOOKS_DAEMON_ROOT_DIR}/untracked"
 
-# Create untracked directory if it doesn't exist
-mkdir -p "$_untracked_dir"
+# Create untracked directory if it doesn't exist. Guarded so the common
+# (dir-exists) path skips the mkdir process spawn on every event (Plan 00156 T3).
+[[ -d "$_untracked_dir" ]] || mkdir -p "$_untracked_dir"
 
 # Plan 00102 Phase 3 (Tier 3a): defensively restore +x on sibling hook
 # wrappers if dropped (core.fileMode=false, IDE rewrite, tarball transfer).
@@ -560,11 +617,22 @@ start_daemon() {
     # CRITICAL: Pass --project-root and export env vars so the CLI uses the
     # same paths we computed above. Without this, the CLI re-discovers the
     # project from CWD which may find a worktree's .claude/ instead of ours.
-    CLAUDE_HOOKS_SOCKET_PATH="$SOCKET_PATH" \
+    #
+    # Output is CAPTURED, not discarded (Plan 00200 Task 5.5): this parent
+    # invocation is the short-lived process that daemonises and returns —
+    # cli.py's cmd_start() prints its own diagnostics (e.g. "ERROR: Fork
+    # failed", "ERROR: Daemon failed to start (no PID file created)") on
+    # THIS fd, before the double-fork detaches the long-lived daemon (which
+    # redirects its OWN stdout/stderr to /dev/null internally regardless —
+    # see daemon/cli.py's "Second child" branch). The readiness poll below
+    # remains the authority for success/failure either way; this capture
+    # only stops a genuine startup failure's root cause from being silently
+    # discarded on the timeout path.
+    local start_output
+    start_output="$(CLAUDE_HOOKS_SOCKET_PATH="$SOCKET_PATH" \
     CLAUDE_HOOKS_PID_PATH="$PID_PATH" \
     $PYTHON_CMD -m claude_code_hooks_daemon.daemon.cli \
-        --project-root "$PROJECT_PATH" start \
-        > /dev/null 2>&1
+        --project-root "$PROJECT_PATH" start 2>&1)"
 
     # Wait for daemon to be ready (using deciseconds for integer arithmetic).
     #
@@ -596,6 +664,10 @@ start_daemon() {
     # coming up, the PID slot belongs to it. is_daemon_running() cleans
     # stale PID files on next call when the process is actually dead.
     echo "ERROR: Daemon startup timeout (daemon not ready after ${DAEMON_STARTUP_TIMEOUT}/10 seconds)" >&2
+    if [[ -n "$start_output" ]]; then
+        echo "Launcher output (may explain the failure):" >&2
+        echo "$start_output" >&2
+    fi
     return 1
 }
 
@@ -679,7 +751,13 @@ _enter_passthrough_mode() {
     # shellcheck disable=SC2317
     send_request_stdin() {
         cat > /dev/null
-        echo '{}'
+        # Status line ($2 == "status"): render the fallback text, not a raw JSON
+        # blob (Plan 00156 review finding 2). Other events: silent {} passthrough.
+        if [[ "${2:-}" == "status" ]]; then
+            echo '⚠️ NO STATUS DATA'
+        else
+            echo '{}'
+        fi
     }
     export -f send_request_stdin
 }
@@ -742,19 +820,22 @@ ensure_daemon() {
         fi
 
         # First call: return one-time advisory context so agent sees the warning once
+        # Plan 00156: jq-free. The event name arrives as $1 (the wrapper passes
+        # it); the hook_input payload on stdin is drained (this advisory is a
+        # fixed template with no user-derived content).
         # shellcheck disable=SC2317
         send_request_stdin() {
-            local input
-            input=$(cat)
-            local event_name
-            event_name=$(echo "$input" | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('event','Unknown'))" 2>/dev/null || echo "Unknown")
-            if command -v jq >/dev/null; then
-                jq -n --arg event "$event_name" \
-                    --arg context "HOOKS DAEMON: Not installed in CI environment. Safety handlers are INACTIVE. All operations allowed without validation. This warning appears once." \
-                    '{"hookSpecificOutput": {"hookEventName": $event, "additionalContext": $context}}'
-            else
-                echo '{}'
+            local event_name="${1:-Unknown}"
+            cat > /dev/null
+            # Status line ($2 == "status"): render the fallback text, not a raw
+            # JSON blob (Plan 00156 review finding 2).
+            if [[ "${2:-}" == "status" ]]; then
+                echo '⚠️ NO STATUS DATA'
+                return 0
             fi
+            printf '{"hookSpecificOutput": {"hookEventName": "%s", "additionalContext": "%s"}}\n' \
+                "$event_name" \
+                "HOOKS DAEMON: Not installed in CI environment. Safety handlers are INACTIVE. All operations allowed without validation. This warning appears once."
         }
         export -f send_request_stdin
         return 0
@@ -785,13 +866,43 @@ ensure_daemon() {
 #   echo '{"key":"value"}' | send_request_stdin
 #
 send_request_stdin() {
-    # Use system python3 for reliable JSON transport - no venv dependency
-    # Only uses stdlib: socket, sys, json (no venv packages needed)
-    # CRITICAL: On error, outputs valid JSON to stdout (not stderr) so agent sees it
+    # Plan 00156 (T2): jq-free transport. The event name arrives as $1; the raw
+    # hook_input payload arrives on stdin. This inline python3 — already spawned
+    # as the transport — wraps it into {"event": $1, "hook_input": <stdin>}
+    # itself, eliminating the per-event jq spawn. $2 optionally selects a
+    # response mode: "status" extracts .text/.error for the status line.
+    #
+    # CRITICAL: the payload passes via stdin (never argv) so control characters
+    # are preserved; only the hardcoded event-name literal moves to argv.
+    # CRITICAL: On error, outputs valid JSON to stdout (not stderr) so agent sees it.
+    # Only uses stdlib: socket, sys, json (no venv packages needed).
+    local event_name="${1:-Unknown}"
+    local response_mode="${2:-}"
     python3 -c "
 import json
+import os
 import socket
 import sys
+
+event_name = sys.argv[1] if len(sys.argv) > 1 else 'Unknown'
+response_mode = sys.argv[2] if len(sys.argv) > 2 else ''
+
+# Socket budget for the whole connect+send+recv exchange. Default 30s; operators
+# can raise it via CLAUDE_HOOKS_SOCKET_TIMEOUT (also lets tests drive the timeout
+# path fast). A non-numeric or non-positive value falls back to the default.
+# Defined up-front (not inside the try) so emit_error_json can name it even when
+# a failure fires before the socket is opened (Plan 00177).
+def _resolve_socket_timeout():
+    raw = os.environ.get('CLAUDE_HOOKS_SOCKET_TIMEOUT', '').strip()
+    if not raw:
+        return 30.0
+    try:
+        value = float(raw)
+    except ValueError:
+        return 30.0
+    return value if value > 0 else 30.0
+
+SOCKET_TIMEOUT_SECONDS = _resolve_socket_timeout()
 
 def emit_error_json(event_name, error_type, error_details):
     '''Output valid hook error response to stdout.
@@ -801,30 +912,85 @@ def emit_error_json(event_name, error_type, error_details):
     '''
     print(f'HOOKS DAEMON ERROR [{error_type}]: {error_details}', file=sys.stderr)
 
-    context_lines = [
-        'HOOKS DAEMON: Not currently running',
-        '',
-        f'Error: {error_type} - {error_details}',
-        '',
-        'Hook safety handlers are inactive until the daemon is restarted.',
-        'If you are in the middle of an upgrade, this is expected and temporary.',
-        '',
-        'TO FIX (usually takes a few seconds):',
-        'Use the hooks-daemon skill to restart the daemon.',
-        'Then use the hooks-daemon skill to verify health.',
-        'Invoke via Skill tool with skill=hooks-daemon and args=restart or args=health.',
-        '',
-        'If restart fails, use the hooks-daemon skill to check logs (args=logs).',
-        'Then inform the user if the issue persists.',
-    ]
+    if error_type == 'invalid_hook_input':
+        # A malformed payload never reached the socket, so the daemon state is
+        # unknown and almost certainly fine. Do NOT frame this as daemon-down or
+        # tell the agent to restart (Plan 00156 review finding 1) — a restart
+        # 'fixes' nothing. This is a caller/Claude-Code payload problem.
+        context_lines = [
+            'HOOKS DAEMON: Received a malformed hook payload',
+            '',
+            f'Error: {error_type} - {error_details}',
+            '',
+            'The hook input was not valid JSON, so no handler validated it.',
+            'The daemon itself is likely healthy — do NOT restart it.',
+            'If this recurs, capture the exact hook input and report it.',
+        ]
+    elif error_type == 'socket_timeout':
+        # A read-side timeout: connect()+sendall() SUCCEEDED, so the daemon was
+        # reached and is ALIVE — a handler merely ran past the budget. Framing
+        # this as 'daemon not running' and advising a restart is wrong and
+        # actively harmful (a restart fixes nothing). Almost always the session
+        # transcript has grown very large (Plan 00177).
+        context_lines = [
+            f'HOOKS DAEMON: A hook handler exceeded the {SOCKET_TIMEOUT_SECONDS:g}s budget',
+            '',
+            f'Error: {error_type} - {error_details}',
+            '',
+            'The daemon was REACHED and is ALIVE (the connection succeeded); a',
+            'hook handler simply ran past the deadline. This is NOT a dead daemon',
+            '— do NOT restart it, a restart fixes nothing here.',
+            '',
+            'This usually means the session transcript has grown very large.',
+            'Run /compact or start a new session to restore fast hooks.',
+        ]
+    else:
+        context_lines = [
+            'HOOKS DAEMON: Not currently running',
+            '',
+            f'Error: {error_type} - {error_details}',
+            '',
+            'Hook safety handlers are inactive until the daemon is restarted.',
+            'If you are in the middle of an upgrade, this is expected and temporary.',
+            '',
+            'TO FIX (usually takes a few seconds):',
+            'Use the hooks-daemon skill to restart the daemon.',
+            'Then use the hooks-daemon skill to verify health.',
+            'Invoke via Skill tool with skill=hooks-daemon and args=restart or args=health.',
+            '',
+            'If restart fails, use the hooks-daemon skill to check logs (args=logs).',
+            'Then inform the user if the issue persists.',
+        ]
     context = chr(10).join(context_lines)
 
-    # Stop/SubagentStop: top-level decision only (deny to show error)
+    # Stop/SubagentStop: top-level decision only. Fail CLOSED (block) for a
+    # genuinely-down daemon, but keep the reason honest and carve out the two
+    # cases where the daemon is NOT down: a malformed payload failed to parse
+    # client-side and never reached the socket (Plan 00157), and a read-side
+    # socket_timeout reached a live-but-slow daemon (Plan 00177) — that one fails
+    # OPEN. Mirror the error_type branches used for context_lines above.
     if event_name in ('Stop', 'SubagentStop'):
-        response = {
-            'decision': 'block',
-            'reason': 'Hooks daemon not running - protection not active',
-        }
+        if error_type == 'socket_timeout':
+            # Read-side timeout: the daemon was reached and is ALIVE, a handler
+            # was just slow. Fail OPEN (allow the stop) rather than wedge the
+            # session with a misleading block that also re-fires into a 30s
+            # stall loop. The honest diagnostic is on stderr above. Connect/send
+            # failures (genuine down) still fail closed via the else arm below
+            # (Plan 00177).
+            response = {}
+        elif error_type == 'invalid_hook_input':
+            reason = ('Hooks daemon received a malformed hook payload - this '
+                      'event was not validated (daemon likely healthy; do not restart)')
+            response = {
+                'decision': 'block',
+                'reason': reason,
+            }
+        else:
+            reason = 'Hooks daemon not running - protection not active'
+            response = {
+                'decision': 'block',
+                'reason': reason,
+            }
     else:
         # Other events: hookSpecificOutput with context (fail-open allow)
         response = {
@@ -835,26 +1001,89 @@ def emit_error_json(event_name, error_type, error_details):
         }
     print(json.dumps(response))
 
-# Read JSON from stdin (preserves all control characters)
-request = sys.stdin.read()
+def fail(error_type, error_details):
+    '''Report a transport failure. For the status line the daemon is already
+    up (the wrapper gates on ensure_daemon), so a mid-render socket failure
+    degrades to the same 'NO STATUS DATA' the old jq -r fallback produced;
+    every other event fails open (or blocks, for Stop) via emit_error_json.'''
+    if response_mode == 'status':
+        # Render the fallback the old jq -r produced, but still surface the
+        # diagnostic on stderr — no silent error suppression (Plan 00156 review
+        # finding 3). (The non-status path logs stderr inside emit_error_json.)
+        print(f'HOOKS DAEMON ERROR [{error_type}]: {error_details}', file=sys.stderr)
+        print('⚠️ NO STATUS DATA')
+    elif response_mode == 'worktree':
+        # WorktreeCreate stdout is parsed as a path; a transport failure has no
+        # valid path to offer. Fail creation cleanly (non-zero) with the reason
+        # on stderr rather than emitting '{}' (which becomes a bad path).
+        print(f'HOOKS DAEMON ERROR [{error_type}]: {error_details}', file=sys.stderr)
+        sys.exit(1)
+    else:
+        emit_error_json(event_name, error_type, error_details)
+    sys.exit(0)
 
-# Try to extract event name from request for better error messages
-event_name = 'Unknown'
+def render_status(output):
+    '''Replicate the old status-line jq -r fallback (.error / .text / no-data).'''
+    try:
+        data = json.loads(output)
+    except Exception:
+        return '⚠️ NO STATUS DATA'
+    if isinstance(data, dict) and data.get('error'):
+        return '⚠️ ERROR: ' + str(data['error'])
+    if isinstance(data, dict) and data.get('text'):
+        return data['text']
+    return '⚠️ NO STATUS DATA'
+
+def print_worktree(output):
+    '''WorktreeCreate: Claude Code parses this hook's stdout as the created
+    worktree PATH (not JSON), so print the raw .worktreePath the daemon returns.
+    If the daemon produced no path (no handler / error), FAIL the creation
+    cleanly with a non-zero exit rather than echoing '{}' — Claude Code would
+    take '{}' literally as the path '/<cwd>/{}' (the original Plan 00188 bug).'''
+    try:
+        data = json.loads(output)
+    except Exception:
+        data = None
+    path = data.get('worktreePath') if isinstance(data, dict) else None
+    if path:
+        print(path)
+        sys.exit(0)
+    print('HOOKS DAEMON: WorktreeCreate produced no worktree path '
+          '(is the worktree_create handler enabled?)', file=sys.stderr)
+    sys.exit(1)
+
+# Read the raw hook_input payload from stdin (preserves control characters).
+raw = sys.stdin.read()
+
+# Parse it so we can wrap it ourselves (jq used to do this). Claude Code always
+# sends a JSON object; a parse failure is a real error, handled explicitly.
 try:
-    req_data = json.loads(request)
-    event_name = req_data.get('event', 'Unknown')
-except Exception:
-    pass
+    hook_input = json.loads(raw)
+except Exception as exc:
+    fail('invalid_hook_input',
+        f'Hook input was not valid JSON: {type(exc).__name__}: {exc}')
 
-# Add newline if not present (daemon expects newline-terminated JSON)
-if not request.endswith('\n'):
-    request += '\n'
+# Status line injects its own event name into the payload (parity with the old
+# jq '. + {hook_event_name: \"Status\"}').
+if event_name == 'Status' and isinstance(hook_input, dict):
+    hook_input['hook_event_name'] = 'Status'
+    # Forward the terminal size from THIS wrapper process's environment (Plan
+    # 00167) - the daemon is a separate long-running process and never
+    # inherits COLUMNS/LINES. Omit entirely when unset/non-numeric so older
+    # Claude Code clients (<2.1.153, which sends no COLUMNS) degrade cleanly.
+    for _src, _dst in (('COLUMNS', 'terminal_columns'), ('LINES', 'terminal_lines')):
+        _v = os.environ.get(_src)
+        if _v is not None and _v.strip().isdigit():
+            hook_input[_dst] = int(_v)
+
+# Wrap into the daemon request envelope; newline-terminated as the daemon expects.
+request = json.dumps({'event': event_name, 'hook_input': hook_input}) + '\n'
 
 socket_path = '$SOCKET_PATH'
 
 try:
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    sock.settimeout(30)  # 30 second timeout
+    sock.settimeout(SOCKET_TIMEOUT_SECONDS)  # budget for connect+send+recv
     sock.connect(socket_path)
     sock.sendall(request.encode('utf-8'))
     sock.shutdown(socket.SHUT_WR)
@@ -870,32 +1099,32 @@ try:
 
     # Output response (strip trailing newline for clean output)
     output = response.decode('utf-8').rstrip('\n')
-    print(output)
+    if response_mode == 'status':
+        print(render_status(output))
+    elif response_mode == 'worktree':
+        print_worktree(output)  # prints raw path + exits (0 on success, 1 if none)
+    else:
+        print(output)
     sys.exit(0)
 
 except socket.timeout:
-    emit_error_json(event_name, 'socket_timeout',
-        f'Socket timeout (30s) connecting to daemon at {socket_path}. '
-        'Daemon may be hung or overloaded.')
-    sys.exit(0)  # Exit 0 so Claude processes the JSON response
+    fail('socket_timeout',
+        f'Socket timeout ({SOCKET_TIMEOUT_SECONDS:g}s) waiting on daemon at {socket_path}. '
+        'The daemon was reached but a handler ran past the budget (it is alive).')
 
 except FileNotFoundError:
-    emit_error_json(event_name, 'socket_not_found',
+    fail('socket_not_found',
         f'Daemon socket not found at {socket_path}. '
         'Daemon may not be running or socket was deleted.')
-    sys.exit(0)
 
 except ConnectionRefusedError:
-    emit_error_json(event_name, 'connection_refused',
+    fail('connection_refused',
         f'Daemon refusing connections at {socket_path}. '
         'Daemon may be shutting down or in error state.')
-    sys.exit(0)
 
 except Exception as e:
-    emit_error_json(event_name, type(e).__name__,
-        f'{type(e).__name__}: {e}')
-    sys.exit(0)
-"
+    fail(type(e).__name__, f'{type(e).__name__}: {e}')
+" "$event_name" "$response_mode"
     return $?
 }
 
@@ -912,7 +1141,8 @@ except Exception as e:
 # stay one-liners and the JSON-to-exit-code mapping lives in one place.
 #
 # Behaviour:
-#   1. Pipe stdin JSON → jq wrap → send_request_stdin
+#   1. Pass stdin JSON to send_request_stdin, which wraps it into
+#      {event, hook_input} itself (jq-free since Plan 00156 T2).
 #   2. Capture daemon response, echo to stdout (back-compat for agent JSON
 #      visibility + existing test invariants).
 #   3. Parse `.decision`:
@@ -943,21 +1173,30 @@ forward_stop_event() {
     # shellcheck disable=SC2064  # intentional early-binding of file path
     trap "rm -f '$response_file'" EXIT
 
-    jq -c --arg event "$event_name" '{event: $event, hook_input: .}' \
-        | send_request_stdin > "$response_file"
+    # Plan 00156 (T2): jq-free. send_request_stdin wraps the raw stdin hook_input
+    # into {event, hook_input} itself; python3 (already the transport dependency)
+    # translates decision=block into exit 2 + reason on stderr. The reason may
+    # contain control characters, so it is printed straight from python rather
+    # than round-tripped through a shell variable.
+    send_request_stdin "$event_name" > "$response_file"
     cat "$response_file"
 
-    local decision
-    decision="$(jq -r '.decision // ""' < "$response_file" 2>/dev/null || echo "")"
-    if [ "$decision" = "block" ]; then
-        local reason
-        reason="$(jq -r '.reason // ""' < "$response_file" 2>/dev/null || echo "")"
-        if [ -n "$reason" ]; then
-            printf '%s\n' "$reason" >&2
-        fi
-        return 2
-    fi
-    return 0
+    python3 -c "
+import json
+import sys
+try:
+    with open(sys.argv[1]) as fh:
+        data = json.load(fh)
+except Exception:
+    sys.exit(0)  # unparseable/empty response -> allow stop (matches old jq // '')
+if isinstance(data, dict) and data.get('decision') == 'block':
+    reason = data.get('reason') or ''
+    if reason:
+        print(reason, file=sys.stderr)
+    sys.exit(2)
+sys.exit(0)
+" "$response_file"
+    return $?
 }
 
 # Export functions for use by forwarder scripts

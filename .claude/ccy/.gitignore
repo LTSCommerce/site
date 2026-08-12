@@ -3,3 +3,5 @@
 *
 !.gitignore
 !Dockerfile
+!ccy.env
+!claude-supervise.py

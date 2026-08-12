@@ -1,7 +1,7 @@
 ---
 name: hooks-daemon
 description: Manage Claude Code Hooks Daemon - install, upgrade, check health, restart, and develop project-level handlers
-argument-hint: '[install|upgrade|health|restart|check|dev-handlers|regen-docs|logs|release-notes] [args...]'
+argument-hint: "[install|upgrade|health|restart|check|dev-handlers|regen-docs|logs|release-notes] [args...]"
 disable-model-invocation: false
 user-invocable: true
 allowed-tools: Bash, Read, Write, Edit
@@ -67,6 +67,19 @@ left them stale or conflict-marked — run it, then stage the clean result. (A n
 bounce.)
 
 See [regen-docs.md](regen-docs.md) for details.
+
+### Plan QA
+
+Lint and sweep the plan tree on demand — the same checks the edit-time lint,
+commit gate and session sweep run automatically:
+
+```bash
+.claude/hooks-daemon/bin/hooks-daemon plan-qa --sweep          # whole tree (exit 1 on findings)
+.claude/hooks-daemon/bin/hooks-daemon plan-qa --lint <PLAN.md> # one plan document
+.claude/hooks-daemon/bin/hooks-daemon plan-qa --check-staged   # what the commit gate will say
+```
+
+See [plan-qa.md](plan-qa.md) for details.
 
 ### Check Health & Status
 
@@ -208,7 +221,7 @@ case "$SUBCOMMAND" in
         bash "$SKILL_DIR/scripts/daemon-cli.sh" regenerate-docs "$@"
         ;;
 
-    logs|status|restart|handlers|validate-config|bug-report|check|release-notes)
+    logs|status|restart|handlers|config-validate|bug-report|check|release-notes)
         # Forward to daemon CLI wrapper
         bash "$SKILL_DIR/scripts/daemon-cli.sh" "$SUBCOMMAND" "$@"
         ;;
