@@ -89,17 +89,14 @@ export function Home() {
           text: 'Get In Touch',
           link: ROUTES.contact,
         }}
+        disqualifier="If your problem is managing thirty in-house engineers, I'm the wrong person."
       />
-
-      <p className="text-center text-sm text-gray-500 italic px-4 -mt-2 mb-2">
-        If your problem is managing thirty in-house engineers, I&apos;m the wrong person.
-      </p>
 
       {/* Core Expertise — dark section, cards designed for dark bg */}
       <Section spacing="xl" className="bg-[#0A0A0A]">
         <Container>
           <div className="mb-16 text-center">
-            <div className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-3">
+            <div className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-3">
               What I do
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
@@ -188,7 +185,7 @@ export function Home() {
       <Section spacing="xl" className="bg-[#0A0A0A]">
         <Container size="md">
           <div ref={authorRef} style={inViewStyle(authorInView)} className="text-center">
-            <div className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-3">
+            <div className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-3">
               Published
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-6">

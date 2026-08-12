@@ -41,7 +41,7 @@ export function NotFound() {
             </Link>
           </div>
 
-          <p className="text-gray-500 text-sm mt-10">
+          <p className="text-gray-400 text-sm mt-10">
             If you believe this is an error, please{' '}
             <Link to={ROUTES.contact.path} className="text-[#0f4c81] hover:underline">
               get in touch

@@ -78,6 +78,7 @@
 /* Theme Configuration - Professional Design System */
 @theme {
   --animate-fade-in-up: fade-in-up 0.5s ease forwards;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
   /* Primary Brand Colors */
   --color-primary: #0f4c81;
   --color-primary-light: #1e6ba5;
@@ -102,16 +103,6 @@
   --color-warning: #d97706;
   --color-error: #dc2626;
   --color-info: #0284c7;
-
-  /* Perfect 8px Grid Spacing System */
-  --spacing-1: 0.5rem; /* 8px - 1 unit */
-  --spacing-2: 1rem; /* 16px - 2 units */
-  --spacing-3: 1.5rem; /* 24px - 3 units */
-  --spacing-4: 2rem; /* 32px - 4 units */
-  --spacing-6: 3rem; /* 48px - 6 units */
-  --spacing-8: 4rem; /* 64px - 8 units */
-  --spacing-12: 6rem; /* 96px - 12 units */
-  --spacing-16: 8rem; /* 128px - 16 units */
 
   /* Professional Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
