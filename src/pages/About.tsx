@@ -8,7 +8,7 @@ export function About() {
   return (
     <Page
       title="About Joseph - Technical Leader & PHP Engineer | LTSCommerce"
-      description="Over 20 years building complex, high-performance PHP systems. Specialising in legacy modernisation, infrastructure automation, and large-scale backend architecture."
+      description="20+ years building complex, high-performance PHP systems. Specialising in legacy modernisation, infrastructure automation, and large-scale backend architecture."
     >
       {/* Hero Section */}
       <Section spacing="xl">
@@ -17,8 +17,8 @@ export function About() {
             <h1 className="text-4xl font-bold mb-6">About Joseph</h1>
             <p className="text-xl text-gray-700 leading-relaxed mx-auto">
               I build systems that actually work, from PHP platforms to the guardrails that keep
-              AI-assisted delivery honest. Over two decades turning messy legacy codebases, and now
-              messy agent output, into clean, high-performance systems. No bullshit, just results.
+              AI-assisted delivery honest. 20+ years turning messy legacy codebases, and now messy
+              agent output, into clean, high-performance systems. No bullshit, just results.
             </p>
           </div>
         </Container>
