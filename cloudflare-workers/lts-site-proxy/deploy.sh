@@ -13,10 +13,18 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 echo "== 1/4: checking wrangler auth =="
-if ! npx wrangler whoami 2>&1 | tee /tmp/wrangler-whoami.out | grep -q "You are logged in"; then
+if [[ -n "${CLOUDFLARE_API_TOKEN:-}" ]]; then
+  echo "Note: CLOUDFLARE_API_TOKEN is set in this shell - wrangler will use it"
+  echo "instead of any cached 'wrangler login' OAuth session, even a valid one."
+  echo "If that token is unset/stale/wrong, unset it: unset CLOUDFLARE_API_TOKEN"
+  echo
+fi
+
+npx wrangler whoami 2>&1 | tee /tmp/wrangler-whoami.out
+if ! grep -q "You are logged in" /tmp/wrangler-whoami.out; then
   cat <<'EOF'
 
-Not authenticated.
+Not authenticated (raw output above).
 
 Run this once, on a machine with a real browser (this can be a different
 machine to the one running the rest of this script - the login just needs
@@ -27,6 +35,10 @@ to happen somewhere wrangler can complete an OAuth redirect):
 That caches a session under ~/.config/.wrangler/ (or ~/.wrangler/) on
 whichever machine you ran it on. Re-run this script FROM THAT SAME MACHINE
 once it's done - the deploy step below reads that cached session.
+
+If you just ran `wrangler login` and it said "Successfully logged in" but
+this check still fails, it's almost always CLOUDFLARE_API_TOKEN being set
+(see note above) - wrangler prefers it over the OAuth session unconditionally.
 
 Alternative if you'd rather not do a browser login here: create a scoped
 API token at https://dash.cloudflare.com/profile/api-tokens (template:
