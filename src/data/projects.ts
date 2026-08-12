@@ -55,10 +55,10 @@ const PROJECTS: readonly OpenSourceProject[] = [
     id: 'claude-code-hooks-daemon',
     name: 'claude-code-hooks-daemon',
     tagline:
-      '107 handlers enforcing deterministic guardrails on AI coding agents — the policy layer',
+      'Over a hundred handlers enforcing deterministic guardrails on AI coding agents — the policy layer',
     description: [
-      'A daemon-based hooks system for Claude Code: 107 handler implementations spread across pre-tool-use, post-tool-use, session-start, and stop events, covering everything from blocking destructive git commands to catching security antipatterns to enforcing project-specific plan workflows.',
-      'The test tree is roughly 2.3x the size of the source tree — source runs to around 66,000 lines, tests to around 155,000. 122 releases since the first alpha, with continuous active development.',
+      'A daemon-based hooks system for Claude Code: well over a hundred handler implementations spread across pre-tool-use, post-tool-use, session-start, and stop events, covering everything from blocking destructive git commands to catching security antipatterns to enforcing project-specific plan workflows.',
+      'The test tree dwarfs the source tree — tens of thousands of lines of source, with several times as many lines of tests. Well over a hundred releases since the first alpha, with continuous active development.',
       'This site is a dogfooding consumer: this exact repository runs the daemon as part of its own development workflow, including several of the handler guardrails described in this project catalogue.',
     ],
     language: 'Python',
@@ -80,7 +80,7 @@ const PROJECTS: readonly OpenSourceProject[] = [
         detail: 'Consuming repos can add their own handlers without forking the daemon itself.',
       },
       {
-        title: '122 releases',
+        title: 'Well over a hundred releases',
         detail:
           'Continuous delivery from a 2025-01 alpha to the current version — actively maintained, not a one-off script.',
       },
@@ -91,11 +91,11 @@ const PROJECTS: readonly OpenSourceProject[] = [
     id: 'php-qa-ci',
     name: 'php-qa-ci',
     tagline:
-      'Comprehensive QA and CI pipeline for PHP 8.3+ projects — still pulled around 800 times a month',
+      'Comprehensive QA and CI pipeline for PHP 8.3+ projects — still pulled hundreds of times a month',
     description: [
       'A composer package providing a single qa binary that runs PHP quality tools in a logical, fail-fast order — suitable for local development and CI alike.',
       'Uses a hybrid tool-delivery approach (PHARs via PHIVE, direct Composer dependencies, and an isolated Rector sub-project) to keep the tooling out of a consuming project’s own dependency graph.',
-      'Currently averaging around 807 installs a month on Packagist — the strongest current-usage signal of anything in this catalogue. (Packagist counts install events, including CI re-installs on every build, so this measures build volume more than distinct users — still the more honest number to lead with than a lifetime total.)',
+      'Currently averaging several hundred installs a month on Packagist — the strongest current-usage signal of anything in this catalogue. (Packagist counts install events, including CI re-installs on every build, so this measures build volume more than distinct users — still the more honest number to lead with than a lifetime total.)',
     ],
     language: 'PHP',
     status: 'Active',
@@ -166,10 +166,10 @@ const PROJECTS: readonly OpenSourceProject[] = [
   {
     id: 'phpqa',
     name: 'phpqa',
-    tagline: '22,918 lifetime installs — the most-installed thing Joseph has published',
+    tagline: "Tens of thousands of lifetime installs — the most-installed thing I've published",
     description: [
       'A composer package providing PHP quality-assurance tooling — linting, static analysis, and test orchestration behind a single command. The direct predecessor to php-qa-ci, and still the most widely-installed thing in this catalogue.',
-      'Averaging around 63 installs a month on Packagist, on top of 22,918 lifetime installs — a package that has stayed in active use well past its original release.',
+      'Averaging dozens of installs a month on Packagist, on top of tens of thousands of lifetime installs — a package that has stayed in active use well past its original release.',
     ],
     language: 'PHP',
     status: 'Active',
@@ -182,9 +182,9 @@ const PROJECTS: readonly OpenSourceProject[] = [
         detail: 'Wraps PHP linting, static analysis, and test orchestration behind one binary.',
       },
       {
-        title: '22,918 lifetime installs',
+        title: 'Tens of thousands of lifetime installs',
         detail:
-          'The most-installed package Joseph has published, on Packagist’s own install-event count.',
+          'The most-installed package I’ve published, on Packagist’s own install-event count.',
       },
     ],
     layer: 'gates',
@@ -192,10 +192,11 @@ const PROJECTS: readonly OpenSourceProject[] = [
   {
     id: 'typesafe-functions',
     name: 'typesafe-functions',
-    tagline: 'Type-safe wrappers around PHP’s native functions — 16,528 lifetime installs',
+    tagline:
+      'Type-safe wrappers around PHP’s native functions — tens of thousands of lifetime installs',
     description: [
       'PHP’s built-in functions are notoriously loose with their return types (string|false, array|null, and so on). This package wraps the common ones in strictly-typed equivalents that throw instead of silently returning a sentinel value.',
-      'Averaging around 68 installs a month on Packagist, on top of 16,528 lifetime installs.',
+      'Averaging dozens of installs a month on Packagist, on top of tens of thousands of lifetime installs.',
     ],
     language: 'PHP',
     status: 'Active',
@@ -216,7 +217,7 @@ const PROJECTS: readonly OpenSourceProject[] = [
     name: 'fedora-desktop',
     tagline: 'Taking a freshly installed Fedora desktop and getting it ready for development',
     description: [
-      'Ansible-driven setup for a Fedora development workstation — the repo that CCY (see the Containment layer above) lives inside, alongside broader desktop and LXC tooling.',
+      'Ansible-driven setup for a Fedora development workstation — the repo that CCY (a rootless-Podman container that sandboxes Claude Code, published separately in this catalogue as ccy) lives inside, alongside broader desktop and LXC tooling.',
     ],
     language: 'Shell',
     status: 'Active',
@@ -228,8 +229,7 @@ const PROJECTS: readonly OpenSourceProject[] = [
       },
       {
         title: 'Hosts CCY',
-        detail:
-          'The rootless-Podman agent-sandboxing subsystem described in the Containment layer above.',
+        detail: 'The rootless-Podman agent-sandboxing subsystem, published separately as ccy.',
       },
     ],
     layer: 'supporting',
@@ -237,7 +237,8 @@ const PROJECTS: readonly OpenSourceProject[] = [
   {
     id: 'mock-server',
     name: 'mock-server',
-    tagline: 'A simple, lean HTTP mock server for integration testing — 2,782 lifetime installs',
+    tagline:
+      'A simple, lean HTTP mock server for integration testing — thousands of lifetime installs',
     description: [
       'A lightweight mock server used to stub external HTTP dependencies in integration tests, avoiding flaky or slow calls to real third-party services during CI.',
       'A stable, mature utility rather than an actively-growing one — install volume is currently flat rather than trending, so this is presented as a lifetime total rather than a current-rate claim.',
@@ -260,7 +261,7 @@ const PROJECTS: readonly OpenSourceProject[] = [
     name: 'doctrine-static-meta',
     tagline: 'Static metadata generation for Doctrine entities — legacy, archived',
     description: [
-      'Generated boilerplate for Doctrine ORM entities from static metadata definitions. 3,449 lifetime installs, but marked abandoned on Packagist and archived on GitHub — included here for completeness and honesty about the full body of work, not as an active recommendation.',
+      'Generated boilerplate for Doctrine ORM entities from static metadata definitions. Thousands of lifetime installs, but marked abandoned on Packagist and archived on GitHub — included here for completeness and honesty about the full body of work, not as an active recommendation.',
     ],
     language: 'PHP',
     status: 'Archived — no longer maintained',

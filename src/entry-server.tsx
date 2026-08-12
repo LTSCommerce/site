@@ -9,9 +9,58 @@ export interface RenderResult {
   html: string;
   title: string;
   description: string;
+  url: string;
+  type: 'website' | 'article';
+  jsonLd?: string;
 }
 
 const SITE_NAME = 'LTS Commerce';
+const SITE_URL = 'https://ltscommerce.dev';
+const OG_IMAGE = `${SITE_URL}/apple-touch-icon.png`;
+
+interface PersonJsonLd {
+  '@context': string;
+  '@type': 'Person';
+  name: string;
+  url: string;
+  jobTitle: string;
+  worksFor: { '@type': 'Organization'; name: string };
+  sameAs: string[];
+}
+
+interface ProfessionalServiceJsonLd {
+  '@context': string;
+  '@type': 'ProfessionalService';
+  name: string;
+  url: string;
+  description: string;
+  founder: { '@type': 'Person'; name: string };
+}
+
+const PERSON_JSON_LD: PersonJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Joseph Edmonds',
+  url: SITE_URL,
+  jobTitle: 'PHP Engineer & Fractional CTO',
+  worksFor: { '@type': 'Organization', name: 'LTS Commerce Ltd' },
+  sameAs: ['https://github.com/LTSCommerce', 'https://linkedin.com/in/edmondscommerce'],
+};
+
+const PROFESSIONAL_SERVICE_JSON_LD: ProfessionalServiceJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'LTS Commerce Ltd',
+  url: SITE_URL,
+  description:
+    'Agentic delivery governance and PHP engineering for complex, high-throughput backend systems.',
+  founder: { '@type': 'Person', name: 'Joseph Edmonds' },
+};
+
+const JSON_LD_BY_ROUTE: Record<string, unknown> = {
+  '/': PROFESSIONAL_SERVICE_JSON_LD,
+  '/about': PERSON_JSON_LD,
+};
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
   '/': {
@@ -93,6 +142,14 @@ function getMetaForRoute(url: string): { title: string; description: string } {
   return { title: SITE_NAME, description: '' };
 }
 
+function getTypeForRoute(url: string): 'website' | 'article' {
+  const articleMatch = url.match(/^\/articles\/(.+)$/);
+  if (articleMatch && articleMatch[1] && getArticleById(articleMatch[1])) {
+    return 'article';
+  }
+  return 'website';
+}
+
 export function render(url: string): RenderResult {
   const html = renderToString(
     <StaticRouter location={url}>
@@ -101,9 +158,19 @@ export function render(url: string): RenderResult {
   );
 
   const meta = getMetaForRoute(url);
+  const canonicalUrl = `${SITE_URL}${url === '/' ? '' : url}`;
+  const jsonLdData = JSON_LD_BY_ROUTE[url];
 
-  return { html, ...meta };
+  return {
+    html,
+    ...meta,
+    url: canonicalUrl,
+    type: getTypeForRoute(url),
+    ...(jsonLdData ? { jsonLd: JSON.stringify(jsonLdData) } : {}),
+  };
 }
+
+export { SITE_URL, OG_IMAGE, SITE_NAME };
 
 export function getRoutes(): string[] {
   const staticRoutes = [

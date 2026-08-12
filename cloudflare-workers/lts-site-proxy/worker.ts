@@ -29,6 +29,7 @@ const SECURITY_HEADERS = {
 // generic .html-strip below (e.g. old URLs still linked from outside this repo)
 const PATH_REDIRECTS: Readonly<Record<string, string>> = {
   '/author.html': '/about',
+  '/author': '/about',
 };
 
 // Vanity headers

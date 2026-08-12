@@ -17,7 +17,7 @@ const distDir = resolve(__dirname, '../dist');
 const serverDir = resolve(__dirname, '../dist-server');
 
 // Import the SSR bundle (built by: vite build --ssr src/entry-server.tsx --outDir dist-server)
-const { render, getRoutes } = await import(`${serverDir}/entry-server.js`);
+const { render, getRoutes, SITE_NAME, OG_IMAGE } = await import(`${serverDir}/entry-server.js`);
 
 // Read the Vite-built index.html template
 const template = readFileSync(resolve(distDir, 'index.html'), 'utf-8');
@@ -30,7 +30,7 @@ let errorCount = 0;
 
 for (const route of routes) {
   try {
-    const { html, title, description } = render(route);
+    const { html, title, description, url, type, jsonLd } = render(route);
     let output = template.replace('<div id="root"></div>', `<div id="root">${html}</div>`);
 
     // Inject title and meta description into <head>
@@ -41,6 +41,29 @@ for (const route of routes) {
       const metaTag = `<meta name="description" content="${description.replace(/"/g, '&quot;')}">`;
       output = output.replace('</head>', `    ${metaTag}\n  </head>`);
     }
+
+    // Canonical link + Open Graph + Twitter Card tags
+    const escapedTitle = (title ?? '').replace(/"/g, '&quot;');
+    const escapedDescription = (description ?? '').replace(/"/g, '&quot;');
+    const headExtras = [
+      `<link rel="canonical" href="${url}">`,
+      `<meta property="og:site_name" content="${SITE_NAME}">`,
+      `<meta property="og:type" content="${type}">`,
+      `<meta property="og:title" content="${escapedTitle}">`,
+      `<meta property="og:description" content="${escapedDescription}">`,
+      `<meta property="og:url" content="${url}">`,
+      `<meta property="og:image" content="${OG_IMAGE}">`,
+      `<meta name="twitter:card" content="summary">`,
+      `<meta name="twitter:title" content="${escapedTitle}">`,
+      `<meta name="twitter:description" content="${escapedDescription}">`,
+      `<meta name="twitter:image" content="${OG_IMAGE}">`,
+    ];
+    if (jsonLd) {
+      headExtras.push(
+        `<script type="application/ld+json">${jsonLd.replace(/</g, '\\u003c')}</script>`
+      );
+    }
+    output = output.replace('</head>', `    ${headExtras.join('\n    ')}\n  </head>`);
 
     // / → dist/index.html, /about → dist/about/index.html
     const routePath = route === '/' ? '/index.html' : `${route}/index.html`;

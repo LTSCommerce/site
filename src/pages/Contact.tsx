@@ -165,7 +165,7 @@ export function Contact() {
   return (
     <Page
       title="Hire Joseph Edmonds - Developer & Technical Leader | LTSCommerce"
-      description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 20+ years experience. 150/hr."
+      description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 20+ years experience. £150/hr."
     >
       {/* Hero + Services + Details - single flow */}
       <div className="py-10">
@@ -173,8 +173,9 @@ export function Contact() {
           <div className="text-center mb-6">
             <h1 className="text-4xl font-bold mb-3">Hire Me</h1>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
-              Senior developer and technical leader, 20+ years in. I'll work at the code level or
-              the strategic level — whatever the job actually needs.
+              I build the guardrails that make AI-assisted delivery safe to ship — containment,
+              policy, quality gates — on top of 20+ years of backend and PHP engineering. Code level
+              or strategic level, whatever the job actually needs.
             </p>
           </div>
 
@@ -207,7 +208,7 @@ export function Contact() {
               <ul className="space-y-1.5 text-sm text-gray-700">
                 <li className="flex items-start gap-2">
                   <span className="text-[#0f4c81] font-bold shrink-0">Rate</span>
-                  <span>150/hr GBP, 2 hour minimum. Negotiable for longer engagements.</span>
+                  <span>£150/hr GBP, 2 hour minimum. Negotiable for longer engagements.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#0f4c81] font-bold shrink-0">Location</span>
@@ -246,7 +247,8 @@ export function Contact() {
                   team.
                 </li>
                 <li>
-                  Active AI adopter. I use Claude Code daily and can help your team do the same.
+                  I build the guardrail tooling for AI-assisted delivery — not just an AI adopter,
+                  the person who wrote the containment and QA-gate tooling other teams install.
                 </li>
               </ul>
             </div>
@@ -285,6 +287,15 @@ export function Contact() {
           </div>
 
           <h2 className="text-2xl font-bold mb-4 text-center">Get in Touch</h2>
+          <noscript>
+            <div className="max-w-2xl mx-auto mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-gray-700 text-center">
+              This form needs JavaScript to send. Without it, email{' '}
+              <a href="mailto:hello@ltscommerce.dev" className="text-[#0f4c81] underline">
+                hello@ltscommerce.dev
+              </a>{' '}
+              directly instead.
+            </div>
+          </noscript>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Contact Form */}
             <div className="lg:col-span-2">
@@ -511,7 +522,7 @@ export function Contact() {
                 <dl className="space-y-3 text-gray-700">
                   <div>
                     <dt className="font-medium text-gray-900">Rate</dt>
-                    <dd>150/hr GBP (2hr min)</dd>
+                    <dd>£150/hr GBP (2hr min)</dd>
                   </div>
                   <div>
                     <dt className="font-medium text-gray-900">Based</dt>

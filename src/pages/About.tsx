@@ -31,6 +31,26 @@ export function About() {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
               <div>
+                <h2 className="text-3xl font-bold mb-4">What This Looks Like in Practice</h2>
+                <p className="text-gray-700 mb-4">
+                  I can't publish client case studies — the work is confidential and staying that
+                  way is part of the deal. What I can say, checkably:
+                </p>
+                <ul className="list-disc list-inside text-gray-700 space-y-2">
+                  <li>
+                    Sole technical lead for a mid-market e-commerce operation — I own the
+                    architecture, run the infrastructure it trades on, and direct the external
+                    agencies that deliver.
+                  </li>
+                  <li>4-node high-availability Proxmox cluster, managed entirely as code.</li>
+                  <li>
+                    Automated error detection, deduplication, and first-pass triage through the
+                    GitHub API.
+                  </li>
+                </ul>
+              </div>
+
+              <div>
                 <h2 className="text-3xl font-bold mb-4">My Journey</h2>
                 <div className="space-y-4 text-gray-700">
                   <p>
@@ -59,31 +79,11 @@ export function About() {
                     Somewhere in that stretch I got serious about how code actually gets tested and
                     shipped. I've been building and operating CI infrastructure since 2014 —
                     self-hosted Jenkins first, then Travis, then my own <code>phpqa</code> tooling,
-                    then GitHub Actions. Eleven years of published, continuously-running test
-                    infrastructure. The current guardrail and quality-gate work is the same problem,
-                    just applied to agents instead of humans.
+                    then GitHub Actions. Publishing continuously since 2015 — eleven years of test
+                    infrastructure out in the open. The current guardrail and quality-gate work is
+                    the same problem, just applied to agents instead of humans.
                   </p>
                 </div>
-              </div>
-
-              <div>
-                <h2 className="text-3xl font-bold mb-4">What This Looks Like in Practice</h2>
-                <p className="text-gray-700 mb-4">
-                  I can't publish client case studies — the work is confidential and staying that
-                  way is part of the deal. What I can say, checkably:
-                </p>
-                <ul className="list-disc list-inside text-gray-700 space-y-2">
-                  <li>
-                    Sole technical lead for a mid-market e-commerce operation — I own the
-                    architecture, run the infrastructure it trades on, and direct the external
-                    agencies that deliver.
-                  </li>
-                  <li>4-node high-availability Proxmox cluster, managed entirely as code.</li>
-                  <li>
-                    Automated error detection, deduplication, and first-pass triage through the
-                    GitHub API.
-                  </li>
-                </ul>
               </div>
 
               <div>
@@ -129,9 +129,9 @@ export function About() {
                       Fractional CTO & Technical Leadership
                     </h3>
                     <p className="text-gray-700">
-                      Strategic guidance, hiring assistance, team training, and architecture
-                      decisions for organizations that need senior technical input without a
-                      full-time hire.
+                      Sole technical lead for a mid-market e-commerce operation — I own the
+                      architecture, run the infrastructure it trades on, and direct the external
+                      agencies that deliver.
                     </p>
                   </div>
 

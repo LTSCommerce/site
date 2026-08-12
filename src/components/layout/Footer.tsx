@@ -5,20 +5,17 @@
  * Brand left, nav + connect columns right, copyright bar.
  */
 
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes';
 
-export function Footer() {
-  // null on both server render and initial client render (matching output,
-  // no hydration mismatch); the effect fills in the real year post-mount.
-  // Avoids reading new Date() during render, which can differ between the
-  // SSG build and the client if they straddle a year boundary.
-  const [currentYear, setCurrentYear] = useState<number | null>(null);
-  useEffect(() => {
-    setCurrentYear(new Date().getFullYear());
-  }, []);
+// Hardcoded rather than computed from `new Date()`: this is a static SSG
+// build, so a runtime value would either be blank in the prerendered HTML
+// until JS hydrates (bots, no-JS, first paint) or mismatch between the
+// server-rendered year and whatever year the client happens to load in.
+// Bump this by hand alongside other yearly maintenance.
+const COPYRIGHT_YEAR = 2026;
 
+export function Footer() {
   return (
     <footer className="bg-[#0A0A0A] text-gray-400 border-t border-[#1a1a1a]">
       <div className="max-w-6xl mx-auto px-6 py-16">
@@ -88,10 +85,10 @@ export function Footer() {
         {/* Copyright bar */}
         <div className="border-t border-[#1a1a1a] pt-8 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
           <p className="text-xs text-gray-600 text-center sm:text-left">
-            &copy; {currentYear} LTS Commerce Ltd. Company No. 16618262. Registered in England &amp;
-            Wales. VAT registered.
+            &copy; {COPYRIGHT_YEAR} LTS Commerce Ltd. Company No. 16618262. Registered in England
+            &amp; Wales. VAT registered.
           </p>
-          <p className="text-xs text-gray-600">TypeScript &amp; React</p>
+          <p className="text-xs text-gray-600">Built with TypeScript &amp; React</p>
         </div>
       </div>
     </footer>

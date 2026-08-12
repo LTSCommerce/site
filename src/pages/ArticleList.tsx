@@ -5,11 +5,12 @@
  */
 
 import { useMemo, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Page } from '@/components/layout/Page';
 import { Container } from '@/components/layout/Container';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import { getAllArticles } from '@/data/articles';
+import { getCategoryRoute } from '@/routes';
 import {
   getAllCategories,
   getCategoryById,
@@ -159,6 +160,24 @@ export function ArticleList() {
                 </button>
               ))}
             </div>
+
+            {/* Crawlable links to the dedicated category landing pages — the
+                pills above filter client-side via a search param, so these
+                real routes need their own entry point for search engines. */}
+            <p className="text-xs text-gray-400 mt-3">
+              Browse by topic:{' '}
+              {categories.map((category, index) => (
+                <span key={category.id}>
+                  <Link
+                    to={getCategoryRoute(category.id).path}
+                    className="text-gray-500 hover:text-[#0f4c81] underline"
+                  >
+                    {category.label}
+                  </Link>
+                  {index < categories.length - 1 ? ' · ' : ''}
+                </span>
+              ))}
+            </p>
           </div>
         </Container>
       </div>

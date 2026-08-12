@@ -9500,7 +9500,7 @@ download_file() {
   // Migrating: fedora-42-breakthrough-features.ejs
   {
     id: 'fedora-42-breakthrough-features',
-    title: 'Fedora 42: The Revolutionary Linux Release That Changes Everything',
+    title: "Fedora 42: What's New in KDE Plasma, COSMIC, and the Installer",
     description:
       'Discover the groundbreaking features of Fedora 42, including KDE Plasma promotion to full edition status, the revolutionary COSMIC desktop environment, and the modernized Anaconda WebUI installer that transforms Linux computing.',
     date: '2025-07-18',
@@ -19708,5 +19708,7 @@ export function getArticleById(id: string): Article | undefined {
 }
 
 export function getAllArticles(): readonly Article[] {
-  return SAMPLE_ARTICLES;
+  return [...SAMPLE_ARTICLES].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 }

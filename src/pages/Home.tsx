@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Code2, Server, Brain, Cpu, Terminal, Shield } from 'lucide-react';
+import { Code2, Server, Brain, Terminal, Shield } from 'lucide-react';
 
 import { Hero } from '../components/content/Hero';
 import { Page } from '../components/layout/Page';
@@ -31,7 +31,7 @@ const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature
   {
     title: 'Fractional CTO & Technical Leadership',
     description:
-      'Architecture decisions, hiring guidance, and technical roadmapping without a full-time hire. Strategic input when you need it.',
+      'Sole technical lead for a mid-market e-commerce operation — I own the architecture, run the infrastructure it trades on, and direct the external agencies that deliver.',
     icon: Brain,
     items: [
       'Technical strategy & roadmapping',
@@ -52,20 +52,13 @@ const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature
   },
 ];
 
-const expertiseRow2: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature] = [
+const secondaryExpertise: [ThreeColumnFeature, ThreeColumnFeature] = [
   {
     title: 'Backend & PHP Engineering',
     description:
       'Complex, modern PHP systems built to last — legacy transformation, scalable API design, and high-throughput backend architecture.',
     icon: Code2,
     items: ['Custom PHP 8.x architecture', 'Legacy system modernisation', 'Database optimisation'],
-  },
-  {
-    title: 'AI-Enhanced Development',
-    description:
-      'AI tools for faster development and business AI integration. Modern workflows with traditional reliability.',
-    icon: Cpu,
-    items: ['AI-assisted development', 'Business AI integration', 'Workflow automation'],
   },
   {
     title: 'TypeScript & Modern JS',
@@ -91,7 +84,7 @@ export function Home() {
     >
       <Hero
         title="Ship Agent-Written Code You Can Actually Trust"
-        subtitle="AI-assisted delivery breaks in production because nobody built the guardrails first, so that's what I build — sandboxing, policy enforcement, quality gates — and then I help your team actually run it. 20+ years of backend engineering underneath, PHP included."
+        subtitle="AI-assisted delivery breaks in production because nobody built the guardrails first, so that's what I build — sandboxing, policy enforcement, quality gates — and then I help your team actually run it. 20+ years of backend engineering underneath, e-commerce and PHP included."
         cta={{
           text: 'Get In Touch',
           link: ROUTES.contact,
@@ -123,13 +116,32 @@ export function Home() {
             />
           </div>
 
-          <div className="mb-10">
-            <ThreeColumnFeatures
-              features={expertiseRow2}
-              animationDelay={600}
-              stagger={150}
-              showHoverEffect={true}
-            />
+          <div className="mb-10 grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
+            {secondaryExpertise.map(feature => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={feature.title}
+                  className="group flex h-full flex-col rounded-sm border border-gray-700 bg-gray-800/50 p-6 md:p-8 transition-all hover:border-[#0f4c81]"
+                >
+                  <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-sm bg-[#0f4c81]/10 text-[#0f4c81]">
+                    <Icon className="h-6 w-6 transition-transform group-hover:scale-110" />
+                  </div>
+                  <h3 className="mb-3 text-base font-semibold text-white">{feature.title}</h3>
+                  <p className="text-sm font-light text-gray-400 mb-6">{feature.description}</p>
+                  {feature.items && (
+                    <ul className="space-y-2">
+                      {feature.items.map(item => (
+                        <li key={item} className="flex items-start gap-2 text-sm font-light">
+                          <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#0f4c81]" />
+                          <span className="text-gray-400">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           <div className="text-center">
