@@ -33,7 +33,7 @@ const __dirname = dirname(__filename);
 const ROOT = join(__dirname, '..');
 
 // Hard global timeout — kills the process if it runs over 3 minutes
-const GLOBAL_TIMEOUT_MS = 3 * 60 * 1000;
+const GLOBAL_TIMEOUT_MS = 6 * 60 * 1000;
 setTimeout(() => {
   console.error(`\n⏱ Global timeout (${GLOBAL_TIMEOUT_MS / 1000}s) reached — forcing exit.`);
   void cleanup().then(() => process.exit(1));
@@ -78,16 +78,16 @@ const ALL_PAGES: Array<{ path: string; name: string }> = [
   { path: '/about', name: 'about' },
   { path: '/contact', name: 'contact' },
   { path: '/articles', name: 'articles' },
+  { path: '/articles/defence-before-fix-static-analysis', name: 'article-detail' },
+  { path: '/articles/category/php', name: 'article-category' },
+  { path: '/open-source', name: 'open-source' },
+  { path: '/open-source/php-qa-ci', name: 'project-detail' },
+  { path: '/privacy', name: 'privacy' },
+  { path: '/errors/404', name: 'not-found' },
 ];
 
-const SCROLL_CONFIG = {
-  step: 400,
-  stabilisationDelay: 300,
-  maxScreenshots: 20,
-};
-
 // Hard overall timeout — process exits if something hangs
-const OVERALL_TIMEOUT_MS = 120_000;
+const OVERALL_TIMEOUT_MS = 300_000;
 setTimeout(() => {
   console.error(`\n❌ Hard timeout (${OVERALL_TIMEOUT_MS / 1000}s) reached — killing process`);
   process.exit(1);
@@ -234,25 +234,25 @@ async function screenshotPage(
   // Wait for CSS animations to complete (ThreeColumnFeatures delays up to ~1.5s)
   await page.waitForTimeout(2000);
 
-  const files: string[] = [];
-  let scrollY = 0;
-  let screenshotCount = 0;
-
+  // Scroll-triggered fade-ins (useInView) only fire once a section has been
+  // in the viewport, so walk the whole page before capturing or anything
+  // below the fold stays at opacity:0 in the screenshot.
   const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight);
-
-  while (scrollY <= pageHeight && screenshotCount < SCROLL_CONFIG.maxScreenshots) {
-    await page.evaluate(y => window.scrollTo(0, y), scrollY);
-    await page.waitForTimeout(SCROLL_CONFIG.stabilisationDelay);
-
-    const filename = `scroll-${scrollY}.png`;
-    const filepath = join(outputDir, filename);
-    await page.screenshot({ path: filepath, fullPage: false });
-    files.push(filepath);
-    console.log(`  📸 ${deviceName} scroll-${scrollY}px`);
-
-    scrollY += SCROLL_CONFIG.step;
-    screenshotCount++;
+  const viewportHeight = page.viewportSize()?.height ?? 1080;
+  for (let y = 0; y < pageHeight; y += viewportHeight) {
+    await page.evaluate(scrollY => window.scrollTo(0, scrollY), y);
+    await page.waitForTimeout(250);
   }
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(300);
+
+  const files: string[] = [];
+
+  const filename = `full.png`;
+  const filepath = join(outputDir, filename);
+  await page.screenshot({ path: filepath, fullPage: true });
+  files.push(filepath);
+  console.log(`  📸 ${deviceName} full-page`);
 
   return files;
 }
