@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { Home, Search } from 'lucide-react';
 
 import { Page } from '../components/layout/Page';
-import { Container } from '../components/layout/Container';
 import { ROUTES } from '../routes';
 
 export function NotFound() {
@@ -41,12 +40,8 @@ export function NotFound() {
               Browse Articles
             </Link>
           </div>
-        </div>
-      </section>
 
-      <Container>
-        <div className="py-16 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-sm mt-10">
             If you believe this is an error, please{' '}
             <Link to={ROUTES.contact.path} className="text-[#0f4c81] hover:underline">
               get in touch
@@ -54,7 +49,7 @@ export function NotFound() {
             .
           </p>
         </div>
-      </Container>
+      </section>
     </Page>
   );
 }
