@@ -173,8 +173,8 @@ export function Contact() {
           <div className="text-center mb-6">
             <h1 className="text-4xl font-bold mb-3">Hire Me</h1>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
-              I build the guardrails that make AI-assisted delivery safe to ship — containment,
-              policy, quality gates — on top of 20+ years of backend and PHP engineering. Code level
+              I build the guardrails that make AI-assisted delivery safe to ship: containment,
+              policy, quality gates, on top of 20+ years of backend and PHP engineering. Code level
               or strategic level, whatever the job actually needs.
             </p>
           </div>
@@ -247,8 +247,8 @@ export function Contact() {
                   team.
                 </li>
                 <li>
-                  I build the guardrail tooling for AI-assisted delivery — not just an AI adopter,
-                  the person who wrote the containment and QA-gate tooling other teams install.
+                  I build the guardrail tooling for AI-assisted delivery. Not just an AI adopter:
+                  I'm the person who wrote the containment and QA-gate tooling other teams install.
                 </li>
               </ul>
             </div>
@@ -257,7 +257,7 @@ export function Contact() {
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4 text-center">Fixed-Scope Engagements</h2>
             <p className="text-center text-gray-600 text-sm max-w-2xl mx-auto mb-6">
-              A fixed-price alternative to open-ended hourly work — for when you want a defined
+              A fixed-price alternative to open-ended hourly work, for when you want a defined
               deliverable instead of an open-ended clock.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -265,22 +265,21 @@ export function Contact() {
                 <h3 className="text-base font-bold mb-1">Technology &amp; Infrastructure Review</h3>
                 <p className="text-gray-700 text-sm leading-snug mb-2">
                   A structured 5-day audit of your codebase, infrastructure, and delivery pipeline.
-                  Fixed scope, fixed price, a written report with prioritised findings — not an
+                  Fixed scope, fixed price, a written report with prioritised findings. Not an
                   open-ended hourly engagement.
                 </p>
                 <p className="text-xs text-gray-500 font-medium">
-                  Fixed price — get in touch for a quote
+                  Fixed price, get in touch for a quote
                 </p>
               </div>
               <div className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
                 <h3 className="text-base font-bold mb-1">Agentic Delivery Readiness Assessment</h3>
                 <p className="text-gray-700 text-sm leading-snug mb-2">
                   Same format, one tier up: how ready is your team's AI-assisted delivery pipeline
-                  for production intensity — where the guardrails are missing, and what breaks
-                  first.
+                  for production intensity, where the guardrails are missing and what breaks first.
                 </p>
                 <p className="text-xs text-gray-500 font-medium">
-                  Fixed price — get in touch for a quote
+                  Fixed price, get in touch for a quote
                 </p>
               </div>
             </div>

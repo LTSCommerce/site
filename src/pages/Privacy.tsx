@@ -10,7 +10,7 @@ export function Privacy() {
   return (
     <Page
       title="Privacy Policy - LTS Commerce Ltd"
-      description="How LTS Commerce Ltd collects, uses, and protects personal data submitted through this site's contact form — what's collected, why, and your rights under UK GDPR."
+      description="How LTS Commerce Ltd collects, uses, and protects personal data submitted through this site's contact form: what's collected, why, and your rights under UK GDPR."
     >
       <Section spacing="xl">
         <Container size="md">
@@ -46,7 +46,7 @@ export function Privacy() {
             <section>
               <h2 className="text-2xl font-bold mb-3">Why it's collected</h2>
               <p className="text-gray-700">
-                Solely to respond to your enquiry. The legal basis is legitimate interest —
+                Solely to respond to your enquiry. The legal basis is legitimate interest:
                 responding to a business enquiry you initiated by filling in the form. It is not
                 used for marketing, and it is not sold or shared with third parties for their own
                 purposes.
@@ -58,8 +58,8 @@ export function Privacy() {
               <p className="text-gray-700">
                 The contact form submits to a Google Apps Script web app, which sends the message on
                 as an email via Gmail. Your submission therefore transits Google&apos;s
-                infrastructure as part of delivering that email — Google acts as a processor for
-                this single purpose. A hidden honeypot field is used to filter automated spam
+                infrastructure as part of delivering that email. Google acts as a processor for this
+                single purpose. A hidden honeypot field is used to filter automated spam
                 submissions; it does not collect any additional data about you.
               </p>
               <p className="text-gray-700">

@@ -53,7 +53,7 @@ export function ProjectList() {
   return (
     <Page
       title="Open Source Projects - LTS Commerce"
-      description="Public repositories published by Joseph Edmonds — agentic-delivery guardrail tooling plus eleven years of PHP, TypeScript, and test-infrastructure packages."
+      description="Public repositories published by Joseph Edmonds: agentic-delivery guardrail tooling plus eleven years of PHP, TypeScript, and test-infrastructure packages."
     >
       <div className="border-b border-gray-200 bg-white">
         <Container>
@@ -65,8 +65,8 @@ export function ProjectList() {
             </p>
             <p className="text-gray-700 mt-4 max-w-2xl">
               <strong>Automate the enforcement, keep humans for the judgement.</strong> Plenty of
-              people have one of the three layers below. Almost nobody has all three integrated —
-              the integration is the differentiation. The gates layer implements{' '}
+              people have one of the three layers below. Almost nobody has all three integrated, and
+              that integration is the differentiation. The gates layer implements{' '}
               <Link
                 to={getArticleRoute('defence-before-fix-static-analysis').path}
                 className="text-[#0f4c81] underline"
@@ -84,13 +84,13 @@ export function ProjectList() {
           <LayerSection
             eyebrow="Containment"
             title="What an agent can reach"
-            description="Blast-radius control — sandboxing that bounds the damage before anything else applies."
+            description="Blast-radius control: sandboxing that bounds the damage before anything else applies."
             layer="containment"
           />
           <LayerSection
             eyebrow="Policy"
             title="What an agent may do"
-            description="Deterministic guardrails enforced inside the sandbox — what actually stops an agent doing something stupid."
+            description="Deterministic guardrails enforced inside the sandbox: what actually stops an agent doing something stupid."
             layer="policy"
           />
           <LayerSection
@@ -110,7 +110,7 @@ export function ProjectList() {
                   The rest of the published work
                 </h2>
                 <p className="text-sm text-gray-500 max-w-2xl">
-                  Utility packages and tooling outside the core thesis — some actively maintained,
+                  Utility packages and tooling outside the core thesis. Some actively maintained,
                   one honestly marked archived rather than pretended-active.
                 </p>
               </div>

@@ -16,7 +16,7 @@ export function About() {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl font-bold mb-6">About Joseph</h1>
             <p className="text-xl text-gray-700 leading-relaxed mx-auto">
-              I build systems that actually work — from PHP platforms to the guardrails that keep
+              I build systems that actually work, from PHP platforms to the guardrails that keep
               AI-assisted delivery honest. Over two decades turning messy legacy codebases, and now
               messy agent output, into clean, high-performance systems. No bullshit, just results.
             </p>
@@ -33,15 +33,15 @@ export function About() {
               <div>
                 <h2 className="text-3xl font-bold mb-4">What This Looks Like in Practice</h2>
                 <p className="text-gray-700 mb-4">
-                  I can't publish client case studies — the work is confidential and staying that
+                  I can't publish client case studies. The work is confidential, and staying that
                   way is part of the deal. What I can say, checkably:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                   <li>
-                    Sole technical lead for a mid-market e-commerce operation — I own the
-                    architecture, run the infrastructure it trades on, and deliver the changes that
-                    ship: agent-driven, gated by my own tooling. External agencies work alongside
-                    me, to standards I set.
+                    Sole technical lead for a mid-market e-commerce operation. I own the
+                    architecture, run the infrastructure it trades on, and I'm the one who delivers
+                    what actually ships, agent-driven work gated by my own tooling. External
+                    agencies come in alongside me, working to standards I set.
                   </li>
                   <li>4-node high-availability Proxmox cluster, managed entirely as code.</li>
                   <li>
@@ -78,9 +78,9 @@ export function About() {
                   </p>
                   <p>
                     Somewhere in that stretch I got serious about how code actually gets tested and
-                    shipped. I've been building and operating CI infrastructure since 2014 —
-                    self-hosted Jenkins first, then Travis, then my own <code>phpqa</code> tooling,
-                    then GitHub Actions. Publishing continuously since 2015 — eleven years of test
+                    shipped. I've been building and operating CI infrastructure since 2014, first
+                    self-hosted Jenkins, then Travis, then my own <code>phpqa</code> tooling, then
+                    GitHub Actions. I've published continuously since 2015, eleven years of test
                     infrastructure out in the open. The current guardrail and quality-gate work is
                     the same problem, just applied to agents instead of humans.
                   </p>
@@ -110,7 +110,7 @@ export function About() {
                     <h3 className="text-xl font-bold mb-2">Agentic Delivery Governance</h3>
                     <p className="text-gray-700">
                       Containment, policy enforcement, and automated quality gates for AI-assisted
-                      development — sandboxed agent environments, guardrail design, and the QA/CI
+                      development: sandboxed agent environments, guardrail design, and the QA/CI
                       infrastructure that catches problems before they ship.
                     </p>
                   </div>
@@ -137,10 +137,10 @@ export function About() {
                       Fractional CTO & Technical Leadership
                     </h3>
                     <p className="text-gray-700">
-                      Sole technical lead for a mid-market e-commerce operation — I own the
-                      architecture, run the infrastructure it trades on, and deliver the changes
-                      that ship: agent-driven, gated by my own tooling. External agencies work
-                      alongside me, to standards I set.
+                      Sole technical lead for a mid-market e-commerce operation. I own the
+                      architecture, run the infrastructure it trades on, and I'm the one who
+                      delivers what actually ships, agent-driven work gated by my own tooling.
+                      External agencies come in alongside me, working to standards I set.
                     </p>
                   </div>
                 </div>

@@ -81,7 +81,7 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
   '/privacy': {
     title: `Privacy Policy - ${SITE_NAME} Ltd`,
     description:
-      "How LTS Commerce Ltd collects, uses, and protects personal data submitted through this site's contact form — what's collected, why, and your rights under UK GDPR.",
+      "How LTS Commerce Ltd collects, uses, and protects personal data submitted through this site's contact form: what's collected, why, and your rights under UK GDPR.",
   },
   '/articles': {
     title: `Technical Articles - PHP, Infrastructure & AI | ${SITE_NAME}`,

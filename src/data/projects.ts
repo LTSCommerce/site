@@ -2,15 +2,20 @@
  * Open Source Projects
  *
  * Public repos published by Joseph Edmonds, across whichever GitHub account
- * actually hosts each one — content is kept factual and verifiable (No
+ * actually hosts each one. Content is kept factual and verifiable (No
  * Bullshit Rule, see CLAUDE.md), sourced directly from each repo's own
  * README/package manifest or the Packagist/GitHub API, not marketing copy.
  *
  * Grouped into three layers plus a supporting tier, per the site's thesis:
  * "Automate the enforcement, keep humans for the judgement."
- *   - Containment (CCY): blast radius — what an agent can reach
- *   - Policy (claude-code-hooks-daemon): permission — what an agent may do
- *   - Gates (php-qa-ci, ts-qa-ci, phpqa): shipping — what is allowed to leave
+ *   - Containment (CCY): blast radius, what an agent can reach
+ *   - Policy (claude-code-hooks-daemon): permission, what an agent may do
+ *   - Gates (php-qa-ci, ts-qa-ci): shipping, what is allowed to leave
+ *
+ * phpqa is deliberately not in the Gates layer: it is php-qa-ci's
+ * superseded predecessor, presented as lineage under Supporting rather
+ * than as a current, equivalent option (see item 12 of the 2026-08-12
+ * change-request audit).
  *
  * Ordering within PROJECTS: layer priority first (containment, policy,
  * gates, supporting), newest/most relevant within each layer.
@@ -23,30 +28,30 @@ const PROJECTS: readonly OpenSourceProject[] = [
     id: 'ccy',
     name: 'CCY (Claude Code YOLO)',
     tagline:
-      'Rootless-Podman per-project sandboxing for AI coding agents — blast-radius containment',
+      'Rootless-Podman per-project sandboxing for AI coding agents: blast-radius containment',
     description: [
       'CCY runs Claude Code inside a disposable, rootless Podman container with permission prompts disabled, so an agent can work at full autonomy without the filesystem it can damage extending past the project it was launched in.',
       'It is the containment layer underneath everything else here: policy enforcement (the hooks daemon) and quality gates (the QA/CI packages) both assume an agent is already sandboxed. CCY is what makes that assumption safe to make.',
-      'Lives inside the fedora-desktop repo rather than as a standalone package — it started as one piece of a broader "get a fresh Fedora box ready for development" toolkit and grew into its own subsystem.',
+      'Lives inside the fedora-desktop repo rather than as a standalone package. It started as one piece of a broader "get a fresh Fedora box ready for development" toolkit and grew into its own subsystem.',
     ],
     language: 'Shell',
-    status: 'Active — a subsystem of fedora-desktop, not an independently-versioned package',
+    status: 'Active: a subsystem of fedora-desktop, not an independently-versioned package',
     githubUrl: 'https://github.com/LongTermSupport/fedora-desktop/blob/master/docs/ccy.md',
     highlights: [
       {
         title: 'Rootless Podman',
         detail:
-          'No root daemon, no privileged containers — the isolation boundary holds even if the agent inside is fully compromised.',
+          'No root daemon, no privileged containers. The isolation boundary holds even if the agent inside is fully compromised.',
       },
       {
         title: 'Per-project, disposable',
         detail:
-          'Each container is scoped to a single project and torn down after use — no persistent state to leak between engagements.',
+          'Each container is scoped to a single project and torn down after use. No persistent state to leak between engagements.',
       },
       {
         title: 'Built for --dangerously-skip-permissions',
         detail:
-          'Designed specifically so permission prompts can be safely disabled — the sandbox is the safety net, not the prompts.',
+          'Designed specifically so permission prompts can be safely disabled. The sandbox is the safety net, not the prompts.',
       },
     ],
     layer: 'containment',
@@ -55,10 +60,10 @@ const PROJECTS: readonly OpenSourceProject[] = [
     id: 'claude-code-hooks-daemon',
     name: 'claude-code-hooks-daemon',
     tagline:
-      'Over a hundred handlers enforcing deterministic guardrails on AI coding agents — the policy layer',
+      'Over a hundred handlers enforcing deterministic guardrails on AI coding agents: the policy layer',
     description: [
       'A daemon-based hooks system for Claude Code: well over a hundred handler implementations spread across pre-tool-use, post-tool-use, session-start, and stop events, covering everything from blocking destructive git commands to catching security antipatterns to enforcing project-specific plan workflows.',
-      'The test tree dwarfs the source tree — tens of thousands of lines of source, with several times as many lines of tests. Well over a hundred releases since the first alpha, with continuous active development.',
+      'The test tree dwarfs the source tree: tens of thousands of lines of source, with several times as many lines of tests. Well over a hundred releases since the first alpha, with continuous active development.',
       'This site is a dogfooding consumer: this exact repository runs the daemon as part of its own development workflow, including several of the handler guardrails described in this project catalogue.',
     ],
     language: 'Python',
@@ -82,7 +87,7 @@ const PROJECTS: readonly OpenSourceProject[] = [
       {
         title: 'Well over a hundred releases',
         detail:
-          'Continuous delivery from a 2025-01 alpha to the current version — actively maintained, not a one-off script.',
+          'Continuous delivery from a 2025-01 alpha to the current version. Actively maintained, not a one-off script.',
       },
     ],
     layer: 'policy',
@@ -91,11 +96,11 @@ const PROJECTS: readonly OpenSourceProject[] = [
     id: 'php-qa-ci',
     name: 'php-qa-ci',
     tagline:
-      'Comprehensive QA and CI pipeline for PHP 8.3+ projects — still pulled hundreds of times a month',
+      'Comprehensive QA and CI pipeline for PHP 8.3+ projects: still pulled hundreds of times a month',
     description: [
-      'A composer package providing a single qa binary that runs PHP quality tools in a logical, fail-fast order — suitable for local development and CI alike.',
+      'A composer package providing a single qa binary that runs PHP quality tools in a logical, fail-fast order, suitable for local development and CI alike.',
       'Uses a hybrid tool-delivery approach (PHARs via PHIVE, direct Composer dependencies, and an isolated Rector sub-project) to keep the tooling out of a consuming project’s own dependency graph.',
-      'Currently averaging several hundred installs a month on Packagist — the strongest current-usage signal of anything in this catalogue. (Packagist counts install events, including CI re-installs on every build, so this measures build volume more than distinct users — still the more honest number to lead with than a lifetime total.)',
+      'Currently averaging several hundred installs a month on Packagist, the strongest current-usage signal of anything in this catalogue. (Packagist counts install events, including CI re-installs on every build, so this measures build volume more than distinct users, but it is still the more honest number to lead with than a lifetime total.)',
     ],
     language: 'PHP',
     status: 'Active',
@@ -104,20 +109,20 @@ const PROJECTS: readonly OpenSourceProject[] = [
     installCommand: 'composer require --dev lts/php-qa-ci:dev-php8.4@dev',
     highlights: [
       {
-        title: 'Phase 1 — Code Modification',
+        title: 'Phase 1: Code Modification',
         detail: 'Rector (safe functions, PHPUnit, PHP 8.4 upgrades) and PHP CS Fixer.',
       },
       {
-        title: 'Phase 2 — Linting and Validation',
+        title: 'Phase 2: Linting and Validation',
         detail:
           'PSR-4 validation, composer checks, strict types enforcement, PHP lint, Composer Require Checker, markdown link checking.',
       },
       {
-        title: 'Phase 3 — Static Analysis',
+        title: 'Phase 3: Static Analysis',
         detail: 'PHPStan at max level, plus PHPArkitect for architecture rules.',
       },
       {
-        title: 'Phase 4 — Testing',
+        title: 'Phase 4: Testing',
         detail: 'PHPUnit, with optional Infection mutation testing.',
       },
     ],
@@ -127,37 +132,37 @@ const PROJECTS: readonly OpenSourceProject[] = [
     id: 'ts-qa-ci',
     name: 'ts-qa-ci',
     tagline:
-      'Orchestrated QA/CI pipeline for TypeScript/React projects — the TypeScript analogue of php-qa-ci',
+      'Orchestrated QA/CI pipeline for TypeScript/React projects, the TypeScript analogue of php-qa-ci',
     description: [
-      'A single devDependency that orchestrates formatting, linting, type-checking, structural/architecture checks, and testing behind one command — auto-fixing locally, failing the gate on any pending diff in CI.',
+      'A single devDependency that orchestrates formatting, linting, type-checking, structural/architecture checks, and testing behind one command: auto-fixing locally, failing the gate on any pending diff in CI.',
       'Includes a Component-Driven Development (CDD) ESLint rule tier that bans ad hoc raw HTML in component/page files, forcing all styling through a reviewable component API. A fast Rust-based pre-filter (oxlint) catches obvious problems before anything slower runs.',
-      'This site (lts-commerce-site) is the first real dogfooding consumer — its own CI pipeline runs on ts-qa-ci.',
+      'This site (lts-commerce-site) is the first real dogfooding consumer. Its own CI pipeline runs on ts-qa-ci.',
     ],
     language: 'TypeScript',
-    status: 'Pre-release — not yet published to npm; install via git dependency',
+    status: 'Pre-release: not yet published to npm, install via git dependency',
     githubUrl: 'https://github.com/LongTermSupport/ts-qa-ci',
     installCommand: 'npm install --save-dev github:LongTermSupport/ts-qa-ci#<commit-sha>',
     highlights: [
       {
-        title: 'Phase 0 — Fast Fail',
+        title: 'Phase 0: Fast Fail',
         detail:
           'oxlint, a Rust-based linter roughly 50-100x faster than ESLint, aborts the run in milliseconds on obvious problems.',
       },
       {
-        title: 'Phase 1 — Code Modification',
+        title: 'Phase 1: Code Modification',
         detail: 'Prettier and ESLint --fix apply every automatic fix (read-only/check mode in CI).',
       },
       {
-        title: 'Phase 2 — Lint & Validation',
+        title: 'Phase 2: Lint & Validation',
         detail:
           'A full ESLint report pass including the CDD rule tier, markdown link validation, and knip (dead code/unused dependency detection).',
       },
       {
-        title: 'Phase 3 — Static Analysis',
+        title: 'Phase 3: Static Analysis',
         detail: 'tsc --noEmit and dependency-cruiser for structural/architecture checks.',
       },
       {
-        title: 'Phase 4 — Testing',
+        title: 'Phase 4: Testing',
         detail: 'Vitest and Playwright, with optional Stryker mutation testing.',
       },
     ],
@@ -166,13 +171,13 @@ const PROJECTS: readonly OpenSourceProject[] = [
   {
     id: 'phpqa',
     name: 'phpqa',
-    tagline: "Tens of thousands of lifetime installs — the most-installed thing I've published",
+    tagline: 'The predecessor to php-qa-ci: superseded, but still getting installed',
     description: [
-      'A composer package providing PHP quality-assurance tooling — linting, static analysis, and test orchestration behind a single command. The direct predecessor to php-qa-ci, and still the most widely-installed thing in this catalogue.',
-      'Averaging dozens of installs a month on Packagist, on top of tens of thousands of lifetime installs — a package that has stayed in active use well past its original release.',
+      'A composer package providing PHP quality-assurance tooling: linting, static analysis, and test orchestration behind a single command. Last released in 2021, superseded by php-qa-ci, and no longer maintained.',
+      'Kept public because it is still installed dozens of times a month, on top of tens of thousands of lifetime installs. It is the first link in a lineage that runs phpqa to php-qa-ci to ts-qa-ci: same problem, three generations of tooling.',
     ],
     language: 'PHP',
-    status: 'Active',
+    status: 'Superseded: no longer maintained, kept public for continuity',
     githubUrl: 'https://github.com/edmondscommerce/phpqa',
     packagistPackage: 'edmondscommerce/phpqa',
     installCommand: 'composer require --dev edmondscommerce/phpqa',
@@ -182,18 +187,18 @@ const PROJECTS: readonly OpenSourceProject[] = [
         detail: 'Wraps PHP linting, static analysis, and test orchestration behind one binary.',
       },
       {
-        title: 'Tens of thousands of lifetime installs',
+        title: 'Still in use, years after the last commit',
         detail:
-          'The most-installed package I’ve published, on Packagist’s own install-event count.',
+          'Dozens of installs a month, long after being superseded: the underlying idea held up even once the tool itself was retired.',
       },
     ],
-    layer: 'gates',
+    layer: 'supporting',
   },
   {
     id: 'typesafe-functions',
     name: 'typesafe-functions',
     tagline:
-      'Type-safe wrappers around PHP’s native functions — tens of thousands of lifetime installs',
+      'Type-safe wrappers around PHP’s native functions, tens of thousands of lifetime installs',
     description: [
       'PHP’s built-in functions are notoriously loose with their return types (string|false, array|null, and so on). This package wraps the common ones in strictly-typed equivalents that throw instead of silently returning a sentinel value.',
       'Averaging dozens of installs a month on Packagist, on top of tens of thousands of lifetime installs.',
@@ -217,7 +222,7 @@ const PROJECTS: readonly OpenSourceProject[] = [
     name: 'fedora-desktop',
     tagline: 'Taking a freshly installed Fedora desktop and getting it ready for development',
     description: [
-      'Ansible-driven setup for a Fedora development workstation — the repo that CCY (a rootless-Podman container that sandboxes Claude Code, published separately in this catalogue as ccy) lives inside, alongside broader desktop and LXC tooling.',
+      'Ansible-driven setup for a Fedora development workstation. This is the repo that CCY (a rootless-Podman container that sandboxes Claude Code, published separately in this catalogue as ccy) lives inside, alongside broader desktop and LXC tooling.',
     ],
     language: 'Shell',
     status: 'Active',
@@ -238,10 +243,10 @@ const PROJECTS: readonly OpenSourceProject[] = [
     id: 'mock-server',
     name: 'mock-server',
     tagline:
-      'A simple, lean HTTP mock server for integration testing — thousands of lifetime installs',
+      'A simple, lean HTTP mock server for integration testing, thousands of lifetime installs',
     description: [
       'A lightweight mock server used to stub external HTTP dependencies in integration tests, avoiding flaky or slow calls to real third-party services during CI.',
-      'A stable, mature utility rather than an actively-growing one — install volume is currently flat rather than trending, so this is presented as a lifetime total rather than a current-rate claim.',
+      'A stable, mature utility rather than an actively-growing one. Install volume is currently flat rather than trending, so this is presented as a lifetime total rather than a current-rate claim.',
     ],
     language: 'PHP',
     status: 'Stable',
@@ -259,19 +264,19 @@ const PROJECTS: readonly OpenSourceProject[] = [
   {
     id: 'doctrine-static-meta',
     name: 'doctrine-static-meta',
-    tagline: 'Static metadata generation for Doctrine entities — legacy, archived',
+    tagline: 'Static metadata generation for Doctrine entities: legacy, archived',
     description: [
-      'Generated boilerplate for Doctrine ORM entities from static metadata definitions. Thousands of lifetime installs, but marked abandoned on Packagist and archived on GitHub — included here for completeness and honesty about the full body of work, not as an active recommendation.',
+      'Generated boilerplate for Doctrine ORM entities from static metadata definitions. Thousands of lifetime installs, but marked abandoned on Packagist and archived on GitHub. Included here for completeness and honesty about the full body of work, not as an active recommendation.',
     ],
     language: 'PHP',
-    status: 'Archived — no longer maintained',
+    status: 'Archived: no longer maintained',
     githubUrl: 'https://github.com/edmondscommerce/doctrine-static-meta',
     packagistPackage: 'edmondscommerce/doctrine-static-meta',
     highlights: [
       {
         title: 'Archived',
         detail:
-          'Marked abandoned on Packagist and archived on GitHub — listed for a complete record, not as current recommended tooling.',
+          'Marked abandoned on Packagist and archived on GitHub. Listed for a complete record, not as current recommended tooling.',
       },
     ],
     layer: 'supporting',
@@ -279,12 +284,12 @@ const PROJECTS: readonly OpenSourceProject[] = [
   {
     id: 'llm-friendly-qa-wrappers',
     name: 'llm-friendly-qa-wrappers',
-    tagline: 'LLM-friendly wrappers for common QA tools — terse terminal output, JSON-first',
+    tagline: 'LLM-friendly wrappers for common QA tools: terse terminal output, JSON-first',
     description: [
       'Wrappers around ESLint, Prettier, Jest, PHPStan, PHPUnit, Ruff, MyPy, ShellCheck and others, built specifically for agent consumption: terse terminal output for a human, detailed native-JSON logs for a tool to parse. A newer, narrower piece of the same QA-gates thesis as php-qa-ci/ts-qa-ci/phpqa.',
     ],
     language: 'Shell',
-    status: 'Active — early stage',
+    status: 'Active: early stage',
     githubUrl: 'https://github.com/edmondscommerce/llm-friendly-qa-wrappers',
     highlights: [
       {
@@ -307,12 +312,12 @@ const ARCHIVE_PROJECTS: readonly ArchiveProject[] = [
   {
     name: 'selenium-server',
     url: 'https://github.com/edmondscommerce/selenium-server',
-    note: 'Created Feb 2015 — the earliest repo in this lineage',
+    note: 'Created Feb 2015, the earliest repo in this lineage',
   },
   {
     name: 'behat-framework',
     url: 'https://github.com/edmondscommerce/behat-framework',
-    note: 'Created Jan 2016 — the flagship of 18 Behat/Selenium context repos',
+    note: 'Created Jan 2016, the flagship of 18 Behat/Selenium context repos',
   },
   {
     name: 'behat-magento-2-context',

@@ -31,7 +31,7 @@ const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature
   {
     title: 'Fractional CTO & Technical Leadership',
     description:
-      'Sole technical lead for a mid-market e-commerce operation — I own the architecture, run the infrastructure it trades on, and deliver the changes that ship: agent-driven, gated by my own tooling. External agencies work alongside me, to standards I set.',
+      "Sole technical lead for a mid-market e-commerce operation. I own the architecture, run the infrastructure it trades on, and I'm the one who delivers what actually ships, agent-driven work gated by my own tooling. External agencies come in alongside me, working to standards I set.",
     icon: Brain,
     items: [
       'Technical strategy & roadmapping',
@@ -56,7 +56,7 @@ const secondaryExpertise: [ThreeColumnFeature, ThreeColumnFeature] = [
   {
     title: 'Backend & PHP Engineering',
     description:
-      'Complex, modern PHP systems built to last — legacy transformation, scalable API design, and high-throughput backend architecture.',
+      'Complex, modern PHP systems built to last, covering legacy transformation, scalable API design, and high-throughput backend architecture.',
     icon: Code2,
     items: ['Custom PHP 8.x architecture', 'Legacy system modernisation', 'Database optimisation'],
   },
@@ -84,7 +84,7 @@ export function Home() {
     >
       <Hero
         title="Ship Agent-Written Code You Can Actually Trust"
-        subtitle="AI-assisted delivery breaks in production because nobody built the guardrails first, so that's what I build — sandboxing, policy enforcement, quality gates — and then I help your team actually run it. 20+ years of backend engineering underneath, e-commerce and PHP included."
+        subtitle="AI-assisted delivery breaks in production because nobody built the guardrails first, so that's what I build: sandboxing, policy enforcement, quality gates, and then I help your team actually run it. 20+ years of backend engineering underneath, e-commerce and PHP included."
         cta={{
           text: 'Get In Touch',
           link: ROUTES.contact,
