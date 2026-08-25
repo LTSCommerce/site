@@ -71,7 +71,7 @@ export function About() {
                     just the wrapper. What you're hiring is me. The LTS stands for Long Term
                     Support, because that's the shape of the work: an ongoing relationship with
                     expertise retained and on hand, not a one-off bill. My longest client
-                    relationship is over fifteen years and counting.
+                    relationships are measured in decades.
                   </p>
                   <p>
                     I've put in thousands of hours of hands-on development work. I can confidently

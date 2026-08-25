@@ -96,6 +96,12 @@ const SPECIFIC_SERVICES: SpecificService[] = [
     estimate: 'Typically 1–3 days per shortlist',
   },
   {
+    title: 'CI/CD & QA Pipeline Configuration',
+    description:
+      'Set up or tune your quality gates: automated QA pipelines that run identically locally and in CI, with no vendor lock-in. I publish and maintain open source QA tooling for PHP and TypeScript.',
+    estimate: 'Typically 2–5 days',
+  },
+  {
     title: 'Performance Rescue',
     description:
       'Slow pages, creaking databases. Profiling and deep SQL optimisation with measurable before/after numbers — my first rescue took page loads from 10+ seconds to 1–2.',

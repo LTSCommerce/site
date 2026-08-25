@@ -95,7 +95,7 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
   '/': {
     title: `Joseph Edmonds — Engineer & Fractional CTO | ${SITE_NAME}`,
     description:
-      'Joseph Edmonds: engineer and fractional CTO from West Yorkshire, UK. 15+ years behind a c. £36m e-commerce business; guardrails that make AI code safe to ship.',
+      'Joseph Edmonds: engineer and fractional CTO from West Yorkshire, UK. Decades of hands-on delivery; guardrails that make AI code safe to ship.',
   },
   '/about': {
     title: `About Me — Joseph Edmonds | ${SITE_NAME}`,

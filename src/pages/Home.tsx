@@ -80,12 +80,12 @@ export function Home() {
   return (
     <Page
       title="Joseph Edmonds — Engineer & Fractional CTO | LTS Commerce"
-      description="Joseph Edmonds: engineer and fractional CTO from West Yorkshire, UK. 15+ years behind a c. £36m e-commerce business; guardrails that make AI code safe to ship."
+      description="Joseph Edmonds: engineer and fractional CTO from West Yorkshire, UK. Decades of hands-on delivery; guardrails that make AI code safe to ship."
     >
       <Hero
         identity="Hey — I'm Joseph Edmonds."
         title="Ship Agent-Written Code You Can Actually Trust"
-        subtitle="I'm a back end/full stack engineer and fractional CTO from West Yorkshire, UK. For 15+ years I've been the sole technology lead behind a UK e-commerce business that grew to c. £36m a year on the platform I build and run. Now I also build the guardrails that make AI-written code safe to ship."
+        subtitle="I'm a back end/full stack engineer and fractional CTO from West Yorkshire, UK. I've spent decades as the technology lead behind serious UK e-commerce businesses, on platforms I build and run. Now I also build the guardrails that make AI-written code safe to ship."
         cta={{
           text: 'Hire Me',
           link: ROUTES.contact,
@@ -107,8 +107,9 @@ export function Home() {
             <p className="text-gray-700 text-lg leading-relaxed">
               The LTS in LTS Commerce stands for <strong>Long Term Support</strong> — and that's
               what I offer. Not a one-off bill, but an ongoing relationship: expertise on hand,
-              retained to support you as and when you need it. My main client has kept me on for
-              over fifteen years.
+              retained to support you as and when you need it. My longest client relationships are
+              measured in decades — specific company names are withheld deliberately, and yours
+              would be too.
             </p>
           </div>
         </Container>
