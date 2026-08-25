@@ -16,6 +16,7 @@ export function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems: Array<{ key: string; route: RouteEntry }> = [
+    { key: 'services', route: ROUTES.services },
     { key: 'articles', route: ROUTES.articles },
     { key: 'openSource', route: ROUTES.openSource },
     { key: 'about', route: ROUTES.about },

@@ -84,8 +84,8 @@ export function Home() {
     >
       <Hero
         identity="Hey — I'm Joseph Edmonds."
-        title="Ship Agent-Written Code You Can Actually Trust"
-        subtitle="I'm a back end/full stack engineer and fractional CTO from West Yorkshire, UK. I've spent 25 years as the technology lead behind serious UK ecommerce businesses, on platforms I build and run. Now I also build the guardrails that make AI-written code safe to ship."
+        title="Long Term Support for Your Technology"
+        subtitle="Back end/full stack engineer and fractional CTO from West Yorkshire, UK. 25 years as the technology lead behind serious UK ecommerce businesses, on platforms I build and run — and today, the guardrails that make AI-written code safe to ship. Currently taking new clients."
         cta={{
           text: 'Hire Me',
           link: ROUTES.contact,
@@ -130,6 +130,10 @@ export function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
               Core Expertise
             </h2>
+            <p className="text-gray-400 mt-3 max-w-xl mx-auto">
+              The current specialism: ship agent-written code you can actually trust — built on
+              the 25-year engineering foundation below.
+            </p>
           </div>
 
           <div className="mb-6">

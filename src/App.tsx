@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Contact } from './pages/Contact';
+import { Services } from './pages/Services';
 import { Privacy } from './pages/Privacy';
 import { ArticleList } from './pages/ArticleList';
 import { ArticleDetail } from './pages/ArticleDetail';
@@ -34,6 +35,7 @@ export function AppContent() {
         <Route path={ROUTES.home.path} element={<Home />} />
         <Route path={ROUTES.about.path} element={<About />} />
         <Route path={ROUTES.contact.path} element={<Contact />} />
+        <Route path={ROUTES.services.path} element={<Services />} />
         <Route path={ROUTES.privacy.path} element={<Privacy />} />
         <Route path={ROUTES.articles.path} element={<ArticleList />} />
         <Route path="/articles/category/:categoryId" element={<ArticleList />} />

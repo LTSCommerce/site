@@ -88,6 +88,7 @@ const JSON_LD_BY_ROUTE: Record<string, unknown> = {
   '/': PROFESSIONAL_SERVICE_JSON_LD,
   '/about': PERSON_JSON_LD,
   '/contact': PROFESSIONAL_SERVICE_JSON_LD,
+  '/services': PROFESSIONAL_SERVICE_JSON_LD,
   '/open-source': OPEN_SOURCE_JSON_LD,
 };
 
@@ -101,6 +102,11 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
     title: `About Me — Joseph Edmonds | ${SITE_NAME}`,
     description:
       "Joseph Edmonds - technical leader with 25 years' experience in PHP engineering, infrastructure automation, and agentic delivery governance.",
+  },
+  '/services': {
+    title: `Services — Joseph Edmonds | ${SITE_NAME}`,
+    description:
+      'What I do and what it costs: development, fractional CTO work, infrastructure, AI delivery governance. £150/hr or £950/day, fixed scope agreed up front.',
   },
   '/contact': {
     title: `Hire Me — Joseph Edmonds | ${SITE_NAME}`,
@@ -205,6 +211,7 @@ export function getRoutes(): string[] {
   const staticRoutes = [
     '/',
     '/about',
+    '/services',
     '/contact',
     '/privacy',
     '/articles',

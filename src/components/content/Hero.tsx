@@ -28,12 +28,21 @@ export function Hero({ title, subtitle, cta, disqualifier, identity }: HeroProps
       <div className="max-w-5xl mx-auto px-6 py-20 md:py-28 text-center">
         {/* Thesis line */}
         <div className="text-xs text-gray-400 mb-8 font-mono uppercase tracking-widest">
-          Containment &middot; Policy &middot; Gates
+          Engineering &middot; Leadership &middot; AI Governance
         </div>
 
         {/* Identity greeting */}
         {identity && (
-          <p className="text-gray-200 text-xl md:text-2xl font-medium mb-4">{identity}</p>
+          <div className="mb-6">
+            <img
+              src="/headshot-320.webp"
+              alt="Joseph Edmonds"
+              width={112}
+              height={112}
+              className="w-28 h-28 rounded-full object-cover mx-auto mb-4 border-2 border-[#2a2a2a]"
+            />
+            <p className="text-gray-200 text-xl md:text-2xl font-medium">{identity}</p>
+          </div>
         )}
 
         {/* Headline */}

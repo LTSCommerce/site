@@ -14,6 +14,13 @@ export function About() {
       <Section spacing="xl">
         <Container>
           <div className="max-w-3xl mx-auto text-center">
+            <img
+              src="/headshot.webp"
+              alt="Joseph Edmonds"
+              width={160}
+              height={160}
+              className="w-40 h-40 rounded-full object-cover mx-auto mb-6 border border-gray-200 shadow-sm"
+            />
             <h1 className="text-4xl font-bold mb-6">About Me</h1>
             <p className="text-xl text-gray-700 leading-relaxed mx-auto">
               I'm Joseph Edmonds. I build systems that actually work, from PHP platforms to the
@@ -95,6 +102,30 @@ export function About() {
                     ever handed us, and my work now is harnessing the beast: putting it to work at
                     full speed, inside guardrails that keep it honest.
                   </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                    <figure className="m-0">
+                      <img
+                        src="/about-dales.webp"
+                        alt="Joseph and his wife hiking in the Yorkshire Dales"
+                        className="rounded-lg w-full h-auto"
+                        loading="lazy"
+                      />
+                      <figcaption className="text-xs text-gray-500 mt-1">
+                        Off the clock: the Yorkshire Dales, with my wife.
+                      </figcaption>
+                    </figure>
+                    <figure className="m-0">
+                      <img
+                        src="/about-estuary.webp"
+                        alt="Joseph on the coast in winter sunshine"
+                        className="rounded-lg w-full h-auto"
+                        loading="lazy"
+                      />
+                      <figcaption className="text-xs text-gray-500 mt-1">
+                        Thinking time. It's where the good architecture comes from.
+                      </figcaption>
+                    </figure>
+                  </div>
                   <p>
                     Somewhere in that stretch I got serious about how code actually gets tested and
                     shipped. I've been building and operating CI infrastructure since 2014, first

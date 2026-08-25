@@ -21,6 +21,7 @@ import type { RouteEntry } from './types/routing';
 export const ROUTES = {
   home: { path: '/', label: 'Home' },
   about: { path: '/about', label: 'About' },
+  services: { path: '/services', label: 'Services' },
   articles: { path: '/articles', label: 'Articles' },
   openSource: { path: '/open-source', label: 'Open Source' },
   contact: { path: '/contact', label: 'Contact' },

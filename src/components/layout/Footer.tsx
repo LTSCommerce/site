@@ -40,6 +40,7 @@ export function Footer() {
             <ul className="space-y-3 list-none p-0 m-0">
               {[
                 ROUTES.home,
+                ROUTES.services,
                 ROUTES.articles,
                 ROUTES.openSource,
                 ROUTES.about,
