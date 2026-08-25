@@ -91,6 +91,12 @@ export function About() {
                     competition rather than level with it.
                   </p>
                   <p>
+                    And today my focus is on AI-driven development processes and business
+                    automation. AI is the most powerful and most dangerous tool this industry has
+                    ever handed us, and my work now is harnessing the beast: putting it to work at
+                    full speed, inside guardrails that keep it honest.
+                  </p>
+                  <p>
                     Somewhere in that stretch I got serious about how code actually gets tested and
                     shipped. I've been building and operating CI infrastructure since 2014, first
                     self-hosted Jenkins, then Travis, then my own <code>phpqa</code> tooling, then
