@@ -91,7 +91,7 @@ const SPECIFIC_SERVICES: SpecificService[] = [
   {
     title: 'Deployment Safety',
     description:
-      'Tag-based blue/green deployment with instantaneous rollback and a sensible human gate — ship confidently without betting the business on every release.',
+      'Tag-based blue/green deployment with instantaneous rollback and a sensible human gate. This is how my production estates deploy.',
     estimate: 'Typically 3–7 days',
   },
   {
@@ -135,9 +135,8 @@ export function Services() {
             <h1 className="text-4xl font-bold mb-3">Services</h1>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
               What I do, what it costs, and roughly how long it takes. Everything here is work I
-              actually do, priced at £150/hr (2 hour minimum) or £950/day — the day rate discounts
-              the hourly for sustained work. Every engagement gets a fixed scope and price agreed up
-              front before any work starts.
+              actually do, priced at £150/hr (2 hour minimum) or £950/day. Every engagement gets a
+              fixed scope and price agreed up front before any work starts.
             </p>
           </div>
 
