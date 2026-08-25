@@ -89,7 +89,6 @@ export function Home() {
           text: 'Get In Touch',
           link: ROUTES.contact,
         }}
-        disqualifier="If your problem is managing thirty in-house engineers, I'm the wrong person."
       />
 
       {/* Core Expertise — dark section, cards designed for dark bg */}
