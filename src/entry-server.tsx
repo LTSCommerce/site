@@ -66,7 +66,7 @@ const PROFESSIONAL_SERVICE_JSON_LD: ProfessionalServiceJsonLd = {
   name: 'LTS Commerce Ltd',
   url: SITE_URL,
   description:
-    'Agentic delivery governance and PHP engineering for complex, high-throughput backend systems.',
+    'Long Term Support from Joseph Edmonds: retained engineering and fractional CTO expertise — agentic delivery governance and PHP engineering as an ongoing relationship, not a one-off bill.',
   founder: { '@type': 'Person', name: 'Joseph Edmonds' },
 };
 
@@ -93,19 +93,19 @@ const JSON_LD_BY_ROUTE: Record<string, unknown> = {
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
   '/': {
-    title: `${SITE_NAME} - Agentic Delivery Governance & PHP Engineering`,
+    title: `Joseph Edmonds — Engineer & Fractional CTO | ${SITE_NAME}`,
     description:
-      'Containment, policy, and quality-gate infrastructure for AI-assisted delivery, built on 20+ years of PHP and backend engineering. No bullshit, just results.',
+      'Joseph Edmonds: engineer and fractional CTO from West Yorkshire, UK. 15+ years behind a c. £36m e-commerce business; guardrails that make AI code safe to ship.',
   },
   '/about': {
-    title: `About - ${SITE_NAME}`,
+    title: `About Me — Joseph Edmonds | ${SITE_NAME}`,
     description:
-      "Joseph Edmonds - technical leader with 20+ years' experience in PHP engineering, infrastructure automation, and agentic delivery governance.",
+      "Joseph Edmonds - technical leader with 25 years' experience in PHP engineering, infrastructure automation, and agentic delivery governance.",
   },
   '/contact': {
-    title: `Contact - ${SITE_NAME}`,
+    title: `Hire Me — Joseph Edmonds | ${SITE_NAME}`,
     description:
-      'Get in touch for PHP development, infrastructure automation, or technical consultancy.',
+      'Hire Joseph Edmonds for PHP development, infrastructure automation, fractional CTO work, or AI delivery governance. Long-term support, not one-off billing.',
   },
   '/privacy': {
     title: `Privacy Policy - ${SITE_NAME} Ltd`,

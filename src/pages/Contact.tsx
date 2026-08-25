@@ -178,7 +178,8 @@ export function Contact() {
               or strategic level, whatever the job actually needs.
             </p>
             <p className="text-sm text-gray-500 mt-3">
-              You'll get a reply from me — not a sales team — usually the same day.
+              You'll get a reply from me — not a sales team — usually the same day. LTS stands for
+              Long Term Support: I'm built for ongoing relationships, not one-off bills.
             </p>
           </div>
 
@@ -211,7 +212,9 @@ export function Contact() {
               <ul className="space-y-1.5 text-sm text-gray-700">
                 <li className="flex items-start gap-2">
                   <span className="text-[#0f4c81] font-bold shrink-0">Rate</span>
-                  <span>£150/hr GBP, 2 hour minimum. Negotiable for longer engagements.</span>
+                  <span>
+                    £150/hr GBP, 2 hour minimum, or £950/day. Negotiable for longer engagements.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#0f4c81] font-bold shrink-0">Location</span>

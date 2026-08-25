@@ -99,10 +99,16 @@ export function Home() {
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-4">
               LTS Commerce is not an agency. It's me.
             </h2>
-            <p className="text-gray-700 text-lg leading-relaxed">
+            <p className="text-gray-700 text-lg leading-relaxed mb-4">
               When you hire me, the person you talk to is the person who does the work. If it
               doesn't ship, that's on me — there's no team to hide behind, no account manager, no
               hand-off. That is the difference between hiring a person and hiring an agency.
+            </p>
+            <p className="text-gray-700 text-lg leading-relaxed">
+              The LTS in LTS Commerce stands for <strong>Long Term Support</strong> — and that's
+              what I offer. Not a one-off bill, but an ongoing relationship: expertise on hand,
+              retained to support you as and when you need it. My main client has kept me on for
+              over fifteen years.
             </p>
           </div>
         </Container>

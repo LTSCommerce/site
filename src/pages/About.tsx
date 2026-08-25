@@ -68,7 +68,10 @@ export function About() {
                     founded Edmonds Commerce, a specialist ecommerce development agency that I grew
                     to a fifteen-person team serving payment processors, fintechs, startups and
                     B2C/B2B retailers. These days I trade as LTS Commerce Ltd — but the company is
-                    just the wrapper. What you're hiring is me.
+                    just the wrapper. What you're hiring is me. The LTS stands for Long Term
+                    Support, because that's the shape of the work: an ongoing relationship with
+                    expertise retained and on hand, not a one-off bill. My longest client
+                    relationship is over fifteen years and counting.
                   </p>
                   <p>
                     I've put in thousands of hours of hands-on development work. I can confidently

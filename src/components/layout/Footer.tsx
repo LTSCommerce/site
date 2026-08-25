@@ -26,9 +26,9 @@ export function Footer() {
               <img src="/logo-mono-light.svg" alt="LTS Commerce" className="h-8 w-auto" />
             </Link>
             <p className="text-sm leading-relaxed text-gray-400 max-w-xs">
-              I'm Joseph Edmonds — one engineer, 25 years of shipping. Agentic delivery
-              governance, PHP engineering and fractional CTO work from West Yorkshire, UK. No
-              bullshit.
+              I'm Joseph Edmonds — one engineer, 25 years of shipping. LTS stands for Long Term
+              Support: retained expertise, on hand as and when you need it, from West Yorkshire,
+              UK. No bullshit.
             </p>
           </div>
 
