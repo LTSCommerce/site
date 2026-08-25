@@ -56,7 +56,7 @@ const secondaryExpertise: [ThreeColumnFeature, ThreeColumnFeature] = [
   {
     title: 'Backend & PHP Engineering',
     description:
-      'Complex, modern PHP systems built to last, covering legacy transformation, scalable API design, and high-throughput backend architecture.',
+      'Complex, modern PHP systems built to last — legacy transformation, scalable API design, high-throughput backends. Complex ecommerce is the speciality: large catalogues and bespoke capability that puts you ahead of the competition.',
     icon: Code2,
     items: ['Custom PHP 8.x architecture', 'Legacy system modernisation', 'Database optimisation'],
   },

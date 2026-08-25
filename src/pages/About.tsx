@@ -84,6 +84,13 @@ export function About() {
                     high-pressure environments where performance and reliability can't fail.
                   </p>
                   <p>
+                    Throughout, my focus has been ecommerce — and particularly the harder end of
+                    it: large catalogues, complex functionality, specialist requirements that
+                    off-the-shelf platforms can't meet. That's where bespoke development earns its
+                    keep, giving a business capabilities and USPs that put it ahead of the
+                    competition rather than level with it.
+                  </p>
+                  <p>
                     Somewhere in that stretch I got serious about how code actually gets tested and
                     shipped. I've been building and operating CI infrastructure since 2014, first
                     self-hosted Jenkins, then Travis, then my own <code>phpqa</code> tooling, then
