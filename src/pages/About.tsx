@@ -108,6 +108,12 @@ export function About() {
 
               <div>
                 <h2 className="text-3xl font-bold mb-4">Philosophy</h2>
+                <p className="text-gray-700 mb-4">
+                  Straight talking comes first. I'll tell you if you're being stupid, and I'll
+                  tell you if something is shit — politely, with reasons, but I won't tell you
+                  what you want to hear. When the wrong technical decision can cost your business
+                  heavily, honest guidance is worth more than a comfortable meeting.
+                </p>
                 <p className="text-gray-700">
                   I write clean, maintainable code that lasts. Every solution should be scalable,
                   secure, and simple to understand. Technology should serve the business, not

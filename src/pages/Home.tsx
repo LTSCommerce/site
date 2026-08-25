@@ -110,6 +110,12 @@ export function Home() {
               don't name them publicly — if you want to know more, get in touch and we can discuss
               directly.
             </p>
+            <p className="text-gray-700 text-lg leading-relaxed mt-4">
+              And you'll get it straight. I offer clear, frank guidance — I won't sugar-coat
+              things or tell you what you want to hear. Sometimes that will annoy you, and that's
+              probably good: I may be the only person in the conversation telling you the truth
+              about your business, at exactly the moments when the wrong decision costs the most.
+            </p>
           </div>
         </Container>
       </Section>
