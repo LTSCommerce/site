@@ -215,8 +215,8 @@ export function Services() {
                   team.
                 </li>
                 <li>
-                  I build the guardrail tooling for AI-assisted delivery. Not just an AI adopter:
-                  I'm the person who wrote the containment and QA-gate tooling other teams install.
+                  I build the guardrail tooling for AI-assisted delivery: the containment and
+                  QA-gate tooling other teams install, dog-fooded daily in production.
                 </li>
               </ul>
             </div>

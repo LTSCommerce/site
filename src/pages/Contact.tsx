@@ -124,7 +124,7 @@ export function Contact() {
   return (
     <Page
       title="Hire Me - Joseph Edmonds | LTS Commerce"
-      description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 25 years experience. £150/hr."
+      description="Hire Joseph Edmonds for PHP development, infrastructure automation, fractional CTO work, or AI delivery governance. Long-term support, not one-off billing."
     >
       {/* Hero + Services + Details - single flow */}
       <div className="py-10">

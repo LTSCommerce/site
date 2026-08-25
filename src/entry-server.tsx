@@ -126,7 +126,7 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
   '/open-source': {
     title: `Open Source Projects - ${SITE_NAME}`,
     description:
-      'Public repositories published by Joseph Edmonds: agentic-delivery guardrail tooling plus eleven years of PHP, TypeScript, and test-infrastructure packages.',
+      'Public repositories published by Joseph Edmonds: agentic-delivery guardrail tooling plus PHP, TypeScript, and test-infrastructure packages published since 2015.',
   },
   '/errors/404': {
     title: `Page Not Found | ${SITE_NAME}`,

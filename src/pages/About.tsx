@@ -8,7 +8,7 @@ export function About() {
   return (
     <Page
       title="About Me - Joseph Edmonds | LTS Commerce"
-      description="20+ years building complex, high-performance PHP systems. Specialising in legacy modernisation, infrastructure automation, and large-scale backend architecture."
+      description="Joseph Edmonds - technical leader with 25 years' experience in PHP engineering, infrastructure automation, and agentic delivery governance."
     >
       {/* Hero Section */}
       <Section spacing="xl">
@@ -47,15 +47,14 @@ export function About() {
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                   <li>
-                    Sole technical lead for a mid-market ecommerce operation. I own the
-                    architecture, run the infrastructure it trades on, and I'm the one who delivers
-                    what actually ships, agent-driven work gated by my own tooling. External
-                    agencies come in alongside me, working to standards I set.
+                    Technical leadership for the businesses I work with: I own architecture, run
+                    production infrastructure, and deliver what actually ships. Agent-driven work is
+                    gated by my own tooling, and external agencies work to standards I set.
                   </li>
-                  <li>4-node high-availability Proxmox cluster, managed entirely as code.</li>
+                  <li>High-availability Proxmox clusters, managed entirely as code.</li>
                   <li>
                     Automated error detection, deduplication, and first-pass triage through the
-                    GitHub API.
+                    GitHub API, built and run in production.
                   </li>
                 </ul>
               </div>
@@ -81,9 +80,9 @@ export function About() {
                     mine have run continuously for more than fifteen years.
                   </p>
                   <p>
-                    I've put in thousands of hours of hands-on development work. I can confidently
-                    say I'm at expert level now. Writing <strong>"The Art of Modern PHP 8"</strong>{' '}
-                    helped solidify that. The best way to learn is to teach, they say.
+                    Twenty-five years in, I can confidently say I'm at expert level now. Writing{' '}
+                    <strong>"The Art of Modern PHP 8"</strong> helped solidify that. The best way to
+                    learn is to teach, they say.
                   </p>
                   <p>
                     Today, I help businesses with large-scale PHP applications that handle serious
@@ -130,9 +129,9 @@ export function About() {
                     Somewhere in that stretch I got serious about how code actually gets tested and
                     shipped. I've been building and operating CI infrastructure since 2014, first
                     self-hosted Jenkins, then Travis, then my own <code>phpqa</code> tooling, then
-                    GitHub Actions. I've published continuously since 2015, eleven years of test
-                    infrastructure out in the open. The current guardrail and quality-gate work is
-                    the same problem, just applied to agents instead of humans.
+                    GitHub Actions. I've published test infrastructure in the open continuously
+                    since 2015. The current guardrail and quality-gate work is the same problem,
+                    just applied to agents instead of humans.
                   </p>
                 </div>
               </div>

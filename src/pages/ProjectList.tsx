@@ -53,7 +53,7 @@ export function ProjectList() {
   return (
     <Page
       title="Open Source Projects - LTS Commerce"
-      description="Public repositories published by Joseph Edmonds: agentic-delivery guardrail tooling plus eleven years of PHP, TypeScript, and test-infrastructure packages."
+      description="Public repositories published by Joseph Edmonds: agentic-delivery guardrail tooling plus PHP, TypeScript, and test-infrastructure packages published since 2015."
     >
       <div className="border-b border-gray-200 bg-white">
         <Container>
@@ -132,7 +132,7 @@ export function ProjectList() {
                 Archive
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                Eleven years of test &amp; CI infrastructure
+                Test &amp; CI infrastructure since 2015
               </h2>
               <p className="text-sm text-gray-500 max-w-2xl">
                 Published continuously since February 2015 (<code>selenium-server</code>, the

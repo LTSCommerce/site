@@ -413,6 +413,8 @@ Documentation should follow clear information prioritization:
 
 ## Content Policy
 
+**SITE-TRUTH Rule (overrides everything else)**: [SITE-TRUTH.md](SITE-TRUTH.md) is the single source of truth for all page copy. Every claim on every page MUST be traceable to an item in that document, and its BANNED list is absolute. To say something new, add it to SITE-TRUTH.md first (with Joseph's sign-off), then use it. Article bodies are technical writing and exempt, but article claims about Joseph himself must still comply.
+
 **No Bullshit Rule**: All content must be factual and verifiable. No fabricated client case studies, made-up performance metrics, or fictional project examples. Use generic examples or theoretical scenarios instead of claiming specific real-world implementations that didn't happen.
 
 ---
