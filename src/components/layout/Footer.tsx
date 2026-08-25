@@ -38,7 +38,14 @@ export function Footer() {
               Navigation
             </h3>
             <ul className="space-y-3 list-none p-0 m-0">
-              {[ROUTES.home, ROUTES.articles, ROUTES.about, ROUTES.contact, ROUTES.privacy].map(
+              {[
+                ROUTES.home,
+                ROUTES.articles,
+                ROUTES.openSource,
+                ROUTES.about,
+                ROUTES.contact,
+                ROUTES.privacy,
+              ].map(
                 route => (
                   <li key={route.path}>
                     <Link

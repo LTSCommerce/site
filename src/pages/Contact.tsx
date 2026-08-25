@@ -255,8 +255,7 @@ export function Contact() {
               or strategic level, whatever the job actually needs.
             </p>
             <p className="text-sm text-gray-500 mt-3">
-              You'll get a reply from me — not a sales team — usually the same day. LTS stands for
-              Long Term Support: I'm built for ongoing relationships, not one-off bills.
+              You'll get a reply from me, not a sales team, within 24 hours on business days.
             </p>
           </div>
 
@@ -275,8 +274,9 @@ export function Contact() {
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-center mb-2">Specific Ways I Can Help</h2>
             <p className="text-sm text-gray-500 text-center mb-5 max-w-2xl mx-auto">
-              Indicative estimates at £950/day — every engagement gets a fixed scope and price
-              agreed up front before any work starts.
+              Indicative estimates at £950/day (the day rate discounts my hourly rate for
+              sustained work). Every engagement gets a fixed scope and price agreed up front
+              before any work starts.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {SPECIFIC_SERVICES.map(service => (

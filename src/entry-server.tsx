@@ -57,7 +57,7 @@ const PERSON_JSON_LD: PersonJsonLd = {
   url: SITE_URL,
   jobTitle: 'PHP Engineer & Fractional CTO',
   worksFor: { '@type': 'Organization', name: 'LTS Commerce Ltd' },
-  sameAs: ['https://github.com/LTSCommerce', 'https://linkedin.com/in/edmondscommerce'],
+  sameAs: ['https://github.com/LongTermSupport', 'https://linkedin.com/in/edmondscommerce'],
 };
 
 const PROFESSIONAL_SERVICE_JSON_LD: ProfessionalServiceJsonLd = {

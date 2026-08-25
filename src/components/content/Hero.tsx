@@ -74,7 +74,7 @@ export function Hero({ title, subtitle, cta, disqualifier, identity }: HeroProps
         {/* Credentials bar */}
         <div className="mt-16 pt-8 border-t border-[#1a1a1a] grid grid-cols-3 gap-6 max-w-xs mx-auto">
           <div>
-            <div className="text-xl font-bold text-white">20+</div>
+            <div className="text-xl font-bold text-white">25</div>
             <div className="text-xs text-gray-400 mt-0.5">Years PHP</div>
           </div>
           <div>
@@ -82,8 +82,8 @@ export function Hero({ title, subtitle, cta, disqualifier, identity }: HeroProps
             <div className="text-xs text-gray-400 mt-0.5">Published</div>
           </div>
           <div>
-            <div className="text-xl font-bold text-white">AI&#8209;First</div>
-            <div className="text-xs text-gray-400 mt-0.5">Workflows</div>
+            <div className="text-xl font-bold text-white">100+</div>
+            <div className="text-xs text-gray-400 mt-0.5">OSS Releases</div>
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@ export function About() {
               I'm Joseph Edmonds. I build systems that actually work, from PHP platforms to the
               guardrails that keep AI-assisted delivery honest. 25 years turning messy legacy
               codebases, and now messy agent output, into clean, high-performance systems. I work
-              remotely from West Yorkshire, UK. No bullshit, just results.
+              remotely from West Yorkshire, UK. No bullshit.
             </p>
           </div>
         </Container>
@@ -34,12 +34,13 @@ export function About() {
               <div>
                 <h2 className="text-3xl font-bold mb-4">What This Looks Like in Practice</h2>
                 <p className="text-gray-700 mb-4">
-                  I can't publish client case studies. The work is confidential, and staying that
-                  way is part of the deal. What I can say, checkably:
+                  I don't publish client case studies — the work is confidential, and staying
+                  that way is part of the deal. If you want more detail, get in touch and we can
+                  discuss directly. What I can say here:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                   <li>
-                    Sole technical lead for a mid-market e-commerce operation. I own the
+                    Sole technical lead for a mid-market ecommerce operation. I own the
                     architecture, run the infrastructure it trades on, and I'm the one who delivers
                     what actually ships, agent-driven work gated by my own tooling. External
                     agencies come in alongside me, working to standards I set.
@@ -69,9 +70,8 @@ export function About() {
                     to a fifteen-person team serving payment processors, fintechs, startups and
                     B2C/B2B retailers. These days I trade as LTS Commerce Ltd — but the company is
                     just the wrapper. What you're hiring is me. The LTS stands for Long Term
-                    Support, because that's the shape of the work: an ongoing relationship with
-                    expertise retained and on hand, not a one-off bill. My longest client
-                    relationships are measured in decades.
+                    Support, because that's how I work: retained, ongoing relationships — some of
+                    mine have run continuously for more than fifteen years.
                   </p>
                   <p>
                     I've put in thousands of hours of hands-on development work. I can confidently
@@ -86,9 +86,8 @@ export function About() {
                   <p>
                     Throughout, my focus has been ecommerce — and particularly the harder end of
                     it: large catalogues, complex functionality, specialist requirements that
-                    off-the-shelf platforms can't meet. That's where bespoke development earns its
-                    keep, giving a business capabilities and USPs that put it ahead of the
-                    competition rather than level with it.
+                    off-the-shelf platforms can't meet. That's where bespoke development pays off:
+                    capabilities and USPs your competitors can't buy off the shelf.
                   </p>
                   <p>
                     And today my focus is on AI-driven development processes and business
@@ -217,7 +216,7 @@ export function About() {
                     <ul className="list-disc list-inside text-gray-700 space-y-1">
                       <li>AI-Powered Development</li>
                       <li>Process Automation</li>
-                      <li>OpenAI APIs</li>
+                      <li>LLM APIs (Anthropic, OpenAI)</li>
                       <li>Business AI Solutions</li>
                     </ul>
                   </div>
@@ -229,7 +228,7 @@ export function About() {
                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                   <li>Published author - "The Art of Modern PHP 8"</li>
                   <li>Zend Certified Engineer</li>
-                  <li>20+ years PHP development</li>
+                  <li>25 years PHP development</li>
                   <li>Large-scale system architecture</li>
                   <li>High-pressure environments</li>
                   <li>Tech debt management expert</li>

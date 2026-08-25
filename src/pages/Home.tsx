@@ -31,7 +31,7 @@ const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature
   {
     title: 'Fractional CTO & Technical Leadership',
     description:
-      "Senior technical ownership without a full-time hire. I've run the technology side of real businesses for 18 years: architecture, roadmap, infrastructure, and the standards external agencies work to when they come in alongside me.",
+      "Senior technical ownership without a full-time hire. I've run the technology side of real businesses since 2007 — architecture, roadmap and infrastructure. External agencies work to standards I set.",
     icon: Brain,
     items: [
       'Technical strategy & roadmapping',
@@ -85,7 +85,7 @@ export function Home() {
       <Hero
         identity="Hey — I'm Joseph Edmonds."
         title="Ship Agent-Written Code You Can Actually Trust"
-        subtitle="I'm a back end/full stack engineer and fractional CTO from West Yorkshire, UK. I've spent decades as the technology lead behind serious UK e-commerce businesses, on platforms I build and run. Now I also build the guardrails that make AI-written code safe to ship."
+        subtitle="I'm a back end/full stack engineer and fractional CTO from West Yorkshire, UK. I've spent 25 years as the technology lead behind serious UK ecommerce businesses, on platforms I build and run. Now I also build the guardrails that make AI-written code safe to ship."
         cta={{
           text: 'Hire Me',
           link: ROUTES.contact,
@@ -101,15 +101,14 @@ export function Home() {
             </h2>
             <p className="text-gray-700 text-lg leading-relaxed mb-4">
               When you hire me, the person you talk to is the person who does the work. If it
-              doesn't ship, that's on me — there's no team to hide behind, no account manager, no
-              hand-off. That is the difference between hiring a person and hiring an agency.
+              doesn't ship, that's on me. There's no account manager between you and the work.
             </p>
             <p className="text-gray-700 text-lg leading-relaxed">
-              The LTS in LTS Commerce stands for <strong>Long Term Support</strong> — and that's
-              what I offer. Not a one-off bill, but an ongoing relationship: expertise on hand,
-              retained to support you as and when you need it. My longest client relationships are
-              measured in decades — specific company names are withheld deliberately, and yours
-              would be too.
+              The LTS in LTS Commerce stands for <strong>Long Term Support</strong>, and that's
+              what I offer: expertise on hand, retained to support you as and when you need it.
+              Some of my client relationships have run continuously for more than fifteen years. I
+              don't name them publicly — if you want to know more, get in touch and we can discuss
+              directly.
             </p>
           </div>
         </Container>
