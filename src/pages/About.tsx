@@ -7,18 +7,26 @@ import { ROUTES, getArticleRoute } from '../routes';
 export function About() {
   return (
     <Page
-      title="About Joseph - Technical Leader & PHP Engineer | LTSCommerce"
+      title="About Me — Joseph Edmonds | LTS Commerce"
       description="20+ years building complex, high-performance PHP systems. Specialising in legacy modernisation, infrastructure automation, and large-scale backend architecture."
     >
       {/* Hero Section */}
       <Section spacing="xl">
         <Container>
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl font-bold mb-6">About Joseph</h1>
+            <img
+              src="/headshot.webp"
+              alt="Joseph Edmonds"
+              width={160}
+              height={160}
+              className="w-40 h-40 rounded-full object-cover mx-auto mb-6 border border-gray-200 shadow-sm"
+            />
+            <h1 className="text-4xl font-bold mb-6">About Me</h1>
             <p className="text-xl text-gray-700 leading-relaxed mx-auto">
-              I build systems that actually work, from PHP platforms to the guardrails that keep
-              AI-assisted delivery honest. 20+ years turning messy legacy codebases, and now messy
-              agent output, into clean, high-performance systems. No bullshit, just results.
+              I'm Joseph Edmonds. I build systems that actually work, from PHP platforms to the
+              guardrails that keep AI-assisted delivery honest. 25 years turning messy legacy
+              codebases, and now messy agent output, into clean, high-performance systems. I work
+              remotely from West Yorkshire, UK. No bullshit, just results.
             </p>
           </div>
         </Container>
@@ -33,12 +41,13 @@ export function About() {
               <div>
                 <h2 className="text-3xl font-bold mb-4">What This Looks Like in Practice</h2>
                 <p className="text-gray-700 mb-4">
-                  I can't publish client case studies. The work is confidential, and staying that
-                  way is part of the deal. What I can say, checkably:
+                  I don't publish client case studies — the work is confidential, and staying
+                  that way is part of the deal. If you want more detail, get in touch and we can
+                  discuss directly. What I can say here:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                   <li>
-                    Sole technical lead for a mid-market e-commerce operation. I own the
+                    Sole technical lead for a mid-market ecommerce operation. I own the
                     architecture, run the infrastructure it trades on, and I'm the one who delivers
                     what actually ships, agent-driven work gated by my own tooling. External
                     agencies come in alongside me, working to standards I set.
@@ -55,16 +64,21 @@ export function About() {
                 <h2 className="text-3xl font-bold mb-4">My Journey</h2>
                 <div className="space-y-4 text-gray-700">
                   <p>
-                    I started my career at an ecommerce company back when ecommerce was still new.
-                    There weren't any ready-made solutions that could handle what we needed. So I
-                    learned to program out of necessity. We had to build the systems ourselves to
-                    handle our sales volume.
+                    I started at an online musical instrument startup in the early 2000s, back when
+                    ecommerce was still new. I ran everything operational — buying, warehousing,
+                    customer service, marketing, the website — and when we couldn't hire a
+                    developer to automate the warehouse, I taught myself PHP and built it. That
+                    automation transformed peak season, and the SEO work I did alongside it took us
+                    to around a million indexed pages.
                   </p>
                   <p>
-                    What started as necessity became a passion. I actually enjoyed the development
-                    work. So I decided to really learn it properly. After getting solid with the
-                    fundamentals and building up experience, I went freelance. That was a long time
-                    ago now.
+                    What started as necessity became the career. In 2007 I went out on my own and
+                    founded Edmonds Commerce, a specialist ecommerce development agency that I grew
+                    to a fifteen-person team serving payment processors, fintechs, startups and
+                    B2C/B2B retailers. These days I trade as LTS Commerce Ltd — but the company is
+                    just the wrapper. What you're hiring is me. The LTS stands for Long Term
+                    Support, because that's how I work: retained, ongoing relationships — some of
+                    mine have run continuously for more than fifteen years.
                   </p>
                   <p>
                     I've put in thousands of hours of hands-on development work. I can confidently
@@ -76,6 +90,42 @@ export function About() {
                     volume. I clean up legacy codebases, tackle massive tech debt, and work in
                     high-pressure environments where performance and reliability can't fail.
                   </p>
+                  <p>
+                    Throughout, my focus has been ecommerce — and particularly the harder end of
+                    it: large catalogues, complex functionality, specialist requirements that
+                    off-the-shelf platforms can't meet. That's where bespoke development pays off:
+                    capabilities and USPs your competitors can't buy off the shelf.
+                  </p>
+                  <p>
+                    And today my focus is on AI-driven development processes and business
+                    automation. AI is the most powerful and most dangerous tool this industry has
+                    ever handed us, and my work now is harnessing the beast: putting it to work at
+                    full speed, inside guardrails that keep it honest.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                    <figure className="m-0">
+                      <img
+                        src="/about-dales.webp"
+                        alt="Joseph and his wife hiking in the Yorkshire Dales"
+                        className="rounded-lg w-full h-auto"
+                        loading="lazy"
+                      />
+                      <figcaption className="text-xs text-gray-500 mt-1">
+                        Off the clock: the Yorkshire Dales, with my wife.
+                      </figcaption>
+                    </figure>
+                    <figure className="m-0">
+                      <img
+                        src="/about-estuary.webp"
+                        alt="Joseph on the coast in winter sunshine"
+                        className="rounded-lg w-full h-auto"
+                        loading="lazy"
+                      />
+                      <figcaption className="text-xs text-gray-500 mt-1">
+                        Thinking time. It's where the good architecture comes from.
+                      </figcaption>
+                    </figure>
+                  </div>
                   <p>
                     Somewhere in that stretch I got serious about how code actually gets tested and
                     shipped. I've been building and operating CI infrastructure since 2014, first
@@ -89,6 +139,12 @@ export function About() {
 
               <div>
                 <h2 className="text-3xl font-bold mb-4">Philosophy</h2>
+                <p className="text-gray-700 mb-4">
+                  Straight talking comes first. I'll tell you if you're being stupid, and I'll
+                  tell you if something is shit — politely, with reasons, but I won't tell you
+                  what you want to hear. When the wrong technical decision can cost your business
+                  heavily, honest guidance is worth more than a comfortable meeting.
+                </p>
                 <p className="text-gray-700">
                   I write clean, maintainable code that lasts. Every solution should be scalable,
                   secure, and simple to understand. Technology should serve the business, not
@@ -197,7 +253,7 @@ export function About() {
                     <ul className="list-disc list-inside text-gray-700 space-y-1">
                       <li>AI-Powered Development</li>
                       <li>Process Automation</li>
-                      <li>OpenAI APIs</li>
+                      <li>LLM APIs (Anthropic, OpenAI)</li>
                       <li>Business AI Solutions</li>
                     </ul>
                   </div>
@@ -209,7 +265,7 @@ export function About() {
                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                   <li>Published author - "The Art of Modern PHP 8"</li>
                   <li>Zend Certified Engineer</li>
-                  <li>20+ years PHP development</li>
+                  <li>25 years PHP development</li>
                   <li>Large-scale system architecture</li>
                   <li>High-pressure environments</li>
                   <li>Tech debt management expert</li>

@@ -57,7 +57,7 @@ const PERSON_JSON_LD: PersonJsonLd = {
   url: SITE_URL,
   jobTitle: 'PHP Engineer & Fractional CTO',
   worksFor: { '@type': 'Organization', name: 'LTS Commerce Ltd' },
-  sameAs: ['https://github.com/LTSCommerce', 'https://linkedin.com/in/edmondscommerce'],
+  sameAs: ['https://github.com/LongTermSupport', 'https://linkedin.com/in/edmondscommerce'],
 };
 
 const PROFESSIONAL_SERVICE_JSON_LD: ProfessionalServiceJsonLd = {
@@ -66,7 +66,7 @@ const PROFESSIONAL_SERVICE_JSON_LD: ProfessionalServiceJsonLd = {
   name: 'LTS Commerce Ltd',
   url: SITE_URL,
   description:
-    'Agentic delivery governance and PHP engineering for complex, high-throughput backend systems.',
+    'Long Term Support from Joseph Edmonds: retained engineering and fractional CTO expertise — agentic delivery governance and PHP engineering as an ongoing relationship, not a one-off bill.',
   founder: { '@type': 'Person', name: 'Joseph Edmonds' },
 };
 
@@ -88,24 +88,30 @@ const JSON_LD_BY_ROUTE: Record<string, unknown> = {
   '/': PROFESSIONAL_SERVICE_JSON_LD,
   '/about': PERSON_JSON_LD,
   '/contact': PROFESSIONAL_SERVICE_JSON_LD,
+  '/services': PROFESSIONAL_SERVICE_JSON_LD,
   '/open-source': OPEN_SOURCE_JSON_LD,
 };
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
   '/': {
-    title: `${SITE_NAME} - Agentic Delivery Governance & PHP Engineering`,
+    title: `Joseph Edmonds — Engineer & Fractional CTO | ${SITE_NAME}`,
     description:
-      'Containment, policy, and quality-gate infrastructure for AI-assisted delivery, built on 20+ years of PHP and backend engineering. No bullshit, just results.',
+      'Joseph Edmonds: engineer and fractional CTO from West Yorkshire, UK. Decades of hands-on delivery; guardrails that make AI code safe to ship.',
   },
   '/about': {
-    title: `About - ${SITE_NAME}`,
+    title: `About Me — Joseph Edmonds | ${SITE_NAME}`,
     description:
-      "Joseph Edmonds - technical leader with 20+ years' experience in PHP engineering, infrastructure automation, and agentic delivery governance.",
+      "Joseph Edmonds - technical leader with 25 years' experience in PHP engineering, infrastructure automation, and agentic delivery governance.",
+  },
+  '/services': {
+    title: `Services — Joseph Edmonds | ${SITE_NAME}`,
+    description:
+      'What I do and what it costs: development, fractional CTO work, infrastructure, AI delivery governance. £150/hr or £950/day, fixed scope agreed up front.',
   },
   '/contact': {
-    title: `Contact - ${SITE_NAME}`,
+    title: `Hire Me — Joseph Edmonds | ${SITE_NAME}`,
     description:
-      'Get in touch for PHP development, infrastructure automation, or technical consultancy.',
+      'Hire Joseph Edmonds for PHP development, infrastructure automation, fractional CTO work, or AI delivery governance. Long-term support, not one-off billing.',
   },
   '/privacy': {
     title: `Privacy Policy - ${SITE_NAME} Ltd`,
@@ -205,6 +211,7 @@ export function getRoutes(): string[] {
   const staticRoutes = [
     '/',
     '/about',
+    '/services',
     '/contact',
     '/privacy',
     '/articles',
