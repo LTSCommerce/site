@@ -242,7 +242,7 @@ export function Contact() {
   return (
     <Page
       title="Hire Me — Joseph Edmonds | LTS Commerce"
-      description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 20+ years experience. £150/hr."
+      description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 25 years experience. £150/hr."
     >
       {/* Hero + Services + Details - single flow */}
       <div className="py-10">
@@ -251,7 +251,7 @@ export function Contact() {
             <h1 className="text-4xl font-bold mb-3">Hire Me</h1>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
               I build the guardrails that make AI-assisted delivery safe to ship: containment,
-              policy, quality gates, on top of 20+ years of backend and PHP engineering. Code level
+              policy, quality gates, on top of 25 years of backend and PHP engineering. Code level
               or strategic level, whatever the job actually needs.
             </p>
             <p className="text-sm text-gray-500 mt-3">
@@ -342,7 +342,7 @@ export function Contact() {
             <div className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
               <h2 className="text-base font-bold mb-2">Why Hire Me</h2>
               <ul className="space-y-1.5 text-sm text-gray-700">
-                <li>20+ years hands-on experience across PHP, TypeScript, Linux, and databases.</li>
+                <li>25 years hands-on experience across PHP, TypeScript, Linux, and databases.</li>
                 <li>Published author of "The Art of Modern PHP 8". Zend Certified Engineer.</li>
                 <li>
                   Proven track record with large-scale, high-pressure systems and legacy codebases.
