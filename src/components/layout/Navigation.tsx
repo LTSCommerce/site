@@ -31,9 +31,14 @@ export function Navigation() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to={ROUTES.home.path} className="flex items-center shrink-0">
-            <img src="/logo-mark.svg" alt="LTS Commerce" className="h-8 w-8 md:hidden" />
-            <img src="/logo.svg" alt="LTS Commerce" className="h-8 w-auto hidden md:block" />
+          <Link to={ROUTES.home.path} className="flex items-center gap-3 shrink-0">
+            <img src="/logo-mark.svg" alt="LTS Commerce" className="h-8 w-8" />
+            <span className="leading-tight">
+              <span className="block text-sm font-semibold text-gray-900">Joseph Edmonds</span>
+              <span className="hidden md:block text-xs text-gray-500">
+                Engineer &amp; Fractional CTO · LTS Commerce
+              </span>
+            </span>
           </Link>
 
           {/* Desktop nav */}

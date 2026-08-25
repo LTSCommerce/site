@@ -7,18 +7,19 @@ import { ROUTES, getArticleRoute } from '../routes';
 export function About() {
   return (
     <Page
-      title="About Joseph - Technical Leader & PHP Engineer | LTSCommerce"
+      title="About Me — Joseph Edmonds | LTS Commerce"
       description="20+ years building complex, high-performance PHP systems. Specialising in legacy modernisation, infrastructure automation, and large-scale backend architecture."
     >
       {/* Hero Section */}
       <Section spacing="xl">
         <Container>
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl font-bold mb-6">About Joseph</h1>
+            <h1 className="text-4xl font-bold mb-6">About Me</h1>
             <p className="text-xl text-gray-700 leading-relaxed mx-auto">
-              I build systems that actually work, from PHP platforms to the guardrails that keep
-              AI-assisted delivery honest. 20+ years turning messy legacy codebases, and now messy
-              agent output, into clean, high-performance systems. No bullshit, just results.
+              I'm Joseph Edmonds. I build systems that actually work, from PHP platforms to the
+              guardrails that keep AI-assisted delivery honest. 25 years turning messy legacy
+              codebases, and now messy agent output, into clean, high-performance systems. I work
+              remotely from West Yorkshire, UK. No bullshit, just results.
             </p>
           </div>
         </Container>
@@ -55,16 +56,19 @@ export function About() {
                 <h2 className="text-3xl font-bold mb-4">My Journey</h2>
                 <div className="space-y-4 text-gray-700">
                   <p>
-                    I started my career at an ecommerce company back when ecommerce was still new.
-                    There weren't any ready-made solutions that could handle what we needed. So I
-                    learned to program out of necessity. We had to build the systems ourselves to
-                    handle our sales volume.
+                    I started at an online musical instrument startup in the early 2000s, back when
+                    ecommerce was still new. I ran everything operational — buying, warehousing,
+                    customer service, marketing, the website — and when we couldn't hire a
+                    developer to automate the warehouse, I taught myself PHP and built it. That
+                    automation transformed peak season, and the SEO work I did alongside it took us
+                    to around a million indexed pages.
                   </p>
                   <p>
-                    What started as necessity became a passion. I actually enjoyed the development
-                    work. So I decided to really learn it properly. After getting solid with the
-                    fundamentals and building up experience, I went freelance. That was a long time
-                    ago now.
+                    What started as necessity became the career. In 2007 I went out on my own and
+                    founded Edmonds Commerce, a specialist ecommerce development agency that I grew
+                    to a fifteen-person team serving payment processors, fintechs, startups and
+                    B2C/B2B retailers. These days I trade as LTS Commerce Ltd — but the company is
+                    just the wrapper. What you're hiring is me.
                   </p>
                   <p>
                     I've put in thousands of hours of hands-on development work. I can confidently

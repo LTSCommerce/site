@@ -31,7 +31,7 @@ const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature
   {
     title: 'Fractional CTO & Technical Leadership',
     description:
-      "Sole technical lead for a mid-market e-commerce operation. I own the architecture, run the infrastructure it trades on, and I'm the one who delivers what actually ships, agent-driven work gated by my own tooling. External agencies come in alongside me, working to standards I set.",
+      "Senior technical ownership without a full-time hire. I've run the technology side of real businesses for 18 years: architecture, roadmap, infrastructure, and the standards external agencies work to when they come in alongside me.",
     icon: Brain,
     items: [
       'Technical strategy & roadmapping',
@@ -79,17 +79,34 @@ export function Home() {
 
   return (
     <Page
-      title="LTSCommerce - Agentic Delivery Governance & PHP Engineering"
-      description="Containment, policy, and quality-gate infrastructure for AI-assisted delivery, built on 20+ years of PHP and backend engineering. No bullshit, just results."
+      title="Joseph Edmonds — Engineer & Fractional CTO | LTS Commerce"
+      description="Joseph Edmonds: engineer and fractional CTO from West Yorkshire, UK. 15+ years behind a c. £36m e-commerce business; guardrails that make AI code safe to ship."
     >
       <Hero
+        identity="Hey — I'm Joseph Edmonds."
         title="Ship Agent-Written Code You Can Actually Trust"
-        subtitle="AI-assisted delivery breaks in production because nobody built the guardrails first, so that's what I build: sandboxing, policy enforcement, quality gates, and then I help your team actually run it. 20+ years of backend engineering underneath, e-commerce and PHP included."
+        subtitle="I'm a back end/full stack engineer and fractional CTO from West Yorkshire, UK. For 15+ years I've been the sole technology lead behind a UK e-commerce business that grew to c. £36m a year on the platform I build and run. Now I also build the guardrails that make AI-written code safe to ship."
         cta={{
-          text: 'Get In Touch',
+          text: 'Hire Me',
           link: ROUTES.contact,
         }}
       />
+
+      {/* Accountability — one person, not an agency */}
+      <Section spacing="lg" className="bg-white">
+        <Container size="md">
+          <div className="text-center max-w-2xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-4">
+              LTS Commerce is not an agency. It's me.
+            </h2>
+            <p className="text-gray-700 text-lg leading-relaxed">
+              When you hire me, the person you talk to is the person who does the work. If it
+              doesn't ship, that's on me — there's no team to hide behind, no account manager, no
+              hand-off. That is the difference between hiring a person and hiring an agency.
+            </p>
+          </div>
+        </Container>
+      </Section>
 
       {/* Core Expertise — dark section, cards designed for dark bg */}
       <Section spacing="xl" className="bg-[#0A0A0A]">

@@ -18,9 +18,11 @@ export interface HeroProps {
   };
   /** Short line naming who this isn't for, shown below the CTAs */
   disqualifier?: string;
+  /** Personal identity greeting shown above the headline */
+  identity?: string;
 }
 
-export function Hero({ title, subtitle, cta, disqualifier }: HeroProps) {
+export function Hero({ title, subtitle, cta, disqualifier, identity }: HeroProps) {
   return (
     <section className="bg-[#0A0A0A] text-white">
       <div className="max-w-5xl mx-auto px-6 py-20 md:py-28 text-center">
@@ -28,6 +30,11 @@ export function Hero({ title, subtitle, cta, disqualifier }: HeroProps) {
         <div className="text-xs text-gray-400 mb-8 font-mono uppercase tracking-widest">
           Containment &middot; Policy &middot; Gates
         </div>
+
+        {/* Identity greeting */}
+        {identity && (
+          <p className="text-gray-200 text-xl md:text-2xl font-medium mb-4">{identity}</p>
+        )}
 
         {/* Headline */}
         <h1 className="text-white text-4xl md:text-6xl lg:text-[4.5rem] font-bold mb-6 leading-[1.1] tracking-tight mt-0">

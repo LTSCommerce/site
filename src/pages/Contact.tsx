@@ -164,7 +164,7 @@ export function Contact() {
 
   return (
     <Page
-      title="Hire Joseph Edmonds - Developer & Technical Leader | LTSCommerce"
+      title="Hire Me — Joseph Edmonds | LTS Commerce"
       description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 20+ years experience. £150/hr."
     >
       {/* Hero + Services + Details - single flow */}
@@ -176,6 +176,9 @@ export function Contact() {
               I build the guardrails that make AI-assisted delivery safe to ship: containment,
               policy, quality gates, on top of 20+ years of backend and PHP engineering. Code level
               or strategic level, whatever the job actually needs.
+            </p>
+            <p className="text-sm text-gray-500 mt-3">
+              You'll get a reply from me — not a sales team — usually the same day.
             </p>
           </div>
 

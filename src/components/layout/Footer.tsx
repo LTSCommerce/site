@@ -26,8 +26,9 @@ export function Footer() {
               <img src="/logo-mono-light.svg" alt="LTS Commerce" className="h-8 w-auto" />
             </Link>
             <p className="text-sm leading-relaxed text-gray-400 max-w-xs">
-              Agentic delivery governance and PHP engineering for complex, high-throughput backend
-              systems. 20+ years. No bullshit.
+              I'm Joseph Edmonds — one engineer, 25 years of shipping. Agentic delivery
+              governance, PHP engineering and fractional CTO work from West Yorkshire, UK. No
+              bullshit.
             </p>
           </div>
 
@@ -85,8 +86,8 @@ export function Footer() {
         {/* Copyright bar */}
         <div className="border-t border-[#1a1a1a] pt-8 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
           <p className="text-xs text-gray-400 text-center sm:text-left">
-            &copy; {COPYRIGHT_YEAR} LTS Commerce Ltd. Company No. 16618262. Registered in England
-            &amp; Wales. VAT registered.
+            &copy; {COPYRIGHT_YEAR} Joseph Edmonds · trading as LTS Commerce Ltd. Company No.
+            16618262. Registered in England &amp; Wales. VAT registered.
           </p>
           <p className="text-xs text-gray-400">Built with TypeScript &amp; React</p>
         </div>
