@@ -50,6 +50,77 @@ const SERVICE_AREAS: ServiceArea[] = [
   },
 ];
 
+interface SpecificService {
+  title: string;
+  description: string;
+  estimate: string;
+}
+
+// Indicative estimates at £950/day — every engagement gets a fixed scope and
+// price agreed up front before any work starts.
+const SPECIFIC_SERVICES: SpecificService[] = [
+  {
+    title: 'Move to Infrastructure as Code',
+    description:
+      'Take hand-managed servers to fully repeatable Ansible/Bash provisioning, so any environment can be rebuilt from scratch on demand. Proxmox and bare metal a speciality.',
+    estimate: 'Typically 5–15 days depending on estate size',
+  },
+  {
+    title: 'Automated Error Triage Pipeline',
+    description:
+      'Error logging wired into GitHub issues with AI-driven deduplication and first-pass triage — incidents become actionable tickets in minutes, not days. I run this in production.',
+    estimate: 'Typically 5–10 days to first triaged incident',
+  },
+  {
+    title: 'AI Delivery Governance Rollout',
+    description:
+      'Get your team shipping agent-written code safely: containment, policy guardrails, and automated QA gates, built on my open source tooling and dog-fooded daily.',
+    estimate: 'Typically 3–10 days, then optional retained support',
+  },
+  {
+    title: 'Training & Support',
+    description:
+      'Hands-on upskilling for your team: AI-assisted development done properly, modern PHP, infrastructure and delivery practice. Follow-up support retained as needed.',
+    estimate: 'From 1 day; retained blocks by arrangement',
+  },
+  {
+    title: 'Strategic Guidance',
+    description:
+      'Fractional CTO input: technical roadmap, architecture decisions, build-vs-buy, hiring and team standards. Senior ownership without the full-time hire.',
+    estimate: 'From 1–2 days/month retained',
+  },
+  {
+    title: 'Third-Party API & Service Review',
+    description:
+      "Choosing payment providers, SaaS platforms or integration partners? I evaluate the candidates from an engineering point of view — API quality, reliability, lock-in, real integration cost — before you commit.",
+    estimate: 'Typically 1–3 days per shortlist',
+  },
+  {
+    title: 'Performance Rescue',
+    description:
+      'Slow pages, creaking databases. Profiling and deep SQL optimisation with measurable before/after numbers — my first rescue took page loads from 10+ seconds to 1–2.',
+    estimate: 'Typically 2–5 days to first measurable gains',
+  },
+  {
+    title: 'Deployment Safety',
+    description:
+      'Tag-based blue/green deployment with instantaneous rollback and a sensible human gate — ship confidently without betting the business on every release.',
+    estimate: 'Typically 3–7 days',
+  },
+  {
+    title: 'Security Hardening',
+    description:
+      'Cut production off from the public internet: VPN and tunnel-based access, client certificates, aggressive WAF rules. Dramatically shrink your attack surface.',
+    estimate: 'Typically 3–10 days',
+  },
+  {
+    title: 'Backup & Disaster Recovery',
+    description:
+      'Tested, automated, off-site backups and a recovery plan you have actually rehearsed — so a bad day stays a bad day, not an extinction event.',
+    estimate: 'Typically 2–5 days',
+  },
+];
+
 const TECH_TAGS: string[] = [
   'PHP',
   'TypeScript',
@@ -193,6 +264,28 @@ export function Contact() {
                 <p className="text-gray-700 text-sm leading-snug">{service.description}</p>
               </div>
             ))}
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-center mb-2">Specific Ways I Can Help</h2>
+            <p className="text-sm text-gray-500 text-center mb-5 max-w-2xl mx-auto">
+              Indicative estimates at £950/day — every engagement gets a fixed scope and price
+              agreed up front before any work starts.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {SPECIFIC_SERVICES.map(service => (
+                <div
+                  key={service.title}
+                  className="bg-white px-4 py-3 rounded-lg border border-gray-200"
+                >
+                  <div className="flex items-baseline justify-between gap-3 mb-1">
+                    <h3 className="text-base font-bold">{service.title}</h3>
+                  </div>
+                  <p className="text-gray-700 text-sm leading-snug mb-2">{service.description}</p>
+                  <p className="text-xs font-medium text-[#0f4c81]">{service.estimate}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-wrap justify-center gap-2 mb-8">
