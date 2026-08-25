@@ -83,7 +83,7 @@ export function Home() {
       description="Joseph Edmonds: engineer and fractional CTO from West Yorkshire, UK. Decades of hands-on delivery; guardrails that make AI code safe to ship."
     >
       <Hero
-        identity="Hey — I'm Joseph Edmonds."
+        identity="I'm Joseph Edmonds."
         title="Long Term Support for Your Technology"
         subtitle="Back end/full stack engineer and fractional CTO from West Yorkshire, UK. 25 years as the technology lead behind serious UK ecommerce businesses, on platforms I build and run — and today, the guardrails that make AI-written code safe to ship. Currently taking new clients."
         cta={{
