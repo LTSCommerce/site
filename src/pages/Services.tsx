@@ -73,7 +73,7 @@ const SPECIFIC_SERVICES: SpecificService[] = [
   {
     title: 'Third-Party API & Service Review',
     description:
-      "Choosing payment providers, SaaS platforms or integration partners? I evaluate the candidates from an engineering point of view — API quality, reliability, lock-in, real integration cost — before you commit.",
+      'Choosing payment providers, SaaS platforms or integration partners? I evaluate the candidates from an engineering point of view — API quality, reliability, lock-in, real integration cost — before you commit.',
     estimate: 'Typically 1–3 days per shortlist',
   },
   {
@@ -136,8 +136,8 @@ export function Services() {
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
               What I do, what it costs, and roughly how long it takes. Everything here is work I
               actually do, priced at £150/hr (2 hour minimum) or £950/day — the day rate discounts
-              the hourly for sustained work. Every engagement gets a fixed scope and price agreed
-              up front before any work starts.
+              the hourly for sustained work. Every engagement gets a fixed scope and price agreed up
+              front before any work starts.
             </p>
           </div>
 

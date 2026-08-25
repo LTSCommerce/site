@@ -104,17 +104,17 @@ export function Home() {
               doesn't ship, that's on me. There's no account manager between you and the work.
             </p>
             <p className="text-gray-700 text-lg leading-relaxed">
-              The LTS in LTS Commerce stands for <strong>Long Term Support</strong>, and that's
-              what I offer: expertise on hand, retained to support you as and when you need it.
-              Some of my client relationships have run continuously for more than fifteen years. I
-              don't name them publicly — if you want to know more, get in touch and we can discuss
+              The LTS in LTS Commerce stands for <strong>Long Term Support</strong>, and that's what
+              I offer: expertise on hand, retained to support you as and when you need it. Some of
+              my client relationships have run continuously for more than fifteen years. I don't
+              name them publicly — if you want to know more, get in touch and we can discuss
               directly.
             </p>
             <p className="text-gray-700 text-lg leading-relaxed mt-4">
-              And you'll get it straight. I offer clear, frank guidance — I won't sugar-coat
-              things or tell you what you want to hear. Sometimes that will annoy you, and that's
-              probably good: I may be the only person in the conversation telling you the truth
-              about your business, at exactly the moments when the wrong decision costs the most.
+              And you'll get it straight. I offer clear, frank guidance — I won't sugar-coat things
+              or tell you what you want to hear. Sometimes that will annoy you, and that's probably
+              good: I may be the only person in the conversation telling you the truth about your
+              business, at exactly the moments when the wrong decision costs the most.
             </p>
           </div>
         </Container>
@@ -131,8 +131,8 @@ export function Home() {
               Core Expertise
             </h2>
             <p className="text-gray-400 mt-3 max-w-xl mx-auto">
-              The current specialism: ship agent-written code you can actually trust — built on
-              the 25-year engineering foundation below.
+              The current specialism: ship agent-written code you can actually trust — built on the
+              25-year engineering foundation below.
             </p>
           </div>
 

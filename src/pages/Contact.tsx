@@ -141,7 +141,6 @@ export function Contact() {
             </p>
           </div>
 
-
           <p className="text-center text-sm mb-8">
             <Link to={ROUTES.services.path} className="text-[#0f4c81] underline">
               See what I do and what it costs on the Services page

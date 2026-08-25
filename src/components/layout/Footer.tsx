@@ -27,8 +27,8 @@ export function Footer() {
             </Link>
             <p className="text-sm leading-relaxed text-gray-400 max-w-xs">
               I'm Joseph Edmonds — one engineer, 25 years of shipping. LTS stands for Long Term
-              Support: retained expertise, on hand as and when you need it, from West Yorkshire,
-              UK. No bullshit.
+              Support: retained expertise, on hand as and when you need it, from West Yorkshire, UK.
+              No bullshit.
             </p>
           </div>
 
@@ -46,18 +46,16 @@ export function Footer() {
                 ROUTES.about,
                 ROUTES.contact,
                 ROUTES.privacy,
-              ].map(
-                route => (
-                  <li key={route.path}>
-                    <Link
-                      to={route.path}
-                      className="text-sm text-gray-400 hover:text-white transition-colors"
-                    >
-                      {route.label}
-                    </Link>
-                  </li>
-                )
-              )}
+              ].map(route => (
+                <li key={route.path}>
+                  <Link
+                    to={route.path}
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    {route.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
