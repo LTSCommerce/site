@@ -123,7 +123,7 @@ export function Contact() {
 
   return (
     <Page
-      title="Hire Me — Joseph Edmonds | LTS Commerce"
+      title="Hire Me - Joseph Edmonds | LTS Commerce"
       description="Available for hire: PHP, TypeScript, DevOps, infrastructure, technical leadership, and AI-enhanced development. 25 years experience. £150/hr."
     >
       {/* Hero + Services + Details - single flow */}

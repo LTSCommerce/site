@@ -7,7 +7,7 @@ import { ROUTES, getArticleRoute } from '../routes';
 export function About() {
   return (
     <Page
-      title="About Me — Joseph Edmonds | LTS Commerce"
+      title="About Me - Joseph Edmonds | LTS Commerce"
       description="20+ years building complex, high-performance PHP systems. Specialising in legacy modernisation, infrastructure automation, and large-scale backend architecture."
     >
       {/* Hero Section */}
@@ -41,7 +41,7 @@ export function About() {
               <div>
                 <h2 className="text-3xl font-bold mb-4">What This Looks Like in Practice</h2>
                 <p className="text-gray-700 mb-4">
-                  I don't publish client case studies — the work is confidential, and staying that
+                  I don't publish client case studies. The work is confidential, and staying that
                   way is part of the deal. If you want more detail, get in touch and we can discuss
                   directly. What I can say here:
                 </p>
@@ -65,9 +65,9 @@ export function About() {
                 <div className="space-y-4 text-gray-700">
                   <p>
                     I started at an online musical instrument startup in the early 2000s, back when
-                    ecommerce was still new. I ran everything operational — buying, warehousing,
-                    customer service, marketing, the website — and when we couldn't hire a developer
-                    to automate the warehouse, I taught myself PHP and built it. That automation
+                    ecommerce was still new. I ran everything operational: buying, warehousing,
+                    customer service, marketing, the website. When we couldn't hire a developer to
+                    automate the warehouse, I taught myself PHP and built it. That automation
                     transformed peak season, and the SEO work I did alongside it took us to around a
                     million indexed pages.
                   </p>
@@ -75,9 +75,9 @@ export function About() {
                     What started as necessity became the career. In 2007 I went out on my own and
                     founded Edmonds Commerce, a specialist ecommerce development agency that I grew
                     to a fifteen-person team serving payment processors, fintechs, startups and
-                    B2C/B2B retailers. These days I trade as LTS Commerce Ltd — but the company is
+                    B2C/B2B retailers. These days I trade as LTS Commerce Ltd, but the company is
                     just the wrapper. What you're hiring is me. The LTS stands for Long Term
-                    Support, because that's how I work: retained, ongoing relationships — some of
+                    Support, because that's how I work: retained, ongoing relationships. Some of
                     mine have run continuously for more than fifteen years.
                   </p>
                   <p>
@@ -91,7 +91,7 @@ export function About() {
                     high-pressure environments where performance and reliability can't fail.
                   </p>
                   <p>
-                    Throughout, my focus has been ecommerce — and particularly the harder end of it:
+                    Throughout, my focus has been ecommerce, and particularly the harder end of it:
                     large catalogues, complex functionality, specialist requirements that
                     off-the-shelf platforms can't meet. That's where bespoke development pays off:
                     capabilities and USPs your competitors can't buy off the shelf.
@@ -141,7 +141,7 @@ export function About() {
                 <h2 className="text-3xl font-bold mb-4">Philosophy</h2>
                 <p className="text-gray-700 mb-4">
                   Straight talking comes first. I'll tell you if you're being stupid, and I'll tell
-                  you if something is shit — politely, with reasons, but I won't tell you what you
+                  you if something is shit. Politely, with reasons, but I won't tell you what you
                   want to hear. When the wrong technical decision can cost your business heavily,
                   honest guidance is worth more than a comfortable meeting.
                 </p>

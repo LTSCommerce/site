@@ -49,7 +49,7 @@ const SPECIFIC_SERVICES: SpecificService[] = [
   {
     title: 'Automated Error Triage Pipeline',
     description:
-      'Error logging wired into GitHub issues with AI-driven deduplication and first-pass triage — incidents become actionable tickets in minutes, not days. I run this in production.',
+      'Error logging wired into GitHub issues with AI-driven deduplication and first-pass triage. Incidents become actionable tickets in minutes, not days. I run this in production.',
     estimate: 'Typically 5–10 days to first triaged incident',
   },
   {
@@ -73,7 +73,7 @@ const SPECIFIC_SERVICES: SpecificService[] = [
   {
     title: 'Third-Party API & Service Review',
     description:
-      'Choosing payment providers, SaaS platforms or integration partners? I evaluate the candidates from an engineering point of view — API quality, reliability, lock-in, real integration cost — before you commit.',
+      'Choosing payment providers, SaaS platforms or integration partners? Before you commit, I evaluate the candidates from an engineering point of view: API quality, reliability, lock-in, real integration cost.',
     estimate: 'Typically 1–3 days per shortlist',
   },
   {
@@ -85,7 +85,7 @@ const SPECIFIC_SERVICES: SpecificService[] = [
   {
     title: 'Performance Rescue',
     description:
-      'Slow pages, creaking databases. Profiling and deep SQL optimisation with measurable before/after numbers — my first rescue took page loads from 10+ seconds to 1–2.',
+      'Slow pages, creaking databases. Profiling and deep SQL optimisation with measurable before/after numbers. My first rescue took page loads from 10+ seconds to 1-2.',
     estimate: 'Typically 2–5 days to first measurable gains',
   },
   {
@@ -103,7 +103,7 @@ const SPECIFIC_SERVICES: SpecificService[] = [
   {
     title: 'Backup & Disaster Recovery',
     description:
-      'Tested, automated, off-site backups and a recovery plan you have actually rehearsed — so a bad day stays a bad day, not an extinction event.',
+      'Tested, automated, off-site backups and a recovery plan you have actually rehearsed, so a bad day stays a bad day rather than an extinction event.',
     estimate: 'Typically 2–5 days',
   },
 ];
@@ -126,7 +126,7 @@ const TECH_TAGS: string[] = [
 export function Services() {
   return (
     <Page
-      title="Services — Joseph Edmonds | LTS Commerce"
+      title="Services - Joseph Edmonds | LTS Commerce"
       description="What I do and what it costs: development, fractional CTO work, infrastructure, AI delivery governance. £150/hr or £950/day, fixed scope agreed up front."
     >
       <div className="py-10">

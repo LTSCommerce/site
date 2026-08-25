@@ -31,7 +31,7 @@ const expertiseRow1: [ThreeColumnFeature, ThreeColumnFeature, ThreeColumnFeature
   {
     title: 'Fractional CTO & Technical Leadership',
     description:
-      "Senior technical ownership without a full-time hire. I've run the technology side of real businesses since 2007 — architecture, roadmap and infrastructure. External agencies work to standards I set.",
+      "Senior technical ownership without a full-time hire. I've run the technology side of real businesses since 2007: architecture, roadmap and infrastructure. External agencies work to standards I set.",
     icon: Brain,
     items: [
       'Technical strategy & roadmapping',
@@ -56,7 +56,7 @@ const secondaryExpertise: [ThreeColumnFeature, ThreeColumnFeature] = [
   {
     title: 'Backend & PHP Engineering',
     description:
-      'Complex, modern PHP systems built to last — legacy transformation, scalable API design, high-throughput backends. Complex ecommerce is the speciality: large catalogues and bespoke capability that puts you ahead of the competition.',
+      'Complex, modern PHP systems built to last: legacy transformation, scalable API design, high-throughput backends. Complex ecommerce is the speciality, with large catalogues and bespoke capability that puts you ahead of the competition.',
     icon: Code2,
     items: ['Custom PHP 8.x architecture', 'Legacy system modernisation', 'Database optimisation'],
   },
@@ -79,13 +79,13 @@ export function Home() {
 
   return (
     <Page
-      title="Joseph Edmonds — Engineer & Fractional CTO | LTS Commerce"
+      title="Joseph Edmonds - Engineer & Fractional CTO | LTS Commerce"
       description="Joseph Edmonds: engineer and fractional CTO from West Yorkshire, UK. Decades of hands-on delivery; guardrails that make AI code safe to ship."
     >
       <Hero
-        identity="I'm Joseph Edmonds."
+        identity="My name is Joseph Edmonds, I'm a developer."
         title="Long Term Support for Your Technology"
-        subtitle="Back end/full stack engineer and fractional CTO from West Yorkshire, UK. 25 years as the technology lead behind serious UK ecommerce businesses, on platforms I build and run — and today, the guardrails that make AI-written code safe to ship. Currently taking new clients."
+        subtitle="Back end/full stack engineer and fractional CTO from West Yorkshire, UK. 25 years as the technology lead behind serious UK ecommerce businesses, on platforms I build and run. Today I also build the guardrails that make AI-written code safe to ship. Currently taking new clients."
         cta={{
           text: 'Hire Me',
           link: ROUTES.contact,
@@ -107,14 +107,14 @@ export function Home() {
               The LTS in LTS Commerce stands for <strong>Long Term Support</strong>, and that's what
               I offer: expertise on hand, retained to support you as and when you need it. Some of
               my client relationships have run continuously for more than fifteen years. I don't
-              name them publicly — if you want to know more, get in touch and we can discuss
+              name them publicly. If you want to know more, get in touch and we can discuss
               directly.
             </p>
             <p className="text-gray-700 text-lg leading-relaxed mt-4">
-              And you'll get it straight. I offer clear, frank guidance — I won't sugar-coat things
-              or tell you what you want to hear. Sometimes that will annoy you, and that's probably
-              good: I may be the only person in the conversation telling you the truth about your
-              business, at exactly the moments when the wrong decision costs the most.
+              And you'll get it straight. I offer clear, frank guidance and I won't sugar-coat
+              things or tell you what you want to hear. Sometimes that will annoy you, and that's
+              probably good: I may be the only person in the conversation telling you the truth
+              about your business, at exactly the moments when the wrong decision costs the most.
             </p>
           </div>
         </Container>
@@ -131,7 +131,7 @@ export function Home() {
               Core Expertise
             </h2>
             <p className="text-gray-400 mt-3 max-w-xl mx-auto">
-              The current specialism: ship agent-written code you can actually trust — built on the
+              The current specialism: ship agent-written code you can actually trust, built on the
               25-year engineering foundation below.
             </p>
           </div>
