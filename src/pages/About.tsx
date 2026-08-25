@@ -19,7 +19,7 @@ export function About() {
               I'm Joseph Edmonds. I build systems that actually work, from PHP platforms to the
               guardrails that keep AI-assisted delivery honest. 25 years turning messy legacy
               codebases, and now messy agent output, into clean, high-performance systems. I work
-              remotely from West Yorkshire, UK. No bullshit.
+              remotely from West Yorkshire, UK. No bullshit, just results.
             </p>
           </div>
         </Container>
