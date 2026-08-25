@@ -6,8 +6,9 @@ import { test, expect } from '@playwright/test';
  * tests: this exercises the actual built HTML, not an isolated component render.
  */
 const ROUTES: Array<{ path: string; heading: string | RegExp }> = [
-  { path: '/', heading: /ship agent-written code/i },
-  { path: '/about', heading: /about joseph/i },
+  { path: '/', heading: /long term support for your technology/i },
+  { path: '/about', heading: /about me/i },
+  { path: '/services', heading: /services/i },
   { path: '/articles', heading: /articles/i },
   { path: '/contact', heading: /hire me/i },
 ];
