@@ -1,11 +1,13 @@
-flowchart LR
+flowchart TB
     subgraph agent["Agent container (no runtime)"]
+        direction LR
         A[Agent process] --> W[request writer]
     end
     subgraph mount["Shared bind mount (repo checkout)"]
         S[("Spool\nuntracked/demo-bridge/")]
     end
     subgraph host["Host (systemd --user session)"]
+        direction LR
         P[".path unit\nwatches spool"] --> D[".service unit\noneshot drain"]
         D --> V["Watcher script\n(host-only copy)"]
         V --> O["./stack.bash &lt;verb&gt;"]

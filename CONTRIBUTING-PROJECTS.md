@@ -130,7 +130,8 @@ cat > /tmp/mermaid-theme.json << 'JSON'
     "primaryTextColor": "#171717",
     "primaryBorderColor": "#0f4c81",
     "lineColor": "#0f4c81",
-    "fontFamily": "system-ui, sans-serif"
+    "fontFamily": "system-ui, sans-serif",
+    "fontSize": "20px"
   }
 }
 JSON
@@ -138,6 +139,19 @@ npx -y @mermaid-js/mermaid-cli \
   -i your-diagram.mmd -o public/images/<article-slug>/<name>.svg \
   -p /tmp/puppeteer-config.json -c /tmp/mermaid-theme.json -b transparent
 ```
+
+**Default to `flowchart TB` (top-to-bottom), not `LR`.** An article's prose
+column is a few hundred pixels wide and effectively unbounded in height, the
+opposite shape of a typical wide-screen diagram canvas. A left-to-right
+flowchart with more than three or four nodes in the main chain renders as a
+wide, short strip; squeezed down to fit the column, the text shrinks with
+it and the diagram reads as low-resolution even though it is a lossless
+vector — it was never blurry, it was just rendered tiny. A `TB` diagram
+(optionally with `direction LR` inside an individual subgraph, to keep a
+short local chain compact) produces a tall, narrow shape the reader scrolls
+through at close to its natural size, which is the shape an article column
+actually rewards. `fontSize: "20px"` above (Mermaid's default is 16px) adds
+a further legibility margin once the SVG is scaled to fit the column.
 
 The `--no-sandbox` puppeteer config is required because this runs as root in
 the agentic container. The theme variables above match this site's
