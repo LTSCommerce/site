@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-08-27T09:14:03Z",
+  "request_id": "3f9a2b7e-2b7a-4c31-9e4d-7c1a4a8e9b10",
+  "verb": "restart",
+  "outcome": "executed",
+  "unit": "example-app-restart-1756289643"
+}

@@ -7,6 +7,125 @@ import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
+    id: 'host-action-bridge',
+    title: 'The Host-Action Bridge: Letting a Sandboxed Agent Control Containers It Cannot Reach',
+    description:
+      'A pattern for letting a runtime-less AI coding agent container start, stop, and rebuild containers on its host, without a container socket, SSH access, or ad-hoc firewall holes.',
+    date: '2026-08-27',
+    category: CATEGORIES.infrastructure.id,
+    readingTime: 11,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'devops',
+    register: 'formal',
+    content: `<div class="intro">
+    <p class="lead">An agentic coding container that ships with no container runtime is a good security default. It cannot reach the engine socket, so it cannot escalate to the host through it. The trouble starts the moment real work begins: an agent editing a multi-container application legitimately needs to restart a service, rebuild an image, or check whether a container is healthy. Something has to bridge that gap, and the wrong bridge quietly undoes the sandbox it was supposed to protect.</p>
+</div>
+
+<section>
+    <h2>The Problem</h2>
+
+    <p>Sandboxing an AI coding agent inside a container is straightforward as long as the agent only touches files. Strip the container runtime binary out of the image, deny the socket mount, and the agent has no path to the host's container engine. That single omission closes an entire class of escalation: no <code>docker</code>, no <code>podman</code>, nothing to talk to.</p>
+
+    <p>The friction appears as soon as the agent is asked to do the kind of work a developer does routinely: change a service, then restart the stack to see the change take effect. The application it is editing lives in containers on the host, one level outside the sandbox. Without a runtime inside the sandbox, the agent has no way to act on what it just edited.</p>
+
+    <p>The instinct to "just give it the socket back" defeats the entire point of removing the runtime in the first place. A container engine socket is not a scoped permission; it is root on the host, wearing a thin disguise. Whatever policy you imagined limiting the agent to safe actions evaporates the moment it can talk to the engine directly, because the engine has no concept of "only restart this one service, never anything else." The gap between "no access" and "full engine access" needs a middle tier, and that middle tier is the actual design problem.</p>
+</section>
+
+<section>
+    <h2>The Trust Model</h2>
+
+    <p>The pattern that closes this gap, call it a host-action bridge, never gives the sandboxed side a way to run arbitrary commands. It gives it a way to request one of a small, fixed set of pre-approved actions, and puts a separate process on the host in charge of deciding whether, and how, to honour that request.</p>
+
+    <h3>A file-based request spool</h3>
+
+    <p>The agent already has one channel to the host that nothing needs to add: the bind-mounted project directory. Writing a small request file into a spool directory inside that mount costs nothing extra and needs no network path, no additional socket, and no new listener inside the sandbox. A request is just a fact: which verb, which project, when, from which session.</p>
+
+    <pre><code class="language-json">{{SNIPPET:host-action-bridge/request-spool-entry.json}}</code></pre>
+
+    <h3>A host-side watcher</h3>
+
+    <p>On the host, a <code>systemd --user</code> path unit watches that spool directory and fires a small watcher process the instant a new request file appears. The watcher is the only thing on the host that acts on requests, and it runs entirely outside the sandbox, with its own separate set of permissions.</p>
+
+    <pre><code class="language-bash">{{SNIPPET:host-action-bridge/watcher-loop.sh}}</code></pre>
+
+    <h3>A closed verb allowlist</h3>
+
+    <p>This is the load-bearing part of the design. The watcher does not interpret or execute anything the request file contains as a command. It looks up the requested verb name in a fixed table and runs the exact argv associated with that verb, nothing else. The agent can select from a menu; it can never write the menu, and it can never append to an entry on it.</p>
+
+    <pre><code class="language-yaml">{{SNIPPET:host-action-bridge/verb-allowlist.yaml}}</code></pre>
+
+    <p>Because the argv is fixed at config time rather than assembled from request content, there is no injection surface to defend. A request that names an unknown verb is rejected before anything runs; there is no fallback path that tries to interpret it as a command anyway.</p>
+
+    <h3>Per-verb policy, rate limits, and an audit trail</h3>
+
+    <p>Not every verb carries the same risk, so the allowlist attaches a policy to each one rather than treating the whole bridge as a single yes/no gate. A <code>status</code> check that only reads container state can run unattended every time it is requested. A <code>rebuild</code> that tears down and recreates containers is exactly the kind of action worth pausing on, so it can require a human to approve it before the watcher runs it.</p>
+
+    <p>Rate limiting exists for the same reason a fuse exists in a wiring circuit: not for the well-behaved case, but for the one where something loops. An agent stuck retrying a failing action should not be able to hammer the host tens of times a second just because the bridge itself has no ceiling.</p>
+
+    <p>Every decision the watcher makes, granted or rejected, gets one line in an audit log. This is the record that answers "what actually ran, and why" after the fact, independent of anything the agent itself reports about what it did.</p>
+
+    <pre><code class="language-json">{{SNIPPET:host-action-bridge/audit-log-entry.json}}</code></pre>
+
+    <h3>Read-only versus mutating, and reaping what gets started</h3>
+
+    <p>Splitting verbs into read-only and mutating groups is what makes the "safe to auto-approve" judgement easy to reason about later. A verb that can only report state cannot leave the host in a different condition than it found it, so it belongs in the low-friction group by construction, not by a case-by-case judgement call each time a new verb is added.</p>
+
+    <p>Verbs that start something long-running need one more piece: a way for the host to keep track of what it started on the agent's behalf. Launching the resulting process inside a transient systemd scope, rather than letting it detach and disappear from view, means the host can list, inspect, and reap anything the bridge has spun up, even a container that outlives the request that created it.</p>
+</section>
+
+<section>
+    <h2>Why Not the Obvious Alternatives</h2>
+
+    <p>Each of the shortcuts here looks like it would save the trouble of building a bridge. Each one reintroduces the exact risk the sandbox exists to remove.</p>
+
+    <h3>Handing the agent the container engine socket</h3>
+
+    <p>The socket is not a scoped credential; it is the entire engine, with no concept of least privilege attached. An agent with socket access can create privileged containers, mount the host filesystem into them, and read or write anything the host user can. This is equivalent to giving the agent root, dressed up as a convenience.</p>
+
+    <h3>SSH back to the host</h3>
+
+    <p>SSH solves the transport problem and creates a worse one: it plants a host credential inside the sandbox. A compromised or simply confused agent process with a working SSH key to the host has the same reach as an interactive shell would, without any of the allowlisting, rate limiting, or audit trail that makes the bridge safe. The blast radius the sandbox was built to contain is now sitting inside it.</p>
+
+    <h3>Ad hoc firewall holes for a control API</h3>
+
+    <p>Opening a port and standing up a small control API feels more principled than a raw socket or SSH key, but it tends to accumulate as untracked drift: one port opened for one project, then another, each with its own bespoke authentication and no shared audit trail. Nothing forces the allowlist, the rate limit, or the read-only split to exist at all, because there is no single chokepoint enforcing them. The spool-plus-watcher approach keeps all three inside one small, auditable surface instead of scattering them across however many bespoke listeners have accumulated over time.</p>
+</section>
+
+<section>
+    <h2>Hard-Won Lessons</h2>
+
+    <p>A few of these only became obvious after they caused a confusing failure. They generalise well beyond any one bridge implementation.</p>
+
+    <h3>Namespace everything per project</h3>
+
+    <p>A spool directory name, a systemd unit name, or a config key that is not namespaced to the specific project will silently collide the moment a second project adopts the same pattern on the same host. The failure mode is not a clean error; it is one project's request quietly triggering another project's verb, or one project's watcher picking up a request meant for someone else's spool.</p>
+
+    <h3>Resolve aliased binaries at install time, not call time</h3>
+
+    <p>A <code>systemd --user</code> unit's <code>PATH</code> is not the interactive shell's <code>PATH</code>. Aliases, shell functions, and version managers that quietly make <code>example-tool</code> resolve to the right binary in a terminal do not exist inside the unit's environment. Resolving the absolute path once, when the allowlist entry is written, avoids a class of "works under a manual test, fails when the unit runs it" bugs entirely.</p>
+
+    <h3>Make error and remediation messages copy-pasteable</h3>
+
+    <p>When a request gets rejected, the message that explains why should be the exact command a human needs to run to fix it, not that command buried inside a timestamp and a log level prefix that has to be stripped out by hand before it will run. A remediation string that cannot be pasted directly into a terminal adds friction at exactly the moment someone is already dealing with a failure.</p>
+
+    <h3>Join the agent container to the application's network, not the host's ports</h3>
+
+    <p>When the agent needs to reach the application it is testing, putting both on the same container network is the better default over publishing the application's ports onto the host. It keeps that traffic off the host network entirely, so there is one fewer thing to firewall and one fewer port that needs to be remembered and eventually closed.</p>
+
+    <h3>Watch for umask mismatches across the boundary</h3>
+
+    <p>Files the agent writes can inherit a restrictive umask that leaves them unreadable to the application containers, which typically run as a different user or a different security context entirely. This surfaces as a permissions error that looks unrelated to anything the agent actually did wrong, and it is worth treating as a recognised class of bug at the boundary rather than a one-off surprise each time it recurs.</p>
+</section>
+
+<section>
+    <h2>The General Shape</h2>
+
+    <p>None of this is specific to AI agents or to Podman. Any time a sandboxed process needs to trigger a privileged action on a system it cannot otherwise reach, the same shape applies: a narrow, closed set of pre-approved actions instead of a generic execution channel; a policy that treats different actions as different risks instead of one blanket permission; and a durable record of what happened instead of trusting the sandboxed side's own account of it. Broad and implicit access is easy to grant and hard to reason about after the fact. Narrow, closed, and auditable costs more to build once, and pays that cost back every time something goes wrong and someone needs to know exactly what ran.</p>
+</section>
+`,
+  },
+  {
     id: 'component-driven-design-react-typescript-storybook',
     title: 'Component-Driven Design with React, TypeScript, and Storybook',
     description:

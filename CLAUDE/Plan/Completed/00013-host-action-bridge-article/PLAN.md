@@ -1,6 +1,6 @@
 # Plan 00013: Host-Action Bridge Article
 
-**Status**: Not Started
+**Status**: Complete
 **Created**: 2026-08-27
 **Owner**: Claude
 **Priority**: Medium
@@ -167,14 +167,14 @@ This repo is public. Before publishing, verify the article:
 
 ### Phase 2: Writing (follow-up work, not part of this plan)
 
-- [ ] ⬜ **Task 2.1**: Draft the article content following the outline above.
-- [ ] ⬜ **Task 2.2**: Create `code-snippets/host-action-bridge/` with any
+- [x] ✅ **Task 2.1**: Draft the article content following the outline above.
+- [x] ✅ **Task 2.2**: Create `code-snippets/host-action-bridge/` with any
   illustrative pseudo-config examples referenced by the article.
-- [ ] ⬜ **Task 2.3**: Add the article object to `src/data/articles.ts`
+- [x] ✅ **Task 2.3**: Add the article object to `src/data/articles.ts`
   following the existing article authoring convention.
-- [ ] ⬜ **Task 2.4**: Run the `article-reviewer` agent per
+- [x] ✅ **Task 2.4**: Run the `article-reviewer` agent per
   `CLAUDE.md` Step 3b and resolve all CRITICAL findings.
-- [ ] ⬜ **Task 2.5**: Run through the public-repo hygiene checklist above as
+- [x] ✅ **Task 2.5**: Run through the public-repo hygiene checklist above as
   a final pass before commit.
 
 ## Success Criteria
@@ -194,3 +194,14 @@ This repo is public. Before publishing, verify the article:
 
 - 2026-08-27: Plan created, scoping the article; writing itself is a
   follow-up task, not part of this plan.
+- 2026-08-27: Phase 2 completed in the same session. Article written and
+  added to `src/data/articles.ts` (id `host-action-bridge`, category
+  infrastructure, register formal). Snippets created under
+  `code-snippets/host-action-bridge/`. Build verified (69/69 routes,
+  `dist/articles/host-action-bridge/index.html` renders with no leftover
+  `{{SNIPPET:...}}` placeholders). `article-reviewer` returned NEEDS FIXES
+  on the first pass (one formal-register first-person leak, two em dashes
+  in code comments) — all three fixed, then re-verified with a clean
+  rebuild. Public-repo hygiene checklist passed: no real hostnames, paths,
+  container/project names, or client identifiers; ccy/claude-yolo and
+  LongTermSupport/fedora-desktop were not named in the final text.
