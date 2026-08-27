@@ -33,7 +33,7 @@ flowchart LR
         A[Agent process] --> W[request writer]
     end
     subgraph mount["Shared bind mount (repo checkout)"]
-        S[("Spool\nuntracked/host-bridge/")]
+        S[("Spool\nuntracked/demo-bridge/")]
     end
     subgraph host["Host (systemd --user session)"]
         P[".path unit\nwatches spool"] --> D[".service unit\noneshot drain"]
@@ -52,7 +52,7 @@ flowchart LR
   a JSON request object, writes it atomically into the spool's
   `requests/` directory, then polls for a response file. It never runs
   the container engine itself — writing a file is all it does.
-- **Spool** (`untracked/host-bridge/` inside the repo checkout, therefore
+- **Spool** (`untracked/demo-bridge/` inside the repo checkout, therefore
   on the shared bind mount both sides can see). Subdirectories: `tmp/`
   (staging for atomic writes), `requests/` (incoming), `processing/`
   (claimed by the watcher mid-run), `responses/` (outcome the agent

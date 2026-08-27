@@ -182,10 +182,12 @@ whose name is on it.
 
 ## Worked example
 
-`CLAUDE/Plan/00013-host-action-bridge-article/` is the reference
+`CLAUDE/Plan/Completed/00013-host-action-bridge-article/` is the reference
 implementation of this whole document: a scoped `PLAN.md` plus a full
 `reference/` pack (architecture, security model, snippets, alternatives,
-lessons, article angles) donated from a private project, sanitised to a
-single consistent placeholder set, and turned into the published
-`host-action-bridge` article. Use its `reference/` folder as the template
-for shape and depth when building your own.
+lessons, article angles, publishing conventions, diagram sources) donated
+from a private project, sanitised to a single consistent placeholder set,
+and turned into the published `host-action-bridge` article. Use its
+`reference/` folder as the template for shape and depth when building your
+own — it is complete (Status: Complete) and archived, but the folder
+contents are the point, not its location.

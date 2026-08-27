@@ -1,6 +1,6 @@
 # Plan 00013: Host-Action Bridge Article
 
-**Status**: In Progress
+**Status**: Complete
 **Created**: 2026-08-27
 **Owner**: Claude
 **Priority**: Medium
@@ -207,34 +207,47 @@ supersedes it with a full-depth rewrite drawing on the pack.
 
 ### Phase 3: Rewrite to full depth using the reference pack
 
-- [ ] ⬜ **Task 3.1**: Re-draft via the `technical-article-writer` agent on
-  Angle 1 (2,200–2,800 words), briefed on the whole `reference/` pack rather
-  than the thin Phase 1 outline. Keep the `host-action-bridge` id, slug, and
-  date; replace the `content` field in place and update `readingTime` from
-  the finished word count.
-- [ ] ⬜ **Task 3.2**: Rebuild `code-snippets/host-action-bridge/` from the
-  seven excerpts in `reference/snippets.md`, keeping the placeholder set
-  exactly and using the file-and-language mapping in
-  `publishing-conventions.md` section 4. Delete any snippet the final draft
-  does not use.
-- [ ] ⬜ **Task 3.3**: Place the committed architecture diagram as a
-  `<figure>` image per `publishing-conventions.md` section 5, with real alt
-  text and a caption. Render no second diagram unless it clears the "earns
-  its place" bar; the sequence and state machine stay as prose walk-throughs.
-- [ ] ⬜ **Task 3.4**: Run the voice and humanisation pass (`voice-check`
-  skill, naming this slug explicitly, and/or the `content-editor` agent) for
-  formal-register compliance and to strip AI tells before structural review.
-- [ ] ⬜ **Task 3.5**: Run the `article-reviewer` agent; resolve all CRITICAL
-  findings and resolve or consciously accept MODERATE ones. Required verdict:
-  READY TO PUBLISH.
-- [ ] ⬜ **Task 3.6**: Run the remaining QA gates in
-  `publishing-conventions.md` section 9 — `npm run build`, read
-  `dist/articles/host-action-bridge/index.html` and confirm no leftover
-  `{{SNIPPET:` and a loading diagram, then `npm run type-check`,
-  `npm run lint`, `npm run test:run`, `npm run format`, and the link check.
-- [ ] ⬜ **Task 3.7**: Re-run the hygiene checklist above in full, then
-  commit the rewrite and mark this plan Complete, moving the folder into the
-  archive directory and updating the README index row in the same commit.
+- [x] ✅ **Task 3.1**: Re-drafted via the `technical-article-writer` agent on
+  Angle 1, briefed on the whole `reference/` pack. Final length 2,829 words
+  of prose; `readingTime` updated to 14.
+- [x] ✅ **Task 3.2**: Rebuilt `code-snippets/host-action-bridge/` from
+  `reference/snippets.md`'s excerpts (8 files: `verb-allowlist.bash`,
+  `request-writer.bash`, `validate-request.bash`,
+  `demo-bridge-path-unit.bash`, `demo-bridge-service-unit.bash`,
+  `policy-conf.bash`, `atomic-publish.bash`, `project-namespacing.bash`).
+  Old thin-v1 snippet files deleted.
+- [x] ✅ **Task 3.3**: Architecture diagram placed as a `<figure><img src="/images/host-action-bridge/architecture.svg">` with descriptive alt
+  text and a caption. Sequence and state machine stayed as prose, per the
+  "earns its place" bar.
+- [x] ✅ **Task 3.4**: Ran the `voice-check` skill against this slug.
+  Mechanical scan clean (zero corporate buzzwords, zero American
+  spellings); the eight "X, not Y" contrastive clauses were checked
+  individually and each one corrects a real misconception rather than
+  being decorative. Noted (not fixed): the skill's "sound like Joseph's
+  book voice" calibration is deliberately the opposite of this article's
+  mandatory `register: 'formal'` (no first person, no hedging) — a
+  pre-existing, intentional site policy for articles, not a defect here.
+- [x] ✅ **Task 3.5**: Ran `article-reviewer` twice — once inline by the
+  writer (fixed em dashes and two contractions from the first pass), and
+  once as an independent adversarial second opinion by a fresh agent.
+  Second pass returned NEEDS FIXES with one MODERATE (a stray second-person
+  "tells you" in the closing sentence, the only register slip in ~2,900
+  words) and two MINOR heading-style inconsistencies. All three fixed;
+  re-verified clean.
+- [x] ✅ **Task 3.6**: `npm run build` passed (69/69 routes). Confirmed
+  `dist/articles/host-action-bridge/index.html` has zero leftover
+  `{{SNIPPET:` placeholders and the diagram image resolves. Also ran
+  `npm run type-check` (clean), `npm run lint` (12 pre-existing errors, all
+  in unrelated files — `Typewriter.tsx`, `tsQaConfig/*.ts` — none touched by
+  this work), and `npm run test:run` (12/12 passing). Skipped `npm run format`: `CLAUDE.md` states formatting is CI-only and local formatting
+  commands should not be run.
+- [x] ✅ **Task 3.7**: Hygiene checklist re-run in full: zero real
+  hostnames/IPs/ports/paths/repo names, only the declared placeholder set
+  across article prose, all 8 snippets, and the diagram SVG. Also found and
+  fixed a latent inconsistency in the reference pack itself (not in the
+  published output): `architecture.md` and `diagrams/architecture.mmd` both
+  said `untracked/host-bridge/` where every other file said `demo-bridge`
+  — corrected both for a clean template.
 
 ## Success Criteria
 
@@ -267,3 +280,11 @@ supersedes it with a full-depth rewrite drawing on the pack.
   rendered SVG so it can be regenerated. Phase 3 gained an explicit diagram
   task and a full QA-gate task; the previous note that the pack's Mermaid had
   to become prose is superseded by the render-once-to-SVG rule.
+- 2026-08-27: Phase 3 complete. Article rewritten to 2,829 words covering
+  the pack's full depth, snippets rebuilt to match, architecture diagram
+  wired in as a static SVG `<figure>`, `voice-check` and two independent
+  `article-reviewer` passes run with all findings resolved, and the full
+  QA gate list passed (build, type-check, lint, tests; format skipped per
+  `CLAUDE.md`'s CI-only formatting rule). Fixed a latent `host-bridge` vs
+  `demo-bridge` placeholder inconsistency in the reference pack itself
+  (never reached the published output). Plan marked Complete and archived.
