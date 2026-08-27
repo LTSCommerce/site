@@ -1,0 +1,18 @@
+flowchart LR
+    subgraph agent["Agent container (no runtime)"]
+        A[Agent process] --> W[request writer]
+    end
+    subgraph mount["Shared bind mount (repo checkout)"]
+        S[("Spool\nuntracked/host-bridge/")]
+    end
+    subgraph host["Host (systemd --user session)"]
+        P[".path unit\nwatches spool"] --> D[".service unit\noneshot drain"]
+        D --> V["Watcher script\n(host-only copy)"]
+        V --> O["./stack.bash &lt;verb&gt;"]
+        O --> C[(Application containers)]
+    end
+
+    W -- "write request.json" --> S
+    S -- "inotify trigger" --> P
+    V -- "read request, write response" --> S
+    S -- "poll response.json" --> W

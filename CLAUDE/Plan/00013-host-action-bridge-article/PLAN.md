@@ -13,275 +13,239 @@ orchestrate containers on its host, without handing the agent a container
 runtime, a socket, or SSH access back to the host.
 
 This grew out of real work on an agentic coding setup where the agent
-container deliberately ships with no `docker`/`podman` binary and no way to
-talk to the container engine — a defensible security boundary — but the
-agent still needs to start, stop, restart, and rebuild the application
-stack it's working on. The article generalises the solution into a
-reusable pattern.
+container deliberately ships with no container-engine binary and no way to
+talk to the engine — a defensible security boundary — but the agent still
+needs to start, stop, restart, and rebuild the application stack it is
+working on. The article generalises the solution into a reusable pattern.
+
+This plan is a **donated hand-off** in the sense of
+[`CONTRIBUTING-PROJECTS.md`](../../../CONTRIBUTING-PROJECTS.md): the source
+material came from a private project, was sanitised at source, and is written
+up here by a writer who has no access to that project. That document is the
+worked-example reference for this folder, so this folder has to stay worthy
+of the citation.
+
+## Brief for the writer: read these, in this order
+
+A writing agent with **only this folder** should be able to produce a
+publish-ready article. Nothing else needs to be opened.
+
+1. [`reference/publishing-conventions.md`](./reference/publishing-conventions.md)
+   — **read this first.** Output paths, the article object schema (the site's
+   equivalent of front matter) with the exact values to use, HTML structure
+   rules, the mandatory snippet system, the diagram rule, the voice and
+   register contract, content policy, the placeholder set, and the ordered
+   QA gates.
+2. [`reference/article-angles.md`](./reference/article-angles.md) — five
+   candidate framings. **Angle 1, "The Sandbox That Still Needs to Turn
+   Things On", is the chosen spine** at 2,200–2,800 words.
+3. [`reference/architecture.md`](./reference/architecture.md) — the mechanism
+   in reimplementable detail: components and responsibilities (spool, request
+   writer, `.path`/`.service` units, watcher, response files, diagnostics), a
+   component diagram, a full request-lifecycle sequence, and the state
+   machine (`queued -> running -> done/failed/denied/expired -> archive/quarantine`).
+4. [`reference/security-model.md`](./reference/security-model.md) — the
+   reasoning behind every design choice, and the highest-value file in the
+   pack: closed verb allowlist plus fixed argv (the single most important
+   property), enumerated arg validation, the read-only/mutating split,
+   per-verb auto/deny policy, rate limiting, nonces and atomic publish,
+   symlink-safe moves, quarantine, the audit log, the config-hash and
+   git-dirty integrity gate, transient scopes, and an explicit list of what
+   the bridge deliberately cannot do.
+5. [`reference/alternatives.md`](./reference/alternatives.md) — socket
+   passthrough, SSH back to the host, running privileged, and ad hoc firewall
+   holes: what each one grants an attacker who compromises the agent, and why
+   the bridge is the better trade.
+6. [`reference/lessons.md`](./reference/lessons.md) — six hard-won lessons as
+   generalised war stories: per-project namespacing, resolving aliased
+   binaries at install time, unprefixed copy-pasteable remediation output,
+   network-join over firewall holes, cross-container file-permission
+   mismatches, and rate limits biting during interactive debugging being
+   correct behaviour rather than a bug.
+7. [`reference/snippets.md`](./reference/snippets.md) — seven sanitised code
+   excerpts to embed close to verbatim, and the authoritative statement of
+   the placeholder set.
+8. [`reference/diagrams/`](./reference/diagrams/) — the Mermaid source for
+   the one diagram that reaches the published article, plus the render recipe
+   for producing the committed SVG.
 
 ## Goals
 
 - Explain the problem clearly: why agent containers should have no runtime,
   and why that creates a real friction point for anyone doing agentic
-  development against a multi-container app.
-- Document the trust model of the bridge in enough technical depth that a
-  reader could implement their own: a file-based request spool, a host-side
-  watcher process, a closed verb allowlist mapping to fixed argv, per-verb
-  policy, rate limiting, an audit log, and the read-only/mutating verb split.
-- Contrast the approach with the obvious-but-wrong alternatives (socket
-  passthrough, SSH, ad-hoc firewall holes) and explain concretely why each
-  one is worse.
-- Share the non-obvious lessons learned building this, as general
-  principles — not project specifics.
-- Land the general claim: this pattern applies to any situation where a
-  sandboxed agent needs to trigger privileged actions on a host it cannot
-  otherwise reach.
+  development against a multi-container application.
+- Document the trust model in enough technical depth that a reader could
+  implement their own: a file-based request spool, a host-side watcher, a
+  closed verb allowlist mapping to fixed argv, per-verb policy, rate
+  limiting, an audit log, and the read-only/mutating verb split.
+- Contrast the approach with the obvious-but-wrong alternatives and explain
+  concretely why each one is worse.
+- Share the non-obvious lessons as general principles, not project
+  specifics.
+- Land the general claim: this pattern applies wherever a sandboxed agent
+  needs to trigger privileged actions on a host it cannot otherwise reach.
 
 ## Non-Goals
 
-- Not a step-by-step "copy this config" tutorial — it is a concepts and
-  reasoning piece, illustrated with pseudo-config, not a real deployment
-  manifest.
-- Not a product pitch. No real hostnames, ports, container names, file
-  paths, usernames, or client/project identifiers appear anywhere in the
-  piece.
+- Not a step-by-step "copy this config" tutorial. It is a concepts and
+  reasoning piece, illustrated with sanitised, illustrative code.
+- Not a product pitch, and not a claim about Joseph, his clients, or his
+  availability (see the SITE-TRUTH constraint in the conventions file).
 - Does not cover unrelated sandboxing techniques (VMs, gVisor, seccomp
-  profiles) except where a one-line contrast is useful.
+  profiles) beyond a one-line contrast where it is useful.
 
-## Context & Background
+## Context worth naming
 
-The surrounding tooling ecosystem worth mentioning for context (both public,
-both fair to name):
+Two public projects are explicitly fair to name, and nothing else is:
 
 - **ccy / claude-yolo** — the wrapper that launches Claude Code inside a
-  disposable, permission-relaxed container ("yolo mode") for agentic coding
-  sessions.
+  disposable, permission-relaxed container for agentic coding sessions.
 - **LongTermSupport/fedora-desktop** on GitHub — the Ansible-provisioned
   desktop environment that hosts these containers.
 
-Both are referenced only as "the surrounding tooling that motivated this",
-not as a deep-dive subject of the article.
-
-## Reference Pack
-
-A self-contained `reference/` folder now sits alongside this PLAN.md,
-built specifically so the writer of Task 2.1 (who works only in this
-public repo, with no access to the private source project) has
-everything needed without cross-repo access:
-
-- [`reference/architecture.md`](./reference/architecture.md) — components
-  and responsibilities (spool, request writer, `.path`/`.service` units,
-  watcher, response files, diagnostics), a mermaid component diagram, a
-  mermaid sequence diagram of the full request lifecycle, and a mermaid
-  state-machine diagram (`queued -> running -> done/failed/denied/expired -> archive/quarantine`).
-- [`reference/security-model.md`](./reference/security-model.md) — the
-  reasoning behind every design choice: closed verb allowlist + fixed
-  argv (the single most important property), enumerated arg validation,
-  read-only/mutating split, per-verb auto/deny policy, rate limiting,
-  atomic publish + symlink-safe moves, quarantine, audit log, the
-  `.env`-hash + git-dirty integrity gate, transient systemd scopes, and
-  an explicit list of what the bridge deliberately cannot do.
-- [`reference/snippets.md`](./reference/snippets.md) — sanitised,
-  illustrative code excerpts the writer can embed directly: the
-  allowlist/fixed-argv case table, the request writer, the watcher's
-  validate step, the systemd unit files, a `policy.conf` sample, the
-  atomic-publish helper, and the per-project namespacing pattern.
-- [`reference/alternatives.md`](./reference/alternatives.md) — socket
-  passthrough, SSH back to the host, running privileged, and ad hoc
-  firewall holes: what each grants an attacker who compromises the
-  agent, and why the bridge is the better trade.
-- [`reference/lessons.md`](./reference/lessons.md) — six hard-won
-  lessons as narrative war stories with generic illustration: per-project
-  namespacing, resolving aliased binaries at install time, unprefixed
-  copy-pasteable remediation output, network-join over firewall holes,
-  cross-container file-permission mismatches, and rate limits during
-  interactive debugging being correct behaviour, not a bug.
-- [`reference/article-angles.md`](./reference/article-angles.md) — five
-  candidate framings/titles, each with a one-paragraph pitch, a suggested
-  length, and the key takeaway to land.
-
-All code in `reference/snippets.md` (and inline in the other reference
-files) is **already sanitised** to the placeholder convention below —
-generic project slug, container names, host user, paths, ports, and
-network name, with no reference to the private source project or its
-business vertical. The writer should draw directly from this pack and
-must keep any further examples they add to the same convention.
+Both are referenced only as the surrounding tooling that motivated the work,
+never as a deep-dive subject.
 
 ## Article Outline
 
 1. **The problem** — agentic coding containers deliberately ship with no
-   container runtime (via ccy / claude-yolo, provisioned on something like
-   LongTermSupport/fedora-desktop). That's a good security default. But real
-   work on a multi-container app means the agent legitimately needs to
-   start/stop/restart/rebuild the stack it's editing. Something has to
-   bridge that gap without punching a hole in the sandbox.
+   container runtime. That is a good security default. Real work on a
+   multi-container application means the agent legitimately needs to
+   start, stop, restart, and rebuild the stack it is editing, and something
+   has to bridge that gap without punching a hole in the sandbox.
 
-2. **The trust model** — the actual bridge design:
+2. **The trust model** — the bridge design itself, carried by the committed
+   architecture diagram and then unpacked: the file-based request spool
+   inside the existing bind mount, the host-side `systemd --user` path unit
+   and oneshot watcher, the closed allowlist of verbs each mapping to fixed
+   hardcoded argv, per-verb auto-approve versus deny policy, rate limiting,
+   the audit log, the read-only versus mutating split, and transient scopes
+   for verbs that leave long-running containers behind.
 
-   - A file-based request spool living inside the repo bind mount, so both
-     sides can see it without a network hop.
-   - A host-side watcher — a systemd `--user` path unit reacting to new
-     request files — picks up requests and acts on them.
-   - A **closed allowlist** of verbs, each mapping to a fixed, hardcoded
-     argv. No parameter injection: the agent can select a verb, never
-     compose a command line.
-   - Per-verb auto-approve vs. deny policy, so low-risk verbs run
-     unattended and higher-risk ones require a human in the loop.
-   - Rate limiting, so a runaway agent loop can't hammer the host.
-   - An audit log of every request and its outcome.
-   - A read-only vs. mutating verb split, since read-only actions
-     (status/health checks) are categorically safer than mutating ones
-     (restart/rebuild).
-   - Transient systemd scopes for verbs that leave long-running containers
-     behind, so the host can track and reap what it started on the agent's
-     behalf.
+3. **The hardening that is easy to skip** — drawn from
+   `security-model.md`, and the depth the thin first version lacked: atomic
+   publish and symlink-safe moves, the quarantine invariant that guarantees
+   forward progress, enumerated per-arg validation, hardcoded denies
+   evaluated before the allowlist, the integrity gate, and the deliberate
+   absence of a confirm mode.
 
-3. **Why not the obvious alternatives**:
+4. **Why not the obvious alternatives** — engine socket passthrough (root on
+   the host in a thin disguise), SSH back to the host (host credentials
+   inside the blast radius the sandbox exists to contain), running
+   privileged, and ad hoc firewall holes (untracked drift, no allowlist, no
+   audit trail).
 
-   - Handing the agent the container engine's socket — equivalent to full
-     root on the host; defeats the point of sandboxing.
-   - SSH back to the host — puts host credentials inside the sandbox, which
-     is exactly the blast-radius the sandbox exists to contain.
-   - Opening firewall ports ad hoc for a control API — untracked drift; no
-     audit trail, no allowlist, nothing durable.
+5. **Hard-won lessons**, stated as transferable principles — namespace
+   everything per project; resolve aliased binaries at install time because a
+   systemd user unit's `PATH` is not an interactive shell's; keep remediation
+   output copy-pasteable with no log prefix glued on; join the agent
+   container to the application network rather than opening host ports; watch
+   for restrictive umasks from one process breaking a different one; treat a
+   rate limit biting during debugging as the system working.
 
-4. **Hard-won lessons** (stated as general principles, not project
-   specifics):
+6. **Closing** — generalise: whenever a sandboxed component legitimately
+   needs to reach outside its boundary to perform a privileged action, the
+   answer is a narrow, closed, auditable, human-tunable channel built for
+   that one need, rather than a looser sandbox.
 
-   - Namespace everything per project. Two unrelated projects using
-     unnamespaced global systemd unit or config names will silently clash.
-   - Resolve any user-aliased binaries at install time, not at call time —
-     a systemd `--user` unit's `PATH` is not the same as an interactive
-     shell's, so aliases and shell functions the agent expects to exist
-     often don't.
-   - Error and remediation messages should be copy-pasteable as-is — no log
-     timestamp/level prefixes glued onto the command the human needs to run.
-   - Joining the agent container to the application's container network is
-     a better default than opening host ports — it keeps traffic off the
-     host network entirely.
-   - Files written by a subagent can inherit a restrictive umask that the
-     application containers (running as a different user/context) can't
-     read — worth calling out as a class of bug, not a one-off.
+## Public-Repo Hygiene Checklist
 
-5. **Closing** — generalise: any time a sandboxed agent needs to reach
-   outside its own boundary to perform a privileged action, the same shape
-   applies — narrow, closed, auditable, human-tunable, rather than broad
-   and implicit.
+The full rule set, including the placeholder table, is
+[`reference/publishing-conventions.md`](./reference/publishing-conventions.md)
+section 8. Before publishing, confirm the article, every snippet file, and
+every diagram asset:
 
-## Tone Notes
-
-- Practical and first-person — "we hit this, here's what we did and why",
-  not an abstract whitepaper.
-- Battle-tested, not theoretical — every claim should trace back to a real
-  problem this solved, described generically.
-- Assume a technically strong reader (they know containers, systemd, and
-  sandboxing already) — don't over-explain the basics, spend the words on
-  the trust-model reasoning and the lessons.
-
-## Public-Repo Hygiene Checklist (for the eventual writer)
-
-This repo is public. Before publishing, verify the article:
-
-- [ ] Contains **no** real hostnames, IP addresses, or port numbers from any
-  private project.
-- [ ] Contains **no** real file paths, directory layouts, or repo names
-  from any private project.
-- [ ] Contains **no** container/service names, user names, or project
-  names beyond the two explicitly public tools named in this plan
-  (ccy / claude-yolo, LongTermSupport/fedora-desktop).
-- [ ] Contains **no** copy-pasted code, config, or shell snippets lifted
-  directly from a private project — all examples are written fresh as
-  illustrative pseudo-config (e.g. `verb-name -> /usr/bin/example-tool arg1 arg2`
-  style, not real unit files or real request-spool contents).
-- [ ] Contains **no** client, customer, or employer names.
-- [ ] Any systemd unit, allowlist, or spool example is clearly illustrative
-  — generic placeholder names throughout (e.g. `myapp`, `example-verb`),
-  never anything traceable to a real deployment.
-- [ ] A final read-through by a second pass (or the writer re-reading cold)
-  confirms nothing in the piece could identify the private project it
-  was drawn from.
-- [ ] Every code excerpt in the article traces back to
-  `reference/snippets.md` (or is newly written to the same placeholder
-  convention) — the reference pack's snippets are already sanitised and
-  MUST stay that way: do not "restore" real names, paths, or ports when
-  adapting them into `code-snippets/host-action-bridge/`.
-- [ ] Any new example the writer adds beyond the reference pack follows
-  the same placeholder set already established there (`demo-app` /
-  `demoapp_web` / `demoapp_db` / user `dev` / `~/Projects/demo-app` /
-  ports `9100`/`9101` / network `demo-app-network` / `./stack.bash`) —
-  do not introduce a second, inconsistent set of placeholders.
+- [ ] Contain no real hostnames, IP addresses, or port numbers.
+- [ ] Contain no real file paths, directory layouts, or repository names.
+- [ ] Contain no container, service, user, or project names beyond the two
+  public tools named above.
+- [ ] Contain no client, customer, or employer names.
+- [ ] Contain no code, config, or shell text lifted from a private project.
+  Every excerpt is a fresh, sanitised rewrite, and the ones in
+  `reference/snippets.md` already are — do not "restore" real names, paths,
+  or ports when adapting them into `code-snippets/host-action-bridge/`.
+- [ ] Use the pack's single placeholder set throughout, with no second set
+  introduced: `demo-app` / `demoapp_web` / `demoapp_api` / `demoapp_db` /
+  user `dev` / `~/Projects/demo-app` / ports `9100`, `9101` / network
+  `demo-app-network` / `./stack.bash`.
+- [ ] Survive a cold re-read confirming nothing in the piece could identify
+  the private project it was drawn from.
 
 ## Tasks
 
-### Phase 1: Scoping (this plan)
+### Phase 1: Scoping and reference pack
 
-- [x] ✅ **Task 1.1**: Explore repo conventions (plan workflow, article/snippet
-  system, existing CLAUDE.md guidance) and follow them.
-- [x] ✅ **Task 1.2**: Scope the article outline, tone, and public-repo
-  hygiene checklist in this PLAN.md.
+- [x] ✅ **Task 1.1**: Explore repo conventions (plan workflow, article and
+  snippet systems, CLAUDE.md guidance) and follow them.
+- [x] ✅ **Task 1.2**: Scope the article outline, tone, and hygiene checklist.
 - [x] ✅ **Task 1.3**: Build the self-contained `reference/` pack
-  (architecture, security model, snippets, alternatives, lessons,
-  article-angles) so a writer with no access to the private source repo
-  has everything needed to draft a detailed 2000+ word article.
+  (architecture, security model, snippets, alternatives, lessons, article
+  angles).
+- [x] ✅ **Task 1.4**: Bring the folder into line with
+  `CONTRIBUTING-PROJECTS.md`: add
+  `reference/publishing-conventions.md` (output paths, article object schema
+  with real values, HTML structure, snippet system, diagram rule, voice and
+  register contract, content policy, placeholder set, ordered QA gates) and
+  `reference/diagrams/` (Mermaid source plus render recipe for the committed
+  SVG), so the folder alone is a sufficient brief.
 
 ### Phase 2: Writing v1 (superseded — see Phase 3)
 
-- [x] ✅ **Task 2.1**: Draft the article content following the outline above.
-- [x] ✅ **Task 2.2**: Create `code-snippets/host-action-bridge/` with
-  illustrative pseudo-config examples.
-- [x] ✅ **Task 2.3**: Add the article object to `src/data/articles.ts`
-  following the existing article authoring convention.
-- [x] ✅ **Task 2.4**: Run the `article-reviewer` agent per
-  `CLAUDE.md` Step 3b and resolve all CRITICAL findings.
-- [x] ✅ **Task 2.5**: Run through the public-repo hygiene checklist above as
-  a final pass before commit.
+- [x] ✅ **Task 2.1**: Draft the article content.
+- [x] ✅ **Task 2.2**: Create `code-snippets/host-action-bridge/`.
+- [x] ✅ **Task 2.3**: Add the article object to `src/data/articles.ts`.
+- [x] ✅ **Task 2.4**: Run `article-reviewer` and resolve CRITICAL findings.
+- [x] ✅ **Task 2.5**: Run the hygiene checklist as a final pass.
 
-Phase 2 shipped a working but thin v1, written before the `reference/`
-pack (Task 1.3) existed — it invented its own placeholder set instead of
-using the pack's, and covered only the outline's five bullets rather
-than the pack's full depth (quarantine, atomic publish/symlink safety,
-the TCB integrity gate, transient-scope fd wrinkle, per-arg enum
-validation, hardcoded-deny-before-allowlist, "no confirm mode" policy
-reasoning, rate-limit-as-a-feature). Phase 3 supersedes it with a
-full-depth rewrite drawing on the pack.
+Phase 2 shipped a working but thin v1, written before the `reference/` pack
+existed. It invented its own placeholder set instead of using the pack's and
+covered only the outline's five bullets rather than the pack's full depth
+(quarantine, atomic publish and symlink safety, the integrity gate, the
+transient-scope wrinkle, per-arg enum validation, hardcoded-deny-before-
+allowlist, the "no confirm mode" reasoning, rate-limit-as-a-feature). Phase 3
+supersedes it with a full-depth rewrite drawing on the pack.
 
 ### Phase 3: Rewrite to full depth using the reference pack
 
-- [ ] ⬜ **Task 3.1**: Pick the article angle from `reference/article-angles.md`
-  (Angle 1, "The Sandbox That Still Needs to Turn Things On", is the
-  recommended spine — 2200-2800 words) and re-draft via the
-  `technical-article-writer` agent, briefed on the full `reference/` pack
-  rather than the thin Phase 1 outline. Keep the `host-action-bridge` id
-  and URL slug; replace the `content` field in place.
-  Note: this site's article renderer has no mermaid support (checked
-  `src/` and `package.json` — no mermaid dependency), so the pack's three
-  mermaid diagrams (component, sequence, state machine) must be
-  translated into prose/numbered-step narrative, not embedded as mermaid
-  fences.
-- [ ] ⬜ **Task 3.2**: Rebuild `code-snippets/host-action-bridge/` from
-  `reference/snippets.md`'s seven excerpts (adapt formatting/length for
-  the article; keep the pack's placeholder set exactly:
-  `demo-app` / `demoapp_web`/`demoapp_api`/`demoapp_db` / user `dev` /
-  `~/Projects/demo-app` / `./stack.bash` / `demo-app-network`).
-- [ ] ⬜ **Task 3.3**: Run a voice/quality pass (`voice-check` skill and/or
-  `content-editor` agent) for formal-register compliance and to remove
-  any AI-writing tells before the structural review.
-- [ ] ⬜ **Task 3.4**: Run the `article-reviewer` agent and resolve all
-  CRITICAL and MODERATE findings.
-- [ ] ⬜ **Task 3.5**: Rebuild (`npm run build`), verify
-  `dist/articles/host-action-bridge/index.html` renders with no leftover
-  `{{SNIPPET:...}}` placeholders, and re-run the public-repo hygiene
-  checklist below in full.
-- [ ] ⬜ **Task 3.6**: Commit the rewrite.
+- [ ] ⬜ **Task 3.1**: Re-draft via the `technical-article-writer` agent on
+  Angle 1 (2,200–2,800 words), briefed on the whole `reference/` pack rather
+  than the thin Phase 1 outline. Keep the `host-action-bridge` id, slug, and
+  date; replace the `content` field in place and update `readingTime` from
+  the finished word count.
+- [ ] ⬜ **Task 3.2**: Rebuild `code-snippets/host-action-bridge/` from the
+  seven excerpts in `reference/snippets.md`, keeping the placeholder set
+  exactly and using the file-and-language mapping in
+  `publishing-conventions.md` section 4. Delete any snippet the final draft
+  does not use.
+- [ ] ⬜ **Task 3.3**: Place the committed architecture diagram as a
+  `<figure>` image per `publishing-conventions.md` section 5, with real alt
+  text and a caption. Render no second diagram unless it clears the "earns
+  its place" bar; the sequence and state machine stay as prose walk-throughs.
+- [ ] ⬜ **Task 3.4**: Run the voice and humanisation pass (`voice-check`
+  skill, naming this slug explicitly, and/or the `content-editor` agent) for
+  formal-register compliance and to strip AI tells before structural review.
+- [ ] ⬜ **Task 3.5**: Run the `article-reviewer` agent; resolve all CRITICAL
+  findings and resolve or consciously accept MODERATE ones. Required verdict:
+  READY TO PUBLISH.
+- [ ] ⬜ **Task 3.6**: Run the remaining QA gates in
+  `publishing-conventions.md` section 9 — `npm run build`, read
+  `dist/articles/host-action-bridge/index.html` and confirm no leftover
+  `{{SNIPPET:` and a loading diagram, then `npm run type-check`,
+  `npm run lint`, `npm run test:run`, `npm run format`, and the link check.
+- [ ] ⬜ **Task 3.7**: Re-run the hygiene checklist above in full, then
+  commit the rewrite and mark this plan Complete, moving the folder into the
+  archive directory and updating the README index row in the same commit.
 
 ## Success Criteria
 
-- PLAN.md exists with a clear outline, tone notes, and a hygiene checklist
-  a future writer (human or agent) can execute against directly.
-- The eventual article, once written, passes the hygiene checklist with no
-  private-project details present.
-- The eventual article, once written, passes `article-reviewer` with
-  `READY TO PUBLISH`.
+- The plan folder alone is a sufficient brief: a writer with no other context
+  can produce a publish-ready article from it, including correct output
+  paths, metadata, structure, voice, and QA steps.
+- The published article covers the pack's full depth at 2,200–2,800 words,
+  not the thin v1's coverage.
+- The article passes `article-reviewer` with READY TO PUBLISH.
+- The hygiene checklist passes with no private-project details present
+  anywhere in the article, the snippets, or the diagram assets.
 
 ## Dependencies
 
@@ -289,23 +253,17 @@ full-depth rewrite drawing on the pack.
 
 ## Notes & Updates
 
-- 2026-08-27: Plan created, scoping the article; writing itself is a
-  follow-up task, not part of this plan.
-- 2026-08-27: Phase 2 completed in the same session. Article written and
-  added to `src/data/articles.ts` (id `host-action-bridge`, category
-  infrastructure, register formal). Snippets created under
-  `code-snippets/host-action-bridge/`. Build verified (69/69 routes,
-  `dist/articles/host-action-bridge/index.html` renders with no leftover
-  `{{SNIPPET:...}}` placeholders). `article-reviewer` returned NEEDS FIXES
-  on the first pass (one formal-register first-person leak, two em dashes
-  in code comments) — all three fixed, then re-verified with a clean
-  rebuild. Public-repo hygiene checklist passed: no real hostnames, paths,
-  container/project names, or client identifiers; ccy/claude-yolo and
-  LongTermSupport/fedora-desktop were not named in the final text.
-- 2026-08-27: A parallel session (merged via `git pull`, commit
-  `bcd986a`) landed a much deeper self-contained `reference/` pack
-  (architecture, security-model, snippets, alternatives, lessons,
-  article-angles) built while unaware the v1 article had already
-  shipped. Reopening the plan (status back to In Progress, folder moved
-  back out of `Completed/`) to do a full-depth Phase 3 rewrite against
-  the pack rather than leave the thinner v1 as the published article.
+- 2026-08-27: Plan created and scoped; reference pack built.
+- 2026-08-27: Phase 2 shipped v1 — article added to `src/data/articles.ts`
+  (id `host-action-bridge`, category infrastructure, register formal),
+  snippets created, build verified, `article-reviewer` findings fixed.
+- 2026-08-27: A parallel session landed the much deeper `reference/` pack
+  while unaware v1 had already shipped. Plan reopened for a full-depth
+  Phase 3 rewrite against the pack rather than leaving v1 published.
+- 2026-08-27: Folder brought into line with `CONTRIBUTING-PROJECTS.md`
+  (Task 1.4). The site's publishing contract now lives in
+  `reference/publishing-conventions.md` instead of being assumed knowledge,
+  and the architecture diagram's Mermaid source is committed alongside the
+  rendered SVG so it can be regenerated. Phase 3 gained an explicit diagram
+  task and a full QA-gate task; the previous note that the pack's Mermaid had
+  to become prose is superseded by the render-once-to-SVG rule.
