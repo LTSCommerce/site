@@ -62,6 +62,51 @@ both fair to name):
 Both are referenced only as "the surrounding tooling that motivated this",
 not as a deep-dive subject of the article.
 
+## Reference Pack
+
+A self-contained `reference/` folder now sits alongside this PLAN.md,
+built specifically so the writer of Task 2.1 (who works only in this
+public repo, with no access to the private source project) has
+everything needed without cross-repo access:
+
+- [`reference/architecture.md`](./reference/architecture.md) — components
+  and responsibilities (spool, request writer, `.path`/`.service` units,
+  watcher, response files, diagnostics), a mermaid component diagram, a
+  mermaid sequence diagram of the full request lifecycle, and a mermaid
+  state-machine diagram (`queued -> running -> done/failed/denied/expired -> archive/quarantine`).
+- [`reference/security-model.md`](./reference/security-model.md) — the
+  reasoning behind every design choice: closed verb allowlist + fixed
+  argv (the single most important property), enumerated arg validation,
+  read-only/mutating split, per-verb auto/deny policy, rate limiting,
+  atomic publish + symlink-safe moves, quarantine, audit log, the
+  `.env`-hash + git-dirty integrity gate, transient systemd scopes, and
+  an explicit list of what the bridge deliberately cannot do.
+- [`reference/snippets.md`](./reference/snippets.md) — sanitised,
+  illustrative code excerpts the writer can embed directly: the
+  allowlist/fixed-argv case table, the request writer, the watcher's
+  validate step, the systemd unit files, a `policy.conf` sample, the
+  atomic-publish helper, and the per-project namespacing pattern.
+- [`reference/alternatives.md`](./reference/alternatives.md) — socket
+  passthrough, SSH back to the host, running privileged, and ad hoc
+  firewall holes: what each grants an attacker who compromises the
+  agent, and why the bridge is the better trade.
+- [`reference/lessons.md`](./reference/lessons.md) — six hard-won
+  lessons as narrative war stories with generic illustration: per-project
+  namespacing, resolving aliased binaries at install time, unprefixed
+  copy-pasteable remediation output, network-join over firewall holes,
+  cross-container file-permission mismatches, and rate limits during
+  interactive debugging being correct behaviour, not a bug.
+- [`reference/article-angles.md`](./reference/article-angles.md) — five
+  candidate framings/titles, each with a one-paragraph pitch, a suggested
+  length, and the key takeaway to land.
+
+All code in `reference/snippets.md` (and inline in the other reference
+files) is **already sanitised** to the placeholder convention below —
+generic project slug, container names, host user, paths, ports, and
+network name, with no reference to the private source project or its
+business vertical. The writer should draw directly from this pack and
+must keep any further examples they add to the same convention.
+
 ## Article Outline
 
 1. **The problem** — agentic coding containers deliberately ship with no
@@ -155,6 +200,16 @@ This repo is public. Before publishing, verify the article:
 - [ ] A final read-through by a second pass (or the writer re-reading cold)
   confirms nothing in the piece could identify the private project it
   was drawn from.
+- [ ] Every code excerpt in the article traces back to
+  `reference/snippets.md` (or is newly written to the same placeholder
+  convention) — the reference pack's snippets are already sanitised and
+  MUST stay that way: do not "restore" real names, paths, or ports when
+  adapting them into `code-snippets/host-action-bridge/`.
+- [ ] Any new example the writer adds beyond the reference pack follows
+  the same placeholder set already established there (`demo-app` /
+  `demoapp_web` / `demoapp_db` / user `dev` / `~/Projects/demo-app` /
+  ports `9100`/`9101` / network `demo-app-network` / `./stack.bash`) —
+  do not introduce a second, inconsistent set of placeholders.
 
 ## Tasks
 
@@ -164,12 +219,20 @@ This repo is public. Before publishing, verify the article:
   system, existing CLAUDE.md guidance) and follow them.
 - [x] ✅ **Task 1.2**: Scope the article outline, tone, and public-repo
   hygiene checklist in this PLAN.md.
+- [x] ✅ **Task 1.3**: Build the self-contained `reference/` pack
+  (architecture, security model, snippets, alternatives, lessons,
+  article-angles) so a writer with no access to the private source repo
+  has everything needed to draft a detailed 2000+ word article.
 
 ### Phase 2: Writing (follow-up work, not part of this plan)
 
-- [ ] ⬜ **Task 2.1**: Draft the article content following the outline above.
-- [ ] ⬜ **Task 2.2**: Create `code-snippets/host-action-bridge/` with any
-  illustrative pseudo-config examples referenced by the article.
+- [ ] ⬜ **Task 2.1**: Pick an angle from `reference/article-angles.md`
+  (or the outline below) and draft the article content, drawing the
+  architecture, security reasoning, and war stories directly from the
+  `reference/` pack rather than re-deriving them.
+- [ ] ⬜ **Task 2.2**: Create `code-snippets/host-action-bridge/` from the
+  excerpts in `reference/snippets.md` (already sanitised — adapt
+  formatting/length for the article, don't reintroduce real names).
 - [ ] ⬜ **Task 2.3**: Add the article object to `src/data/articles.ts`
   following the existing article authoring convention.
 - [ ] ⬜ **Task 2.4**: Run the `article-reviewer` agent per
