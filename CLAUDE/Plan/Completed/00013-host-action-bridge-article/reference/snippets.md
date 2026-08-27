@@ -200,7 +200,7 @@ MODE_rebuild=auto
 MODE_init=auto
 ```
 
-**What this shows**: policy is a flat allowlist of *modes*, not
+**What this shows**: policy is a flat allowlist of _modes_, not
 commands — the verbs themselves are still fixed in code (snippet 1). This
 file can only make a verb stricter (deny) or leave it at the code-level
 default (auto); it cannot introduce a new verb or a new argv shape.

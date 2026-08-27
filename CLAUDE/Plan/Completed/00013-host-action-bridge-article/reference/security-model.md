@@ -23,7 +23,7 @@ esac
 ```
 
 Nothing here interpolates request content into a shell string. The `arg`
-value is validated against an enumerated service list *before* it ever
+value is validated against an enumerated service list _before_ it ever
 reaches this table (see §3), and even then it's passed as a single argv
 element, never concatenated into a command string that a shell parses.
 There is no `eval`, no `sh -c "$user_input"`, no string-built command
@@ -83,7 +83,7 @@ can run, independent of policy. Read-only verbs are exempt. This exists
 to bound the blast radius of a runaway agent loop — a bug that causes
 the agent to hammer `rebuild` in a tight loop degrades to "denied, rate
 limited" rather than repeatedly rebuilding images or bouncing containers.
-It is explicitly *not* meant as a pacing mechanism for legitimate use;
+It is explicitly _not_ meant as a pacing mechanism for legitimate use;
 during heavy interactive debugging it is normal, and correct, to
 occasionally hit the limit and simply wait out the window.
 
@@ -93,9 +93,9 @@ Every request filename embeds a timestamp and a random nonce, so
 requests never collide and can't be replayed by re-submitting an old
 filename. Every write into the spool — the agent's request, the
 watcher's response, the exec log — goes through the same pattern:
-write to a temp file in a scratch subdirectory *on the same filesystem*,
+write to a temp file in a scratch subdirectory _on the same filesystem_,
 then `mv -f` into the destination. `rename()` is atomic and, critically,
-*replaces* a destination path rather than following it, so a symlink
+_replaces_ a destination path rather than following it, so a symlink
 planted at the destination name can't be used to write through to an
 arbitrary target. The watcher goes one step further: it holds one
 directory file descriptor open per spool subdirectory for the whole
@@ -130,7 +130,7 @@ as diagnostic-only, never the authoritative record.
 
 ## 9. `.env`-hash and git-dirty guards (TCB integrity gate)
 
-Before running a *mutating* verb, the watcher checks two things:
+Before running a _mutating_ verb, the watcher checks two things:
 
 - A small set of tracked files that define what the orchestration
   actually does (the compose file, the orchestration script itself, the
@@ -161,9 +161,9 @@ does its work, and exits — and by default its whole cgroup is torn down
 with it. But some bridged verbs (`up`, `restart`, `rebuild`, …)
 deliberately leave long-running containers behind. Left naively wired
 up, either the containers get killed the instant the oneshot exits, or
-(depending on kill mode) they linger *inside* the oneshot's cgroup and
+(depending on kill mode) they linger _inside_ the oneshot's cgroup and
 the service can never fully settle back to idle — which then stops the
-watcher from being re-triggered for the *next* request. The fix is to
+watcher from being re-triggered for the _next_ request. The fix is to
 launch those specific verbs inside a transient systemd scope
 (`systemd-run --user --scope`), which puts the spawned containers in a
 sibling unit rather than as descendants of the drain's own cgroup. The

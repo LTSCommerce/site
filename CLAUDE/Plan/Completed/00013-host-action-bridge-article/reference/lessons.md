@@ -15,7 +15,7 @@ machine installs its own copy of the same bridge. Its installer writes
 to the same unit names, the same config path, the same binary path — and
 because installers of this kind are designed to be idempotent and
 self-healing (that's a feature: re-running one should repair a broken
-install), the second project's install doesn't *fail*, it just silently
+install), the second project's install doesn't _fail_, it just silently
 overwrites the first project's live bridge. Now project A's agent
 container is issuing requests that get validated against project B's
 service enum, or worse, executed against project B's orchestration
@@ -47,7 +47,7 @@ tool the operator normally invokes as an alias will fail to find it,
 even though typing the same name at a prompt works perfectly.
 
 The fix is to resolve any such binary once, at install time (in a real
-interactive shell, where aliases *are* visible, or via an explicit
+interactive shell, where aliases _are_ visible, or via an explicit
 environment override), and bake the resolved absolute path into the
 generated config — never re-resolve it at call time from inside the
 systemd unit's much narrower environment. The installer should also
@@ -73,7 +73,7 @@ run with zero editing.
 ## 4. "The agent can't reach the app" is usually a networking-join problem, not a firewall problem
 
 A very common shape of failure: the agent container can start the
-application stack (via the bridge) but then can't *talk* to it — health
+application stack (via the bridge) but then can't _talk_ to it — health
 checks against `host.containers.internal:<port>` time out, even though
 the same address works fine from the host itself. The instinctive fix
 is to open the relevant ports on the host firewall for the container
@@ -103,7 +103,7 @@ project's files are `644`/`755`. Nothing about that looks wrong from the
 writing process's own point of view; the files exist, they're readable
 by the user that wrote them, tests that run as that same user pass
 fine. The failure shows up somewhere completely different: an
-application container running as a *different* user or UID inside its
+application container running as a _different_ user or UID inside its
 own namespace tries to read one of those files — a config file, a class
 the framework autoloads, an asset — and gets a permission-denied that,
 depending on how the failure is surfaced, can look like almost anything

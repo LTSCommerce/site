@@ -33,7 +33,7 @@ An SSH private key that authenticates as a real host user undoes that in
 one step — now compromising the container means compromising a
 credential that works everywhere that key is trusted, not just inside
 the container's own blast radius. It also reintroduces a full shell on
-the other end: SSH doesn't naturally constrain *which* commands can run
+the other end: SSH doesn't naturally constrain _which_ commands can run
 unless a great deal of additional plumbing (forced commands, restricted
 shells) is bolted on afterwards — and that plumbing is, in effect, a
 worse-designed version of the bridge itself.
@@ -65,7 +65,7 @@ immediate need passes, and — because it's reachable over the network
 rather than gated by filesystem placement — needs its own
 authentication, TLS, and audit story built from scratch. None of that
 comes for free the way file permissions and directory placement do.
-It's also *architecturally* the same idea as the bridge (closed set of
+It's also _architecturally_ the same idea as the bridge (closed set of
 actions, validated input) but reimplemented on a strictly worse
 foundation: a listening network service has to defend against being
 reached by more than just the one agent container, while a spool inside

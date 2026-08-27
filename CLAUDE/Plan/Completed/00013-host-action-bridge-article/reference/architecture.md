@@ -22,7 +22,7 @@ everything is up. Every one of those is normally a shell command against
 the container engine — exactly what the sandbox forbids.
 
 The bridge is the answer: a narrow, asynchronous, file-based channel that
-lets the agent *request* one of a fixed set of orchestration actions
+lets the agent _request_ one of a fixed set of orchestration actions
 without ever gaining the ability to run arbitrary commands.
 
 ## Components
@@ -143,7 +143,7 @@ stateDiagram-v2
 ```
 
 The `queued` state exists for a subtle reason: the watcher acknowledges
-*every* pending request the instant it starts draining — before doing any
+_every_ pending request the instant it starts draining — before doing any
 real validation — specifically so a concurrent watcher invocation that
 lost the single-flight lock still writes an ack. Without that, a losing
 invocation could leave a request un-acknowledged, and the agent's poll

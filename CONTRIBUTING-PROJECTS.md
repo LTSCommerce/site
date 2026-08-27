@@ -150,8 +150,8 @@ resulting file from the article as a plain image, not through the
 
 ```html
 <figure class="my-8">
-    <img src="/images/<article-slug>/<name>.svg" alt="Description of what the diagram shows" />
-    <figcaption>One-line caption.</figcaption>
+  <img src="/images/<article-slug>/<name>.svg" alt="Description of what the diagram shows" />
+  <figcaption>One-line caption.</figcaption>
 </figure>
 ```
 

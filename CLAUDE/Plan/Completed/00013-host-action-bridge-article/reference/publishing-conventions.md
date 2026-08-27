@@ -97,20 +97,22 @@ injected directly into the page; there is no markdown step and no sanitiser.
 
 ```html
 <div class="intro">
-    <p class="lead">Opening lead paragraph. Two to four sentences that state the tension the article resolves.</p>
+  <p class="lead">
+    Opening lead paragraph. Two to four sentences that state the tension the article resolves.
+  </p>
 </div>
 
 <section>
-    <h2>Section Title</h2>
-    <p>Prose…</p>
-    <h3>Sub-section Title</h3>
-    <p>Prose…</p>
-    <pre><code class="language-bash">{{SNIPPET:host-action-bridge/watcher-loop.sh}}</code></pre>
+  <h2>Section Title</h2>
+  <p>Prose…</p>
+  <h3>Sub-section Title</h3>
+  <p>Prose…</p>
+  <pre><code class="language-bash">{{SNIPPET:host-action-bridge/watcher-loop.sh}}</code></pre>
 </section>
 
 <section>
-    <h2>Next Section</h2>
-    …
+  <h2>Next Section</h2>
+  …
 </section>
 ```
 
@@ -199,8 +201,8 @@ economically.
 
 **Code comments inside snippet files are reviewed prose.** They obey the same
 register rules as the article body: no em dashes, no contractions, no first
-person, no "note that" / "simply" / "keep in mind", and they state *why*
-rather than *what*.
+person, no "note that" / "simply" / "keep in mind", and they state _why_
+rather than _what_.
 
 ---
 
@@ -225,8 +227,13 @@ commit the SVG**:
 
 ```html
 <figure class="my-8">
-    <img src="/images/host-action-bridge/architecture.svg" alt="Component diagram: the agent container writes a request into a spool inside the shared bind mount, a systemd path unit on the host triggers a watcher, and the watcher runs a fixed command against the application containers." />
-    <figcaption>The bridge in one picture: the agent writes files, the host decides what runs.</figcaption>
+  <img
+    src="/images/host-action-bridge/architecture.svg"
+    alt="Component diagram: the agent container writes a request into a spool inside the shared bind mount, a systemd path unit on the host triggers a watcher, and the watcher runs a fixed command against the application containers."
+  />
+  <figcaption>
+    The bridge in one picture: the agent writes files, the host decides what runs.
+  </figcaption>
 </figure>
 ```
 
@@ -238,7 +245,7 @@ commit the SVG**:
   `reference/diagrams/`, render it with the recipe in `CONTRIBUTING-PROJECTS.md`
   (`@mermaid-js/mermaid-cli` with the no-sandbox puppeteer config and the
   site-palette theme file), and commit both source and SVG.
-- `alt` text describes what the diagram *shows*, in a full sentence.
+- `alt` text describes what the diagram _shows_, in a full sentence.
   `figcaption` is one line and adds meaning rather than repeating the alt.
 
 ---
@@ -314,7 +321,7 @@ transferable principle.
 
 - **SITE-TRUTH rule**: `SITE-TRUTH.md` is the single source of truth for all
   page copy. Article bodies are technical writing and exempt — but any claim
-  the article makes *about Joseph himself* (experience, clients, services,
+  the article makes _about Joseph himself_ (experience, clients, services,
   availability) must be traceable to that document. The simplest compliance
   strategy for this article: make no claims about him at all.
 - **No Bullshit rule**: factual and verifiable only. Generic and theoretical

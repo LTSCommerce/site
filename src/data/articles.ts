@@ -8,8 +8,7 @@ import { CATEGORIES } from './categories';
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
     id: 'host-action-bridge',
-    title:
-      'The Host-Action Bridge: Letting a Sandboxed Agent Control Containers It Cannot Reach',
+    title: 'The Host-Action Bridge: Letting a Sandboxed Agent Control Containers It Cannot Reach',
     description:
       'How a file-based request spool, a host-side systemd watcher, and a closed verb allowlist let a runtime-less AI coding agent container trigger orchestration actions on its host, without a container socket, SSH access, or ad-hoc firewall holes.',
     date: '2026-08-27',

@@ -19,7 +19,7 @@ needs to start, stop, restart, and rebuild the application stack it is
 working on. The article generalises the solution into a reusable pattern.
 
 This plan is a **donated hand-off** in the sense of
-[`CONTRIBUTING-PROJECTS.md`](../../../CONTRIBUTING-PROJECTS.md): the source
+[`CONTRIBUTING-PROJECTS.md`](../../../../CONTRIBUTING-PROJECTS.md): the source
 material came from a private project, was sanitised at source, and is written
 up here by a writer who has no access to that project. That document is the
 worked-example reference for this folder, so this folder has to stay worthy
@@ -158,36 +158,36 @@ every diagram asset:
 - [ ] Contain no real hostnames, IP addresses, or port numbers.
 - [ ] Contain no real file paths, directory layouts, or repository names.
 - [ ] Contain no container, service, user, or project names beyond the two
-  public tools named above.
+      public tools named above.
 - [ ] Contain no client, customer, or employer names.
 - [ ] Contain no code, config, or shell text lifted from a private project.
-  Every excerpt is a fresh, sanitised rewrite, and the ones in
-  `reference/snippets.md` already are — do not "restore" real names, paths,
-  or ports when adapting them into `code-snippets/host-action-bridge/`.
+      Every excerpt is a fresh, sanitised rewrite, and the ones in
+      `reference/snippets.md` already are — do not "restore" real names, paths,
+      or ports when adapting them into `code-snippets/host-action-bridge/`.
 - [ ] Use the pack's single placeholder set throughout, with no second set
-  introduced: `demo-app` / `demoapp_web` / `demoapp_api` / `demoapp_db` /
-  user `dev` / `~/Projects/demo-app` / ports `9100`, `9101` / network
-  `demo-app-network` / `./stack.bash`.
+      introduced: `demo-app` / `demoapp_web` / `demoapp_api` / `demoapp_db` /
+      user `dev` / `~/Projects/demo-app` / ports `9100`, `9101` / network
+      `demo-app-network` / `./stack.bash`.
 - [ ] Survive a cold re-read confirming nothing in the piece could identify
-  the private project it was drawn from.
+      the private project it was drawn from.
 
 ## Tasks
 
 ### Phase 1: Scoping and reference pack
 
 - [x] ✅ **Task 1.1**: Explore repo conventions (plan workflow, article and
-  snippet systems, CLAUDE.md guidance) and follow them.
+      snippet systems, CLAUDE.md guidance) and follow them.
 - [x] ✅ **Task 1.2**: Scope the article outline, tone, and hygiene checklist.
 - [x] ✅ **Task 1.3**: Build the self-contained `reference/` pack
-  (architecture, security model, snippets, alternatives, lessons, article
-  angles).
+      (architecture, security model, snippets, alternatives, lessons, article
+      angles).
 - [x] ✅ **Task 1.4**: Bring the folder into line with
-  `CONTRIBUTING-PROJECTS.md`: add
-  `reference/publishing-conventions.md` (output paths, article object schema
-  with real values, HTML structure, snippet system, diagram rule, voice and
-  register contract, content policy, placeholder set, ordered QA gates) and
-  `reference/diagrams/` (Mermaid source plus render recipe for the committed
-  SVG), so the folder alone is a sufficient brief.
+      `CONTRIBUTING-PROJECTS.md`: add
+      `reference/publishing-conventions.md` (output paths, article object schema
+      with real values, HTML structure, snippet system, diagram rule, voice and
+      register contract, content policy, placeholder set, ordered QA gates) and
+      `reference/diagrams/` (Mermaid source plus render recipe for the committed
+      SVG), so the folder alone is a sufficient brief.
 
 ### Phase 2: Writing v1 (superseded — see Phase 3)
 
@@ -208,46 +208,46 @@ supersedes it with a full-depth rewrite drawing on the pack.
 ### Phase 3: Rewrite to full depth using the reference pack
 
 - [x] ✅ **Task 3.1**: Re-drafted via the `technical-article-writer` agent on
-  Angle 1, briefed on the whole `reference/` pack. Final length 2,829 words
-  of prose; `readingTime` updated to 14.
+      Angle 1, briefed on the whole `reference/` pack. Final length 2,829 words
+      of prose; `readingTime` updated to 14.
 - [x] ✅ **Task 3.2**: Rebuilt `code-snippets/host-action-bridge/` from
-  `reference/snippets.md`'s excerpts (8 files: `verb-allowlist.bash`,
-  `request-writer.bash`, `validate-request.bash`,
-  `demo-bridge-path-unit.bash`, `demo-bridge-service-unit.bash`,
-  `policy-conf.bash`, `atomic-publish.bash`, `project-namespacing.bash`).
-  Old thin-v1 snippet files deleted.
+      `reference/snippets.md`'s excerpts (8 files: `verb-allowlist.bash`,
+      `request-writer.bash`, `validate-request.bash`,
+      `demo-bridge-path-unit.bash`, `demo-bridge-service-unit.bash`,
+      `policy-conf.bash`, `atomic-publish.bash`, `project-namespacing.bash`).
+      Old thin-v1 snippet files deleted.
 - [x] ✅ **Task 3.3**: Architecture diagram placed as a `<figure><img src="/images/host-action-bridge/architecture.svg">` with descriptive alt
-  text and a caption. Sequence and state machine stayed as prose, per the
-  "earns its place" bar.
+      text and a caption. Sequence and state machine stayed as prose, per the
+      "earns its place" bar.
 - [x] ✅ **Task 3.4**: Ran the `voice-check` skill against this slug.
-  Mechanical scan clean (zero corporate buzzwords, zero American
-  spellings); the eight "X, not Y" contrastive clauses were checked
-  individually and each one corrects a real misconception rather than
-  being decorative. Noted (not fixed): the skill's "sound like Joseph's
-  book voice" calibration is deliberately the opposite of this article's
-  mandatory `register: 'formal'` (no first person, no hedging) — a
-  pre-existing, intentional site policy for articles, not a defect here.
+      Mechanical scan clean (zero corporate buzzwords, zero American
+      spellings); the eight "X, not Y" contrastive clauses were checked
+      individually and each one corrects a real misconception rather than
+      being decorative. Noted (not fixed): the skill's "sound like Joseph's
+      book voice" calibration is deliberately the opposite of this article's
+      mandatory `register: 'formal'` (no first person, no hedging) — a
+      pre-existing, intentional site policy for articles, not a defect here.
 - [x] ✅ **Task 3.5**: Ran `article-reviewer` twice — once inline by the
-  writer (fixed em dashes and two contractions from the first pass), and
-  once as an independent adversarial second opinion by a fresh agent.
-  Second pass returned NEEDS FIXES with one MODERATE (a stray second-person
-  "tells you" in the closing sentence, the only register slip in ~2,900
-  words) and two MINOR heading-style inconsistencies. All three fixed;
-  re-verified clean.
+      writer (fixed em dashes and two contractions from the first pass), and
+      once as an independent adversarial second opinion by a fresh agent.
+      Second pass returned NEEDS FIXES with one MODERATE (a stray second-person
+      "tells you" in the closing sentence, the only register slip in ~2,900
+      words) and two MINOR heading-style inconsistencies. All three fixed;
+      re-verified clean.
 - [x] ✅ **Task 3.6**: `npm run build` passed (69/69 routes). Confirmed
-  `dist/articles/host-action-bridge/index.html` has zero leftover
-  `{{SNIPPET:` placeholders and the diagram image resolves. Also ran
-  `npm run type-check` (clean), `npm run lint` (12 pre-existing errors, all
-  in unrelated files — `Typewriter.tsx`, `tsQaConfig/*.ts` — none touched by
-  this work), and `npm run test:run` (12/12 passing). Skipped `npm run format`: `CLAUDE.md` states formatting is CI-only and local formatting
-  commands should not be run.
+      `dist/articles/host-action-bridge/index.html` has zero leftover
+      `{{SNIPPET:` placeholders and the diagram image resolves. Also ran
+      `npm run type-check` (clean), `npm run lint` (12 pre-existing errors, all
+      in unrelated files — `Typewriter.tsx`, `tsQaConfig/*.ts` — none touched by
+      this work), and `npm run test:run` (12/12 passing). Skipped `npm run format`: `CLAUDE.md` states formatting is CI-only and local formatting
+      commands should not be run.
 - [x] ✅ **Task 3.7**: Hygiene checklist re-run in full: zero real
-  hostnames/IPs/ports/paths/repo names, only the declared placeholder set
-  across article prose, all 8 snippets, and the diagram SVG. Also found and
-  fixed a latent inconsistency in the reference pack itself (not in the
-  published output): `architecture.md` and `diagrams/architecture.mmd` both
-  said `untracked/host-bridge/` where every other file said `demo-bridge`
-  — corrected both for a clean template.
+      hostnames/IPs/ports/paths/repo names, only the declared placeholder set
+      across article prose, all 8 snippets, and the diagram SVG. Also found and
+      fixed a latent inconsistency in the reference pack itself (not in the
+      published output): `architecture.md` and `diagrams/architecture.mmd` both
+      said `untracked/host-bridge/` where every other file said `demo-bridge`
+      — corrected both for a clean template.
 
 ## Success Criteria
 
