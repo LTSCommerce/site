@@ -98,14 +98,38 @@ writer, who has far less context to fill the gap with.
 
 ### Diagrams
 
-This site's article renderer has **no Mermaid support** (plain HTML with
-`highlight.js` syntax highlighting only — checked `src/` and
-`package.json`). Mermaid diagrams are still useful *inside the reference
-pack itself* as precise source material for the writer to read and
-understand, but they will not render in the published article. Expect them
-to be translated into prose narrative, a numbered sequence of steps, or
-plain-text ASCII art, not embedded as a Mermaid code fence and left for the
-reader's browser to render.
+This site's article renderer has **no Mermaid support**. Articles are
+pre-rendered to plain static HTML (`ArticleContent` injects the `content`
+field's HTML directly; `highlight.js` handles code-block syntax
+highlighting only). A \`\`\`mermaid fence prints as raw, unrendered text to a
+reader — never use one in anything meant to reach the published article.
+
+**Inside the reference pack, Mermaid is fine.** Nobody needs a reference-pack
+diagram to render: it is read by the writer (human or agent), not a site
+visitor. Mermaid is precise, cheap to write and edit, and a good way to
+convey a component graph, a sequence, or a state machine exactly. Keep using
+it there.
+
+**In the published article, use hand-authored inline SVG**, embedded
+directly in the HTML `content` string, for any diagram that earns its place
+(a component/architecture diagram, a state machine — not a two-box flow that
+prose already covers as well). Reasons this beats the alternatives on this
+site specifically:
+
+- The article's HTML is injected as-is with no build step in between, so an
+  inline `<svg>...</svg>` block just works — no new dependency, no runtime
+  rendering library, nothing that can fail silently during the static
+  prerender.
+- It stays crisp at any zoom level, unlike a rasterised PNG/JPEG export of a
+  Mermaid diagram.
+- It can be styled with `currentColor` and the site's existing CSS custom
+  properties (see `src/styles/global.css`) so it inherits the site's actual
+  look instead of reading as a pasted screenshot from somewhere else.
+
+A diagram that does not clear the "earns its place" bar should be prose or a
+short numbered walk-through instead — most sequences and lifecycles read
+perfectly well as an ordered list of steps, and not every Mermaid diagram in
+the reference pack needs a published-article equivalent at all.
 
 ## What happens after the push
 
