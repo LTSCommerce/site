@@ -101,7 +101,7 @@ writer, who has far less context to fill the gap with.
 This site's article renderer has **no Mermaid support**. Articles are
 pre-rendered to plain static HTML (`ArticleContent` injects the `content`
 field's HTML directly; `highlight.js` handles code-block syntax
-highlighting only). A \`\`\`mermaid fence prints as raw, unrendered text to a
+highlighting only). A mermaid code fence prints as raw, unrendered text to a
 reader — never use one in anything meant to reach the published article.
 
 **Inside the reference pack, Mermaid is fine.** Nobody needs a reference-pack
@@ -110,21 +110,58 @@ visitor. Mermaid is precise, cheap to write and edit, and a good way to
 convey a component graph, a sequence, or a state machine exactly. Keep using
 it there.
 
-**In the published article, use hand-authored inline SVG**, embedded
-directly in the HTML `content` string, for any diagram that earns its place
-(a component/architecture diagram, a state machine — not a two-box flow that
-prose already covers as well). Reasons this beats the alternatives on this
-site specifically:
+**In the published article, render the reference pack's Mermaid source to a
+static SVG at authoring time**, for any diagram that earns its place (a
+component/architecture diagram, a state machine — not a two-box flow that
+prose already covers as well). This does NOT need a CI build-step change:
+render it once, by hand, in the authoring session, and commit the resulting
+`.svg` file like any other static asset. Verified working recipe, run from
+the repo root:
 
-- The article's HTML is injected as-is with no build step in between, so an
-  inline `<svg>...</svg>` block just works — no new dependency, no runtime
-  rendering library, nothing that can fail silently during the static
-  prerender.
-- It stays crisp at any zoom level, unlike a rasterised PNG/JPEG export of a
-  Mermaid diagram.
-- It can be styled with `currentColor` and the site's existing CSS custom
-  properties (see `src/styles/global.css`) so it inherits the site's actual
-  look instead of reading as a pasted screenshot from somewhere else.
+```bash
+cat > /tmp/puppeteer-config.json << 'JSON'
+{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}
+JSON
+cat > /tmp/mermaid-theme.json << 'JSON'
+{
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#eef4fa",
+    "primaryTextColor": "#171717",
+    "primaryBorderColor": "#0f4c81",
+    "lineColor": "#0f4c81",
+    "fontFamily": "system-ui, sans-serif"
+  }
+}
+JSON
+npx -y @mermaid-js/mermaid-cli \
+  -i your-diagram.mmd -o public/images/<article-slug>/<name>.svg \
+  -p /tmp/puppeteer-config.json -c /tmp/mermaid-theme.json -b transparent
+```
+
+The `--no-sandbox` puppeteer config is required because this runs as root in
+the agentic container. The theme variables above match this site's
+`--color-primary` (see `src/styles/global.css`) so the diagram reads as
+drawn for the site rather than a default-Mermaid-styled screenshot; adjust
+to taste but keep it consistent with the site palette. Reference the
+resulting file from the article as a plain image, not through the
+`{{SNIPPET:...}}` system (that system HTML-escapes content into a
+`<pre><code>` block for syntax highlighting — wrong for an actual image):
+
+```html
+<figure class="my-8">
+    <img src="/images/<article-slug>/<name>.svg" alt="Description of what the diagram shows" />
+    <figcaption>One-line caption.</figcaption>
+</figure>
+```
+
+Why render-once beats both a live Mermaid.js dependency and hand-drawing SVG
+by hand: no client-side rendering library ships to the reader (this site is
+static-HTML-first with no JS dependency in the critical path), no CI
+pipeline change is needed (the render happens once, in the authoring
+session, and only the output SVG is committed), and the real Mermaid layout
+engine placed the boxes and arrows, so it doesn't suffer the misaligned
+geometry an LLM hand-drawing raw `<svg>` coordinates tends to produce.
 
 A diagram that does not clear the "earns its place" bar should be prose or a
 short numbered walk-through instead — most sequences and lifecycles read
