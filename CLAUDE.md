@@ -125,6 +125,18 @@ Screenshots are saved to `var/` directory which is gitignored. The screenshot sc
 - **SEO**: Meta tags and structured data generated automatically from article metadata
 - **Ordering**: Newest article first (top of the `SAMPLE_ARTICLES` array)
 
+### Article Source Material From Other Projects
+
+**[CONTRIBUTING-PROJECTS.md](CONTRIBUTING-PROJECTS.md)** defines how another
+(often private) project hands off raw source material for an article: a
+`CLAUDE/Plan/` plan folder plus a sanitised `reference/` pack (architecture,
+design rationale, code snippets, alternatives considered, lessons learned,
+candidate framings), pushed from that project's own checkout of this repo.
+Read it before acting on any plan whose `PLAN.md` describes itself as
+donated/scoped-only material for a future writer rather than a
+ready-to-write outline — the depth and sanitisation rules there apply before
+the normal article process below does.
+
 ### Adding New Articles
 
 **REACT/TYPESCRIPT SYSTEM**: Articles are TypeScript objects in `src/data/articles.ts`. There are no EJS files or `private_html/` for articles.
