@@ -18343,10 +18343,17 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'typescript',
+    heroImage: {
+      src: '/images/typescript-di-for-php-developers/hero.webp',
+      alt: 'An 1846 engraving of porters transferring luggage between broad-gauge and narrow-gauge trains at Gloucester station, where incompatible railway gauges forced everything to be handed across the platform',
+      ogImage: '/images/typescript-di-for-php-developers/og.jpg',
+      creditText: 'Image: J. H. Townshend, 1846, public domain, via Wikimedia Commons',
+      creditUrl: 'https://commons.wikimedia.org/wiki/File:Break_of_gauge_GWR_Gloucester.jpg',
+    },
     content: `
 <div class="intro">
     <p class="lead">
-        As a PHP developer, you're likely accustomed to mature DI containers like 
+        As a PHP developer, you're likely accustomed to mature DI containers like
         <a href="https://symfony.com/doc/current/service_container.html" target="_blank" rel="noopener">Symfony's Service Container</a> or 
         <a href="https://php-di.org/" target="_blank" rel="noopener">PHP-DI</a>. TypeScript's approach to dependency injection 
         is fundamentally different. It's not just the implementation that changes, but the entire philosophy. Let's explore why.
