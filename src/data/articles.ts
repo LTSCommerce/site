@@ -4013,6 +4013,13 @@ GROUP BY c.id</code></pre>
       'Modern PHP development enhanced with AI tools and workflows for increased productivity and code quality',
     date: '2024-12-10',
     category: CATEGORIES.ai.id,
+    heroImage: {
+      src: '/images/ai-enhanced-php-development/hero.webp',
+      alt: 'A black-and-white photograph of a technician operating the control console of a mechanical differential analyzer, in front of a dense wall of patch-panel switchboards',
+      ogImage: '/images/ai-enhanced-php-development/og.jpg',
+      creditText: 'Image: NASA, public domain, via Wikimedia Commons',
+      creditUrl: 'https://commons.wikimedia.org/wiki/File:NASA_Differential_Analyzer.jpg',
+    },
     readingTime: 10,
     author: 'Joseph Edmonds',
     tags: [],
