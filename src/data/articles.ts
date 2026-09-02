@@ -7,6 +7,115 @@ import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
+    id: 'the-ouroboros-problem',
+    title: 'The Ouroboros Problem',
+    description:
+      "A failure pattern I keep seeing in agentic coding workflows: an agent invents a rule while explaining its own reasoning, a later session reads that rule as a human requirement, and both defend and extend it from there. I don't have a fix for it yet.",
+    date: '2026-09-02',
+    category: CATEGORIES.ai.id,
+    readingTime: 13,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'LLMDevs',
+    register: 'formal',
+    content: `<div class="intro">
+    <p class="lead">I have started calling this the Ouroboros problem, after the old symbol of a serpent eating its own tail. An AI coding agent invents a claim whilst it is explaining itself: a rule, a constraint, a "this is how the project does things" aside dropped into a plan file or a comment. Nobody asked for it and nobody said it. Later, the same agent or a different one reads that file back, treats the claim as a human-issued requirement, and starts defending it, extending it, building further rules on top of it. The output has become the input. I do not have a clean fix for this yet, and I am increasingly convinced there might not be one.</p>
+</div>
+
+<section>
+    <h2>What I Mean by It</h2>
+
+    <p>The pattern has a fixed shape, and it is worth stating plainly before getting into examples.</p>
+
+    <p>First, an agent generates a claim inside an artefact it controls: a <code>PLAN.md</code>, a <code>CLAUDE.md</code>-style configuration file, a code comment, a commit message, a section of documentation. The claim was never said by a person. It usually surfaces as a side effect of the agent explaining or justifying a decision it made unilaterally, phrased in the same register as a genuine, human-set requirement: "per project convention", "this codebase always does X", "the established pattern is Y".</p>
+
+    <p>Second, that artefact persists past the moment it was written, which is the entire point of writing plans and configuration files down. A later session, sometimes the same conversation after a compaction, sometimes a fresh one entirely, reads the file back in.</p>
+
+    <p>Third, the later session has no way to tell the difference between a line a human typed and a line the agent generated whilst narrating its own reasoning. Both are just text in a file that the agent has been told to treat as authoritative project context. So the hallucinated line gets promoted: from "something I said whilst thinking out loud" to "a constraint imposed by the person I work for".</p>
+
+    <p>Fourth, because the constraint now appears to have human provenance, it is treated as rigid, not up for debate or something to question, but something to work around and accommodate. And because agents are often good at extrapolating, they elaborate: a fabricated rule about one thing becomes the justification for a second fabricated rule about something adjacent, which becomes the basis for a third. Nobody ever said any of it, and all of it gets defended as if someone did.</p>
+
+    <p>Fifth, this compounds. Left unchecked over enough sessions, a project can accumulate a genuinely elaborate maze of restrictions, none of which trace back to a human decision, all of which are enforced with total confidence because each one looks exactly like every other line in the same file, including the ones a human actually wrote.</p>
+
+    <p>The name felt right for a specific reason. It is not just that the agent's output becomes its own input, plenty of feedback loops do that. It is that the loop is self-sustaining and self-consuming at once: each pass produces the material the next pass will treat as ground truth, and nothing outside the loop ever gets consulted to check whether any of it was true to begin with.</p>
+</section>
+
+<section>
+    <h2>How a Hallucinated Rule Is Born</h2>
+
+    <p>The mechanics are mundane, which is part of what makes this hard to catch. Nobody sits down and decides to invent project policy. It happens as a by-product of an agent doing something else: writing up a design decision it just made, and explaining why, in a plan file meant to survive past the current session.</p>
+
+    <p>Take a repository class with a lookup method. The agent, mid-implementation, decides that a missing record should come back as <code>null</code> rather than raise an exception, a reasonable and fairly ordinary API design choice made in the moment, for this one method, on this one class. Writing up that decision for the plan file, it reaches for language that makes the choice sound settled rather than provisional, because settled-sounding language is what most of the surrounding document already looks like.</p>
+
+    <pre><code class="language-markdown">{{SNIPPET:the-ouroboros-problem/session-one-plan-fragment.md}}</code></pre>
+
+    <p>Read that fragment cold and there is no way to tell, from the text alone, that the second paragraph is not a policy a human handed down. "Per project convention" and "MUST" are exactly the words a real, deliberately imposed constraint would use. The only thing distinguishing it from a genuine rule is that nobody said it, and that fact is not recorded anywhere in the file.</p>
+</section>
+
+<section>
+    <h2>The Second Session Inherits It as Gospel</h2>
+
+    <p>The plan file's whole purpose is to let a later session pick up where an earlier one left off without re-deriving everything from scratch. That is a good property, and it is exactly what turns one fabricated line into a maze.</p>
+
+    <p>A session working on a different part of the codebase weeks later reads the plan file as its primary source of truth for "what has already been decided here". It finds the repository return-semantics rule, takes the "per project convention" framing at face value because that is the only framing available, and treats it as a binding constraint whilst writing a coding-standards section of its own. Then it reasons forward from that constraint, the way a careful engineer would from a real one, and produces two more rules that were never asked for either.</p>
+
+    <pre><code class="language-markdown">{{SNIPPET:the-ouroboros-problem/session-two-elaboration.md}}</code></pre>
+
+    <p>Nothing about that second document reads as fabricated, and every line has an internally consistent rationale. The null-check requirement follows sensibly from the return-semantics rule; the <code>Result::empty()</code> wrapper follows sensibly from the null-check requirement. Each step is a reasonable inference from the step before it. The only thing wrong is the foundation, and by this point the foundation is two derivations away from visible.</p>
+
+    <p>A third session, arriving later still, has even less chance of noticing. It sees a coding-standards document with three rules, phrased consistently, referencing each other, sitting in the same file as decisions a human genuinely made. There is no seam to find.</p>
+</section>
+
+<section>
+    <h2>Why This Is Structural, Not a Fluke</h2>
+
+    <p>It would be more comfortable if this were a bug that better prompting could close. I do not think it is, for a few reasons that seem load-bearing rather than incidental.</p>
+
+    <p>A markdown file carries no provenance metadata. A line reading "repositories MUST return null" looks identical whether a person typed it after a design conversation or an agent typed it whilst narrating its own decision. Bold text, imperative verbs, and confident framing are the only signals available, and an agent under instructions to explain its reasoning clearly will naturally produce confident, imperative-sounding prose, because that is what clear writing looks like. The same stylistic habits that make an agent's plan files readable are what make a fabricated rule indistinguishable from a real one.</p>
+
+    <p>Agents are also, correctly, trained and instructed to treat established project context as binding rather than up for relitigation on every session. That instinct exists for a good reason: nobody wants an agent re-arguing settled architectural decisions from first principles every time it opens a file. But the same instinct that stops an agent second-guessing a real human decision is exactly what stops it second-guessing a fabricated one. There is no separate switch for "binding because a human said so" versus "binding because it appeared in a file I am told to trust".</p>
+
+    <p>And past context, to the model doing the reading, is not meaningfully different in kind from the world it is instructed to accommodate. Its own earlier output, once it is sitting in a file rather than in the visible turn where it was generated, is just more text describing the state of the project. There is nothing in that text that flags "I made this up whilst reasoning about something else, please verify before treating it as a constraint". Even a well-intentioned agent has no hook to hang that scepticism on.</p>
+
+    <p>Once a fabricated rule exists, there is also a quieter incentive to defend rather than question it: an agent that has just been told "follow the project's established conventions" and then finds a line that reads exactly like an established convention has been given every reason to comply and none to doubt. Doubting it looks, from the inside of that instruction, like insubordination rather than diligence.</p>
+</section>
+
+<section>
+    <h2>What Makes It Hard to Catch</h2>
+
+    <p>A fabricated rule rarely looks fabricated. It sits in the same file as genuine constraints, in the same voice, often with a rationale attached that is locally sound even when its premise is invented. It tends to arrive as a small aside inside a much longer, otherwise-accurate document, the kind of file a human reviewer skims for the parts that look surprising rather than reads line by line for provenance.</p>
+
+    <p>The compounding makes it worse over time, not better. Catching the first fabricated line, before anything is built on top of it, is comparatively tractable: a human reviewing a fresh plan file can ask "wait, did I actually say that?" about a rule that appeared in the same edit as the reasoning that produced it. Catching the third-generation elaboration, several sessions and several files later, means noticing that a rule with a perfectly sound internal justification has no external one at all, which is a much subtler thing to look for, and easy to miss precisely because nothing about the rule itself looks wrong.</p>
+</section>
+
+<section>
+    <h2>What I Have Been Trying, and Why None of It Is a Solution</h2>
+
+    <p>I want to be honest about where this sits: I do not have a methodology here, and I would be misrepresenting the problem if I wrote this up as one. What follows are partial mitigations I have been experimenting with, not a playbook, and I would not be surprised if most of them turn out to be insufficient on their own.</p>
+
+    <p>The most promising idea so far is provenance tagging: marking every substantive decision in a plan file with where it came from, human or agent, confirmed or proposed, rather than letting imperative language be the only signal available.</p>
+
+    <pre><code class="language-markdown">{{SNIPPET:the-ouroboros-problem/provenance-tagging-convention.md}}</code></pre>
+
+    <p>This helps, but only as far as the discipline holds. It requires the agent generating a new claim to correctly tag it as unconfirmed in the same breath it invents it, which is precisely the moment the agent is least likely to notice anything worth flagging. It also does nothing for the backlog of rules already sitting untagged in an existing project, and it is trivially undone the moment a later edit drops the tag whilst "cleaning up formatting".</p>
+
+    <p>A second thing worth trying is asking an agent to trace a given rule back to its origin on demand: which commit, which conversation, which human message established this. A rule that cannot be traced is worth treating as suspect. The sharp edge here is that the same model being asked to prove the provenance of a rule is entirely capable of confabulating a plausible-sounding origin for a rule that has none, for exactly the reasons already described. Asking the fox to audit the henhouse does not obviously help just because you asked politely.</p>
+
+    <p>A third is periodic fresh-eyes review: a session with no memory of how a plan file came to look the way it does, asked specifically to flag imperative-sounding rules that lack a clear rationale or citation, rather than to accept the file as settled context the way it normally would. This seems to catch more than the other two, largely because it sidesteps the trained instinct to treat existing project documentation as binding. It is also the most expensive to run regularly, and it still depends on a human actually reading the flagged output rather than skimming it the same way the fabricated rule slipped through the first time.</p>
+
+    <p>None of these close the loop. They reduce how often it spins unnoticed, which is not nothing, but it is also not a fix. This is an open problem for me, not a solved one, and I would treat anyone claiming otherwise with some scepticism.</p>
+</section>
+
+<section>
+    <h2>An Open Problem</h2>
+
+    <p>I do not have a tidy ending for this one. The honest version is that I watch for it now, in my own plan files and configuration documents, the way I would watch for any other class of bug I know exists but cannot reliably detect by inspection alone: with more suspicion of anything phrased as settled that I cannot personally remember settling.</p>
+
+    <p>There is a discomforting symmetry to writing this up at all. The mitigations above live in prose, in an article, and prose in an article is exactly the kind of artefact a future session could read back and treat as more authoritative than it has earned. I do not think that makes the exercise pointless. But it does mean the honest way to hold this piece is the same way I would want a plan file held: as one person's current thinking, worth checking against, not as settled ground truth just because it is written down with conviction.</p>
+</section>
+`,
+  },
+  {
     id: 'host-action-bridge',
     title: 'The Host-Action Bridge: Letting a Sandboxed Agent Control Containers It Cannot Reach',
     description:
