@@ -3423,6 +3423,14 @@ module.exports = {
       'Discover advanced database patterns for PHP including retry mechanisms, bulk updates, statement caching, query classes, generators for memory efficiency, and PHPStan rules for test correctness. Learn when to use PDO directly over ORMs.',
     date: '2025-10-08',
     category: CATEGORIES.database.id,
+    heroImage: {
+      src: '/images/advanced-php-database-patterns/hero.webp',
+      alt: 'A c. 1949 Western Electric manual telephone switchboard, densely packed with numbered jack rows and patch cords routing individual connections by hand.',
+      ogImage: '/images/advanced-php-database-patterns/og.jpg',
+      creditText: 'Image: Daderot, CC0, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Telephone_switchboard,_c._1949,_Western_Electric_-_Museum_of_Science_and_Industry_(Chicago)_-_DSC06823.JPG',
+    },
     readingTime: 18,
     author: 'Joseph Edmonds',
     tags: [],
