@@ -74,13 +74,45 @@ export function ArticleDetail() {
 
   return (
     <Page title={`${article.title} - LTS Commerce`} description={article.description}>
+      {/* Hero Image — sits at the very top of the page, pulled up by the nav's own height
+          (-mt-16 matches Navigation's h-16) so it renders behind the sticky, translucent nav
+          rather than below it. Rendered outside Container so it's full width with no breakout
+          trick needed. The fade-to-transparent at the bottom is baked into the image's own
+          alpha channel (see public/images/<slug>/SOURCE.md), not a CSS overlay — a plain
+          <img>, no extra paint layer, works the same regardless of page background. */}
+      {article.heroImage && (
+        <div className="-mt-16">
+          <img
+            src={article.heroImage.src}
+            alt={article.heroImage.alt}
+            className="w-full h-[220px] sm:h-[320px] lg:h-[420px] object-cover object-bottom"
+          />
+        </div>
+      )}
       <Container>
         <Section>
           <article className="max-w-4xl mx-auto">
-            {/* Article Header */}
-            <header className="mb-12">
+            {/* Article Header — pulled up to overlap the hero image's faded lower portion
+                (cancels Section's py-16 top padding, then continues into the image itself),
+                so the header reads as floating on the image rather than sitting in a separate
+                block below it. Only applies when there's a hero image to overlap. */}
+            <header className={article.heroImage ? '-mt-40 relative mb-12' : 'mb-12'}>
               <CategoryBadge category={getCategoryById(article.category)} />
-              <h1 className="mt-4 mb-4">{article.title}</h1>
+              {article.heroImage ? (
+                // Per-word background boxes (not one continuous block) so the title stays
+                // legible over whatever's behind it in the hero image, without hiding the
+                // image between/around the words the way a single full-width box would.
+                <h1 className="mt-4 mb-4 leading-[1.6]">
+                  {article.title.split(' ').map((word, i, words) => (
+                    <span key={i}>
+                      <span className="bg-white/90 px-1.5 box-decoration-clone">{word}</span>
+                      {i < words.length - 1 ? ' ' : ''}
+                    </span>
+                  ))}
+                </h1>
+              ) : (
+                <h1 className="mt-4 mb-4">{article.title}</h1>
+              )}
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 <time dateTime={article.date}>{formatDate(article.date)}</time>
                 <span>•</span>

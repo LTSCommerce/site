@@ -20,6 +20,19 @@ export type ArticleRegister = 'formal';
 export const DEFAULT_ARTICLE_REGISTER: ArticleRegister = 'formal';
 
 /**
+ * Full-width hero banner shown below the article header, before the content.
+ * See public/images/<slug>/SOURCE.md for the source/licence/rebuild recipe of every image used
+ * here — the `article-image` skill enforces writing that file alongside the processed asset.
+ */
+export interface ArticleHeroImage {
+  /** Path under /images/<slug>/, e.g. '/images/the-ouroboros-problem/hero.webp' */
+  readonly src: string;
+
+  /** Accessible description of what the image depicts */
+  readonly alt: string;
+}
+
+/**
  * Article metadata and content
  */
 export interface Article {
@@ -37,6 +50,9 @@ export interface Article {
 
   /** Article category */
   readonly category: CategoryId;
+
+  /** Optional full-width hero banner, rendered below the article header */
+  readonly heroImage?: ArticleHeroImage;
 
   /** Estimated reading time in minutes */
   readonly readingTime: number;

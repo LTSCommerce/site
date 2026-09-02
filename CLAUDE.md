@@ -259,13 +259,33 @@ Agent(voice-pass): run a voice pass on article 'your-article-slug'
 
 **Register note (settled 2026-09-02)**: `formal` register permits natural contractions and first-person for opinion/admission/recommendation, per the measured evidence in `untracked/JOSEPH-VOICE.md` — this supersedes the older house-style convention that banned both. `content-editor` and `article-reviewer` are aligned with this.
 
+#### Step 3d: Hero image (optional)
+
+An article can carry a full-width `heroImage` (see `ArticleHeroImage` in `src/types/article.ts`), rendered at the very top of the page behind the translucent site nav. Not every article needs one. To add one, use the `article-image` skill rather than sourcing/processing an image by hand:
+
+```
+Skill(article-image): the-ouroboros-problem hero image, [what it should depict]
+```
+
+It covers sourcing a genuinely public-domain/CC0 image, verifying the licence before fetching, processing with ImageMagick to a controlled size/quality with the fade baked into the pixels (not a CSS overlay), writing a `public/images/<slug>/SOURCE.md` provenance record (mandatory — this is what lets the asset be rebuilt with different styling later without re-deriving anything), and wiring it into the article. Read the skill's own file for the full recipe and lessons from the first real run of it.
+
 #### Step 4: Deploy
 
 ```bash
 git add code-snippets/your-article-slug/ src/data/articles.ts
 git commit -m "Add article: Your Article Title"
-git push origin main
 ```
+
+Then push using the `git-push` skill rather than a bare `git push` — it watches CI through to
+completion and smoke-tests the live article afterwards, rather than treating the push as
+fire-and-forget:
+
+```
+Skill(git-push)
+```
+
+Only push once the user has actually authorised it for this specific commit — committing and
+pushing are not the same permission, and a push here triggers a real production deploy.
 
 #### Legacy Note
 

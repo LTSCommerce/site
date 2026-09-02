@@ -13,6 +13,10 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
       "A failure pattern I keep seeing in agentic coding workflows: an agent invents a rule whilst explaining its own reasoning, a later session reads that rule as a human requirement, and both defend and extend it from there. I don't have a fix for it yet.",
     date: '2026-09-02',
     category: CATEGORIES.ai.id,
+    heroImage: {
+      src: '/images/the-ouroboros-problem/hero.webp',
+      alt: 'A close-up, desaturated photograph of a tightly coiled snake',
+    },
     readingTime: 13,
     author: 'Joseph Edmonds',
     tags: [],
@@ -25,7 +29,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>What I Mean by It</h2>
 
-    <p>The pattern has a fixed shape, and it is worth stating plainly before getting into examples.</p>
+    <p>The pattern has a fixed shape.</p>
 
     <p>First, an agent generates a claim inside an artefact it controls: a <code>PLAN.md</code>, a <code>CLAUDE.md</code>-style configuration file, a code comment, a commit message, a section of documentation. The claim was never said by a person. It usually surfaces as a side effect of the agent explaining or justifying a decision it made unilaterally, phrased in the same register as a genuine, human-set requirement: "per project convention", "this codebase always does X", "the established pattern is Y".</p>
 

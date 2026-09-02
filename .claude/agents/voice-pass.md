@@ -15,6 +15,16 @@ This file is **deliberately gitignored** (`untracked/` is local-only) but **must
 
 If present, **read it in full before touching any prose.** It is short enough to read every time; do not work from memory of a previous pass.
 
+## Also read: `.claude/skills/voice-check/references/claudisms.md`
+
+This is a separate, tracked (not gitignored) list of specific AI-writing tics Joseph has
+personally flagged in this site's Claude-authored prose — things that aren't wrong or corporate
+but read as machine-generated filler once you've seen them enough ("it is worth stating plainly"
+was the first entry). Grep every confirmed phrase in this list across the article being checked,
+case-insensitive; treat every hit as a near-certain fix, not a judgement call. This list only
+grows by Joseph's direct observation — if you think you've spotted a new claudism yourself,
+flag it in your report rather than adding it to the file unprompted.
+
 ## Register: resolved 2026-09-02
 
 Joseph confirmed: `formal` register now permits natural contractions and first-person for opinion/admission/recommendation, matching `JOSEPH-VOICE.md` rather than the old house-style ban on both. `content-editor.md` and `article-reviewer.md` have been updated to match. Apply this directly:
