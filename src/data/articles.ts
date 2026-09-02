@@ -19959,6 +19959,14 @@ hmm not that... what about... oh wait I found it!"
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'programming',
+    heroImage: {
+      src: '/images/unix-philosophy-strategic-guide/hero.webp',
+      alt: 'A black-and-white photograph of a machine shop interior, showing a wall of tool racks and chucks, an electrical panel, and several lathes',
+      ogImage: '/images/unix-philosophy-strategic-guide/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Interior_of_machine_shop-lathes._-_Barbour_Boat_Works,_Tryon_Palace_Drive,_New_Bern,_Craven_County,_NC_HAER_NC,25-NEBER,29-29.tif',
+    },
     content: `
 <div class="intro">
             <p class="lead">In 1969, a small team at Bell Labs created Unix with a radical design philosophy: build simple tools that do one thing well and compose together seamlessly. Today, this philosophy underpins the world's most successful technology companies. Netflix uses microservices to handle 238 million subscribers. Amazon deploys code every 11.7 seconds. For technology leaders, understanding and applying Unix principles isn't just about technical architecture. It's about building resilient, cost-effective, and strategically flexible technology platforms that create competitive advantage through speed, agility, and vendor independence.</p>
