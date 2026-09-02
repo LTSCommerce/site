@@ -9230,6 +9230,15 @@ h1, h2 {
       'Master guard clauses and early return patterns across PHP, TypeScript, Bash, and Ansible to write cleaner, more maintainable code with reduced cognitive complexity',
     date: '2025-07-31',
     category: CATEGORIES.php.id,
+    heroImage: {
+      src: '/images/early-return-patterns-cleaner-code/hero.webp',
+      alt: 'Zigzagging cast-iron fire escapes descending several adjoining building facades in SoHo, New York, each one a direct exit route bypassing the interior',
+      ogImage: '/images/early-return-patterns-cleaner-code/og.jpg',
+      creditText:
+        'Image: Carol M. Highsmith, Library of Congress, no known copyright restrictions, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Fire_escapes_on_apartment_buildings_in_Soho,_New_York,_New_York_LCCN2011630656.tif',
+    },
     readingTime: 9,
     author: 'Joseph Edmonds',
     tags: [],
