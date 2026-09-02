@@ -10,7 +10,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     id: 'the-ouroboros-problem',
     title: 'The Ouroboros Problem',
     description:
-      "A failure pattern I keep seeing in agentic coding workflows: an agent invents a rule while explaining its own reasoning, a later session reads that rule as a human requirement, and both defend and extend it from there. I don't have a fix for it yet.",
+      "A failure pattern I keep seeing in agentic coding workflows: an agent invents a rule whilst explaining its own reasoning, a later session reads that rule as a human requirement, and both defend and extend it from there. I don't have a fix for it yet.",
     date: '2026-09-02',
     category: CATEGORIES.ai.id,
     readingTime: 13,
@@ -19,7 +19,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     subreddit: 'LLMDevs',
     register: 'formal',
     content: `<div class="intro">
-    <p class="lead">I have started calling this the Ouroboros problem, after the old symbol of a serpent eating its own tail. An AI coding agent invents a claim whilst it is explaining itself: a rule, a constraint, a "this is how the project does things" aside dropped into a plan file or a comment. Nobody asked for it and nobody said it. Later, the same agent or a different one reads that file back, treats the claim as a human-issued requirement, and starts defending it, extending it, building further rules on top of it. The output has become the input. I do not have a clean fix for this yet, and I am increasingly convinced there might not be one.</p>
+    <p class="lead">I have started calling this the Ouroboros problem, after the old symbol of a serpent eating its own tail. An AI coding agent invents a claim whilst it is explaining itself: a rule, a constraint, a "this is how the project does things" aside dropped into a plan file or a comment. Nobody asked for it and nobody said it. Later, the same agent or a different one reads that file back, treats the claim as a human-issued requirement, and starts defending it, extending it, building further rules on top of it. The output has become the input. I don't have a clean fix for this yet, and I'm increasingly convinced there might not be one.</p>
 </div>
 
 <section>
@@ -37,7 +37,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>Fifth, this compounds. Left unchecked over enough sessions, a project can accumulate a genuinely elaborate maze of restrictions, none of which trace back to a human decision, all of which are enforced with total confidence because each one looks exactly like every other line in the same file, including the ones a human actually wrote.</p>
 
-    <p>The name felt right for a specific reason. It is not just that the agent's output becomes its own input, plenty of feedback loops do that. It is that the loop is self-sustaining and self-consuming at once: each pass produces the material the next pass will treat as ground truth, and nothing outside the loop ever gets consulted to check whether any of it was true to begin with.</p>
+    <p>The name felt right for a specific reason. It's not just that the agent's output becomes its own input, plenty of feedback loops do that. It is that the loop is self-sustaining and self-consuming at once: each pass produces the material the next pass will treat as ground truth, and nothing outside the loop ever gets consulted to check whether any of it was true to begin with.</p>
 </section>
 
 <section>
@@ -69,7 +69,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>Why This Is Structural, Not a Fluke</h2>
 
-    <p>It would be more comfortable if this were a bug that better prompting could close. I do not think it is, for a few reasons that seem load-bearing rather than incidental.</p>
+    <p>It would be more comfortable if this were a bug that better prompting could close. I don't think it is, for a few reasons that seem load-bearing rather than incidental.</p>
 
     <p>A markdown file carries no provenance metadata. A line reading "repositories MUST return null" looks identical whether a person typed it after a design conversation or an agent typed it whilst narrating its own decision. Bold text, imperative verbs, and confident framing are the only signals available, and an agent under instructions to explain its reasoning clearly will naturally produce confident, imperative-sounding prose, because that is what clear writing looks like. The same stylistic habits that make an agent's plan files readable are what make a fabricated rule indistinguishable from a real one.</p>
 
@@ -91,7 +91,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>What I Have Been Trying, and Why None of It Is a Solution</h2>
 
-    <p>I want to be honest about where this sits: I do not have a methodology here, and I would be misrepresenting the problem if I wrote this up as one. What follows are partial mitigations I have been experimenting with, not a playbook, and I would not be surprised if most of them turn out to be insufficient on their own.</p>
+    <p>I want to be honest about where this sits: I don't have a methodology here, and I'd be misrepresenting the problem if I wrote this up as one. What follows are partial mitigations I've been experimenting with, not a playbook, and I wouldn't be surprised if most of them turn out to be insufficient on their own.</p>
 
     <p>The most promising idea so far is provenance tagging: marking every substantive decision in a plan file with where it came from, human or agent, confirmed or proposed, rather than letting imperative language be the only signal available.</p>
 
@@ -99,19 +99,19 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>This helps, but only as far as the discipline holds. It requires the agent generating a new claim to correctly tag it as unconfirmed in the same breath it invents it, which is precisely the moment the agent is least likely to notice anything worth flagging. It also does nothing for the backlog of rules already sitting untagged in an existing project, and it is trivially undone the moment a later edit drops the tag whilst "cleaning up formatting".</p>
 
-    <p>A second thing worth trying is asking an agent to trace a given rule back to its origin on demand: which commit, which conversation, which human message established this. A rule that cannot be traced is worth treating as suspect. The sharp edge here is that the same model being asked to prove the provenance of a rule is entirely capable of confabulating a plausible-sounding origin for a rule that has none, for exactly the reasons already described. Asking the fox to audit the henhouse does not obviously help just because you asked politely.</p>
+    <p>A second thing worth trying is asking an agent to trace a given rule back to its origin on demand: which commit, which conversation, which human message established this. A rule that cannot be traced is worth treating as suspect. The sharp edge here is that the same model being asked to prove the provenance of a rule is entirely capable of confabulating a plausible-sounding origin for a rule that has none, for exactly the reasons already described. Asking the fox to audit the henhouse doesn't obviously help just because you asked politely.</p>
 
     <p>A third is periodic fresh-eyes review: a session with no memory of how a plan file came to look the way it does, asked specifically to flag imperative-sounding rules that lack a clear rationale or citation, rather than to accept the file as settled context the way it normally would. This seems to catch more than the other two, largely because it sidesteps the trained instinct to treat existing project documentation as binding. It is also the most expensive to run regularly, and it still depends on a human actually reading the flagged output rather than skimming it the same way the fabricated rule slipped through the first time.</p>
 
-    <p>None of these close the loop. They reduce how often it spins unnoticed, which is not nothing, but it is also not a fix. This is an open problem for me, not a solved one, and I would treat anyone claiming otherwise with some scepticism.</p>
+    <p>None of these close the loop. They reduce how often it spins unnoticed, which is not nothing, but it is also not a fix. This is an open problem for me, not a solved one, and I'd treat anyone claiming otherwise with some scepticism.</p>
 </section>
 
 <section>
     <h2>An Open Problem</h2>
 
-    <p>I do not have a tidy ending for this one. The honest version is that I watch for it now, in my own plan files and configuration documents, the way I would watch for any other class of bug I know exists but cannot reliably detect by inspection alone: with more suspicion of anything phrased as settled that I cannot personally remember settling.</p>
+    <p>I don't have a tidy ending for this one. The honest version is that I watch for it now, in my own plan files and configuration documents, the way I'd watch for any other class of bug I know exists but can't reliably detect by inspection alone: with more suspicion of anything phrased as settled that I cannot personally remember settling.</p>
 
-    <p>There is a discomforting symmetry to writing this up at all. The mitigations above live in prose, in an article, and prose in an article is exactly the kind of artefact a future session could read back and treat as more authoritative than it has earned. I do not think that makes the exercise pointless. But it does mean the honest way to hold this piece is the same way I would want a plan file held: as one person's current thinking, worth checking against, not as settled ground truth just because it is written down with conviction.</p>
+    <p>There's a discomforting symmetry to writing this up at all. The mitigations above live in prose, in an article, and prose in an article is exactly the kind of artefact a future session could read back and treat as more authoritative than it has earned. I don't think that makes the exercise pointless. But it does mean the honest way to hold this piece is the same way I would want a plan file held: as one person's current thinking, worth checking against, not as settled ground truth just because it is written down with conviction.</p>
 </section>
 `,
   },
