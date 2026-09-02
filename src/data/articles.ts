@@ -19383,6 +19383,14 @@ yarn add reflect-metadata inversify</code></pre>
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'LLMDevs',
+    heroImage: {
+      src: '/images/understanding-llm-context-management/hero.webp',
+      alt: 'A sailor using navigational dividers to plot a precise fix on a paper nautical chart',
+      ogImage: '/images/understanding-llm-context-management/og.jpg',
+      creditText: 'Image: U.S. Navy, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:US_Navy_100405-N-5712P-135_Quartermaster_3rd_Class_Adalberto_Fuentes,_from_Galveston,_Texas,_plots_a_course_on_a_coastal_chart_in_the_chart_room_aboard_the_amphibious_assault_ship_USS_Nassau_(LHA_4).jpg',
+    },
     content: `
 <div class="intro">
             <p class="lead">You're debugging a complex issue with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a>. After 30 messages back and forth, you notice the AI seems confused, mixing up earlier solutions with current problems. What happened? You've just experienced the hidden challenge of context management, the invisible force that can make or break your AI development experience.</p>
