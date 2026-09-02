@@ -474,6 +474,14 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    heroImage: {
+      src: '/images/php-exception-best-practices/hero.webp',
+      alt: 'A black-and-white photograph of a shipboard electrical switchboard, dense with ammeters, voltmeters, breakers, and labelled buses',
+      ogImage: '/images/php-exception-best-practices/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:DETAIL_OF_ELECTRICAL_PANEL._-_Lightship_116,_Pier_3,_Inner_Harbor,_Baltimore,_Independent_City,_MD_HAER_MD-133-16.tif',
+    },
     content: `<div class="intro">
     <p class="lead">Exceptions are the primary way PHP code communicates that something has gone wrong. Get them right and the stack trace, the log line, and the API error response all tell the same coherent story. Get them wrong and you end up parsing human-readable messages with regex, swallowing errors "temporarily", and turning every production incident into an archaeology dig. This article lays out a set of simple hard rules, with a PHP 8.4 implementation pattern that makes them trivial to follow. Python and TypeScript get a cursory section at the end. The principles transfer directly.</p>
 </div>
