@@ -14172,10 +14172,18 @@ return $backups[0];
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    heroImage: {
+      src: '/images/php-magic-constants-maintainable-logging/hero.webp',
+      alt: 'A black-and-white photograph of a cast metal "ASHTON VIADUCT 275" identification plaque bolted to a weathered stone bridge pier, alongside a utility box',
+      ogImage: '/images/php-magic-constants-maintainable-logging/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Southwest_identification_plaque._View_east_-_Ashton_Viaduct,_State_Route_116_(Washington_Highway)_spanning_Blackstone_River,_Blackstone_Canal,_and_Providence_and_Worcester_HAER_RI,4-ASH.V,2-16.tif',
+    },
     content: `
 <div class="intro">
     <p class="lead">
-        PHP magic constants provide automatic context about code execution location, enabling logging systems 
+        PHP magic constants provide automatic context about code execution location, enabling logging systems
         that track method calls, file locations, and class hierarchies without manual instrumentation. Combined 
         with <a href="https://github.com/Seldaek/monolog">Monolog</a> and 
         <a href="https://www.php-fig.org/psr/psr-3/">PSR-3 logging standards</a>, these constants create 
