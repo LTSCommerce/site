@@ -15362,6 +15362,14 @@ chmod +x bin/qa</code></pre>
       'Comprehensive guide to PHP stream wrappers, from built-in protocols like file://, http://, and data:// to implementing custom stream handlers for advanced I/O operations',
     date: '2025-09-26',
     category: CATEGORIES.php.id,
+    heroImage: {
+      src: '/images/php-stream-wrappers/hero.webp',
+      alt: 'A 1913 engineering drawing of a steel discharge manifold, showing a single intake pipe splitting at a T-junction into three separate branches, each ending in its own flanged connector',
+      ogImage: '/images/php-stream-wrappers/og.jpg',
+      creditText: 'Image: U.S. Reclamation Service / HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:STEEL_MANIFOLD,_HIGHLINE_PUMPING_PLANT._January_7,_1913_-_Highline_Canal_and_Pumping_Station,_South_side_of_Salt_River_between_Tempe,_Phoenix_and_Mesa,_Tempe,_Maricopa_County,_AZ_HAER_ARIZ,7-TEMP,6-26.tif',
+    },
     readingTime: 9,
     author: 'Joseph Edmonds',
     tags: [],
