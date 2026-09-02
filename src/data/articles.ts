@@ -1106,6 +1106,14 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'programming',
+    heroImage: {
+      src: '/images/errors-vs-bugs-the-difference-that-matters/hero.webp',
+      alt: 'The Harvard Mark II relay-calculator logbook page for 9 September 1947, with a moth taped in beside the handwritten note "First actual case of bug being found."',
+      ogImage: '/images/errors-vs-bugs-the-difference-that-matters/og.jpg',
+      creditText:
+        'Image: U.S. Naval Historical Center / NHHC, public domain, via Wikimedia Commons',
+      creditUrl: 'https://commons.wikimedia.org/wiki/File:First_Computer_Bug,_1947.jpg',
+    },
     content: `<div class="intro">
     <p class="lead">Software fails. That is not the interesting part. The interesting part is <em>how</em> it fails, because not all failures are the same. There is a fundamental distinction between two kinds of failure: <strong>errors</strong> and <strong>bugs</strong>. Most developers use these words interchangeably despite them meaning completely different things. Getting clear on this distinction will change how you write code, how you handle failures, and how much time you spend staring at production logs at two in the morning.</p>
 </div>
