@@ -4544,6 +4544,13 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
       'AI coding assistants are fundamentally transforming software development productivity and economics. Understanding when to use AI versus deterministic code is now a critical strategic skill.',
     date: '2025-11-19',
     category: CATEGORIES.ai.id,
+    heroImage: {
+      src: '/images/ai-software-development-paradigm-shift/hero.webp',
+      alt: 'Workers assembling flywheel magnetos along the moving conveyor at Ford’s Highland Park plant in 1913, the year the first moving assembly line was introduced',
+      ogImage: '/images/ai-software-development-paradigm-shift/og.jpg',
+      creditText: 'Image: U.S. National Archives, public domain, via Wikimedia Commons',
+      creditUrl: 'https://commons.wikimedia.org/wiki/File:Ford_assembly_line_-_1913.jpg',
+    },
     readingTime: 14,
     author: 'Joseph Edmonds',
     tags: [],
