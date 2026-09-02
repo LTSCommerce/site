@@ -12284,6 +12284,14 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
       'Technical guide to upgrading legacy MySQL databases from MyISAM with implied foreign keys to modern MySQL 8.4 with InnoDB, proper constraints, and modern features for enhanced security, performance, and data integrity.',
     date: '2025-08-18',
     category: CATEGORIES.database.id,
+    heroImage: {
+      src: '/images/mysql-legacy-to-modern-upgrade/hero.webp',
+      alt: 'A historic walk-in bank vault door photographed square-on, its diagonal bolt-throw bars crossing over a central combination wheel',
+      ogImage: '/images/mysql-legacy-to-modern-upgrade/og.jpg',
+      creditText: 'Image: National Park Service (HABS), public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:PSFS_Building,_Walnut_and_Seventh_Streets,_Philadelphia,_Philadelphia_County,_PA_HABS_PA-6663-21.tif',
+    },
     readingTime: 10,
     author: 'Joseph Edmonds',
     tags: [],
