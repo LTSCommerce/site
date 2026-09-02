@@ -823,6 +823,14 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    heroImage: {
+      src: '/images/openapi-automatic-code-generation/hero.webp',
+      alt: 'A black-and-white photograph of a machined forging die, tagged "MOD 17FM", seated in the bed of a large industrial closed-die forging press',
+      ogImage: '/images/openapi-automatic-code-generation/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Die_in_place_-_Alcoa_Forging_Division,_Mesta_50,000-Ton_Closed_Die_Forging_Press,_1600_Harvard_Avenue,_Cleveland,_Cuyahoga_County,_OH_HAER_OHIO,18-CLEV,41-13.tif',
+    },
     content: `<div class="intro">
     <p class="lead">You have built an API. Now every team that wants to consume it needs to write HTTP client code, map JSON responses to objects, handle authentication headers, and deal with error responses. Multiply that by five client teams across three languages and you have a maintenance disaster waiting to happen. OpenAPI solves this by letting you describe your API in a single machine-readable specification, then automatically generating all that boilerplate in whatever language you need. The specification becomes the contract, and the generated code stays in sync with it.</p>
 </div>
