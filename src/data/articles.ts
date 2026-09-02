@@ -13826,6 +13826,14 @@ return $backups[0];
       'An in-depth exploration of oclif, the enterprise-grade CLI framework from Salesforce. Learn best practices, pros and cons, and compare with alternatives.',
     date: '2025-07-22',
     category: CATEGORIES.typescript.id,
+    heroImage: {
+      src: '/images/oclif-cli-framework-guide/hero.webp',
+      alt: 'A wide, densely packed wall of labelled switch and instrument panels in a nuclear power station control room, each panel carrying its own named controls',
+      ogImage: '/images/oclif-cli-framework-guide/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:MAIN_CONTROL_ROOM,_PANELS_WEST_OF_MAIN_CONTROL_AREA,_LOOKING_NORTH_(LOCATION_Q)_-_Shippingport_Atomic_Power_Station,_On_Ohio_River,_25_miles_Northwest_of_Pittsburgh,_Shippingport,_HAER_PA,4-SHIP,1-28.tif',
+    },
     readingTime: 12,
     author: 'Joseph Edmonds',
     tags: [],
