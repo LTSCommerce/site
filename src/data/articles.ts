@@ -11461,6 +11461,14 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
       'Explore how LLM agents can over-specialize solutions to handle specific edge cases while destroying generic functionality. Learn to spot and prevent overfitting in AI-generated code.',
     date: '2025-08-26',
     category: CATEGORIES.ai.id,
+    heroImage: {
+      src: '/images/llm-overfitting-trap/hero.webp',
+      alt: 'Refractory-lined runner-box moulds lined up on rail carts in a brass foundry casting shop, each cast to the same fixed shape',
+      ogImage: '/images/llm-overfitting-trap/og.jpg',
+      creditText: 'Image: National Park Service (HAER), public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:RUNNER_BOXES_IN_CASTING_SHOP_MAINTENANCE_AREA._THE_SECTION_OF_THE_PLANT_SHOWN_IN_THE_BACKGROUND_FORMERLY_HOUSED_SMALL_BRASS_AND_COPPER_FURNACES_THAT_POURED_APPROXIMATLEY_3500_LBS._HAER_NY,15-BUF,25-12.tif',
+    },
     readingTime: 12,
     author: 'Joseph Edmonds',
     tags: [],
