@@ -69,8 +69,7 @@ This check applies to **every piece of text in the article**, not just paragraph
 - Em dashes in inline comments
 - Phrases like "Note that...", "Keep in mind...", "It's worth noting...", "Simply..."
 - Over-explaining the obvious — comments should state WHY, not WHAT
-- Contractions (`isn't`, `don't`, `you've`) inconsistent with the article's declared register
-- First-person ("I use this pattern because...")
+- First-person ("I use this pattern because...") only where it's diary-like rather than a genuine WHY
 - Sentence fragments and grammar issues
 
 **Paragraph prose:**
@@ -79,7 +78,9 @@ This check applies to **every piece of text in the article**, not just paragraph
 - "Moreover", "Furthermore", "In essence", "It is worth noting that"
 - Passive voice where active is clearly better
 - Sentences over 35 words
-- Contractions (`isn't`, `don't`, `you've`) — flag if inconsistent with the article's declared register
+- American spelling where British is the site convention ("while" → "whilst", "-ize" → "-ise")
+
+Note: as of 2026-09-02, `formal` register permits natural contractions and first-person for opinion/admission/recommendation — see `untracked/JOSEPH-VOICE.md`, the measured reference for how Joseph actually writes. Do not flag contractions as a register violation; that guidance is superseded.
 
 ## How To Run a Review
 

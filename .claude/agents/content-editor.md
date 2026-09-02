@@ -37,7 +37,7 @@ Replace ALL em dashes (`—`) with alternatives in prose AND headings AND code c
 **2. Remove AI telltales**
 
 - Eliminate "Moreover", "Furthermore", "Additionally", "In essence", "It is worth noting that", "Keep in mind that", "Note that", "Simply"
-- Cut excessive hedging ("might", "could", "perhaps") where it weakens a direct claim
+- Cut hedging used as vague filler or to dodge a claim that should just be stated plainly — but honest hedging ("I would suggest", "probably", "hopefully") is part of the real voice (see Register consistency below); do not strip it wholesale
 - Cut redundant explanations and restated points
 - Replace passive voice with active where it reads better
 
@@ -45,15 +45,16 @@ Replace ALL em dashes (`—`) with alternatives in prose AND headings AND code c
 
 Read the `register` field from the article object in `src/data/articles.ts`. If absent, use `'formal'` (the site default). Do NOT infer register from prose — the field is the authoritative source.
 
-**`formal` register (current site default) — apply to all text surfaces:**
+**`formal` register (current site default; redefined 2026-09-02 to match `untracked/JOSEPH-VOICE.md`, the measured reference for how Joseph actually writes) — apply to all text surfaces:**
 
-- No contractions (`isn't` → `is not`, `don't` → `do not`, `you've` → `you have`)
-- No first-person voice (`I use...`, `we prefer...`)
-- State things directly — no hedging (`might`, `perhaps`, `could`)
-- No direct address (`you`, `your`) unless the article already uses it consistently throughout
-- British English spelling preferred (`behaviour`, `colour`, `favour`, `recognised`)
-- Active voice preferred over passive
-- Apply identically to paragraph prose, heading text, and code comments
+- Natural contractions are fine (`isn't`, `don't`, `you've`) — do not force expansion to "is not"/"do not"/"you have". Don't force one into every clause either; this is natural variation, not a quota.
+- First person for opinion, recommendation, and honest admission of a limit is fine and characteristic (`I would suggest...`, `I have not seen...`). Avoid first person that's purely diary-like or that name-drops the writing process itself.
+- Hedge honestly rather than overclaiming — `might`, `probably`, `I would suggest`, `hopefully` are real texture, not weakness.
+- Direct address (`you`, `your`) is fine where the article already uses it consistently.
+- British English spelling and idiom preferred (`behaviour`, `colour`, `favour`, `recognised`, `whilst` not `while`).
+- Active voice preferred over passive.
+- Apply identically to paragraph prose, heading text, and code comments.
+- For anything not covered above, `untracked/JOSEPH-VOICE.md` is authoritative — read it directly rather than relying only on this summary.
 
 **4. Code comment humanisation**
 

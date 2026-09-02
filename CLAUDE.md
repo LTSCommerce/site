@@ -257,7 +257,7 @@ Agent(voice-pass): run a voice pass on article 'your-article-slug'
 
 `untracked/JOSEPH-VOICE.md` is deliberately gitignored but must be present locally for this step to run — if it's missing, the agent will stop and say so rather than guessing at a voice from general knowledge. The pass can be **run more than once**: apply the first pass, re-read the result, and re-run the agent if it still flags issues or recommends another round. Stop once it reports the article reads clean.
 
-The reference doc's guidance on contractions and first-person voice can conflict with the site's `register: 'formal'` convention used by `content-editor`/`article-reviewer` (which currently reads "formal" as banning both). The `voice-pass` agent is instructed not to resolve that tension unilaterally — it will flag genuine conflicts in its report rather than silently picking a side. If it does, that's a decision for Joseph, not something to paper over before commit.
+**Register note (settled 2026-09-02)**: `formal` register permits natural contractions and first-person for opinion/admission/recommendation, per the measured evidence in `untracked/JOSEPH-VOICE.md` — this supersedes the older house-style convention that banned both. `content-editor` and `article-reviewer` are aligned with this.
 
 #### Step 4: Deploy
 
@@ -585,7 +585,7 @@ Writing code that silently swallows errors is blocked. All errors must be handle
 
 **Required action**: Handle errors explicitly — log them, return them to the caller, or propagate them. Silent error suppression masks bugs and makes debugging impossible.
 
-**Excluded paths**: vendor/, node_modules/, and test-fixture dirs (tests/fixtures/, tests/assets/, __fixtures__/) are skipped by default. Exempt more paths with glob patterns via `handlers.pre_tool_use.error_hiding_blocker.options.exclude_paths` or the project-wide `daemon.exclude_paths` — use these for fixtures of deliberately-broken code instead of disabling the handler.
+**Excluded paths**: vendor/, node_modules/, and test-fixture dirs (tests/fixtures/, tests/assets/, **fixtures**/) are skipped by default. Exempt more paths with glob patterns via `handlers.pre_tool_use.error_hiding_blocker.options.exclude_paths` or the project-wide `daemon.exclude_paths` — use these for fixtures of deliberately-broken code instead of disabling the handler.
 
 ## curl_pipe_shell — never pipe curl/wget to bash/sh
 
@@ -768,7 +768,7 @@ CLAUDE/Plan/mkplan.bash "descriptive-kebab-name"
 
 (Use the project's configured plan directory if it is not `CLAUDE/Plan/`.) The script takes a lock, reads the same authoritative git counter (`hooksdaemon.latestPlanNumber`), assigns the next number atomically, creates the `NNNNN-name/` folder, scaffolds `PLAN.md`, and advances the counter — so concurrent runs can never collide on a number. It prints the new folder path on stdout. You still add the README index row yourself (the script reminds you).
 
-**If you only need the *number* (not a folder)**, read the counter and add 1 — this is the fallback, not the primary path:
+**If you only need the _number_ (not a folder)**, read the counter and add 1 — this is the fallback, not the primary path:
 
 ```
 git config --local hooksdaemon.latestPlanNumber
@@ -1075,7 +1075,7 @@ At session start this handler reports any **project handlers** (`.claude/project
 1. **Do not assume normal guardrails are in force.** The listed handlers are OFF for this session.
 2. **Diagnose** each failure: `/workspace/.claude/hooks-daemon/bin/hooks-daemon validate-project-handlers` names the file, the missing method, and the daemon version that introduced it.
 3. **Fix** the handler(s) — usually adding a required method stub (e.g. `get_claude_md`) that a daemon upgrade made mandatory.
-4. **Restart the daemon** (`/workspace/.claude/hooks-daemon/bin/hooks-daemon restart`). The alert reflects the *running* daemon, so it clears only after a restart reloads the fixed handlers — fixing the file alone is not enough.
+4. **Restart the daemon** (`/workspace/.claude/hooks-daemon/bin/hooks-daemon restart`). The alert reflects the _running_ daemon, so it clears only after a restart reloads the fixed handlers — fixing the file alone is not enough.
 
 The handler is silent when every project handler loads, so seeing this alert always means real action is required.
 
