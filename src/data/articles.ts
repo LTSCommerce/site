@@ -9929,6 +9929,14 @@ download_file() {
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'Fedora',
+    heroImage: {
+      src: '/images/fedora-42-breakthrough-features/hero.webp',
+      alt: 'A black-and-white photograph of a foundry casting crew pouring molten metal from a holding furnace into molds, with a bright glowing pour stream lighting the scene',
+      ogImage: '/images/fedora-42-breakthrough-features/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:FRONT_VIEW_OF_POURING_FROM_-61_HOLDING_FURNACE_AT_-02_STATION_INTO_THREE_VERTICAL_MOLDS_SUBMERGED_IN_A_WATER-FILLED_TANK_BELOW_THE_CASTING_FLOOR._THE_CASTING_CREW%27S_JOBS_DURING_HAER_NY,15-BUF,25-8.tif',
+    },
     content: `
 <section class="intro">
       <p class="lead">Discover the groundbreaking features of Fedora 42, including KDE Plasma promotion to full edition status, the revolutionary COSMIC desktop environment, and the modernized Anaconda WebUI installer that transforms Linux computing.</p>
