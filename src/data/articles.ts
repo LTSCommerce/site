@@ -1516,6 +1516,15 @@ function loadConfig(string $path): array
       'Ansible Vault file encryption creates opaque blobs that break git diffs, block code review, and resist AI tooling. Vault encrypted strings keep your keys visible and your values safe. It is a strictly better workflow for infrastructure secrets.',
     date: '2026-03-03',
     category: CATEGORIES.infrastructure.id,
+    heroImage: {
+      src: '/images/ansible-vault-strings-vs-file-encryption/hero.webp',
+      alt: 'A 1914 Diebold bank vault door swung open, showing its inner locking mechanism of meshing drive gears and bolt-work beside a barred security gate',
+      ogImage: '/images/ansible-vault-strings-vs-file-encryption/og.jpg',
+      creditText:
+        'Image: Historic American Buildings Survey, National Park Service, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Looking_east,_1914_Diebold_vault_door,_open_-_City_Post_Office,_2_Massachusetts_Avenue,_Northwest,_Washington,_District_of_Columbia,_DC_HABS_DC,WASH,587-153.tif',
+    },
     readingTime: 15,
     author: 'Joseph Edmonds',
     tags: [],
