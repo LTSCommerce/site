@@ -11863,6 +11863,14 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
       'Learn when to mock and when not to mock in unit tests. Discover why over-mocking creates brittle, unmaintainable tests and how to write better tests with minimal mocking using TypeScript, Vitest, and PHPUnit.',
     date: '2025-07-30',
     category: CATEGORIES.php.id,
+    heroImage: {
+      src: '/images/mocking-best-practices/hero.webp',
+      alt: 'A four-engine wind-tunnel test model, mounted from below in a full-scale tunnel, its wing and engine nacelles filling the frame edge to edge',
+      ogImage: '/images/mocking-best-practices/og.jpg',
+      creditText: 'Image: NASA Ames Research Center, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Four_Engine_USB_Model_in_the_40x80_foot_Wind_Tunnel_(AC74-2756).jpg',
+    },
     readingTime: 10,
     author: 'Joseph Edmonds',
     tags: [],
@@ -11870,7 +11878,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     content: `
 <div class="intro">
     <p class="lead">
-        Mocking in unit tests is like hot sauce - a little bit enhances the flavor, but too much ruins the meal. 
+        Mocking in unit tests is like hot sauce - a little bit enhances the flavor, but too much ruins the meal.
         Yet many developers drown their tests in mocks, creating brittle, unreadable test suites that break with 
         every refactor. Let's explore when to mock, when not to mock, and how to write maintainable tests that 
         actually test what matters.
