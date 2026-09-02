@@ -2034,6 +2034,13 @@ ansible-vault encrypt_string \\
       'Cron has scheduled Linux tasks for fifty years, but systemd timers offer structured logging, dependency management, security sandboxing, and catch-up execution that cron simply cannot match. A deep dive for engineers running Red Hat, Fedora, and Rocky Linux.',
     date: '2026-02-26',
     category: CATEGORIES.infrastructure.id,
+    heroImage: {
+      src: '/images/systemd-timers-modern-cron/hero.webp',
+      alt: 'The exposed movement of a mechanical clock, showing its balance wheel, gear train, and engraved regulator plate',
+      ogImage: '/images/systemd-timers-modern-cron/og.jpg',
+      creditText: 'Image: Anonimski, CC0, via Wikimedia Commons',
+      creditUrl: 'https://commons.wikimedia.org/wiki/File:Reform_clock_movement.JPG',
+    },
     readingTime: 14,
     author: 'Joseph Edmonds',
     tags: [],
