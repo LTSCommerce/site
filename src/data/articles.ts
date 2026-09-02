@@ -8554,6 +8554,14 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
       'Master dependency inversion with final classes in PHP 8.4, learn when to use real objects vs mocks, and discover the pragmatic testing approach that combines Detroit and London schools for maintainable, testable code.',
     date: '2025-08-11',
     category: CATEGORIES.php.id,
+    heroImage: {
+      src: '/images/dependency-inversion-final-classes-pragmatic-testing/hero.webp',
+      alt: 'A bank of three-phase knife switches on a 1930s-era industrial switchboard, each identical switch assembly mounted on its own labelled panel along a shared bus structure',
+      ogImage: '/images/dependency-inversion-final-classes-pragmatic-testing/og.jpg',
+      creditText: 'Image: HABS/NPS, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Detail_of_switches_on_West_wall,_plant_switch_house_-_Bureau_of_Mines_Metallurgical_Research_Laboratory,_Original_Building,_Date_Street_north_of_U.S._Highway_93,_Boulder_City,_HABS_NEV,2-BOUC,1B-18.tif',
+    },
     readingTime: 18,
     author: 'Joseph Edmonds',
     tags: [],
