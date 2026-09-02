@@ -21,7 +21,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
       creditUrl:
         'https://commons.wikimedia.org/wiki/File:A_close_up_of_a_coiled_up_Corn_snake_on_the_grass._(00f0e1dc-b4b7-4ab6-b124-bcddd284a68e).jpg',
     },
-    readingTime: 13,
+    readingTime: 11,
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'LLMDevs',
@@ -97,29 +97,11 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 </section>
 
 <section>
-    <h2>What I Have Been Trying, and Why None of It Is a Solution</h2>
-
-    <p>I want to be honest about where this sits: I don't have a methodology here, and I'd be misrepresenting the problem if I wrote this up as one. What follows are partial mitigations I've been experimenting with, not a playbook, and I wouldn't be surprised if most of them turn out to be insufficient on their own.</p>
-
-    <p>The most promising idea so far is provenance tagging: marking every substantive decision in a plan file with where it came from, human or agent, confirmed or proposed, rather than letting imperative language be the only signal available.</p>
-
-    <pre><code class="language-markdown">{{SNIPPET:the-ouroboros-problem/provenance-tagging-convention.md}}</code></pre>
-
-    <p>This helps, but only as far as the discipline holds. It requires the agent generating a new claim to correctly tag it as unconfirmed in the same breath it invents it, which is precisely the moment the agent is least likely to notice anything worth flagging. It also does nothing for the backlog of rules already sitting untagged in an existing project, and it is trivially undone the moment a later edit drops the tag whilst "cleaning up formatting".</p>
-
-    <p>A second thing worth trying is asking an agent to trace a given rule back to its origin on demand: which commit, which conversation, which human message established this. A rule that cannot be traced is worth treating as suspect. The sharp edge here is that the same model being asked to prove the provenance of a rule is entirely capable of confabulating a plausible-sounding origin for a rule that has none, for exactly the reasons already described. Asking the fox to audit the henhouse doesn't obviously help just because you asked politely.</p>
-
-    <p>A third is periodic fresh-eyes review: a session with no memory of how a plan file came to look the way it does, asked specifically to flag imperative-sounding rules that lack a clear rationale or citation, rather than to accept the file as settled context the way it normally would. This seems to catch more than the other two, largely because it sidesteps the trained instinct to treat existing project documentation as binding. It is also the most expensive to run regularly, and it still depends on a human actually reading the flagged output rather than skimming it the same way the fabricated rule slipped through the first time.</p>
-
-    <p>None of these close the loop. They reduce how often it spins unnoticed, which is not nothing, but it is also not a fix. This is an open problem for me, not a solved one, and I'd treat anyone claiming otherwise with some scepticism.</p>
-</section>
-
-<section>
     <h2>An Open Problem</h2>
 
     <p>I don't have a tidy ending for this one. The honest version is that I watch for it now, in my own plan files and configuration documents, the way I'd watch for any other class of bug I know exists but can't reliably detect by inspection alone: with more suspicion of anything phrased as settled that I cannot personally remember settling.</p>
 
-    <p>There's a discomforting symmetry to writing this up at all. The mitigations above live in prose, in an article, and prose in an article is exactly the kind of artefact a future session could read back and treat as more authoritative than it has earned. I don't think that makes the exercise pointless. But it does mean the honest way to hold this piece is the same way I would want a plan file held: as one person's current thinking, worth checking against, not as settled ground truth just because it is written down with conviction.</p>
+    <p>There's a discomforting symmetry to writing this up at all. This article lives in prose, and prose is exactly the kind of artefact a future session could read back and treat as more authoritative than it has earned. I don't think that makes the exercise pointless. But it does mean the honest way to hold this piece is the same way I would want a plan file held: as one person's current thinking, worth checking against, not as settled ground truth just because it is written down with conviction.</p>
 </section>
 `,
   },
