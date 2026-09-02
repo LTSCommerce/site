@@ -15597,6 +15597,14 @@ chmod +x bin/qa</code></pre>
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    heroImage: {
+      src: '/images/phpstan-project-level-rules/hero.webp',
+      alt: 'A black-and-white photograph of a machine shop tool room, with a mesh-fronted tool cabinet, a rack of hanging clamps and wrenches, and a run of individually labelled parts drawers under a workbench with a mounted vice',
+      ogImage: '/images/phpstan-project-level-rules/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:TOOL_ROOM_SHOWING_TOOL_STORAGE_AREA._VIEW_WEST_-_Oldman_Boiler_Works,_Office-Machine_Shop,_32_Illinois_Street,_Buffalo,_Erie_County,_NY_HAER_NY,15-BUF,41B-4.tif',
+    },
     content: `
 <div class="intro">
             <p class="lead">
