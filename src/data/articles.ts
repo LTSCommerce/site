@@ -4881,10 +4881,18 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'devops',
+    heroImage: {
+      src: '/images/ansible-fact-caching-problems/hero.webp',
+      alt: 'A black-and-white historical photograph of the Library of Congress Card Division, showing clerks filing catalog cards across long tables in front of a wall of card-catalog drawer cabinets',
+      ogImage: '/images/ansible-fact-caching-problems/og.jpg',
+      creditText: 'Image: Library of Congress, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Card_Division_of_the_Library_of_Congress_3c18631u_original.jpg',
+    },
     content: `
 <div class="intro">
             <p class="lead">
-                <a href="https://www.ansible.com/" target="_blank" rel="noopener">Ansible</a> fact caching promises 
+                <a href="https://www.ansible.com/" target="_blank" rel="noopener">Ansible</a> fact caching promises
                 performance improvements and cross-playbook fact persistence. Instead, it delivers frustrating limitations 
                 that have plagued operations teams for years. You can't use memory caching with 
                 <a href="https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html#cmdoption-ansible-playbook-limit" target="_blank" rel="noopener">--limit operations</a>. 
