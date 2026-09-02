@@ -15043,6 +15043,14 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    heroImage: {
+      src: '/images/php-qa-ci-comprehensive-quality-pipeline/hero.webp',
+      alt: 'Historic black-and-white photograph of gate valves controlling sequential stages of a water filtration plant, main flood valve and crossover valve mounted side by side on the pipe run',
+      ogImage: '/images/php-qa-ci-comprehensive-quality-pipeline/og.jpg',
+      creditText: 'Image: National Park Service (HAER), public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Valves_under_central_corridor_of_filtration_bed_building._Main_flood_valves_is_at_left_and_crossover_valve_is_a_right._-_Lake_Whitney_Water_Filtration_Plant,_Filtration_Plant,_South_HAER_CT-186-A-30.tif',
+    },
     content: `
 <div class="intro">
             <p class="lead">Setting up quality assurance for PHP projects is a pain. You need to install a dozen different tools, each with its own config files and quirks. But what if you could get a complete, battle-tested QA pipeline with just one Composer dependency?</p>
