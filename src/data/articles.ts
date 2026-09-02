@@ -6887,6 +6887,13 @@ to explore the full documentation and get started with intelligent command manag
       'Explore the groundbreaking features added to Claude Code in the last three months, including checkpoints for fearless refactoring, autonomous subagents, plugin marketplace, web interface, and more.',
     date: '2025-11-05',
     category: CATEGORIES.ai.id,
+    heroImage: {
+      src: '/images/claude-code-latest-features/hero.webp',
+      alt: 'The battleship USS Iowa under construction on the building ways at the New York Navy Yard in 1941, viewed down the length of the hull with turret barbette machinery being fitted inside the framed structure.',
+      ogImage: '/images/claude-code-latest-features/og.jpg',
+      creditText: 'Image: U.S. National Archives, public domain, via Wikimedia Commons',
+      creditUrl: 'https://commons.wikimedia.org/wiki/File:19-LCunnumbered.tif',
+    },
     readingTime: 12,
     author: 'Joseph Edmonds',
     tags: [],
