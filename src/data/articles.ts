@@ -7243,6 +7243,14 @@ to explore the full documentation and get started with intelligent command manag
       "A comprehensive guide to Claude Code's planning features, from built-in Plan Mode to formal planning workflows with parallel agent execution for complex development tasks",
     date: '2025-10-01',
     category: CATEGORIES.ai.id,
+    heroImage: {
+      src: '/images/claude-code-planning-execution-workflows/hero.webp',
+      alt: 'A black-and-white 1940s drafting room, rows of engineers at drafting tables with rolled blueprints on their desks',
+      ogImage: '/images/claude-code-planning-execution-workflows/og.jpg',
+      creditText: 'Image: NASA, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Interior_View_of_Drafting_Room_in_ERB_-_GPN-2000-001447.jpg',
+    },
     readingTime: 12,
     author: 'Joseph Edmonds',
     tags: [],
