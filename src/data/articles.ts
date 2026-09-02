@@ -5321,6 +5321,15 @@ fact_caching_prefix = "\${ENVIRONMENT}"</code></pre>
       'Complete guide to automating PHP infrastructure deployment and management using Ansible',
     date: '2025-01-10',
     category: CATEGORIES.infrastructure.id,
+    heroImage: {
+      src: '/images/ansible-php-infrastructure/hero.webp',
+      alt: 'Historic turbine hall at a power station, showing a wide row of nominally identical turbine-generator units built and operated to the same specification',
+      ogImage: '/images/ansible-php-infrastructure/og.jpg',
+      creditText:
+        'Image: Jack E. Boucher / HAER, National Park Service, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:TURBINE_HALL,_VIEW_EAST_TO_WEST_(NOTE-_DUPLICATE_OF_HAER_No._PA-505-63,_EXCEPT_HORIZONTAL)_-_Delaware_County_Electric_Company,_Chester_Station,_Delaware_River_at_South_end_of_Ward_HAER_PA,23-CHES,2-64.tif',
+    },
     readingTime: 15,
     author: 'Joseph Edmonds',
     tags: [],
