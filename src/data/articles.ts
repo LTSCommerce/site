@@ -16691,6 +16691,15 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'programming',
+    heroImage: {
+      src: '/images/regex-strictness-code-paths/hero.webp',
+      alt: 'A black-and-white 1905 photograph of the interior of a Railway Post Office car, showing two facing walls of individually labelled pigeonhole mail-sorting racks lining a narrow aisle',
+      ogImage: '/images/regex-strictness-code-paths/og.jpg',
+      creditText:
+        'Image: Smithsonian National Postal Museum, no known copyright restrictions, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Interior_of_a_Railway_Post_Office_Car_(2550262025).jpg',
+    },
     content: `
 <div class="intro">
             <p class="lead">A single optional group in a regex pattern can double your code paths. Multiple optional groups create exponential complexity. Learn why strict validation up front eliminates entire classes of bugs.</p>
