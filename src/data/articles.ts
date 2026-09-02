@@ -5882,6 +5882,14 @@ loop:
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'programming',
+    heroImage: {
+      src: '/images/caching-vs-memoization/hero.webp',
+      alt: 'A black-and-white photograph of a cold storage warehouse interior, showing rows of pipe-frame storage racks holding wooden pallets receding past a concrete support column',
+      ogImage: '/images/caching-vs-memoization/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:FREEZER_STORAGE._-_Atlantic_Ice_and_Coal_Company,_135_Prince_Street,_Montgomery,_Montgomery_County,_AL_HAER_AL-188-22.tif',
+    },
     content: `
 <div class="intro">
             <p class="lead">
