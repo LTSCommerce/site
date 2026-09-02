@@ -77,7 +77,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>Why This Is Structural, Not a Fluke</h2>
 
-    <p>It would be more comfortable if this were a bug that better prompting could close. I don't think it is, for a few reasons that seem load-bearing rather than incidental.</p>
+    <p>It would be more comfortable if this were a bug that better prompting could close. I don't think it is, for a few reasons that look structural rather than incidental.</p>
 
     <p>A markdown file carries no provenance metadata. A line reading "repositories MUST return null" looks identical whether a person typed it after a design conversation or an agent typed it whilst narrating its own decision. Bold text, imperative verbs, and confident framing are the only signals available, and an agent under instructions to explain its reasoning clearly will naturally produce confident, imperative-sounding prose, because that is what clear writing looks like. The same stylistic habits that make an agent's plan files readable are what make a fabricated rule indistinguishable from a real one.</p>
 
@@ -577,7 +577,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/composition-value-object.php}}</code></pre>
 
-    <p>Now the same <code>PaymentAttemptContext</code> value object is reused by the exception, the audit log writer, the analytics publisher, and anywhere else that needs to represent a payment attempt. Adding a new field to the context does not ripple through every exception constructor, and the exception's public surface stays stable. This is the same argument for composition over inheritance that applies to any other class in the system; it just holds doubly for exceptions because inheritance is already load-bearing for the <code>throw</code> contract.</p>
+    <p>Now the same <code>PaymentAttemptContext</code> value object is reused by the exception, the audit log writer, the analytics publisher, and anywhere else that needs to represent a payment attempt. Adding a new field to the context does not ripple through every exception constructor, and the exception's public surface stays stable. This is the same argument for composition over inheritance that applies to any other class in the system; it just holds doubly for exceptions because inheritance is already doing necessary work for the <code>throw</code> contract.</p>
 
     <h3>Three Axes, Not One Chain</h3>
 
