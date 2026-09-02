@@ -18672,6 +18672,14 @@ yarn add reflect-metadata inversify</code></pre>
       'TypeScript provides zero runtime safety and can be bypassed 25+ different ways. The definitive guide to every bypass mechanism - from any to eval to recursive type limits - and how to defend against them with ESLint.',
     date: '2025-11-18',
     category: CATEGORIES.typescript.id,
+    heroImage: {
+      src: '/images/typescript-honesty-system/hero.webp',
+      alt: 'A Howe commercial platform scale inside a National Park Service-documented scale house, the branded beam and hanging counterweight surrounded by a ladder, barrel, and stove',
+      ogImage: '/images/typescript-honesty-system/og.jpg',
+      creditText: 'Image: National Park Service (HAER), public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:INTERIOR_VIEW_OF_SCALE_HOUSE,_SHOWING_HOWE_SCALE_-_Clay_Spur_Bentonite_Plant_and_Camp,_Scale_House,_Clay_Spur_Siding_on_Burlington_Northern_Railroad,_Osage,_Weston_County,_WY_HAER_WYO,23-OSAG.V,1-P-4.tif',
+    },
     readingTime: 18,
     author: 'Joseph Edmonds',
     tags: [],
