@@ -245,7 +245,19 @@ Run the `article-reviewer` agent on the new article before committing. It catche
 Agent(article-reviewer): review article 'your-article-slug' before publication
 ```
 
-The reviewer returns `READY TO PUBLISH`, `NEEDS FIXES`, or `MAJOR REWORK`. Do not proceed to Step 4 until the verdict is `READY TO PUBLISH`. Fix all CRITICAL findings; resolve or consciously accept MODERATE ones.
+The reviewer returns `READY TO PUBLISH`, `NEEDS FIXES`, or `MAJOR REWORK`. Do not proceed to Step 3c until the verdict is `READY TO PUBLISH`. Fix all CRITICAL findings; resolve or consciously accept MODERATE ones.
+
+#### Step 3c: Voice pass (MANDATORY before commit)
+
+Run the `voice-pass` agent on the new article. It checks and directly rewrites prose (including code comments) against `untracked/JOSEPH-VOICE.md` — a measured, evidence-based reference for how Joseph actually writes, derived from ~58,000 words of his own pre-LLM manuscript. This is a separate concern from `article-reviewer`'s structural/factual check: it exists because generated prose defaults to a generic register (stacked short declaratives, em dashes, no hedging, corporate buzzwords) that reads as AI-written even when the content is accurate.
+
+```
+Agent(voice-pass): run a voice pass on article 'your-article-slug'
+```
+
+`untracked/JOSEPH-VOICE.md` is deliberately gitignored but must be present locally for this step to run — if it's missing, the agent will stop and say so rather than guessing at a voice from general knowledge. The pass can be **run more than once**: apply the first pass, re-read the result, and re-run the agent if it still flags issues or recommends another round. Stop once it reports the article reads clean.
+
+The reference doc's guidance on contractions and first-person voice can conflict with the site's `register: 'formal'` convention used by `content-editor`/`article-reviewer` (which currently reads "formal" as banning both). The `voice-pass` agent is instructed not to resolve that tension unilaterally — it will flag genuine conflicts in its report rather than silently picking a side. If it does, that's a decision for Joseph, not something to paper over before commit.
 
 #### Step 4: Deploy
 
