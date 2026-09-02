@@ -11,6 +11,7 @@ export interface RenderResult {
   description: string;
   url: string;
   type: 'website' | 'article';
+  image: string;
   jsonLd?: string;
 }
 
@@ -185,6 +186,17 @@ function getTypeForRoute(url: string): 'website' | 'article' {
   return 'website';
 }
 
+function getImageForRoute(url: string): string {
+  const articleMatch = url.match(/^\/articles\/(.+)$/);
+  if (articleMatch && articleMatch[1]) {
+    const article = getArticleById(articleMatch[1]);
+    if (article?.heroImage?.ogImage) {
+      return `${SITE_URL}${article.heroImage.ogImage}`;
+    }
+  }
+  return OG_IMAGE;
+}
+
 export function render(url: string): RenderResult {
   const html = renderToString(
     <StaticRouter location={url}>
@@ -201,6 +213,7 @@ export function render(url: string): RenderResult {
     ...meta,
     url: canonicalUrl,
     type: getTypeForRoute(url),
+    image: getImageForRoute(url),
     ...(jsonLdData ? { jsonLd: JSON.stringify(jsonLdData) } : {}),
   };
 }

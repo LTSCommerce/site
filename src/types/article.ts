@@ -30,6 +30,20 @@ export interface ArticleHeroImage {
 
   /** Accessible description of what the image depicts */
   readonly alt: string;
+
+  /**
+   * Optional opaque, social-card-proportioned (1200x630) version of the same source image,
+   * used as the per-article og:image/twitter:image instead of the site-wide fallback. The
+   * on-page hero has a baked-in alpha fade that would render as a solid colour block on
+   * platforms that don't composite transparency, so this is a separate flat asset.
+   */
+  readonly ogImage?: string;
+
+  /** Plain-text attribution shown in the article meta row, e.g. 'Image: National Park Service' */
+  readonly creditText?: string;
+
+  /** Link target for creditText — the source file page, not the raw image URL */
+  readonly creditUrl?: string;
 }
 
 /**

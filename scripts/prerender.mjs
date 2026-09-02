@@ -17,7 +17,7 @@ const distDir = resolve(__dirname, '../dist');
 const serverDir = resolve(__dirname, '../dist-server');
 
 // Import the SSR bundle (built by: vite build --ssr src/entry-server.tsx --outDir dist-server)
-const { render, getRoutes, SITE_NAME, OG_IMAGE } = await import(`${serverDir}/entry-server.js`);
+const { render, getRoutes, SITE_NAME } = await import(`${serverDir}/entry-server.js`);
 
 // Read the Vite-built index.html template
 const template = readFileSync(resolve(distDir, 'index.html'), 'utf-8');
@@ -30,7 +30,7 @@ let errorCount = 0;
 
 for (const route of routes) {
   try {
-    const { html, title, description, url, type, jsonLd } = render(route);
+    const { html, title, description, url, type, image, jsonLd } = render(route);
     let output = template.replace('<div id="root"></div>', `<div id="root">${html}</div>`);
 
     // Inject title and meta description into <head>
@@ -52,11 +52,11 @@ for (const route of routes) {
       `<meta property="og:title" content="${escapedTitle}">`,
       `<meta property="og:description" content="${escapedDescription}">`,
       `<meta property="og:url" content="${url}">`,
-      `<meta property="og:image" content="${OG_IMAGE}">`,
-      `<meta name="twitter:card" content="summary">`,
+      `<meta property="og:image" content="${image}">`,
+      `<meta name="twitter:card" content="summary_large_image">`,
       `<meta name="twitter:title" content="${escapedTitle}">`,
       `<meta name="twitter:description" content="${escapedDescription}">`,
-      `<meta name="twitter:image" content="${OG_IMAGE}">`,
+      `<meta name="twitter:image" content="${image}">`,
     ];
     if (jsonLd) {
       headExtras.push(

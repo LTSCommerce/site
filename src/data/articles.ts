@@ -16,6 +16,10 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     heroImage: {
       src: '/images/the-ouroboros-problem/hero.webp',
       alt: 'A close-up, desaturated photograph of a tightly coiled snake',
+      ogImage: '/images/the-ouroboros-problem/og.jpg',
+      creditText: 'Image: NPS, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:A_close_up_of_a_coiled_up_Corn_snake_on_the_grass._(00f0e1dc-b4b7-4ab6-b124-bcddd284a68e).jpg',
     },
     readingTime: 13,
     author: 'Joseph Edmonds',
@@ -131,6 +135,14 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     tags: [],
     subreddit: 'devops',
     register: 'formal',
+    heroImage: {
+      src: '/images/host-action-bridge/hero.webp',
+      alt: 'A black-and-white photograph of the Golden Gate Bridge steel truss structure and girders, viewed from below',
+      ogImage: '/images/host-action-bridge/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Golden_Gate_Bridge_trusses,_HAER_CA-31-14.jpg',
+    },
     content: `<div class="intro">
     <p class="lead">An AI coding agent running inside a container with no container runtime at all is a genuinely good security default. It cannot reach the host's container engine and cannot escalate through the one mechanism that would hand it the keys to everything. The trouble starts the moment the agent is asked to do the work a developer does every day against a real, multi-container application: restart a service, rebuild an image, check whether the stack is up. Every one of those is normally a command against the container engine, exactly what the sandbox forbids. Something has to close that gap without reopening the one it was built to close.</p>
 </div>

@@ -1,4 +1,4 @@
-# Source: hero.webp
+# Source: hero.webp, og.jpg
 
 ## Provenance
 
@@ -56,6 +56,23 @@ convert hero-faded.png -quality 78 -define webp:lossless=false hero.webp
 
 Result: 2400×480px WebP, ~103KB, alpha channel intact (verified with
 `identify -format "channels=%[channels] alpha=%A\n" hero.webp` → `channels=graya alpha=True`).
+
+### og.jpg — social card image
+
+Social platforms (Slack, Twitter/X, LinkedIn, etc.) composite `og:image`/`twitter:image` at a
+roughly 1.91:1 aspect ratio and don't reliably render alpha transparency, so the on-page hero
+(5:1, alpha-faded) isn't usable directly as the link-preview image. `og.jpg` is a separate,
+fully opaque asset at the conventional 1200×630 social-card size, cropped from the same source:
+
+```bash
+convert resized.png -gravity center -crop 1200x630+0+40 +repage og-crop.png
+convert og-crop.png -colorspace Gray -modulate 100,100,100 -brightness-contrast 5x10 og-grey.png
+convert og-grey.png -quality 80 og.jpg
+```
+
+Result: 1200×630px JPEG, ~114KB. Wired in via the article's `heroImage.ogImage` field, which
+`entry-server.tsx`/`prerender.mjs` use for that route's `og:image`/`twitter:image` meta tags
+instead of falling back to the site-wide default.
 
 ## Why this approach
 

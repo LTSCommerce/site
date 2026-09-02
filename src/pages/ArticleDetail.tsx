@@ -113,7 +113,7 @@ export function ArticleDetail() {
               ) : (
                 <h1 className="mt-4 mb-4">{article.title}</h1>
               )}
-              <div className="flex items-center gap-3 text-sm text-gray-600">
+              <div className="flex items-center gap-3 text-sm text-gray-600 flex-wrap">
                 <time dateTime={article.date}>{formatDate(article.date)}</time>
                 <span>•</span>
                 <span>{article.readingTime} min read</span>
@@ -121,6 +121,23 @@ export function ArticleDetail() {
                   <>
                     <span>•</span>
                     <span>By {article.author}</span>
+                  </>
+                )}
+                {article.heroImage?.creditText && (
+                  <>
+                    <span>•</span>
+                    {article.heroImage.creditUrl ? (
+                      <a
+                        href={article.heroImage.creditUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-gray-900 underline decoration-gray-300"
+                      >
+                        {article.heroImage.creditText}
+                      </a>
+                    ) : (
+                      <span>{article.heroImage.creditText}</span>
+                    )}
                   </>
                 )}
               </div>

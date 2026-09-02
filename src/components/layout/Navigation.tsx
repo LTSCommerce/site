@@ -31,8 +31,12 @@ export function Navigation() {
     <header className="sticky top-0 z-50 bg-white/45 hover:bg-white/90 transition-colors duration-200 border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to={ROUTES.home.path} className="flex items-center gap-3 shrink-0">
+          {/* Logo — always-opaque pill so it stays readable regardless of the translucent
+              nav strip behind it or whatever's in a hero image under that */}
+          <Link
+            to={ROUTES.home.path}
+            className="flex items-center gap-3 shrink-0 bg-white/95 rounded-lg pl-2 pr-3 py-1.5 -ml-2"
+          >
             <img src="/logo-mark.svg" alt="LTS Commerce" className="h-8 w-8" />
             <span className="leading-tight">
               <span className="block text-sm font-semibold text-gray-900">Joseph Edmonds</span>

@@ -119,6 +119,30 @@ Try a couple of quality values and compare size/detail trade-off (`-quality 90` 
 etc.) rather than accepting the first number — this is exactly what "control filesize" means in
 practice, not just picking a default and moving on.
 
+## Step 4b — Also generate a flat social-card image (og.jpg)
+
+The on-page hero (5:1, alpha-faded) is not what should go in `og:image`/`twitter:image`. Social
+unfurlers (Slack, Twitter/X, LinkedIn, etc.) composite at roughly 1.91:1 and don't reliably
+render transparency, so the faded edge would show as a solid block. Generate a second, separate,
+fully opaque asset at the conventional 1200×630 social-card size, cropped from the same resized
+source used for the hero (reuse `resized.png` from Step 4, not the original — you want the same
+framing family, not a re-derivation):
+
+```bash
+# Pick a crop that captures the same subject/detail as the hero crop, just at a taller aspect
+# ratio (1200x630 vs the hero's 2400x480) — adjust the +X+Y offset by eye per image
+convert resized.png -crop 1200x630+<x>+<y> +repage og-crop.png
+
+# Photo source: desaturate to match the hero's greyscale treatment (skip -colorspace Gray if
+# the source was already black-and-white, same as the hero step)
+convert og-crop.png -colorspace Gray -modulate 100,100,100 -brightness-contrast 5x10 og-grey.png
+convert og-grey.png -quality 80 og.jpg
+ls -la og.jpg   # aim well under ~150KB, same trade-off process as the hero WebP
+```
+
+No alpha channel here — `og.jpg` is a plain opaque JPEG, since it never sits over other page
+content the way the hero does.
+
 ## Step 5 — Write the provenance file (MANDATORY, not optional)
 
 Every processed image gets a `public/images/<slug>/SOURCE.md` alongside it, containing:
@@ -129,6 +153,8 @@ Every processed image gets a `public/images/<slug>/SOURCE.md` alongside it, cont
    width/height, quality setting) that produced the final asset, not a generic template. This
    must be enough to rebuild the asset from the original source with different parameters
    (a new crop, a different fade point, a different target size) without re-deriving anything.
+   Cover both `hero.webp` and `og.jpg` as separate subsections — they're related but distinct
+   derivations from the same source.
 3. **Why this approach** — the reasoning behind the specific choices (why greyscale, why this
    crop, why this fade split) so a future rebuild can tell what's load-bearing vs. arbitrary.
 
@@ -137,11 +163,19 @@ dead end the moment anyone wants to adjust it — see "Lessons from the first ru
 
 ## Step 6 — Wire into the article
 
-1. `public/images/<slug>/hero.webp` is the asset; reference it as `/images/<slug>/hero.webp`.
-2. Add/update the `heroImage: { src, alt }` field on the article object in
-   `src/data/articles.ts` — `alt` describes what's actually depicted, plainly (see
-   `src/types/article.ts` for the `ArticleHeroImage` type).
-3. `npm run build` and verify the article's `dist/articles/<slug>/index.html` output.
+1. `public/images/<slug>/hero.webp` and `public/images/<slug>/og.jpg` are the assets; reference
+   them as `/images/<slug>/hero.webp` and `/images/<slug>/og.jpg`.
+2. Add/update the `heroImage` field on the article object in `src/data/articles.ts` — see
+   `src/types/article.ts` for the full `ArticleHeroImage` type:
+   - `src`, `alt` — the on-page hero (as before; `alt` describes what's actually depicted).
+   - `ogImage` — path to `og.jpg`. `entry-server.tsx`'s `getImageForRoute()` picks this up
+     automatically for that route's `og:image`/`twitter:image`; no other wiring needed.
+   - `creditText` / `creditUrl` — plain attribution (e.g. `'Image: NPS, public domain, via Wikimedia Commons'`) linking to the source file page. **Do not put credit text on the
+     image itself** — it renders in the article's byline meta row (date · reading time · author
+     · credit) via `ArticleDetail.tsx`, not overlaid on the hero. Public-domain sources don't
+     legally require this, but it's honest and cheap to include.
+3. `npm run build` and verify the article's `dist/articles/<slug>/index.html` output — check
+   both the rendered hero AND the `<meta property="og:image">` tag point to the right files.
 
 ## Step 7 — Actually look at the result, not just build success
 
@@ -191,3 +225,29 @@ The two numbers should match exactly.
   already full width with no trick needed, and negative margin (`-mt-16`, matching the nav's own
   height) is what pulls it up to sit behind a sticky nav. Check where in the tree the image
   actually needs to render before reaching for the breakout CSS.
+
+## Lessons from the second run (host-action-bridge + retrofitting og.jpg)
+
+- **A translucent nav needs one always-opaque anchor, not uniform translucency.** Once real
+  photographs sit behind it, the logo/title text block can become genuinely unreadable depending
+  on what's in that part of the image (this happened for real, not hypothetically). Fix: give
+  just the logo block its own opaque pill (`bg-white/95 rounded-lg`) independent of the nav
+  strip's own translucency — the strip can stay translucent for the "floats over the image"
+  effect, but the one piece of text that must always be legible gets a guaranteed-opaque backing.
+- **Don't put attribution credit on the image itself.** The instinct is to overlay a small credit
+  line on the hero (bottom corner, like a photo caption) — but that fights the same
+  contrast-over-arbitrary-image problem as the title text, for something that matters much less.
+  Putting it in the article's own byline meta row (date · reading time · author · credit) as a
+  plain text link solves contrast for free — it's rendered on the page's normal background, not
+  on the photo — and keeps the hero image itself clean.
+- **`og:image` and the on-page hero are different assets with different constraints, not one
+  image reused twice.** The hero's baked-in alpha fade is exactly wrong for a social card:
+  unfurlers composite at ~1.91:1 (not the hero's 5:1) and don't reliably render transparency, so
+  the faded edge shows as a solid colour block in link previews. Generate `og.jpg` as a separate,
+  fully opaque 1200×630 crop from the same `resized.png` — same source, different derivation, not
+  a re-fetch and not a resize-in-place of `hero.webp`.
+- **Retrofitting a cross-cutting change (per-article OG images) touches the SSR pipeline, not
+  just the image files.** `entry-server.tsx`'s `render()` needed a new `image` field threaded
+  through to `prerender.mjs`, which needed to stop hardcoding the site-wide `OG_IMAGE` constant
+  for every route. Get this wiring right once — every subsequent article with a hero image gets
+  a correct social card automatically via `heroImage.ogImage`, no per-article meta-tag work.
