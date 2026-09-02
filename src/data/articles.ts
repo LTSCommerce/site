@@ -2898,6 +2898,14 @@ WantedBy=timers.target</code></pre>
       'When you find a bug, ask whether a machine can detect this pattern automatically before asking how to fix it. A systematic approach to converting bugs into permanent static analysis defences across PHP, TypeScript, and Python.',
     date: '2026-02-22',
     category: CATEGORIES.qa.id,
+    heroImage: {
+      src: '/images/defence-before-fix-static-analysis/hero.webp',
+      alt: 'A row of brick barrel-vault arches receding into depth under a bastion at Fort Delaware, historic defensive masonry documented by the National Park Service',
+      ogImage: '/images/defence-before-fix-static-analysis/og.jpg',
+      creditText: 'Image: National Park Service (HABS), public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:MULTI-CASEMATE_ARCHES_UNDER_BASTION_-_Fort_Delaware,_Pea_Patch_Island,_Delaware_City,_New_Castle_County,_DE_HABS_DEL,2-PEPIS,1-30.tif',
+    },
     readingTime: 15,
     author: 'Joseph Edmonds',
     tags: [],
