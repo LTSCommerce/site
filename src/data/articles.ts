@@ -303,6 +303,14 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     tags: [],
     subreddit: 'reactjs',
     register: 'formal',
+    heroImage: {
+      src: '/images/component-driven-design-react-typescript-storybook/hero.webp',
+      alt: 'A black-and-white photograph of two interlocking cast-iron gears against a stone wall',
+      ogImage: '/images/component-driven-design-react-typescript-storybook/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:DETAIL_OF_GEARS_-_Creque_Marine_Railway,_Charlotte_Amalie,_St._Thomas,_VI_HAER_VI,3-HASI,1-6.tif',
+    },
     content: `<div class="intro">
     <p class="lead">Every frontend codebase eventually accumulates a graveyard of slightly-different buttons. One is blue, one is navy, one has a drop shadow that nobody can explain, and three of them have <code>margin-top: 3px</code> applied directly in the page file because the designer asked for "just a small tweak" six months ago. Component-driven design is the discipline that stops the graveyard from forming. Pair <a href="https://react.dev/" target="_blank" rel="noopener">React</a> with <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a> and you can enforce that discipline mechanically. It stops being a convention people remember to follow and becomes a rule the build refuses to break.</p>
 </div>
