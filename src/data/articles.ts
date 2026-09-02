@@ -17497,6 +17497,14 @@ php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
       'Comprehensive guide to building scalable, maintainable PHP APIs using modern architecture patterns',
     date: '2024-12-15',
     category: CATEGORIES.php.id,
+    heroImage: {
+      src: '/images/scalable-php-apis/hero.webp',
+      alt: 'Multiple grain elevator structures of different eras and construction methods built alongside each other in the Buffalo, NY grain elevator district, with rail sidings converging in the foreground',
+      ogImage: '/images/scalable-php-apis/og.jpg',
+      creditText: 'Image: HAER/National Park Service, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:(Left_to_right)American_elevator,_Canagra_Mill,_Lake_and_rail_elevator,_marine_A._-_Buffalo_Grain_Elevators,_Buffalo,_Erie_County,_NY_HAER_NY,15-BUF,27-2.tif',
+    },
     readingTime: 16,
     author: 'Joseph Edmonds',
     tags: [],
