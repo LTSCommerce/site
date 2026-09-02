@@ -14589,10 +14589,19 @@ unset($context); // Explicit cleanup
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    register: 'formal',
+    heroImage: {
+      src: '/images/php-per-coding-style-evolution/hero.webp',
+      alt: 'A black-and-white 1919 photograph of a standards-laboratory exhibit room, with tables and a labelled pegboard wall displaying categorised aeronautic measuring instruments and calibration charts',
+      ogImage: '/images/php-per-coding-style-evolution/og.jpg',
+      creditText: 'Image: NIST, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Aeronautic_instrument_exhibit_of_thermometers,_inclinometers,_airspeed_meters,_and_pressure_gages_at_A.P.S.,_May_1919.jpg',
+    },
     content: `
 <div class="intro">
     <p class="lead">
-        <a href="https://www.php-fig.org/per/" target="_blank" rel="noopener">PHP Evolving Recommendations (PER)</a> 
+        <a href="https://www.php-fig.org/per/" target="_blank" rel="noopener">PHP Evolving Recommendations (PER)</a>
         represent a fundamental shift in how the PHP community approaches standards. Unlike the static 
         <a href="https://www.php-fig.org/psr/" target="_blank" rel="noopener">PSRs</a>, PERs are designed to evolve 
         with the language, ensuring standards stay relevant as PHP continues its rapid modernization.
