@@ -6447,6 +6447,13 @@ $key = "user:{$userId}:{$timestamp}";
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'LLMDevs',
+    heroImage: {
+      src: '/images/claude-code-custom-commands-cc-commands/hero.webp',
+      alt: 'A labelled foam shadow-board tool drawer in a military aircraft maintenance tool crib, each wrench and tool set into its own cut-out slot with a barcoded accountability tag',
+      ogImage: '/images/claude-code-custom-commands-cc-commands/og.jpg',
+      creditText: 'Image: A1C Allen Tyler, 138th Fighter Wing, public domain, via DVIDS',
+      creditUrl: 'https://www.dvidshub.net/image/7274488/138fw-amxs-tool-crib',
+    },
     content: `
 <section class="intro">
 <p class="lead">
