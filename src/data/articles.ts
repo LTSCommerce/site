@@ -16895,6 +16895,13 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    heroImage: {
+      src: '/images/reusable-openapi-classes-php-symfony/hero.webp',
+      alt: 'A black-and-white photograph of a WWII-era Quonset hut encampment, dozens of identical prefabricated arched-roof huts arranged across a snowy site',
+      ogImage: '/images/reusable-openapi-classes-php-symfony/og.jpg',
+      creditText: 'Image: U.S. Navy, public domain, via Wikimedia Commons',
+      creditUrl: 'https://commons.wikimedia.org/wiki/File:Quonset_huts_at_Alaskan_base_c1943.jpg',
+    },
     content: `
 <div class="intro">
     <p class="lead">
