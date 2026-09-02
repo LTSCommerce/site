@@ -9527,6 +9527,14 @@ h1, h2 {
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'programming',
+    heroImage: {
+      src: '/images/fail-fast-programming-philosophy/hero.webp',
+      alt: 'A black-and-white photograph of a dam with a relief valve open, water bursting out under pressure, flanked by dense conifer forest',
+      ogImage: '/images/fail-fast-programming-philosophy/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:ROSS_DAM_WITH_A_RELIEF_VALVE_AT_ELEVATION_1340_OPEN,_1989._-_Skagit_Power_Development,_Ross_Dam,_11.0_miles_upstream_from_Newhalem_on_Skagit_River,_Newhalem,_Whatcom_County,_HAER_WASH,37-NEHA.V,1-H-3.tif',
+    },
     content: `
 <div class="intro">
     <p class="lead">
