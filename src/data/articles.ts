@@ -13081,6 +13081,14 @@ SHOW STATUS LIKE 'Innodb_row_lock_waits';
       'Database optimization strategies specifically tailored for bespoke PHP systems with complex queries',
     date: '2024-12-20',
     category: CATEGORIES.database.id,
+    heroImage: {
+      src: '/images/mysql-performance-php/hero.webp',
+      alt: 'A row of numbered mechanical levers on a 1910s railway interlocking machine, each one routing traffic to a specific track',
+      ogImage: '/images/mysql-performance-php/og.jpg',
+      creditText: 'Image: National Park Service (HAER), public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:INTERIOR,_MODEL_14_INTERLOCKING_MACHINE_-_Union_Junction_Interlocking_Tower,_Bounded_by_Federal,_Guilford,_Royal_...,_Baltimore,_Independent_City,_MD_HAER_MD,4-BALT,145-4.tif',
+    },
     readingTime: 12,
     author: 'Joseph Edmonds',
     tags: [],
