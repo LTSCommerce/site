@@ -8024,12 +8024,20 @@ Create a comprehensive architecture document from the findings."
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'programming',
+    heroImage: {
+      src: '/images/defensive-programming-principles/hero.webp',
+      alt: 'A black-and-white photograph of the radial-gate hoist mechanism and walkway railings on the spillway bridge at Kachess Dam',
+      ogImage: '/images/defensive-programming-principles/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:RADIAL_GATE_OPERATING_MECHANISMS_AND_SPILLWAY_BRIDGE,_LOOKING_WEST_-_Kachess_Dam,_1936_Spillway_and_Radial_Gates,_Kachess_River,_1.5_miles_north_of_Interstate_90_,_Easton,_Kittitas_HAER_WA-79-B-2.tif',
+    },
     content: `
 <div class="intro">
     <p class="lead">
-        Defensive programming isn't just about handling edge cases. It's about designing systems that prevent 
-        entire classes of bugs from existing in the first place. Three fundamental principles stand out: YAGNI 
-        (You Aren't Gonna Need It), making invalid states unrepresentable, and maintaining domain object purity. 
+        Defensive programming isn't just about handling edge cases. It's about designing systems that prevent
+        entire classes of bugs from existing in the first place. Three fundamental principles stand out: YAGNI
+        (You Aren't Gonna Need It), making invalid states unrepresentable, and maintaining domain object purity.
         These principles create codebases that are more reliable, more maintainable, and easier to reason about.
     </p>
 </div>
