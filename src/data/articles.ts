@@ -16409,6 +16409,14 @@ final class QueryInLoopRuleTest extends RuleTestCase
       'Comparative analysis of Proxmox private cloud vs public cloud solutions for enterprise infrastructure',
     date: '2025-01-05',
     category: CATEGORIES.infrastructure.id,
+    heroImage: {
+      src: '/images/proxmox-vs-cloud/hero.webp',
+      alt: 'A black-and-white photograph of two diesel generator units in a private power house, dense with engine block, gauge cluster, and generator housings',
+      ogImage: '/images/proxmox-vs-cloud/og.jpg',
+      creditText: 'Image: NPS/HABS, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:POWER_ROOM_INTERIOR,_DETAIL_CATERPILLAR_DIESEL_ENGINE,_GENERATOR_ON_RIGHT_-_Death_Valley_Ranch,_Power_House,_Death_Valley_Junction,_Inyo_County,_CA_HABS_CAL,14-DVNM,1-E-22.tif',
+    },
     readingTime: 10,
     author: 'Joseph Edmonds',
     tags: [],
