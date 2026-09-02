@@ -6718,6 +6718,15 @@ to explore the full documentation and get started with intelligent command manag
       'Learn how to use Claude Code hooks to enforce execution rules for parallel sub-agents, preventing resource conflicts in test suites and other shared-resource scenarios.',
     date: '2025-10-24',
     category: CATEGORIES.ai.id,
+    heroImage: {
+      src: '/images/claude-code-hooks-subagent-control/hero.webp',
+      alt: 'A black-and-white HAER photograph of the Lockport Locks on the New York State Barge Canal, showing a stacked stone lock wall and an arching road bridge crossing the lock cut',
+      ogImage: '/images/claude-code-hooks-subagent-control/og.jpg',
+      creditText:
+        'Image: Jet Lowe, HAER, National Park Service, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:PERSPECTIVE_LOOKING_NORTH_NORTHEAST_THROUGH_LOCKS_70_(FOREGROUND),_69,_68,_67_(EXTERME_BACKGROUND)._-_New_York_State_Barge_Canal,_Lockport_Locks,_Richmond_Avenue,_Lockport,_HAER_NY,32-LOCK,14A-24.tif',
+    },
     readingTime: 8,
     author: 'Joseph Edmonds',
     tags: [],
