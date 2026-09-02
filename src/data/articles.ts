@@ -10045,10 +10045,17 @@ download_file() {
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'Fedora',
+    heroImage: {
+      src: '/images/fedora-desktop-automation-ansible/hero.webp',
+      alt: 'An elevated, black-and-white photograph of NASA Mission Control, showing rows of identically equipped console workstations',
+      ogImage: '/images/fedora-desktop-automation-ansible/og.jpg',
+      creditText: 'Image: NASA, public domain, via Wikimedia Commons',
+      creditUrl: 'https://commons.wikimedia.org/wiki/File:Mission_control_center.jpg',
+    },
     content: `
 <div class="intro">
             <p class="lead">
-                Every developer knows the pain: fresh OS installation, hours of manual configuration, 
+                Every developer knows the pain: fresh OS installation, hours of manual configuration,
                 hunting down packages, setting up SSH keys, configuring Git, installing development 
                 tools, and customizing the environment. What if a single command could transform a 
                 vanilla <a href="https://fedoraproject.org/" target="_blank" rel="noopener">Fedora 42</a> 
