@@ -10848,6 +10848,14 @@ download_file() {
       'Advanced PHP optimization techniques for high-performance applications and systems',
     date: '2024-12-28',
     category: CATEGORIES.php.id,
+    heroImage: {
+      src: '/images/high-performance-php/hero.webp',
+      alt: 'A black-and-white photograph of a large vertical steam turbine-generator unit, dense with piping, gauges, and a motor coupling',
+      ogImage: '/images/high-performance-php/og.jpg',
+      creditText: 'Image: NPS/HAER, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:GENERAL_VIEW_OF_TURBINE_-3_-_Georgetown_Steam_Plant,_South_Warsaw_Street,_King_County_Airport,_Seattle,_King_County,_WA_HAER_WASH,17-SEAT,2-14.tif',
+    },
     readingTime: 12,
     author: 'Joseph Edmonds',
     tags: [],
