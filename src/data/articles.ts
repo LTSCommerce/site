@@ -9070,6 +9070,14 @@ $processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</cod
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'webdev',
+    heroImage: {
+      src: '/images/dynamic-gradient-headings/hero.webp',
+      alt: 'A hazy orange-red sunset gradating from pale gold through orange to deep red over a mountain ridge',
+      ogImage: '/images/dynamic-gradient-headings/og.jpg',
+      creditText: 'Image: Gene Daniels/EPA, public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:SUNSET_SEEN_THROUGH_SMOG_-_NARA_-_542680.jpg',
+    },
     content: `
 <div class="intro">
     <p class="lead">
