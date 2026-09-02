@@ -11207,6 +11207,14 @@ return $this-&gt;queryLog;
       'Strategies for modernizing legacy PHP codebases and managing technical debt effectively',
     date: '2025-01-15',
     category: CATEGORIES.php.id,
+    heroImage: {
+      src: '/images/legacy-php-modernization/hero.webp',
+      alt: 'A black-and-white photograph of a steel reinforcement plate bolted onto the weathered wooden bow of a historic schooner in dry dock, with a second vessel and the dry dock wooden staging structure visible behind it',
+      ogImage: '/images/legacy-php-modernization/og.jpg',
+      creditText: 'Image: National Park Service (HAER), public domain, via Wikimedia Commons',
+      creditUrl:
+        'https://commons.wikimedia.org/wiki/File:Detail_of_forefoot_and_steel_bow_reinforcement,_port_side_-_Schooner_WAWONA,_1018_Valley_Street,_Seattle,_King_County,_WA_HAER_WASH,17-SEAT,10-19.tif',
+    },
     readingTime: 14,
     author: 'Joseph Edmonds',
     tags: [],
