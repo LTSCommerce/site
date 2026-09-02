@@ -119,6 +119,21 @@ Try a couple of quality values and compare size/detail trade-off (`-quality 90` 
 etc.) rather than accepting the first number — this is exactly what "control filesize" means in
 practice, not just picking a default and moving on.
 
+**If a high-texture source won't compress down even at low quality** (rough stone, foliage,
+gravel, brick — anything with dense high-frequency detail), check the unblurred file size first;
+if it's landing well above the usual ~100–140KB range even at `-quality 60`, apply a light blur
+immediately before the alpha-composite step, before encoding:
+
+```bash
+convert crop-grey.png -blur 0x0.6 crop-blurred.png   # then build/apply the alpha mask on this
+```
+
+This is source-specific, not a default step — don't apply it pre-emptively. A `0x0.6` blur has
+cut file size by roughly 40% on a stone-wall-textured source with no visible softness at on-page
+display size, because WebP's compressor struggles specifically with high-frequency noise, not
+with genuine subject detail. Try the blur, re-encode, compare — same "check the actual trade-off"
+discipline as the quality setting itself.
+
 ## Step 4b — Also generate a flat social-card image (og.jpg)
 
 The on-page hero (5:1, alpha-faded) is not what should go in `og:image`/`twitter:image`. Social
