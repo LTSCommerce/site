@@ -112,16 +112,7 @@ The path is relative to the `code-snippets/` directory.
 
 ### Code Block Languages
 
-Use the appropriate language class on `<code>`:
-
-- `language-php` — PHP code
-- `language-typescript` — TypeScript/JavaScript
-- `language-javascript` — Plain JavaScript
-- `language-bash` — Shell commands
-- `language-sql` — SQL queries
-- `language-yaml` — YAML config
-- `language-json` — JSON
-- `language-nginx` — Nginx config
+See [Supported Code Block Languages](../../CLAUDE.md#supported-code-block-languages) in `CLAUDE.md` for the full list of `language-*` classes.
 
 ### Template Literal Escaping (for non-code content only)
 

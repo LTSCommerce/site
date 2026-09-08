@@ -338,6 +338,11 @@ documentation:
     edit_mode: warn # start warn-first per upstream rollout guidance
     commit_gate_mode: warn
     sweep_mode: advise
+    scope_exclude_globs:
+      - "ARCHIVE/**" # frozen legacy EJS build system, archived 2025-12-11 (see ARCHIVE/README.md); superseded by root CLAUDE.md's React/TS system, never re-verified
+    resident_at_imports:
+      - "CLAUDE.md" # built-in default - keep alongside any additions
+      - "CLAUDE/PlanWorkflow.md" # planning/SKILL.md's "Required Reading" - deliberately eager, not a lazy pointer
 
 agents:
   docs_qa:

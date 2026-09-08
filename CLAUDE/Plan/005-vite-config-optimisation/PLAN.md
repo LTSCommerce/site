@@ -12,7 +12,7 @@
 
 This plan **must** be executed using the git worktree workflow. Read the full documentation before starting any implementation:
 
-**@CLAUDE/Worktree.md**
+**[CLAUDE/Worktree.md](../../Worktree.md)**
 
 ```bash
 # Setup: create parent worktree before any implementation
