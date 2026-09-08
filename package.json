@@ -47,7 +47,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@longtermsupport/ts-qa-ci": "github:LongTermSupport/ts-qa-ci#1b46d3d9e045d4031852fe44be5d1294ae891478",
+    "@longtermsupport/ts-qa-ci": "github:LongTermSupport/ts-qa-ci#4203dc8f97ff74c6c42897d6ab89e988c33fc3d9",
     "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4.1.18",
@@ -78,6 +78,7 @@
   "engines": {
     "node": ">=22.0.0"
   },
+  "packageManager": "pnpm@12.3.4",
   "prettier": {
     "printWidth": 100,
     "tabWidth": 2,

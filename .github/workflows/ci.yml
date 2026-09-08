@@ -21,22 +21,25 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build site
-        run: npm run build
+        run: pnpm run build
         env:
           VITE_CONTACT_FORM_URL: ${{ vars.VITE_CONTACT_FORM_URL }}
 
       # QA runs after build, not before: ts-qa's Playwright phase serves the real
-      # dist/ output (via `npm run preview`) rather than a mocked/dev server, so the
+      # dist/ output (via `pnpm run preview`) rather than a mocked/dev server, so the
       # build has to exist first. Everything else in the pipeline (lint/type-check/
       # unit tests) doesn't depend on dist/ but there's no cost to running it after -
       # GITHUB_ACTIONS=true puts ts-qa in read-only mode automatically (check-only,
