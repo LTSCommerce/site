@@ -81,6 +81,8 @@ publication. The private ground truth lives outside this repository.
 - AI delivery governance: containment (CCY), deterministic policy guardrails
   (claude-code-hooks-daemon, 100+ releases), automated QA gates
   (php-qa-ci / ts-qa-ci). All open source, dog-fooded daily in production.
+- Most working time for the last couple of years has been spent directing AI
+  agents rather than hand-writing code personally.
 - Expert-level developer, and comfortable saying so; writing _The Art of
   Modern PHP 8_ helped solidify it.
 
