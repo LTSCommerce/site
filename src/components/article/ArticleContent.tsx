@@ -80,9 +80,11 @@ export function ArticleContent({ content }: ArticleContentProps) {
   useEffect(() => {
     if (contentRef.current) {
       // Find all code blocks and apply syntax highlighting
-      const codeBlocks = contentRef.current.querySelectorAll('pre code');
+      const codeBlocks = Array.from(contentRef.current.querySelectorAll('pre code')).filter(
+        (el): el is HTMLElement => el instanceof HTMLElement
+      );
       codeBlocks.forEach(block => {
-        hljs.highlightElement(block as HTMLElement);
+        hljs.highlightElement(block);
       });
     }
   }, [resolvedContent]);

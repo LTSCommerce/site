@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '../components/ui/AppLink';
 import { Page } from '../components/layout/Page';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
@@ -33,7 +33,7 @@ export function About() {
       </Section>
 
       {/* Main Content Section */}
-      <Section spacing="xl" className="bg-gray-50">
+      <Section spacing="xl" tone="muted">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Main Content */}
@@ -149,12 +149,12 @@ export function About() {
                   secure, and simple to understand. Technology should serve the business, not
                   complicate it. When I fix a bug I write the rule that catches its whole class
                   first, then use it to find every other instance,{' '}
-                  <Link
+                  <AppLink
                     to={getArticleRoute('defence-before-fix-static-analysis').path}
-                    className="text-[#0f4c81] underline"
+                    variant="inline"
                   >
                     Defence Before Fix
-                  </Link>
+                  </AppLink>
                   .
                 </p>
               </div>
@@ -306,12 +306,9 @@ export function About() {
               Got a project, a mess that needs cleaning up, or a team that could use an extra senior
               pair of hands? Get in touch.
             </p>
-            <Link
-              to={ROUTES.contact.path}
-              className="inline-block px-8 py-4 bg-[#0f4c81] text-white rounded-lg hover:bg-[#1e6ba5] transition-colors font-semibold"
-            >
+            <AppLink to={ROUTES.contact.path} variant="ctaLarge">
               Get In Touch
-            </Link>
+            </AppLink>
           </div>
         </Container>
       </Section>

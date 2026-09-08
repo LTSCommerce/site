@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Page } from '../components/layout/Page';
 import { Container } from '../components/layout/Container';
+import { AppLink } from '../components/ui/AppLink';
 import { ROUTES } from '../routes';
 import {
   contactFormSchema,
@@ -55,7 +55,7 @@ export function Contact() {
         return;
       }
 
-      const contactFormUrl = import.meta.env['VITE_CONTACT_FORM_URL'] as string | undefined;
+      const contactFormUrl = import.meta.env['VITE_CONTACT_FORM_URL'];
 
       if (!contactFormUrl) {
         const mailto = `mailto:hello@ltscommerce.dev?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(`Name: ${data.name}\n\n${data.message}`)}`;
@@ -142,9 +142,9 @@ export function Contact() {
           </div>
 
           <p className="text-center text-sm mb-8">
-            <Link to={ROUTES.services.path} className="text-[#0f4c81] underline">
+            <AppLink to={ROUTES.services.path} variant="inline">
               See what I do and what it costs on the Services page
-            </Link>
+            </AppLink>
           </p>
 
           <h2 className="text-2xl font-bold mb-4 text-center">Get in Touch</h2>
@@ -209,14 +209,14 @@ export function Contact() {
                     />
 
                     {/* Server error */}
-                    {status === 'error' && serverError && (
+                    {status === 'error' && serverError ? (
                       <div
                         role="alert"
                         className="p-4 bg-red-50 border border-red-200 rounded-md text-sm text-red-700"
                       >
                         {serverError}
                       </div>
-                    )}
+                    ) : null}
 
                     {/* Name */}
                     <div>
@@ -241,11 +241,11 @@ export function Contact() {
                           Boolean(touchedFields.name)
                         )}
                       />
-                      {errors.name && (
+                      {errors.name ? (
                         <p id="name-error" role="alert" className="mt-1 text-sm text-red-600">
                           {errors.name.message}
                         </p>
-                      )}
+                      ) : null}
                     </div>
 
                     {/* Email */}
@@ -271,11 +271,11 @@ export function Contact() {
                           Boolean(touchedFields.email)
                         )}
                       />
-                      {errors.email && (
+                      {errors.email ? (
                         <p id="email-error" role="alert" className="mt-1 text-sm text-red-600">
                           {errors.email.message}
                         </p>
-                      )}
+                      ) : null}
                     </div>
 
                     {/* Subject */}
@@ -300,11 +300,11 @@ export function Contact() {
                           Boolean(touchedFields.subject)
                         )}
                       />
-                      {errors.subject && (
+                      {errors.subject ? (
                         <p id="subject-error" role="alert" className="mt-1 text-sm text-red-600">
                           {errors.subject.message}
                         </p>
-                      )}
+                      ) : null}
                     </div>
 
                     {/* Message */}
@@ -330,11 +330,11 @@ export function Contact() {
                           Boolean(touchedFields.message)
                         )}
                       />
-                      {errors.message && (
+                      {errors.message ? (
                         <p id="message-error" role="alert" className="mt-1 text-sm text-red-600">
                           {errors.message.message}
                         </p>
-                      )}
+                      ) : null}
                     </div>
 
                     {/* Submit */}

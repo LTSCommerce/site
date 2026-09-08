@@ -6,8 +6,9 @@
  */
 
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { AppLink } from '@/components/ui/AppLink';
 import { ROUTES } from '@/routes';
 import type { RouteEntry } from '@/types/routing';
 
@@ -33,10 +34,7 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo — always-opaque pill so it stays readable regardless of the translucent
               nav strip behind it or whatever's in a hero image under that */}
-          <Link
-            to={ROUTES.home.path}
-            className="flex items-center gap-3 shrink-0 bg-white/95 rounded-lg pl-2 pr-3 py-1.5 -ml-2"
-          >
+          <AppLink to={ROUTES.home.path} variant="navLogo">
             <img src="/logo-mark.svg" alt="LTS Commerce" className="h-8 w-8" />
             <span className="leading-tight">
               <span className="block text-sm font-semibold text-gray-900">Joseph Edmonds</span>
@@ -44,29 +42,18 @@ export function Navigation() {
                 Engineer &amp; Fractional CTO · LTS Commerce
               </span>
             </span>
-          </Link>
+          </AppLink>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map(({ key, route }) => (
-              <Link
-                key={key}
-                to={route.path}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isActive(route)
-                    ? 'text-gray-900 bg-gray-100'
-                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
+              <AppLink key={key} to={route.path} variant="navItem" active={isActive(route)}>
                 {route.label}
-              </Link>
+              </AppLink>
             ))}
-            <Link
-              to={ROUTES.contact.path}
-              className="ml-3 px-4 py-2 text-sm font-medium bg-[#0f4c81] hover:bg-[#1e6ba5] text-white rounded-md transition-colors"
-            >
+            <AppLink to={ROUTES.contact.path} variant="navCta">
               Hire Me
-            </Link>
+            </AppLink>
           </nav>
 
           {/* Mobile hamburger */}
@@ -83,35 +70,32 @@ export function Navigation() {
       </div>
 
       {/* Mobile menu */}
-      {mobileOpen && (
+      {mobileOpen ? (
         <div className="md:hidden border-t border-gray-100 bg-white px-6 py-4 flex flex-col gap-1">
           {navItems.map(({ key, route }) => (
-            <Link
+            <AppLink
               key={key}
               to={route.path}
+              variant="navItemMobile"
+              active={isActive(route)}
               onClick={() => {
                 setMobileOpen(false);
               }}
-              className={`px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
-                isActive(route)
-                  ? 'text-gray-900 bg-gray-100'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
             >
               {route.label}
-            </Link>
+            </AppLink>
           ))}
-          <Link
+          <AppLink
             to={ROUTES.contact.path}
+            variant="navCtaMobile"
             onClick={() => {
               setMobileOpen(false);
             }}
-            className="mt-2 px-3 py-2.5 text-sm font-medium bg-[#0f4c81] text-white rounded-md text-center"
           >
             Hire Me
-          </Link>
+          </AppLink>
         </div>
-      )}
+      ) : null}
     </header>
   );
 }

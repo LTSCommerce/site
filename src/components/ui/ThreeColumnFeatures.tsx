@@ -37,6 +37,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from './Carousel';
+import { Icon } from './Icon';
 
 export interface ThreeColumnFeature {
   title: string;
@@ -123,15 +124,13 @@ function FeatureCard({
     animationFillMode: 'forwards',
   };
 
-  const Icon = feature.icon;
-
   const cardContent = (
     <>
       {/* Icon */}
       <div
         className={`mb-6 inline-flex h-12 w-12 items-center justify-center rounded-sm ${iconColourClass}`}
       >
-        <Icon className="h-6 w-6 transition-transform group-hover:scale-110" />
+        <Icon icon={feature.icon} size="md" growOnHover />
       </div>
 
       {/* Title */}
@@ -242,19 +241,19 @@ export function ThreeColumnFeatures({
             duration: 35,
           }}
           setApi={setApi}
-          className="w-full"
+          fullWidth
         >
-          <CarouselContent className="-ml-2">
+          <CarouselContent gap="tight">
             {features.map((feature, index) => (
-              <CarouselItem key={feature.title} className="basis-[90%] pl-2">
+              <CarouselItem key={feature.title} peek="ninety">
                 <FeatureCard feature={feature} index={index} {...sharedCardProps} />
               </CarouselItem>
             ))}
           </CarouselContent>
 
           {/* Prev/Next hidden -- use swipe */}
-          <CarouselPrevious className="hidden" />
-          <CarouselNext className="hidden" />
+          <CarouselPrevious hidden />
+          <CarouselNext hidden />
         </Carousel>
 
         <CarouselDots api={api} />

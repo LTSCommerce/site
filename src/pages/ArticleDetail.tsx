@@ -80,7 +80,7 @@ export function ArticleDetail() {
           trick needed. The fade-to-transparent at the bottom is baked into the image's own
           alpha channel (see public/images/<slug>/SOURCE.md), not a CSS overlay — a plain
           <img>, no extra paint layer, works the same regardless of page background. */}
-      {article.heroImage && (
+      {article.heroImage ? (
         <div className="-mt-16">
           <img
             src={article.heroImage.src}
@@ -88,7 +88,7 @@ export function ArticleDetail() {
             className="w-full h-[220px] sm:h-[320px] lg:h-[420px] object-cover object-bottom"
           />
         </div>
-      )}
+      ) : null}
       <Container>
         <Section>
           <article className="max-w-4xl mx-auto">
@@ -117,13 +117,13 @@ export function ArticleDetail() {
                 <time dateTime={article.date}>{formatDate(article.date)}</time>
                 <span>•</span>
                 <span>{article.readingTime} min read</span>
-                {article.author && (
+                {article.author ? (
                   <>
                     <span>•</span>
                     <span>By {article.author}</span>
                   </>
-                )}
-                {article.heroImage?.creditText && (
+                ) : null}
+                {article.heroImage?.creditText ? (
                   <>
                     <span>•</span>
                     {article.heroImage.creditUrl ? (
@@ -139,7 +139,7 @@ export function ArticleDetail() {
                       <span>{article.heroImage.creditText}</span>
                     )}
                   </>
-                )}
+                ) : null}
               </div>
             </header>
 

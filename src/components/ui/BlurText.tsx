@@ -7,7 +7,6 @@ export interface BlurTextProps {
   trigger?: boolean;
   delay?: number;
   duration?: number;
-  className?: string;
   as?: 'div' | 'p' | 'span';
 }
 
@@ -28,7 +27,6 @@ export interface BlurTextProps {
  * @param trigger - Controls when animation starts (default: true)
  * @param delay - Delay before animation in ms (default: 0)
  * @param duration - Animation duration in ms (default: 600)
- * @param className - Additional CSS classes
  * @param as - HTML element type (default: 'div')
  */
 export function BlurText({
@@ -36,7 +34,6 @@ export function BlurText({
   trigger = true,
   delay = 0,
   duration = 600,
-  className = '',
   as: Tag = 'div',
 }: BlurTextProps) {
   const [hasAnimated, setHasAnimated] = React.useState(false);
@@ -60,12 +57,8 @@ export function BlurText({
 
   // Early return for phones or reduced motion preference -- render instantly (after all hooks)
   if (isPhone || prefersReducedMotion) {
-    return <Tag className={className}>{children}</Tag>;
+    return <Tag>{children}</Tag>;
   }
 
-  return (
-    <Tag className={className} style={baseStyle}>
-      {children}
-    </Tag>
-  );
+  return <Tag style={baseStyle}>{children}</Tag>;
 }

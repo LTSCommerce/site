@@ -44,11 +44,11 @@ export function Page({
 
   return (
     <div className="min-h-screen flex flex-col">
-      {showNavigation && <Navigation />}
+      {showNavigation ? <Navigation /> : null}
 
       <main className="flex-1">{children}</main>
 
-      {showFooter && <Footer />}
+      {showFooter ? <Footer /> : null}
     </div>
   );
 }

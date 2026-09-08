@@ -14,7 +14,6 @@ export interface HighlightTypewriterProps {
   /** Insert a line break immediately before the highlighted portion. */
   breakBeforeHighlight?: boolean;
   as?: ElementType;
-  className?: string;
   trigger?: boolean;
   delay?: number;
   speed?: number;
@@ -38,7 +37,6 @@ export interface HighlightTypewriterProps {
  * @param text - Full text to display (e.g. "Bespoke PHP Development")
  * @param highlightText - Portion to highlight (e.g. "PHP")
  * @param as - HTML element type (default: 'h2')
- * @param className - Additional CSS classes for the container element
  * @param trigger - Controls when animation starts (default: true)
  * @param delay - Delay before starting in ms (default: 0)
  * @param speed - Typing speed in ms per character (default: 50)
@@ -49,7 +47,6 @@ export interface HighlightTypewriterProps {
  *   text="Bespoke PHP Development"
  *   highlightText="PHP"
  *   as="h1"
- *   className="text-5xl font-bold"
  *   highlightColour="#0f4c81"
  * />
  */
@@ -58,7 +55,6 @@ export function HighlightTypewriter({
   highlightText,
   breakBeforeHighlight = false,
   as: Tag = 'h2',
-  className = '',
   trigger = true,
   delay = 0,
   speed = 50,
@@ -78,7 +74,7 @@ export function HighlightTypewriter({
   // No highlight: render entire text without highlight colour
   if (!highlightText) {
     return (
-      <Tag className={className}>
+      <Tag>
         <Typewriter text={text} trigger={trigger} delay={delay} speed={speed} />
       </Tag>
     );
@@ -90,7 +86,7 @@ export function HighlightTypewriter({
       `HighlightTypewriter: highlightText "${highlightText}" not found in text "${text}"`
     );
     return (
-      <Tag className={className}>
+      <Tag>
         <Typewriter text={text} trigger={trigger} delay={delay} speed={speed} />
       </Tag>
     );
@@ -103,9 +99,9 @@ export function HighlightTypewriter({
   const suffix = text.substring(highlightIndex + highlightText.length);
 
   return (
-    <Tag className={className}>
+    <Tag>
       {prefix}
-      {breakBeforeHighlight && <br />}
+      {breakBeforeHighlight ? <br /> : null}
       <span
         className="transition-colors duration-500"
         style={{

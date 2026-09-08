@@ -56,7 +56,7 @@ export function ProjectDetail() {
               >
                 View on GitHub
               </a>
-              {project.packagistPackage && (
+              {project.packagistPackage ? (
                 <a
                   href={`https://packagist.org/packages/${project.packagistPackage}`}
                   target="_blank"
@@ -65,8 +65,8 @@ export function ProjectDetail() {
                 >
                   View on Packagist
                 </a>
-              )}
-              {project.npmPackage && (
+              ) : null}
+              {project.npmPackage ? (
                 <a
                   href={`https://www.npmjs.com/package/${project.npmPackage}`}
                   target="_blank"
@@ -75,10 +75,10 @@ export function ProjectDetail() {
                 >
                   View on npm
                 </a>
-              )}
+              ) : null}
             </div>
 
-            {project.installCommand && (
+            {project.installCommand ? (
               <div className="mb-12">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">
                   Install
@@ -87,7 +87,7 @@ export function ProjectDetail() {
                   <code>{project.installCommand}</code>
                 </pre>
               </div>
-            )}
+            ) : null}
 
             <div className="prose prose-lg max-w-none mb-12">
               {project.description.map(paragraph => (

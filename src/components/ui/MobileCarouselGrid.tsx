@@ -30,8 +30,6 @@ export interface MobileCarouselGridProps {
   children: React.ReactNode[];
   /** Number of columns on desktop (default: 3) */
   columns?: 2 | 3 | 4;
-  /** Additional CSS classes for container */
-  className?: string;
   /** Show dot indicators on mobile (default: true) */
   showDots?: boolean;
 }
@@ -104,7 +102,6 @@ function CarouselDots({ api }: { api: CarouselApi | undefined }) {
 export function MobileCarouselGrid({
   children,
   columns = 3,
-  className = '',
   showDots = true,
 }: MobileCarouselGridProps) {
   const [api, setApi] = useState<CarouselApi>();
@@ -117,7 +114,7 @@ export function MobileCarouselGrid({
   }[columns];
 
   return (
-    <div className={className}>
+    <div>
       {/* Mobile: Embla Carousel */}
       <div className="md:hidden">
         <Carousel
@@ -128,23 +125,23 @@ export function MobileCarouselGrid({
             dragFree: false,
           }}
           setApi={setApi}
-          className="w-full"
+          fullWidth
         >
-          <CarouselContent className="-ml-2 md:-ml-4">
+          <CarouselContent gap="tightResponsive">
             {children.map((child, index) => (
-              <CarouselItem key={index} className="basis-[85%] pl-2 md:pl-4">
+              <CarouselItem key={index} peek="eightyFive">
                 {child}
               </CarouselItem>
             ))}
           </CarouselContent>
 
           {/* Previous/Next buttons hidden on mobile -- use swipe instead */}
-          <CarouselPrevious className="hidden" />
-          <CarouselNext className="hidden" />
+          <CarouselPrevious hidden />
+          <CarouselNext hidden />
         </Carousel>
 
         {/* Dot indicators */}
-        {showDots && <CarouselDots api={api} />}
+        {showDots ? <CarouselDots api={api} /> : null}
       </div>
 
       {/* Desktop: Standard Grid */}

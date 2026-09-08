@@ -189,5 +189,13 @@ export default tseslint.config(
     rules: {
       'ts-qa/ssr-safe-hooks': 'off',
     },
+  },
+  {
+    // rollup-plugin-visualizer's Plugin type resolves to `any` under Vite 8 (see
+    // tsQaConfig/tier-a-exemptions.json for the full justification).
+    files: ['**/vite.config.ts'],
+    rules: {
+      'no-restricted-syntax': 'off',
+    },
   }
 );

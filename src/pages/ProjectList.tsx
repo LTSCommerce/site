@@ -7,10 +7,10 @@
  * dated archive of historical test/CI infrastructure work.
  */
 
-import { Link } from 'react-router-dom';
 import { Page } from '@/components/layout/Page';
 import { Container } from '@/components/layout/Container';
 import { ProjectCard } from '@/components/project/ProjectCard';
+import { AppLink } from '@/components/ui/AppLink';
 import { getAllProjects, getProjectsByLayer, getArchiveProjects } from '@/data/projects';
 import { getArticleRoute } from '@/routes';
 
@@ -67,12 +67,12 @@ export function ProjectList() {
               <strong>Automate the enforcement, keep humans for the judgement.</strong> Plenty of
               people have one of the three layers below. Almost nobody has all three integrated, and
               that integration is the differentiation. The gates layer implements{' '}
-              <Link
+              <AppLink
                 to={getArticleRoute('defence-before-fix-static-analysis').path}
-                className="text-[#0f4c81] underline"
+                variant="inline"
               >
                 Defence Before Fix
-              </Link>
+              </AppLink>
               : every bug class gets a static analysis rule, not just a one-time patch.
             </p>
           </div>

@@ -21,7 +21,7 @@
  * });
  * ```
  */
-import { render, type RenderOptions } from '@testing-library/react';
+import { render, type RenderOptions, type RenderResult } from '@testing-library/react';
 import { type ReactElement } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -39,7 +39,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 function customRender(
   ui: ReactElement,
   { initialEntries = ['/'], ...options }: CustomRenderOptions = {}
-) {
+): RenderResult {
   return render(ui, {
     wrapper: ({ children }) => (
       <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>

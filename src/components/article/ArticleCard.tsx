@@ -5,7 +5,7 @@
  * title, description, date, and reading time.
  */
 
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/components/ui/AppLink';
 import { CategoryBadge } from '@/components/content/CategoryBadge';
 import { getCategoryById } from '@/data/categories';
 import { getArticleRoute } from '@/routes';
@@ -13,7 +13,6 @@ import type { ArticlePreview } from '@/types/article';
 
 export interface ArticleCardProps {
   article: ArticlePreview;
-  className?: string;
 }
 
 function formatDate(isoDate: string): string {
@@ -25,14 +24,11 @@ function formatDate(isoDate: string): string {
   }).format(date);
 }
 
-export function ArticleCard({ article, className }: ArticleCardProps) {
+export function ArticleCard({ article }: ArticleCardProps) {
   const articleRoute = getArticleRoute(article.id);
 
   return (
-    <Link
-      to={articleRoute.path}
-      className={`group block h-full bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-md transition-all duration-200 flex flex-col ${className || ''}`}
-    >
+    <AppLink to={articleRoute.path} variant="card">
       <div className="mb-4">
         <CategoryBadge category={getCategoryById(article.category)} />
       </div>
@@ -48,6 +44,6 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
         <span>·</span>
         <span>{article.readingTime} min read</span>
       </div>
-    </Link>
+    </AppLink>
   );
 }

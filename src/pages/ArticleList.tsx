@@ -5,10 +5,11 @@
  */
 
 import { useMemo, useEffect } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Page } from '@/components/layout/Page';
 import { Container } from '@/components/layout/Container';
 import { ArticleCard } from '@/components/article/ArticleCard';
+import { AppLink } from '@/components/ui/AppLink';
 import { getAllArticles } from '@/data/articles';
 import { getCategoryRoute } from '@/routes';
 import {
@@ -26,7 +27,7 @@ export function ArticleList() {
     routeCategoryId && isCategoryId(routeCategoryId) ? routeCategoryId : null;
   const categoryParam = searchParams.get('category');
   const selectedCategory: CategoryId | 'all' =
-    (categoryParam as CategoryId | null) ?? routeCategory ?? 'all';
+    (categoryParam && isCategoryId(categoryParam) ? categoryParam : null) ?? routeCategory ?? 'all';
   const searchQuery = searchParams.get('search') ?? '';
 
   // A dedicated /articles/category/:id landing page — used for its title/intro
@@ -168,12 +169,9 @@ export function ArticleList() {
               Browse by topic:{' '}
               {categories.map((category, index) => (
                 <span key={category.id}>
-                  <Link
-                    to={getCategoryRoute(category.id).path}
-                    className="text-gray-500 hover:text-[#0f4c81] underline"
-                  >
+                  <AppLink to={getCategoryRoute(category.id).path} variant="inlineSubtle">
                     {category.label}
-                  </Link>
+                  </AppLink>
                   {index < categories.length - 1 ? ' · ' : ''}
                 </span>
               ))}

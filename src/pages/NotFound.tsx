@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
 import { Home, Search } from 'lucide-react';
 
 import { Page } from '../components/layout/Page';
+import { AppLink } from '../components/ui/AppLink';
+import { Icon } from '../components/ui/Icon';
 import { ROUTES } from '../routes';
 
 export function NotFound() {
@@ -25,27 +26,21 @@ export function NotFound() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              to={ROUTES.home.path}
-              className="inline-flex items-center gap-2 px-7 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium rounded-md transition-colors text-sm"
-            >
-              <Home className="w-4 h-4" aria-hidden="true" />
+            <AppLink to={ROUTES.home.path} variant="ctaWithIcon">
+              <Icon icon={Home} size="sm" aria-hidden />
               Return Home
-            </Link>
-            <Link
-              to={ROUTES.articles.path}
-              className="inline-flex items-center gap-2 px-7 py-3 border border-[#2a2a2a] hover:border-[#444] text-gray-300 hover:text-white font-medium rounded-md transition-colors text-sm"
-            >
-              <Search className="w-4 h-4" aria-hidden="true" />
+            </AppLink>
+            <AppLink to={ROUTES.articles.path} variant="outlineWithIcon">
+              <Icon icon={Search} size="sm" aria-hidden />
               Browse Articles
-            </Link>
+            </AppLink>
           </div>
 
           <p className="text-gray-400 text-sm mt-10">
             If you believe this is an error, please{' '}
-            <Link to={ROUTES.contact.path} className="text-[#0f4c81] hover:underline">
+            <AppLink to={ROUTES.contact.path} variant="inlineHover">
               get in touch
-            </Link>
+            </AppLink>
             .
           </p>
         </div>

@@ -5,7 +5,6 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 export interface TypewriterProps {
   text: string;
   as?: React.ElementType;
-  className?: string;
   trigger?: boolean;
   delay?: number;
   speed?: number;
@@ -23,7 +22,6 @@ export interface TypewriterProps {
  *
  * @param text - The full text to animate
  * @param as - HTML element type (default: 'span')
- * @param className - Additional CSS classes
  * @param trigger - Controls when animation starts (default: true)
  * @param delay - Delay before starting in ms (default: 0)
  * @param speed - Typing speed in ms per character (default: 30)
@@ -34,7 +32,6 @@ export interface TypewriterProps {
 export function Typewriter({
   text,
   as: Tag = 'span',
-  className = '',
   trigger = true,
   delay = 0,
   speed = 30,
@@ -120,7 +117,7 @@ export function Typewriter({
 
   // Early return for phones or reduced motion preference -- render instantly (after all hooks)
   if (isPhone || prefersReducedMotion) {
-    return <Tag className={className}>{text}</Tag>;
+    return <Tag>{text}</Tag>;
   }
 
   // Split text into characters and render with individual visibility control
@@ -128,7 +125,7 @@ export function Typewriter({
   const visibleLength = displayedText.length;
 
   return (
-    <Tag className={className}>
+    <Tag>
       {chars.map((char, index) => (
         <span
           key={index}

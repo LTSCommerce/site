@@ -4,7 +4,7 @@
  * Full-width dark hero with centered content, credentials bar, and dual CTAs.
  */
 
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/components/ui/AppLink';
 import type { RouteEntry } from '@/types/routing';
 import { getLinkPath } from '@/types/routing';
 import { ROUTES } from '@/routes';
@@ -32,7 +32,7 @@ export function Hero({ title, subtitle, cta, disqualifier, identity }: HeroProps
         </div>
 
         {/* Identity greeting */}
-        {identity && (
+        {identity ? (
           <div className="mb-6">
             <img
               src="/headshot-320.webp"
@@ -43,7 +43,7 @@ export function Hero({ title, subtitle, cta, disqualifier, identity }: HeroProps
             />
             <p className="text-gray-200 text-xl md:text-2xl font-medium">{identity}</p>
           </div>
-        )}
+        ) : null}
 
         {/* Headline */}
         <h1 className="text-white text-4xl md:text-6xl lg:text-[4.5rem] font-bold mb-6 leading-[1.1] tracking-tight mt-0">
@@ -51,34 +51,31 @@ export function Hero({ title, subtitle, cta, disqualifier, identity }: HeroProps
         </h1>
 
         {/* Subtitle */}
-        {subtitle && (
+        {subtitle ? (
           <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             {subtitle}
           </p>
-        )}
+        ) : null}
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          {cta && (
+          {cta ? (
             <a
               href={getLinkPath(cta.link)}
               className="px-7 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium rounded-md transition-colors text-sm"
             >
               {cta.text}
             </a>
-          )}
-          <Link
-            to={ROUTES.articles.path}
-            className="px-7 py-3 border border-[#2a2a2a] hover:border-[#444] text-gray-300 hover:text-white font-medium rounded-md transition-colors text-sm"
-          >
+          ) : null}
+          <AppLink to={ROUTES.articles.path} variant="heroSecondary">
             Read Articles
-          </Link>
+          </AppLink>
         </div>
 
         {/* Disqualifier */}
-        {disqualifier && (
+        {disqualifier ? (
           <p className="mt-10 text-sm text-gray-400 max-w-md mx-auto">{disqualifier}</p>
-        )}
+        ) : null}
 
         {/* Credentials bar */}
         <div className="mt-16 pt-8 border-t border-[#1a1a1a] grid grid-cols-3 gap-6 max-w-xs mx-auto">

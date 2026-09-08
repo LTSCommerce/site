@@ -3,5 +3,10 @@
     "ruleId": "ts-qa/ssr-safe-hooks",
     "files": ["**/src/main.tsx"],
     "justification": "src/main.tsx is Vite's client-only browser entry point (the separate src/entry-server.tsx is the SSR entry) - it structurally never executes during SSR/SSG, so its module-top-level document.getElementById('root') is not an SSR-hydration risk."
+  },
+  {
+    "ruleId": "no-restricted-syntax",
+    "files": ["**/vite.config.ts"],
+    "justification": "rollup-plugin-visualizer's own types import Plugin from \"rollup\", which Vite 8 no longer depends on directly (it moved to rolldown), so that import resolves to any. The runtime value returned by visualizer() is a legitimate Vite plugin object; casting it to Vite's own Plugin type bridges a real upstream type-resolution gap and is type-only - there is no runtime value to type-guard against since the shape is already correct."
   }
 ]

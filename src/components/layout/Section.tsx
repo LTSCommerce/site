@@ -10,10 +10,11 @@ import type { ReactNode } from 'react';
 export interface SectionProps {
   children: ReactNode;
   spacing?: 'sm' | 'md' | 'lg' | 'xl';
-  className?: string;
+  /** Background treatment. Default: transparent. */
+  tone?: 'default' | 'white' | 'dark' | 'muted';
 }
 
-export function Section({ children, spacing = 'lg', className }: SectionProps) {
+export function Section({ children, spacing = 'lg', tone = 'default' }: SectionProps) {
   const spacingClasses = {
     sm: 'py-8',
     md: 'py-12',
@@ -21,5 +22,16 @@ export function Section({ children, spacing = 'lg', className }: SectionProps) {
     xl: 'py-24',
   };
 
-  return <section className={`${spacingClasses[spacing]} ${className || ''}`}>{children}</section>;
+  const toneClasses = {
+    default: '',
+    white: 'bg-white',
+    dark: 'bg-[#0A0A0A]',
+    muted: 'bg-gray-50',
+  };
+
+  return (
+    <section className={`${spacingClasses[spacing]} ${toneClasses[tone]}`.trim()}>
+      {children}
+    </section>
+  );
 }

@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
 import { Page } from '../components/layout/Page';
 import { Container } from '../components/layout/Container';
+import { AppLink } from '../components/ui/AppLink';
 import { ROUTES } from '../routes';
 
 interface ServiceArea {
@@ -265,12 +265,9 @@ export function Services() {
           </div>
 
           <div className="text-center">
-            <Link
-              to={ROUTES.contact.path}
-              className="inline-block px-8 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium transition-colors rounded-md"
-            >
+            <AppLink to={ROUTES.contact.path} variant="ctaMedium" size="base">
               Hire Me
-            </Link>
+            </AppLink>
           </div>
         </Container>
       </div>

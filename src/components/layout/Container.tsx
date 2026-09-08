@@ -10,10 +10,9 @@ import type { ReactNode } from 'react';
 export interface ContainerProps {
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
-  className?: string;
 }
 
-export function Container({ children, size = 'lg', className }: ContainerProps) {
+export function Container({ children, size = 'lg' }: ContainerProps) {
   const sizeClasses = {
     sm: 'max-w-3xl',
     md: 'max-w-5xl',
@@ -22,9 +21,5 @@ export function Container({ children, size = 'lg', className }: ContainerProps) 
     full: 'max-w-full',
   };
 
-  return (
-    <div className={`${sizeClasses[size]} mx-auto px-4 sm:px-6 lg:px-8 ${className || ''}`}>
-      {children}
-    </div>
-  );
+  return <div className={`${sizeClasses[size]} mx-auto px-4 sm:px-6 lg:px-8`}>{children}</div>;
 }

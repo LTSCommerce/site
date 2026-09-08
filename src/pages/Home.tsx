@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { Code2, Server, Brain, Terminal, Shield } from 'lucide-react';
 
 import { Hero } from '../components/content/Hero';
@@ -8,6 +7,8 @@ import { Section } from '../components/layout/Section';
 import { ArticleCard } from '../components/article/ArticleCard';
 import { ThreeColumnFeatures } from '../components/ui/ThreeColumnFeatures';
 import type { ThreeColumnFeature } from '../components/ui/ThreeColumnFeatures';
+import { AppLink } from '../components/ui/AppLink';
+import { Icon } from '../components/ui/Icon';
 import { ROUTES } from '../routes';
 import { SAMPLE_ARTICLES } from '../data/articles';
 import { useInView } from '../hooks/useInView';
@@ -93,7 +94,7 @@ export function Home() {
       />
 
       {/* Accountability — one person, not an agency */}
-      <Section spacing="lg" className="bg-white">
+      <Section spacing="lg" tone="white">
         <Container size="md">
           <div className="text-center max-w-2xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-4">
@@ -121,7 +122,7 @@ export function Home() {
       </Section>
 
       {/* Core Expertise — dark section, cards designed for dark bg */}
-      <Section spacing="xl" className="bg-[#0A0A0A]">
+      <Section spacing="xl" tone="dark">
         <Container>
           <div className="mb-16 text-center">
             <div className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-3">
@@ -147,18 +148,17 @@ export function Home() {
 
           <div className="mb-10 grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
             {secondaryExpertise.map(feature => {
-              const Icon = feature.icon;
               return (
                 <div
                   key={feature.title}
                   className="group flex h-full flex-col rounded-sm border border-gray-700 bg-gray-800/50 p-6 md:p-8 transition-all hover:border-[#0f4c81]"
                 >
                   <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-sm bg-[#0f4c81]/10 text-[#0f4c81]">
-                    <Icon className="h-6 w-6 transition-transform group-hover:scale-110" />
+                    <Icon icon={feature.icon} size="md" growOnHover />
                   </div>
                   <h3 className="mb-3 text-base font-semibold text-white">{feature.title}</h3>
                   <p className="text-sm font-light text-gray-400 mb-6">{feature.description}</p>
-                  {feature.items && (
+                  {feature.items ? (
                     <ul className="space-y-2">
                       {feature.items.map(item => (
                         <li key={item} className="flex items-start gap-2 text-sm font-light">
@@ -167,25 +167,22 @@ export function Home() {
                         </li>
                       ))}
                     </ul>
-                  )}
+                  ) : null}
                 </div>
               );
             })}
           </div>
 
           <div className="text-center">
-            <Link
-              to={ROUTES.openSource.path}
-              className="inline-block px-8 py-3 border border-gray-700 hover:border-gray-500 text-white font-medium transition-colors rounded-md text-sm"
-            >
+            <AppLink to={ROUTES.openSource.path} variant="outlineDark">
               See the Actual Tooling
-            </Link>
+            </AppLink>
           </div>
         </Container>
       </Section>
 
       {/* Latest Articles — light section */}
-      <Section spacing="xl" className="bg-gray-50">
+      <Section spacing="xl" tone="muted">
         <Container>
           <div className="mb-12 text-center">
             <div className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-3">
@@ -202,19 +199,16 @@ export function Home() {
               ))}
             </div>
             <div className="text-center">
-              <Link
-                to={ROUTES.articles.path}
-                className="inline-block px-8 py-3 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium transition-colors rounded-md text-sm"
-              >
+              <AppLink to={ROUTES.articles.path} variant="ctaMedium">
                 View All Articles
-              </Link>
+              </AppLink>
             </div>
           </div>
         </Container>
       </Section>
 
       {/* Published Author — dark section */}
-      <Section spacing="xl" className="bg-[#0A0A0A]">
+      <Section spacing="xl" tone="dark">
         <Container size="md">
           <div ref={authorRef} style={inViewStyle(authorInView)} className="text-center">
             <div className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-3">

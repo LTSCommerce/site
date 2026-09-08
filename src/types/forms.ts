@@ -39,8 +39,8 @@ export interface ApiResponse {
 
 export function isApiResponse(data: unknown): data is ApiResponse {
   if (typeof data !== 'object' || data === null) return false;
-  const record = data as Record<string, unknown>;
-  return 'success' in record && typeof record['success'] === 'boolean';
+  if (!('success' in data)) return false;
+  return typeof data.success === 'boolean';
 }
 
 export type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error';

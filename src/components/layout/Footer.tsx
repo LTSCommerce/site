@@ -5,7 +5,7 @@
  * Brand left, nav + connect columns right, copyright bar.
  */
 
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/components/ui/AppLink';
 import { ROUTES } from '@/routes';
 
 // Hardcoded rather than computed from `new Date()`: this is a static SSG
@@ -22,9 +22,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand */}
           <div>
-            <Link to={ROUTES.home.path} className="flex items-center mb-4">
+            <AppLink to={ROUTES.home.path} variant="footerBrand">
               <img src="/logo-mono-light.svg" alt="LTS Commerce" className="h-8 w-auto" />
-            </Link>
+            </AppLink>
             <p className="text-sm leading-relaxed text-gray-400 max-w-xs">
               I'm Joseph Edmonds, one engineer with 25 years of shipping. LTS stands for Long Term
               Support: retained expertise, on hand as and when you need it, from West Yorkshire, UK.
@@ -48,12 +48,9 @@ export function Footer() {
                 ROUTES.privacy,
               ].map(route => (
                 <li key={route.path}>
-                  <Link
-                    to={route.path}
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
-                  >
+                  <AppLink to={route.path} variant="footerLink">
                     {route.label}
-                  </Link>
+                  </AppLink>
                 </li>
               ))}
             </ul>

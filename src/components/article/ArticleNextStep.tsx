@@ -6,7 +6,7 @@
  * page is actually relevant to that topic, rather than a generic sign-off.
  */
 
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/components/ui/AppLink';
 import { ROUTES } from '@/routes';
 import { getLinkPath, type RouteEntry } from '@/types/routing';
 import type { CategoryId } from '@/data/categories';
@@ -60,12 +60,9 @@ export function ArticleNextStep({ category }: ArticleNextStepProps) {
   return (
     <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 rounded-lg p-6">
       <p className="text-gray-700 text-sm m-0">{step.text}</p>
-      <Link
-        to={getLinkPath(step.to)}
-        className="shrink-0 inline-block px-5 py-2 bg-[#0f4c81] hover:bg-[#1e6ba5] text-white font-medium transition-colors rounded-md text-sm"
-      >
+      <AppLink to={getLinkPath(step.to)} variant="ctaSmall">
         {step.linkText}
-      </Link>
+      </AppLink>
     </div>
   );
 }

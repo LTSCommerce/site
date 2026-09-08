@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
 import { Page } from '../components/layout/Page';
 import { Container } from '../components/layout/Container';
 import { Section } from '../components/layout/Section';
+import { AppLink } from '../components/ui/AppLink';
 import { ROUTES } from '../routes';
 
 const LAST_UPDATED = '12 August 2026';
@@ -35,9 +35,9 @@ export function Privacy() {
               <h2 className="text-2xl font-bold mb-3">What data is collected</h2>
               <p className="text-gray-700">
                 The only personal data this site collects is what you submit through the{' '}
-                <Link to={ROUTES.contact.path} className="text-[#0f4c81]">
+                <AppLink to={ROUTES.contact.path} variant="plain">
                   contact form
-                </Link>
+                </AppLink>
                 : your name, email address, subject, and message. There is no user account system,
                 no newsletter signup, and no analytics or advertising tracking anywhere on the site.
               </p>
