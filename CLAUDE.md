@@ -370,7 +370,7 @@ Pages live in `src/pages/`:
 
 **Link to actual code when:**
 
-- Referencing complete interface definitions (use `See [path/to/file.ts](../path/to/file.ts)`)
+- Referencing complete interface definitions (add a "See" link pointing at the real file instead of replicating the interface inline)
 - Showing real implementation patterns that exist in the codebase
 - Pointing to complex examples that would clutter documentation
 - Referencing configuration files or complete class definitions
