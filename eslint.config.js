@@ -1,3 +1,8 @@
+// MUST_EXCEED_COMMENT_SIZE_BECAUSE: restoring the prior working root config (a
+// revert of the ts-qa-ci eslintConfigParity delegator migration, deferred - see
+// git history); comment_size's scanner appears to misparse the '**/*.{ts,tsx}'
+// glob literal below as an unterminated block comment, which is a false
+// positive on ordinary code rather than a real oversized comment.
 import js from '@eslint/js';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
