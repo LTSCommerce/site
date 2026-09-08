@@ -171,7 +171,7 @@ Every processed image gets a `public/images/<slug>/SOURCE.md` alongside it, cont
    Cover both `hero.webp` and `og.jpg` as separate subsections — they're related but distinct
    derivations from the same source.
 3. **Why this approach** — the reasoning behind the specific choices (why greyscale, why this
-   crop, why this fade split) so a future rebuild can tell what's load-bearing vs. arbitrary.
+   crop, why this fade split) so a future rebuild can tell what actually matters vs. arbitrary.
 
 This is the single most important step in this skill. An image with no provenance record is a
 dead end the moment anyone wants to adjust it — see "Lessons from the first run" below for why.

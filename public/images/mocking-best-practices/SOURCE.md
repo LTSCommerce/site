@@ -110,7 +110,7 @@ instead of falling back to the site-wide default.
 
 ## Why this approach
 
-- Desaturation is load-bearing here (unlike the two prior hero images, which were already
+- Desaturation actually matters here (unlike the two prior hero images, which were already
   black-and-white HAER documentation photos) — the source is a vividly yellow-painted test
   model, and greyscale is what makes it sit calmly against the site's blue/white/grey palette.
 - The fade is baked into the image itself (a real alpha channel), not a CSS gradient overlay —

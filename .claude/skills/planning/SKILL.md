@@ -30,7 +30,7 @@ find CLAUDE/Plan -maxdepth 2 -type d -name '[0-9]*' | grep -oP '/\K\d{3}(?=-)' |
 
 ## Plan Structure
 
-See @CLAUDE/PlanWorkflow.md for full template.
+See [CLAUDE/PlanWorkflow.md](../../../CLAUDE/PlanWorkflow.md) for full template.
 
 Key sections:
 

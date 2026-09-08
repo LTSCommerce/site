@@ -24,9 +24,10 @@ to it from guessing either.
 
 ## Confirmed on this site
 
-| Phrase / construction         | Flagged    | Where seen                                 | Fix                                                   |
-| ----------------------------- | ---------- | ------------------------------------------ | ----------------------------------------------------- |
-| "it is worth stating plainly" | 2026-09-02 | the-ouroboros-problem, "What I Mean by It" | Delete the throat-clearing, state the thing directly. |
+| Phrase / construction         | Flagged    | Where seen                                                                                                    | Fix                                                                                                                                                                                                                                    |
+| ----------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "it is worth stating plainly" | 2026-09-02 | the-ouroboros-problem, "What I Mean by It"                                                                    | Delete the throat-clearing, state the thing directly.                                                                                                                                                                                  |
+| "load-bearing" (metaphorical) | 2026-09-02 | the-ouroboros-problem; php-exception-best-practices; article-image SKILL.md; mocking-best-practices/SOURCE.md | Replace with a plain word for the sense meant: "structural", "necessary", "actually matters", "does real work" - or just say what breaks if it's removed. Literal uses (an actual load-bearing wall/column) are fine and out of scope. |
 
 ## Known from published research (watchlist, judgement call)
 

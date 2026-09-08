@@ -12,7 +12,7 @@
 
 This plan **must** be executed using the git worktree workflow. Read the full documentation before starting any implementation:
 
-**@CLAUDE/Worktree.md**
+**[CLAUDE/Worktree.md](../../Worktree.md)**
 
 ```bash
 # Setup: create parent worktree before any implementation
@@ -82,7 +82,7 @@ Components from EC site depend on:
 
 #### 1. BlurText -- ADOPT (Low Adaptation)
 
-**What it does**: Animates content with blur-to-clear fade-in effect using CSS transitions. Disables on phones (<768px) and when `prefers-reduced-motion` is set.
+**What it does**: Animates content with blur-to-clear fade-in effect using CSS transitions. Disables on phones (\<768px) and when `prefers-reduced-motion` is set.
 
 **EC Location**: `src/components/ui/BlurText.tsx` (95 lines)
 
@@ -191,7 +191,7 @@ Components from EC site depend on:
 
 #### 7. MobileCarouselGrid -- ADOPT (Medium Adaptation)
 
-**What it does**: Generic wrapper that renders children as an Embla carousel on mobile (<768px) and a CSS grid on desktop. Includes dot indicators and snap navigation.
+**What it does**: Generic wrapper that renders children as an Embla carousel on mobile (\<768px) and a CSS grid on desktop. Includes dot indicators and snap navigation.
 
 **EC Location**: `src/components/ui/MobileCarouselGrid.tsx` (224 lines)
 
