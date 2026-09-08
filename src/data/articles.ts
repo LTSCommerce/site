@@ -2908,6 +2908,7 @@ WantedBy=timers.target</code></pre>
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    register: 'formal',
     content: `<div class="intro">
     <p class="lead">Defence Before Fix is a phase that runs before a defect is fixed. Rather than dropping straight into remediating the specific instance in front of you, you first treat that instance as evidence of a class, and you build the automated defence that detects every occurrence of that class across the whole codebase. The defence is only trusted once it has been seen to fire.</p>
 </div>
@@ -2918,6 +2919,8 @@ WantedBy=timers.target</code></pre>
     which is the canonical statement of the method and the place to go if you want the precise version. This article is where I first published the term, on 22 February 2026, and I have since rewritten it so that it agrees with the specification rather than with my earlier, looser description of the idea. Where the two still differ, the specification is correct, and I would suggest reading it as the source of truth and this as the long-form worked example that it deliberately leaves out.</p>
 
     <p>The name is meant literally. The defence comes before the fix in time, because the moment you fix the bug the evidence you would have built the defence from is gone, and I have found that this is the part people most often skip whilst believing they have done it.</p>
+
+    <p>I did not arrive at this from nowhere, and it is probably worth saying where I did arrive from. I have spent a long time, going back well before I had a name for any of it, believing that tooling rather than discipline is what actually makes quality stick in a codebase: php-qa-ci and the precursors that came before it are the practical result of that belief, a project's own checks wired into one entry point that nobody can forget to run because the pipeline runs them regardless of who is under deadline pressure that week. What has changed, and changed quite recently, is not the belief but the cost of acting on it. Writing a bespoke rule used to take long enough that only the most obviously recurring problems ever earned one, and everything smaller went into a code review comment and quietly reappeared a few months later under a different ticket number. An agent can now draft, prove and wire in a rule from a single reported bug in roughly the time it used to take to write that comment, so the calculation that used to favour fixing it and moving on has more or less flipped. Defence Before Fix is the name I have given to actually acting on that, every time, rather than only on the bugs that were annoying enough to justify the old cost.</p>
 </section>
 
 <section>
