@@ -1,0 +1,6 @@
+# phpstan.neon
+services:
+    -
+        class: App\QA\PHPStan\NoNullCoalesceToEmptyStringRule
+        tags:
+            - phpstan.rules.rule

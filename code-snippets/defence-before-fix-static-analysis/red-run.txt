@@ -1,0 +1,17 @@
+vendor/bin/phpstan analyse src/
+
+ [ERROR] Found 23 errors
+
+  src/Email/CustomerNotification.php:31
+  Null coalescing to empty string (?? '') hides missing data.
+  🪪  app.nullCoalescingEmptyString
+
+  src/Email/OrderNotification.php:47
+  Null coalescing to empty string (?? '') hides missing data.
+  🪪  app.nullCoalescingEmptyString
+
+  src/Report/CustomerSummary.php:83
+  Null coalescing to empty string (?? '') hides missing data.
+  🪪  app.nullCoalescingEmptyString
+
+  ... 20 more instances
