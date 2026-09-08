@@ -42,9 +42,13 @@ handlers:
     pipe_blocker: # Blocks dangerous pipe patterns in bash commands
       enabled: true
       priority: 15
-      options:
-        extra_whitelist:
-          - "^find\\b" # find | wc -l, find | grep etc are safe read-only ops
+      # NOTE: extra_whitelist removed 2026-09-08 - upstream bug in the daemon's
+      # generic option-injection (handlers/registry.py setattr path) overwrites
+      # this handler's compiled re.Pattern list with raw config strings, causing
+      # every piped Bash command to crash pipe_blocker's matches() (fail-open,
+      # so not blocking, but it silently disables ALL pipe protection). See
+      # untracked/scratch/hooks-daemon-pipe-blocker-extra-whitelist-bug.md.
+      # Re-add extra_whitelist only after upstream fixes this.
 
     dangerous_permissions: # Warns about dangerous file permission changes
       enabled: true
@@ -84,6 +88,12 @@ handlers:
       #     - Go
       #     - JavaScript/TypeScript
       #     - PHP
+
+    comment_changelog: # Blocks changelog narrative in code comments (belongs in git/JOURNAL)
+      enabled: true # v3.53.0 recommendation, zero false positives measured on this project's own scan
+
+    comment_size: # Caps over-long comments (tiered: shrinking is always allowed)
+      enabled: true # v3.53.0 recommendation, safe to adopt on an existing codebase
 
     tdd_enforcement: # Enforces test-first development
       enabled: false # Enable for strict TDD workflow
@@ -210,6 +220,10 @@ handlers:
       options:
         mode: agent-pull # Auto-pull as first action when behind upstream
 
+    contract_staleness: # Flags when installed Claude Code outruns the last-audited hooks contract
+      enabled: true
+      priority: 60
+
   # PreCompact handlers (run before conversation compaction)
   pre_compact:
     transcript_archiver: # Archives transcripts before compaction
@@ -315,3 +329,16 @@ project_handlers:
 # ccy (Claude Code YOLO container) integration
 ccy:
   deploy_supervisor: true # Auto-deploy + arm claude-supervise.py on install/upgrade (this project uses .claude/ccy/)
+
+# Documentation SSoT enforcement (v3.57.0 recommendation) - project's CLAUDE/ + docs/
+# trees already match the defaults below, so no trees: override is needed.
+documentation:
+  enabled: true # master switch for docs_qa_edit / docs_qa_commit_gate / docs_qa_sweep
+  qa:
+    edit_mode: warn # start warn-first per upstream rollout guidance
+    commit_gate_mode: warn
+    sweep_mode: advise
+
+agents:
+  docs_qa:
+    enabled: true # deploys the read-only hooks-daemon-docs-qa audit agent

@@ -84,6 +84,15 @@ npm run syntax-highlight # Process code syntax highlighting
 
 **Manual Deployment Override**: Use GitHub Actions UI or `gh workflow run "Deploy static content to Pages"`
 
+**Keeping `ts-qa-ci` current**: this project pulls `@longtermsupport/ts-qa-ci` directly from `github:LongTermSupport/ts-qa-ci#<commit>` in `package.json` (it isn't published to npm yet), so `npm outdated` never flags it. Periodically check for a newer commit and bump the pin:
+
+```bash
+git ls-remote https://github.com/LongTermSupport/ts-qa-ci.git HEAD
+npm install @longtermsupport/ts-qa-ci@github:LongTermSupport/ts-qa-ci#<new-commit-sha>
+```
+
+Then run `npx ts-qa` to confirm the new pin still works before committing the `package.json`/`package-lock.json` bump.
+
 ### Debugging & Screenshots
 
 Take screenshots of live pages for debugging layout issues:
