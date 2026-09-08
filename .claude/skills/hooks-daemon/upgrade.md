@@ -6,10 +6,12 @@ Upgrade the Claude Code Hooks Daemon and commit the result atomically.
 
 1. **Run the upgrade**:
 
-   ```bash
-   /hooks-daemon upgrade           # latest
-   /hooks-daemon upgrade 3.14.0    # specific version
-   /hooks-daemon upgrade --force   # reinstall current
+   ```claude-code
+   /hooks-daemon upgrade                              # latest
+   /hooks-daemon upgrade 3.14.0                       # specific version
+   /hooks-daemon upgrade --force                      # reinstall current
+   /hooks-daemon upgrade --skip-config-optimisation    # opt out of step 8
+   /hooks-daemon optimise                              # step 8 on its own
    ```
 
 2. **Parse the metadata block** emitted on stdout between the
@@ -111,3 +113,24 @@ Upgrade the Claude Code Hooks Daemon and commit the result atomically.
 
 If the daemon is not RUNNING after upgrade, do NOT commit — investigate
 first (`.claude/hooks-daemon/bin/hooks-daemon logs`).
+
+8. **Run the config-optimisation review** (Plan 00308) — mandatory unless
+   `--skip-config-optimisation` was passed to this upgrade. Step 5 above
+   surfaces recommended config KEYS via `check-config-migrations`; this step
+   is the full per-handler review that decides which ones to enable, applies
+   them on your confirmation, and records the run so the
+   `config_optimisation_reminder` SessionStart advisory does not re-nag next
+   session:
+
+   ```claude-code
+   /hooks-daemon optimise
+   ```
+
+   Run it in THIS session, immediately after the commit in step 7 above (it
+   may itself edit `.claude/hooks-daemon.yaml` and restart the daemon — that
+   is a separate, later commit, same discipline as steps 4-5's
+   project-doc/config edits). The upgrade is not finished until it has run:
+   do not defer it to a later session, and do not report it back as an
+   optional follow-up. If `--skip-config-optimisation` was passed, skip this
+   step and tell the user to run `/hooks-daemon optimise` themselves when
+   ready.

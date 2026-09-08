@@ -1,8 +1,15 @@
 {
   "plansDirectory": "./CLAUDE/Plan",
+  "permissions": {
+    "deny": [
+      "Edit(//tmp/**)",
+      "Edit(//var/tmp/**)",
+      "Edit(//dev/shm/**)"
+    ]
+  },
   "statusLine": {
     "type": "command",
-    "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/status-line",
+    "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/status-line",
     "refreshInterval": 1
   },
   "hooks": {
@@ -308,5 +315,6 @@
         ]
       }
     ]
-  }
+  },
+  "enableArtifact": false
 }

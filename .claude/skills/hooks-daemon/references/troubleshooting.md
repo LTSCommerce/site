@@ -82,7 +82,7 @@ def get_acceptance_tests(self) -> list[AcceptanceTest]:
     return []  # Or add actual tests
 ```
 
-See: `CLAUDE/HANDLER_DEVELOPMENT.md` for details on v2.13.0 changes.
+See: the daemon clone's `CLAUDE/HANDLER_DEVELOPMENT.md` for details on v2.13.0 changes.
 
 **2. Import Error**
 
@@ -143,13 +143,18 @@ curl: (404) Not Found
 **Solution:**
 Use the skill command or download-then-run:
 
-```bash
-# Preferred:
-/hooks-daemon upgrade
+Preferred — in the Claude Code chat:
 
-# Manual:
-curl -sSL https://raw.githubusercontent.com/Edmonds-Commerce-Limited/claude-code-hooks-daemon/main/scripts/upgrade.sh -o /tmp/hooks-daemon-upgrade.sh
-bash /tmp/hooks-daemon-upgrade.sh
+```claude-code
+/hooks-daemon upgrade
+```
+
+Manual — from a terminal:
+
+```bash
+mkdir -p untracked/scratch
+curl -sSL https://raw.githubusercontent.com/Edmonds-Commerce-Limited/claude-code-hooks-daemon/main/scripts/upgrade.sh -o untracked/scratch/hooks-daemon-upgrade.sh
+bash untracked/scratch/hooks-daemon-upgrade.sh
 ```
 
 ### Upgrade Hangs
@@ -158,13 +163,20 @@ bash /tmp/hooks-daemon-upgrade.sh
 
 **Solution:**
 
+From a terminal:
+
 ```bash
 # Check daemon logs
 .claude/hooks-daemon/bin/hooks-daemon logs
 
-# If stuck, stop THIS project's daemon and retry (never `pkill -f hooks-daemon`
+# If stuck, stop THIS project's daemon (never `pkill -f hooks-daemon`
 # — that matches every daemon on the host, not just this project's)
 .claude/hooks-daemon/bin/hooks-daemon stop
+```
+
+Then retry the upgrade in the Claude Code chat:
+
+```claude-code
 /hooks-daemon upgrade
 ```
 
@@ -234,10 +246,10 @@ export HOOKS_DAEMON_LOG_LEVEL=DEBUG
 ./scripts/debug_hooks.sh stop
 
 # Analyze captured events
-cat /tmp/hook_debug_*.log | grep -A10 "event_type"
+cat untracked/scratch/hook_debug_*.log | grep -A10 "event_type"
 ```
 
-See: `CLAUDE/DEBUGGING_HOOKS.md` for complete debugging workflow.
+See: the daemon clone's `CLAUDE/DEBUGGING_HOOKS.md` for the complete debugging workflow.
 
 ## Configuration Issues
 
