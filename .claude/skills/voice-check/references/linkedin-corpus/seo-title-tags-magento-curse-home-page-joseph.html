@@ -1,0 +1,147 @@
+<html>
+<head>
+  <title>SEO Title Tags, Magento and the curse of "Home page"​</title>
+  <style>
+    body {
+      margin: 0 auto;
+      width: 744px;
+      font-family: Source Serif Pro, serif;
+      line-height: 32px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.7);
+      font-size: 21px;
+    }
+    h1, h2, h3 {
+      font-family: Source Sans Pro, Helvetica, Arial, sans-serif;
+    }
+    h1 a, h1 a:visited {
+      color: inherit;
+      text-decoration: none;
+    }
+    h1 {
+      line-height: 48px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 42px;
+      margin: 32px 0 20px;
+    }
+    h2 {
+      line-height: 32px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 26px;
+      margin: 28px 0;
+    }
+    h3 {
+      line-height: 28px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 21px;
+      margin: 24px 0;
+    }
+    p {
+      margin: 32px 0;
+    }
+    .created, .published {
+      color: rgba(0, 0, 0, 0.55);
+      font-size: 15px;
+      line-height: 15px;
+      margin: 20px 0;
+    }
+    .created + .published {
+      margin-top: -12px;
+    }
+    blockquote {
+      font-family: Georgia, Source Serif Pro, serif;
+      font-style: italic;
+      font-size: 24px;
+      line-height: 36px;
+      margin: 48px 120px;
+      text-align: center;
+    }
+    a {
+      word-wrap: break-word;
+      outline: none;
+      text-decoration: none;
+      background-color: transparent;
+      border: 0;
+      color: #008CC9;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    a:visited {
+      color: #8C68CB;
+    }
+    .center {
+      text-align: center;
+    }
+    iframe {
+      display: block;
+      margin: 44px auto;
+    }
+    *:not(pre) + pre, pre:first-of-type {
+      margin-top: 32px;
+      padding-top: 32px;
+    }
+    pre:only-of-type {
+      margin: 32px 0;
+      padding: 32px;
+    }
+    pre {
+      background: #F3F6F8;
+      overflow-x: auto;
+      display: block;
+      font-size: 13px;
+      font-family: monospace;
+      line-height: 13px;
+      padding: 0 32px 32px;
+      white-space: pre;
+    }
+    a.embedded {
+      background: #F3F6F8;
+      display: block;
+      padding: 32px;
+      margin: 32px 0;
+    }
+    img {
+      height: auto;
+      max-width: 100%;
+    }
+    .slate-image-embed__resize-full-width img {
+      width: 100%;
+    }
+    .series-logo {
+      width: 48px;
+      height: 48px;
+      box-sizing: border-box;
+      background-clip: content-box;
+      border: 4px solid transparent;
+      border-radius: 6px;
+      object-fit: scale-down;
+      float: left;
+    }
+    .series-title {
+      font-size: 16px;
+      font-weight: 600;
+      vertical-align: top;
+    }
+    .series-description {
+      color: rgba(0,0,0,.6);
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    div {
+      margin: 32px 0;
+    }
+  </style>
+</head>
+<body>
+    <img src="https://media.licdn.com/mediaC4D12AQHdkGzLbWmzDg" alt="" title="" />
+      <h1><a href="https://www.linkedin.com/pulse/seo-title-tags-magento-curse-home-page-joseph">SEO Title Tags, Magento and the curse of "Home page"​</a></h1>
+    <p class="created">Created on 2021-06-14 09:09</p>
+  <p class="published">Published on 2021-06-14 09:26</p>
+  <div><p><strong>SEO fundamentals lesson 1</strong></p><p><em>OK I'll admit, I do not claim to be any kind of SEO guru. I haven't watched hours of youtube videos by self proclaimed gurus explaining the latest ways to tame the Google algorithms and shoot your site to the top of the rankings with this one easy trick your competitors wish they knew...</em></p><p>But I do know some fundamentals, and one of those is that there is one single tag on your page that carries more weight than probably any other. It's called the `title`. </p><p>https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title</p><p>This tag contains the text that is usually shown in your browser tab and is also the text that is usually displayed as the link text in search engine result pages. It's an important tag for both user experience and also for SEO as it should clearly and succinctly describe what the page is about.</p><div class="slate-resizable-image-embed slate-image-embed__resize-full-width"><img alt="No alt text provided for this image" data-media-urn="urn:li:digitalmediaAsset:C4D12AQFuk6rTLzgTCA" src="https://media.licdn.com/dms/image/v2/C4D12AQFuk6rTLzgTCA/article-inline_image-shrink_400_744/article-inline_image-shrink_400_744/0/1623661867983?e=1790812800&amp;v=beta&amp;t=_wag7G0RTHiRrRY4AaJx_UDZwS2e8rLXrOT-yRMLNm8"></div><p>And then there was Magento. Unfortunately Magento (1 and 2) make it very easy to have a home page (usually your most important page in terms of SEO) have a title tag that simply says "Home page"</p><p>Things that you might have wanted to include in there were your brand name, your primary products, some kind of longer tail key-phrase that you have a good chance of ranking well for.</p><p>There are multiple approaches to setting a good page title for M2 and the correct answer depends on how you have things configured. Often, there is simply a CMS page called Home page under the Content-&gt;Pages section and in there you have an option to set the Page title. It might be worth raising the question with your current developers if this does not seem to be the case or it does not work.</p><p>It is definitely worth the little bit of effort to both improve your user experience and your SEO potential.</p><p>I'm certainly not looking to win any SEO business, but if you have a home page title tag that says "Home page" and you have an SEO agency or provider at present, you may wonder why they haven't mentioned anything..?</p><p>Hope you found this interesting, if you need any help with your M2 site please feel free to get in touch</p><p>Joseph</p><p><br></p><p><br></p></div>
+</body>
+</html>

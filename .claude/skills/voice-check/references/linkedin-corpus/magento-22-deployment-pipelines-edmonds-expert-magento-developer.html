@@ -1,0 +1,182 @@
+<html>
+<head>
+  <title>Magento 2.2 Deployment Pipelines</title>
+  <style>
+    body {
+      margin: 0 auto;
+      width: 744px;
+      font-family: Source Serif Pro, serif;
+      line-height: 32px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.7);
+      font-size: 21px;
+    }
+    h1, h2, h3 {
+      font-family: Source Sans Pro, Helvetica, Arial, sans-serif;
+    }
+    h1 a, h1 a:visited {
+      color: inherit;
+      text-decoration: none;
+    }
+    h1 {
+      line-height: 48px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 42px;
+      margin: 32px 0 20px;
+    }
+    h2 {
+      line-height: 32px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 26px;
+      margin: 28px 0;
+    }
+    h3 {
+      line-height: 28px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 21px;
+      margin: 24px 0;
+    }
+    p {
+      margin: 32px 0;
+    }
+    .created, .published {
+      color: rgba(0, 0, 0, 0.55);
+      font-size: 15px;
+      line-height: 15px;
+      margin: 20px 0;
+    }
+    .created + .published {
+      margin-top: -12px;
+    }
+    blockquote {
+      font-family: Georgia, Source Serif Pro, serif;
+      font-style: italic;
+      font-size: 24px;
+      line-height: 36px;
+      margin: 48px 120px;
+      text-align: center;
+    }
+    a {
+      word-wrap: break-word;
+      outline: none;
+      text-decoration: none;
+      background-color: transparent;
+      border: 0;
+      color: #008CC9;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    a:visited {
+      color: #8C68CB;
+    }
+    .center {
+      text-align: center;
+    }
+    iframe {
+      display: block;
+      margin: 44px auto;
+    }
+    *:not(pre) + pre, pre:first-of-type {
+      margin-top: 32px;
+      padding-top: 32px;
+    }
+    pre:only-of-type {
+      margin: 32px 0;
+      padding: 32px;
+    }
+    pre {
+      background: #F3F6F8;
+      overflow-x: auto;
+      display: block;
+      font-size: 13px;
+      font-family: monospace;
+      line-height: 13px;
+      padding: 0 32px 32px;
+      white-space: pre;
+    }
+    a.embedded {
+      background: #F3F6F8;
+      display: block;
+      padding: 32px;
+      margin: 32px 0;
+    }
+    img {
+      height: auto;
+      max-width: 100%;
+    }
+    .slate-image-embed__resize-full-width img {
+      width: 100%;
+    }
+    .series-logo {
+      width: 48px;
+      height: 48px;
+      box-sizing: border-box;
+      background-clip: content-box;
+      border: 4px solid transparent;
+      border-radius: 6px;
+      object-fit: scale-down;
+      float: left;
+    }
+    .series-title {
+      font-size: 16px;
+      font-weight: 600;
+      vertical-align: top;
+    }
+    .series-description {
+      color: rgba(0,0,0,.6);
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    div {
+      margin: 32px 0;
+    }
+  </style>
+</head>
+<body>
+    <img src="https://media.licdn.com/mediaC4D12AQGrschHjcfeZQ" alt="" title="" />
+      <h1><a href="https://www.linkedin.com/pulse/magento-22-deployment-pipelines-edmonds-expert-magento-developer">Magento 2.2 Deployment Pipelines</a></h1>
+    <p class="created">Created on 2017-07-18 17:32</p>
+  <p class="published">Published on 2017-07-18 17:55</p>
+  <div>
+  <p>Magento 2 continues to be actively developed and continues to get better. Merchants who have already got on board can now look forward to a long a continuous round of improvements as the platform becomes increasingly more polished.</p> 
+  <a class="embedded" href="http://devdocs.magento.com/guides/v2.2/release-notes/release-notes-2-2-prerelease1-CE.html">http://devdocs.magento.com/guides/v2.2/release-notes/release-notes-2-2-prerelease1-CE.html</a> 
+  <p>Soon a major update, 2.2, will be released. There have already been some release candidates which are worth having a look at if you are interested. Clearly there are a lot of bug fixes included in the release, it's great that these are getting dealt with though it would be fair to say there are still a large number of bugs that still need to be ironed out.</p> 
+  <h3>Magento 2.2 Highlights</h3> 
+  <blockquote>
+    Significant enhancements in platform security and developer experience.&nbsp; 
+  </blockquote> 
+  <blockquote>
+    Upgraded technology stack.&nbsp; 
+  </blockquote> 
+  <blockquote>
+    Pipeline deployment,&nbsp; 
+  </blockquote> 
+  <blockquote>
+    Substantial performance gains from improvements in indexing, cart, and cache operations.&nbsp; 
+  </blockquote> 
+  <p><br></p> 
+  <p>One really nice feature that is quite subtle really but opens up a lot of possibilities is the move to what they are calling "Pipeline Deployment". Essentially what this means is that the maximum amount of work around deploying updates can be done before any changes are made to your live site. This in turn means that downtime can be kept to the barest minimum, essentially unnoticeable for most store owners.</p> 
+  <p>From reading the documentation you would be forgiven for thinking this is really complex, however it doesn't really need to be. On a well powered server, there can simply be a "build area" where any new updates are automatically prepared before finally being applied the live production site. Ideally the whole process can be fully automated which means that developers find it easy and fluid to push out regular updates and you can enjoy rapid iterations on new features and code updates on your store.</p> 
+  <p>You can read more about pipeline deployment here, suggest you speak to your developers about it, or get in touch with myself or my team at Edmonds Commerce</p> 
+  <a class="embedded" href="http://devdocs.magento.com/guides/v2.2/config-guide/deployment/pipeline/">http://devdocs.magento.com/guides/v2.2/config-guide/deployment/pipeline/</a> 
+  <h3>Upgrading to Magento 2 .2 from 2.x</h3> 
+  <p>There are some backwards incompatible changes being brought in which, especially if you have custom modules or functionality then you may need to refactor. Apart from that though, the upgrade should be relatively painless. It goes without saying that upgrades should be handled by your developers and then properly tested before going into production.</p> 
+  <h3><strong>Upgrading to Magento 2.2 from Magento 1</strong></h3> 
+  <p>If you are still on Magento 1 then I continue to believe that the time has come to start at least preparing your upgrade to Magento 2. The powers that be in Magento have declared that Magento 1 still has at least 18 months of support, however I'd regard that as a comfortable amount of time to handle your upgrade. <strong>Don't leave it to the last minute!</strong></p> 
+  <p>Of course, feel free to get in touch with me and my team to discuss your move to Magento 2!</p> 
+  <p>Cheers</p> 
+  <p>Joseph</p> 
+  <p>💻 <a href="https://www.edmondscommerce.co.uk" target="_blank">www.edmondscommerce.co.uk</a></p> 
+  <p>☎ +44 (0)113 880 5654</p> 
+  <p>✉ info@edmondscommerce.co.uk</p> 
+  <p><br></p> 
+  <p><br></p>
+ 
+</div>
+</body>
+</html>

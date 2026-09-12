@@ -5,3 +5,4 @@
 !Dockerfile
 !ccy.env
 !claude-supervise.py
+!mounts
