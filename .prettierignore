@@ -6,6 +6,7 @@ untracked
 ARCHIVE
 var
 .claude
+CLAUDE/core
 cloudflare-workers
 package-lock.json
 src/data/snippets.ts
