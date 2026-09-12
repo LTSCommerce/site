@@ -19,6 +19,7 @@
     "llm:type-check": "tsc --noEmit --pretty false 2>&1 | tee var/qa/typescript.log",
     "llm:test": "CI=true vitest run --reporter=json --outputFile=var/qa/vitest.json",
     "llm:qa": "npm run llm:type-check && npm run llm:lint && npm run llm:test",
+    "llm:build": "npm run build 2>&1 | tee var/qa/build.log",
     "build:analyze": "vite build",
     "screenshots": "npx tsx scripts/generate-screenshots.ts",
     "llm:screenshots": "npx tsx scripts/generate-screenshots.ts"
