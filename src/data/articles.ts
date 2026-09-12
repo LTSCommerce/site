@@ -5646,7 +5646,7 @@ Managing commands manually across multiple projects doesn't scale; letting comma
     id: 'claude-code-latest-features',
     title: "Claude Code Latest Features: What's New in Autumn 2025",
     description:
-      "A dated snapshot of Claude Code as of November 2025: how checkpoints, subagents, the plugin system, and MCP fit together, plus version-specific fixes and settings added across the 2.0.30-2.0.33 release run.",
+      'A dated snapshot of Claude Code as of November 2025: how checkpoints, subagents, the plugin system, and MCP fit together, plus version-specific fixes and settings added across the 2.0.30-2.0.33 release run.',
     date: '2025-11-05',
     category: CATEGORIES.ai.id,
     heroImage: {
@@ -7229,7 +7229,7 @@ Managing commands manually across multiple projects doesn't scale; letting comma
     id: 'dependency-inversion-final-classes-pragmatic-testing',
     title: 'Dependency Inversion, Final Classes, and Pragmatic Testing in PHP 8.4',
     description:
-      "Why final classes push dependency inversion toward composition over inheritance, and how the Detroit/London testing split resolves into a simpler rule for when to reach for a mock.",
+      'Why final classes push dependency inversion toward composition over inheritance, and how the Detroit/London testing split resolves into a simpler rule for when to reach for a mock.',
     date: '2025-08-11',
     category: CATEGORIES.php.id,
     register: 'formal',
@@ -8462,7 +8462,7 @@ Managing commands manually across multiple projects doesn't scale; letting comma
     id: 'fedora-desktop-automation-ansible',
     title: 'Automating Fedora 42 Desktop Development: Open Source Infrastructure as Code',
     description:
-      "What a real Ansible repository for provisioning a Fedora desktop looks like, and why baseline automation should stay narrow so project-specific stacks can build on top of it.",
+      'What a real Ansible repository for provisioning a Fedora desktop looks like, and why baseline automation should stay narrow so project-specific stacks can build on top of it.',
     date: '2025-09-03',
     category: CATEGORIES.infrastructure.id,
     readingTime: 12,
@@ -14331,7 +14331,7 @@ Architectural patterns and best practices for creating robust, scalable backend 
     id: 'typescript-honesty-system',
     title: "TypeScript's Honesty System: Why Type Safety is Optional and How to Enforce It",
     description:
-      "A working ESLint and tsconfig setup that actually enforces the type safety TypeScript only suggests by default, built against a taxonomy of the 25+ ways developers (and LLMs) routinely bypass it.",
+      'A working ESLint and tsconfig setup that actually enforces the type safety TypeScript only suggests by default, built against a taxonomy of the 25+ ways developers (and LLMs) routinely bypass it.',
     date: '2025-11-18',
     category: CATEGORIES.typescript.id,
     heroImage: {
