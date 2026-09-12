@@ -1,7 +1,14 @@
 <?php
 
-class OrderProcessor
+declare(strict_types=1);
+
+namespace App\Database;
+
+final class OrderProcessor
 {
+    /**
+     * @return list<array<string,mixed>>
+     */
     public function processHighValueOrders(DatabaseServiceInterface $db): array
     {
         // Step 1: Use SQL for initial filtering and aggregation
@@ -93,6 +100,10 @@ class OrderProcessor
         };
     }
 
+    /**
+     * @param array<string,mixed> $order
+     * @return list<string>
+     */
     private function checkPromotionalRules(array $order): array
     {
         // Complex promotional logic that would be nightmare in SQL

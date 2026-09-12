@@ -17,7 +17,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * DETROIT SCHOOL: Testing with real objects
- * Focus on state verification and end-to-end behavior
+ * Focus on state verification and end-to-end behaviour
  */
 class OrderProcessorDetroitTest extends TestCase
 {
@@ -119,7 +119,7 @@ class OrderProcessorDetroitTest extends TestCase
 
 /**
  * LONDON SCHOOL: Testing with mocks for interaction verification
- * Focus on behavior verification and message passing
+ * Focus on behaviour verification and message passing
  */
 class OrderProcessorLondonTest extends TestCase
 {
@@ -255,14 +255,9 @@ class OrderProcessorLondonTest extends TestCase
 }
 
 /**
- * HYBRID APPROACH: Union types for flexible testing
- * PHP 8.4 allows more sophisticated type unions
+ * HYBRID APPROACH: real and mock objects in the same test
+ * Use real objects where they add value, mocks where necessary
  */
-
-// Define union type for testing flexibility
-type TestableOrderStorage = InMemoryOrderStorage|MockObject;
-type TestablePaymentGateway = PaymentGatewayInterface|MockObject;
-
 class OrderProcessorHybridTest extends TestCase
 {
     /**

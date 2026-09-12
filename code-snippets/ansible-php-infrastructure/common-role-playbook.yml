@@ -1,0 +1,45 @@
+# roles/common/tasks/main.yml
+---
+- name: Update package cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install essential packages
+  apt:
+    name:
+      - curl
+      - wget
+      - unzip
+      - git
+      - htop
+      - fail2ban
+      - ufw
+    state: present
+
+- name: Configure firewall
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - 22
+    - 80
+    - 443
+
+- name: Enable firewall
+  ufw:
+    state: enabled
+    policy: deny
+
+- name: Configure SSH security
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backup: yes
+  loop:
+    - { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
+    - { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
+    - { regexp: '^#?PubkeyAuthentication', line: 'PubkeyAuthentication yes' }
+  notify: restart ssh

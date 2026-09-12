@@ -1,0 +1,11 @@
+# phpstan.neon
+parameters:
+    level: 9
+    strictRules:
+        strictCalls: true
+
+    # Enforce modern PHP features
+    phpVersion: 80300  # Minimum PHP 8.3
+
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon

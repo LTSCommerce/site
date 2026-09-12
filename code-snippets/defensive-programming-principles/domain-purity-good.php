@@ -1,7 +1,7 @@
 <?php
 
-// Good: Pure domain object with clean boundaries  
-readonly class Order 
+// Good: Pure domain object with clean boundaries
+readonly class Order
 {
     public function __construct(
         private OrderId $id,
@@ -10,8 +10,8 @@ readonly class Order
         private Money $total,
         private OrderStatus $status = OrderStatus::PENDING
     ) {}
-    
-    public function canBeProcessed(InventoryService $inventory): bool 
+
+    public function canBeProcessed(InventoryService $inventory): bool
     {
         foreach ($this->items as $item) {
             if (!$inventory->hasAvailableQuantity($item->productId(), $item->quantity())) {
@@ -20,52 +20,30 @@ readonly class Order
         }
         return true;
     }
-    
-    public function process(): OrderProcessed 
+
+    public function process(): self
     {
         if ($this->status !== OrderStatus::PENDING) {
             throw new DomainException('Order can only be processed when pending');
         }
-        
-        $this->status = OrderStatus::PROCESSING;
-        
-        return new OrderProcessed(
-            $this->id,
-            $this->customerId,
-            $this->total,
-            new DateTimeImmutable()
-        );
+
+        return new self($this->id, $this->customerId, $this->items, $this->total, OrderStatus::PROCESSING);
     }
-    
-    public function complete(): OrderCompleted 
+
+    public function complete(): self
     {
         if ($this->status !== OrderStatus::PROCESSING) {
             throw new DomainException('Order must be processing to complete');
         }
-        
-        $this->status = OrderStatus::COMPLETED;
-        
-        return new OrderCompleted(
-            $this->id,
-            $this->customerId,
-            $this->items,
-            $this->total,
-            new DateTimeImmutable()
-        );
+
+        return new self($this->id, $this->customerId, $this->items, $this->total, OrderStatus::COMPLETED);
     }
-    
-    public function fail(string $reason): OrderFailed 
+
+    public function fail(): self
     {
-        $this->status = OrderStatus::FAILED;
-        
-        return new OrderFailed(
-            $this->id,
-            $this->customerId,
-            $reason,
-            new DateTimeImmutable()
-        );
+        return new self($this->id, $this->customerId, $this->items, $this->total, OrderStatus::FAILED);
     }
-    
+
     // Pure getters - no external dependencies
     public function id(): OrderId { return $this->id; }
     public function customerId(): CustomerId { return $this->customerId; }
@@ -74,8 +52,8 @@ readonly class Order
     public function status(): OrderStatus { return $this->status; }
 }
 
-// Application service handles orchestration
-class ProcessOrderService 
+// Application service handles orchestration, including building domain events
+class ProcessOrderService
 {
     public function __construct(
         private OrderRepository $orders,
@@ -84,33 +62,55 @@ class ProcessOrderService
         private EventDispatcher $events,
         private LoggerInterface $logger
     ) {}
-    
-    public function execute(ProcessOrderCommand $command): void 
+
+    public function execute(ProcessOrderCommand $command): void
     {
         $order = $this->orders->findById($command->orderId());
-        
+
         if (!$order->canBeProcessed($this->inventory)) {
-            $failed = $order->fail('Insufficient inventory');
+            $order = $order->fail();
             $this->orders->save($order);
-            $this->events->dispatch($failed);
+            $this->events->dispatch(new OrderFailed(
+                $order->id(),
+                $order->customerId(),
+                'Insufficient inventory',
+                new DateTimeImmutable()
+            ));
             return;
         }
-        
+
         try {
-            $processed = $order->process();
-            $this->events->dispatch($processed);
-            
+            $order = $order->process();
+            $this->orders->save($order);
+            $this->events->dispatch(new OrderProcessed(
+                $order->id(),
+                $order->customerId(),
+                $order->total(),
+                new DateTimeImmutable()
+            ));
+
             $this->payment->charge($order->total(), $order->customerId());
-            
-            $completed = $order->complete();
+
+            $order = $order->complete();
             $this->orders->save($order);
-            $this->events->dispatch($completed);
-            
+            $this->events->dispatch(new OrderCompleted(
+                $order->id(),
+                $order->customerId(),
+                $order->items(),
+                $order->total(),
+                new DateTimeImmutable()
+            ));
+
         } catch (PaymentException $e) {
-            $failed = $order->fail('Payment failed: ' . $e->getMessage());
+            $order = $order->fail();
             $this->orders->save($order);
-            $this->events->dispatch($failed);
-            
+            $this->events->dispatch(new OrderFailed(
+                $order->id(),
+                $order->customerId(),
+                'Payment failed: ' . $e->getMessage(),
+                new DateTimeImmutable()
+            ));
+
             $this->logger->error('Order payment failed', [
                 'order_id' => $order->id()->value(),
                 'error' => $e->getMessage()
@@ -120,17 +120,17 @@ class ProcessOrderService
 }
 
 // Event handlers manage side effects
-class OrderCompletedHandler 
+class OrderCompletedHandler
 {
     public function __construct(
         private MailerInterface $mailer,
         private CustomerRepository $customers
     ) {}
-    
-    public function handle(OrderCompleted $event): void 
+
+    public function handle(OrderCompleted $event): void
     {
         $customer = $this->customers->findById($event->customerId());
-        
+
         $this->mailer->send(
             'order-confirmation',
             $customer->email()->value(),

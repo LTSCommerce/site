@@ -1,22 +1,8 @@
-#!/bin/bash
+# Test connectivity
+ansible all -m ping -i inventories/production/hosts
 
-# Check Ansible connectivity
-ansible all -i inventories/production/hosts -m ping
+# Check SSH configuration
+ansible all -m setup -i inventories/production/hosts | grep ansible_ssh
 
-# Run playbook in check mode
-ansible-playbook -i inventories/production/hosts playbooks/site.yml --check
-
-# Run with increased verbosity
-ansible-playbook -i inventories/production/hosts playbooks/site.yml -vvv
-
-# Test specific host
-ansible web1.example.com -i inventories/production/hosts -m setup
-
-# Check syntax
-ansible-playbook playbooks/site.yml --syntax-check
-
-# List hosts
-ansible-inventory -i inventories/production/hosts --list
-
-# Run specific tags
-ansible-playbook -i inventories/production/hosts playbooks/site.yml --tags "php,nginx"
+# Debug playbook execution
+ansible-playbook -i inventories/production/hosts playbooks/deploy.yml -vvv

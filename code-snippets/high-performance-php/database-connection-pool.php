@@ -6,15 +6,19 @@ namespace App\Database\Connection;
 
 use App\Exceptions\{ConnectionCreationFailedException, ConnectionPoolExhaustedException};
 use App\ValueObjects\{ConnectionId, ConnectionString};
-use WeakMap;
+use PDO;
+use PDOException;
 
 final class DatabaseConnectionPool
 {
-    /** @var WeakMap<ConnectionId, PDO> */
-    private WeakMap $connections;
+    /** @var array<string, PDO> */
+    private array $connections = [];
 
     /** @var array<string, ConnectionId> */
-    private array $connectionIds = [];
+    private array $available = [];
+
+    /** @var array<string, ConnectionId> */
+    private array $checkedOut = [];
 
     public function __construct(
         private readonly ConnectionString $dsn,
@@ -22,31 +26,37 @@ final class DatabaseConnectionPool
         private readonly int $maxConnections = 20,
         private readonly ConnectionOptions $options = new ConnectionOptions(),
     ) {
-        $this->connections = new WeakMap();
     }
 
     public function getConnection(): PDO
     {
-        $connectionId = $this->findAvailableConnection()
+        $connectionId = $this->takeAvailableConnection()
             ?? $this->createNewConnection();
 
-        return $this->connections[$connectionId];
+        return $this->connections[$connectionId->value];
     }
 
-    private function findAvailableConnection(): ?ConnectionId
+    public function release(ConnectionId $connectionId): void
     {
-        foreach ($this->connectionIds as $id) {
-            if ($this->connections->offsetExists($id)) {
-                return $id;
-            }
+        unset($this->checkedOut[$connectionId->value]);
+        $this->available[$connectionId->value] = $connectionId;
+    }
+
+    private function takeAvailableConnection(): ?ConnectionId
+    {
+        if ($this->available === []) {
+            return null;
         }
 
-        return null;
+        $connectionId = array_shift($this->available);
+        $this->checkedOut[$connectionId->value] = $connectionId;
+
+        return $connectionId;
     }
 
     private function createNewConnection(): ConnectionId
     {
-        if (count($this->connectionIds) >= $this->maxConnections) {
+        if (count($this->connections) >= $this->maxConnections) {
             throw new ConnectionPoolExhaustedException(
                 "Maximum connections ({$this->maxConnections}) reached"
             );
@@ -62,8 +72,8 @@ final class DatabaseConnectionPool
                 $this->options->toPdoOptions(),
             );
 
-            $this->connections[$connectionId] = $pdo;
-            $this->connectionIds[]            = $connectionId;
+            $this->connections[$connectionId->value]  = $pdo;
+            $this->checkedOut[$connectionId->value]   = $connectionId;
 
             return $connectionId;
         } catch (PDOException $e) {

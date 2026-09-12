@@ -59,6 +59,6 @@ var_dump($validator->processUser('@john_doe'));   // ✅ "Fixed"
 // But everything else is broken or inconsistent:
 var_dump($validator->processUser('@jane_doe'));   // ❌ Still fails
 var_dump($validator->processUser('@user123'));    // ❌ Still fails
-var_dump($validator->processUser('john_doe'));    // ✅ Works but inconsistent behavior
+var_dump($validator->processUser('john_doe'));    // ✅ Works but inconsistent behaviour
 
 // The solution went from "one bug" to "fundamentally broken"

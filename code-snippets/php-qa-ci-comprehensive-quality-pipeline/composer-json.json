@@ -1,0 +1,8 @@
+{
+  "require-dev": {
+    "lts/php-qa-ci": "dev-php8.4@dev"
+  },
+  "config": {
+    "bin-dir": "bin"
+  }
+}

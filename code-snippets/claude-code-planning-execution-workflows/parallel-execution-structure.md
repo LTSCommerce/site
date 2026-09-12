@@ -1,12 +1,12 @@
 ## Parallel Execution Plan Structure
 
-Plans should be optimized for parallel agent execution with clear dependency chains.
+Plans should be optimised for parallel agent execution with clear dependency chains.
 
 ### Key Principles
 
 1. **Identify Independent Work**: Break tasks into components that can be developed in parallel
 2. **Define Clear Interfaces**: Create contracts/types upfront that parallel work depends on
-3. **Minimize Blocking Phases**: Reduce sequential dependencies to maximize parallelism
+3. **Minimise Blocking Phases**: Reduce sequential dependencies to maximise parallelism
 4. **Clear Dependency Notation**: Use BLOCKING/NON-BLOCKING labels explicitly
 
 ### Plan Structure for Parallel Execution
@@ -15,7 +15,6 @@ Plans should be optimized for parallel agent execution with clear dependency cha
 ## Implementation Phases - Parallel Execution Plan
 
 ### Execution Overview
-```
 
 Phase 1: Foundation (BLOCKING - Must complete first)
 ├── Agent A: Core contracts/interfaces
@@ -32,9 +31,6 @@ Phase 3: Integration (BLOCKING - Requires Phase 2)
 
 Phase 4: Deployment (BLOCKING - Requires Phase 3)
 └── Agent H: Deploy to production
-
-```
-
 ```
 
 ### Phase Definitions
@@ -51,11 +47,9 @@ Each phase should include:
 
 **Dependencies**: Specific prerequisites (e.g., "Phase 1 types only")
 **Output Required**: Exact deliverables
-```
 
 [List of files/packages to create]
 
-```
 **Libraries/Tools**: External dependencies needed
 **Can work independently**: Yes/No
 ```

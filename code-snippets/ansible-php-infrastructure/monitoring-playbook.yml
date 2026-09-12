@@ -1,0 +1,30 @@
+# roles/monitoring/tasks/main.yml
+---
+- name: Install monitoring tools
+  apt:
+    name:
+      - htop
+      - iotop
+      - nethogs
+      - sysstat
+    state: present
+
+- name: Configure PHP-FPM status page
+  lineinfile:
+    path: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
+    regexp: '^;?pm.status_path'
+    line: 'pm.status_path = /status'
+  notify: restart php-fpm
+
+- name: Configure Nginx status
+  blockinfile:
+    path: /etc/nginx/sites-available/{{ app_name }}
+    insertafter: "server_name"
+    block: |
+      location /nginx_status {
+          stub_status on;
+          access_log off;
+          allow 127.0.0.1;
+          deny all;
+      }
+  notify: restart nginx

@@ -1,0 +1,17 @@
+# inventories/production/group_vars/all.yml
+---
+app_name: myapp
+app_domain: myapp.com
+app_env: production
+php_version: 8.2
+keep_releases: 5
+run_migrations: true
+deploy_serial: 1
+# Database configuration
+app_db_host: db1.example.com
+app_db_name: myapp_production
+app_db_user: myapp_user
+# Performance settings
+php_memory_limit: 512M
+php_max_execution_time: 300
+php_upload_max_filesize: 64M

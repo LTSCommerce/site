@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
+namespace App\Database;
+
 // Basic hash lookup pattern - O(1) performance
-class FastUserLookup
+final class FastUserLookup
 {
     /** @var array<string, true> */
     private array $activeUserEmails = [];
@@ -23,12 +27,16 @@ class FastUserLookup
         return isset($this->activeUserEmails[strtolower($email)]);
     }
 
+    /**
+     * @param array<int,string> $emailList
+     * @return array<int,string>
+     */
     public function filterActiveUsers(array $emailList): array
     {
         // Process thousands of emails in milliseconds
         return array_filter(
             $emailList,
-            fn(string $email) => $this->isActiveUser($email)
+            fn(string $email): bool => $this->isActiveUser($email)
         );
     }
 }

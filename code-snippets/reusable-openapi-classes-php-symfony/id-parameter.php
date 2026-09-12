@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
 /**
  * Reusable ID path parameter for OpenAPI documentation.
  *
- * Standardizes the definition of integer ID parameters across all endpoints,
+ * Standardises the definition of integer ID parameters across all endpoints,
  * ensuring consistent validation rules and documentation.
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]

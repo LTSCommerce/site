@@ -5,6 +5,9 @@ import { IPaymentGateway } from '../interfaces/IPaymentGateway';
 import { IEmailService } from '../interfaces/IEmailService';
 import { IInventoryService } from '../interfaces/IInventoryService';
 import { IAuditLogger } from '../interfaces/IAuditLogger';
+import { EmailService } from '../services/EmailService';
+import { InventoryService } from '../services/InventoryService';
+import { AuditLogger } from '../services/AuditLogger';
 
 describe('OrderService - Minimal Mocking (GOOD)', () => {
   let orderService: OrderService;

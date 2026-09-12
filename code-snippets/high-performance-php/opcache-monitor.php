@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Monitoring\OPcache;
 
-use App\Exceptions\OPcacheNotAvailableException;
+use App\Exceptions\{OPcacheInvalidationFailedException, OPcacheNotAvailableException, OPcacheResetFailedException};
 use App\ValueObjects\{HitRate, MemoryUsage};
 
 final readonly class OPcacheMonitor

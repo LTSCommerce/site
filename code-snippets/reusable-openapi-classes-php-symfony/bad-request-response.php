@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Reusable 400 Bad Request response attribute.
  *
- * Standardizes error responses across the API by linking to a consistent
- * ErrorDto model and providing a clear, customizable description.
+ * Standardises error responses across the API by linking to a consistent
+ * ErrorDto model and providing a clear, customisable description.
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 final class BadRequestResponse extends OA\Response

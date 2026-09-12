@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Domain\User\User;
 use App\Exceptions\{DuplicateEmailException, ValidationException};
 use App\Http\{JsonResponse, Request, Response};
-use App\Services\User\UserService;
-use App\ValueObjects\UserId;
+use App\ValueObjects\{EmailAddress, UserId, UserName};
+use PDO;
 use Psr\Log\LoggerInterface;
 
 // Controller Layer - HTTP concerns only

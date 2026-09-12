@@ -1,5 +1,6 @@
 // TypeScript Interface-First Design with Intersection Types for Mocks
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import type { Mocked } from 'vitest';
 
 // GOOD: TypeScript uses I prefix for interfaces
 interface IUserRepository {
@@ -156,20 +157,20 @@ describe('UserRegistrationService - TypeScript Intersection Types', () => {
   });
 });
 
-// MODERN APPROACH: Using vi.Mocked<T> utility (RECOMMENDED)
-describe('UserRegistrationService - Modern vi.Mocked<T>', () => {
-  it('should work with vi.Mocked<T> utility', async () => {
-    // BEST: Modern Vitest approach with vi.Mocked<T>
-    const userRepository = {} as vi.Mocked<IUserRepository>;
+// MODERN APPROACH: Using the Mocked<T> utility type (RECOMMENDED)
+describe('UserRegistrationService - Modern Mocked<T>', () => {
+  it('should work with the Mocked<T> utility type', async () => {
+    // BEST: Modern Vitest approach with the Mocked<T> utility type
+    const userRepository = {} as Mocked<IUserRepository>;
     userRepository.findById = vi.fn();
     userRepository.save = vi.fn();
     userRepository.findByEmail = vi.fn().mockResolvedValue(null);
 
-    const emailService = {} as vi.Mocked<IEmailService>;
+    const emailService = {} as Mocked<IEmailService>;
     emailService.send = vi.fn();
     emailService.sendTemplate = vi.fn().mockResolvedValue(true);
 
-    const passwordHasher = {} as vi.Mocked<IPasswordHasher>;
+    const passwordHasher = {} as Mocked<IPasswordHasher>;
     passwordHasher.hash = vi.fn().mockResolvedValue('hashed_password_456');
     passwordHasher.verify = vi.fn();
 

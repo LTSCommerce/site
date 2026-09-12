@@ -34,7 +34,7 @@ function parseUserResult(json: string) {
       // result.data is typed as User
       return result.data;
     } else {
-      console.error('Validation errors:', result.error.errors);
+      console.error('Validation errors:', result.error.issues);
       return null;
     }
   } catch {

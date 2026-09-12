@@ -41,11 +41,11 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>Third, the later session has no way to tell the difference between a line a human typed and a line the agent generated whilst narrating its own reasoning. Both are just text in a file that the agent has been told to treat as authoritative project context. So the hallucinated line gets promoted: from "something I said whilst thinking out loud" to "a constraint imposed by the person I work for".</p>
 
-    <p>Fourth, because the constraint now appears to have human provenance, it is treated as rigid, not up for debate or something to question, but something to work around and accommodate. And because agents are often good at extrapolating, they elaborate: a fabricated rule about one thing becomes the justification for a second fabricated rule about something adjacent, which becomes the basis for a third. Nobody ever said any of it, and all of it gets defended as if someone did.</p>
+    <p>Fourth, because the constraint now appears to have human provenance, it is treated as rigid: something to work around and accommodate rather than to debate or question. And because agents are often good at extrapolating, they elaborate: a fabricated rule about one thing becomes the justification for a second fabricated rule about something adjacent, which becomes the basis for a third. Nobody ever said any of it, and all of it gets defended as if someone did.</p>
 
     <p>Fifth, this compounds. Left unchecked over enough sessions, a project can accumulate a genuinely elaborate maze of restrictions, none of which trace back to a human decision, all of which are enforced with total confidence because each one looks exactly like every other line in the same file, including the ones a human actually wrote.</p>
 
-    <p>The name felt right for a specific reason. It's not just that the agent's output becomes its own input, plenty of feedback loops do that. It is that the loop is self-sustaining and self-consuming at once: each pass produces the material the next pass will treat as ground truth, and nothing outside the loop ever gets consulted to check whether any of it was true to begin with.</p>
+    <p>The name felt right for a specific reason. Plenty of feedback loops turn output into input, but this one is self-sustaining and self-consuming at once, each pass producing the material the next pass will treat as ground truth, and nothing outside the loop is ever consulted to check whether any of it was true to begin with.</p>
 </section>
 
 <section>
@@ -151,7 +151,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>Both sides already share one channel that needs no new plumbing: the bind-mounted repository checkout. Inside it sits a spool directory, <code>untracked/demo-bridge/</code>, with fixed subdirectories: <code>tmp/</code> for atomic writes, <code>requests/</code> for incoming requests, <code>processing/</code> for whatever the watcher has claimed, <code>responses/</code> for outcomes the agent polls, <code>archive/</code> for completed requests and logs, <code>quarantine/</code> for input too malformed to classify, and <code>diagnostics/</code>, a mirror the agent can read directly.</p>
 
-    <p>The <code>.path</code> unit watches <code>requests/</code> and triggers the paired <code>.service</code> unit the instant a file appears; checking both file-modification events and a glob at start-up means a request queued while the watcher was down still gets picked up. The <code>.service</code> unit is <code>Type=oneshot</code>: it drains whatever is waiting, once, and exits, so there is no long-running daemon. The watcher script lives outside the bind mount, on a host-only path the agent container cannot write to.</p>
+    <p>The <code>.path</code> unit watches <code>requests/</code> and triggers the paired <code>.service</code> unit the instant a file appears; checking both file-modification events and a glob at start-up means a request queued whilst the watcher was down still gets picked up. The <code>.service</code> unit is <code>Type=oneshot</code>: it drains whatever is waiting, once, and exits, so there is no long-running daemon. The watcher script lives outside the bind mount, on a host-only path the agent container cannot write to.</p>
 
     <pre><code class="language-bash">{{SNIPPET:host-action-bridge/demo-bridge-path-unit.bash}}</code></pre>
 
@@ -211,7 +211,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <h3>Quarantine, not silence, for malformed input</h3>
 
-    <p>A file in <code>requests/</code> that fails to parse as JSON, carries a filename outside the expected schema, or is not a plain regular file, a symlink or FIFO planted where a request should be, moves to <code>quarantine/</code> rather than being left, deleted, or processed. Leaving it would crash-loop the <code>.path</code> unit; deleting it silently would erase evidence of an attack or a writer bug. Quarantine preserves the artefact while keeping requests always leaving the inbox.</p>
+    <p>A file in <code>requests/</code> that fails to parse as JSON, carries a filename outside the expected schema, or is not a plain regular file, a symlink or FIFO planted where a request should be, moves to <code>quarantine/</code> rather than being left, deleted, or processed. Leaving it would crash-loop the <code>.path</code> unit; deleting it silently would erase evidence of an attack or a writer bug. Quarantine preserves the artefact whilst keeping requests always leaving the inbox.</p>
 
     <h3>The audit log: off the mount it audits</h3>
 
@@ -223,7 +223,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <h3>Transient scopes and the inherited file descriptor problem</h3>
 
-    <p>A <code>Type=oneshot</code> service starts, does its work, and exits, and by default its whole cgroup is torn down with it. Several bridged verbs deliberately leave long-running containers behind. Wired up naively, either the containers get killed the instant the oneshot exits, or they linger inside its cgroup, which never settles back to idle, stopping the watcher being re-triggered. The fix launches those verbs inside a transient systemd scope via <code>systemd-run --user --scope</code>, placing spawned containers in a sibling unit that outlives the drain, while the drain's own cgroup still empties out cleanly. One wrinkle costs an afternoon if missed: a file descriptor the drain holds open, a lock, a pinned spool descriptor, is inherited by the scoped child unless explicitly closed, so the lock it represents stays held open for as long as that long-running child survives, long after the drain itself has exited. The fix is unglamorous: close every non-essential descriptor first.</p>
+    <p>A <code>Type=oneshot</code> service starts, does its work, and exits, and by default its whole cgroup is torn down with it. Several bridged verbs deliberately leave long-running containers behind. Wired up naively, either the containers get killed the instant the oneshot exits, or they linger inside its cgroup, which never settles back to idle, stopping the watcher being re-triggered. The fix launches those verbs inside a transient systemd scope via <code>systemd-run --user --scope</code>, placing spawned containers in a sibling unit that outlives the drain, whilst the drain's own cgroup still empties out cleanly. One wrinkle costs an afternoon if missed: a file descriptor the drain holds open, a lock, a pinned spool descriptor, is inherited by the scoped child unless explicitly closed, so the lock it represents stays held open for as long as that long-running child survives, long after the drain itself has exited. The fix is unglamorous: close every non-essential descriptor first.</p>
 
     <h3>What the bridge deliberately cannot do</h3>
 
@@ -249,7 +249,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>Lessons That Generalise Beyond This One Bridge</h2>
 
-    <p>A handful of failures only became obvious after watching a bridge like this run for a while.</p>
+    <p>A handful of failures only became obvious after watching a bridge like this run for some time.</p>
 
     <p>Namespace every host-global artefact by project from day one, not just the in-repo spool. A first bridge built for one project tends to get simple, global-sounding names for its systemd units, config directory, and installed binary, which works until a second, unrelated project installs its own copy on the same host. Installers of this kind are meant to be idempotent and self-healing, so the second install does not fail; it silently overwrites the first project's live bridge, and one project's agent starts issuing requests validated against another project's service list. Nothing crashes; it quietly does the wrong thing. Carry a project slug in every unit name, config path, and binary name outside the project's own checkout.</p>
 
@@ -277,7 +277,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     id: 'component-driven-design-react-typescript-storybook',
     title: 'Component-Driven Design with React, TypeScript, and Storybook',
     description:
-      'How building UIs as a hierarchy of typed, isolated components, with styling controlled entirely through declared props, produces design systems that stay coherent, testable, and maintainable at scale.',
+      'How building UIs as a hierarchy of typed, isolated components, with styling controlled entirely through declared props, produces design systems that stay coherent, testable, and maintainable as they grow.',
     date: '2026-05-29',
     category: CATEGORIES.typescript.id,
     readingTime: 12,
@@ -326,7 +326,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>People usually discuss "Don't Repeat Yourself" in the context of logic. Find yourself copy-pasting a function, extract it. The same principle applies with equal force to UI. If you are copy-pasting a button, that button is screaming to become a component.</p>
 
-    <p>The payoff matches the function case exactly. Change the button once and every instance updates. Fix an accessibility issue in the component and it is fixed everywhere. Update the hover colour for a rebrand and a single file changes. The alternative is twenty copies of the button spread across twenty page files, which means twenty manual edits, twenty chances to miss one, and twenty variations drifting apart over time.</p>
+    <p>The payoff matches the function case exactly: change the button once and every instance updates, fix an accessibility issue in the component and it is fixed everywhere, update the hover colour for a rebrand and a single file changes. The alternative is twenty copies of the button spread across twenty page files, which means twenty manual edits, twenty chances to miss one, and twenty variations drifting apart over time.</p>
 
     <p>A quieter benefit follows from this. When a piece of UI lives in only one place, decisions about it happen in only one place. Designers and developers have one thing to discuss, not twenty. "The button should have more padding" becomes a one-line change to a single component, not a refactoring sprint.</p>
 </section>
@@ -418,7 +418,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-javascript">{{SNIPPET:component-driven-design-react-typescript-storybook/no-html-in-screens.js}}</code></pre>
 
-    <p>The rule scans every file in the screens directory and reports an error the moment a raw HTML element appears: <code>&lt;div&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;form&gt;</code>, all of them. The error message does not just say "this is wrong"; it names the component to reach for instead. Screens stay pure composition by structural impossibility.</p>
+    <p>The rule scans every file in the screens directory and reports an error the moment a raw HTML element appears: <code>&lt;div&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;form&gt;</code>, all of them. The error message goes further than "this is wrong": it names the component to reach for instead. Screens stay pure composition by structural impossibility.</p>
 
     <p>This pairs naturally with TypeScript's enforcement at the component boundary. TypeScript prevents invalid props; ESLint prevents raw HTML in screens. Together they make the architecture self-defending. The codebase pushes back on violations the moment they are written, before a pull request, before a review, before a test run. The discipline scales to teams of any size because it lives in tooling, not in institutional memory.</p>
 </section>
@@ -426,7 +426,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>Designers Can Ship New Features Independently, and With High Confidence</h2>
 
-    <p>Once a mature component library exists, a designer or front-end designer, someone who writes markup and basic React but is not a full engineer, can build an entire new page by composing components that already exist. No new components to build. No new styles to write. No new test cases to author. All of that already exists, and it is already passing.</p>
+    <p>Once a mature component library exists, a designer or front-end designer, someone who writes markup and basic React but is not a full engineer, can build an entire new page by composing components that already exist. No new components to build, no new styles to write, no new test cases to author: all of that already exists, and it is already passing.</p>
 
     <p>The confidence that comes with this is the real prize. Every component on the new page has been battle-tested. It has Storybook documentation, snapshot tests covering every state, and visual regression coverage on top. Assemble those proven pieces and the new page inherits all of that rigour for free. A designer can ship something genuinely new without a senior engineer hovering nervously over the diff, because there is no new untested UI in it to be nervous about.</p>
 
@@ -438,7 +438,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>The most underappreciated benefit of component-driven design is linguistic. Give every piece of UI a name (<code>Button</code>, <code>Card</code>, <code>PageLayout</code>) and every valid state of that piece a name (<code>primary</code>, <code>featured</code>, <code>full-width</code>), and designers and developers can finally have precise conversations. "The featured card on mobile" means something specific and findable. "Make the ghost button larger" is a one-word change to a single prop.</p>
 
-    <p>The TypeScript interface is not an implementation detail. It is the vocabulary of the design system, written in a form a compiler can enforce. Grow that interface thoughtfully, adding new variants deliberately and deprecating old ones explicitly, and the design system stays coherent over years and across teams. It holds up long after launch, not just for the few weeks while everyone still remembers why.</p>
+    <p>The TypeScript interface is not an implementation detail. It is the vocabulary of the design system, written in a form a compiler can enforce. Grow that interface thoughtfully, adding new variants deliberately and deprecating old ones explicitly, and the design system stays coherent over years and across teams. It holds up long after launch, not just for the few weeks whilst everyone still remembers why.</p>
 
     <p>That scattered CSS nightmare is not inevitable. It is simply what happens when UI decisions get made locally, case by case, with no shared vocabulary and no machine-enforced contract. Component-driven design, typed with TypeScript and documented with Storybook, is the structural answer. Commit to it and you build something that gets stronger with every feature instead of more fragile: a codebase where shipping fast and shipping safely stop being in tension, and where the next page is always the easiest one you have built. That is worth the up-front discipline many times over.</p>
 </section>
@@ -465,7 +465,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
         'https://commons.wikimedia.org/wiki/File:DETAIL_OF_ELECTRICAL_PANEL._-_Lightship_116,_Pier_3,_Inner_Harbor,_Baltimore,_Independent_City,_MD_HAER_MD-133-16.tif',
     },
     content: `<div class="intro">
-    <p class="lead">Exceptions are the primary way PHP code communicates that something has gone wrong. Get them right and the stack trace, the log line, and the API error response all tell the same coherent story. Get them wrong and you end up parsing human-readable messages with regex, swallowing errors "temporarily", and turning every production incident into an archaeology dig. This article lays out a set of simple hard rules, with a PHP 8.4 implementation pattern that makes them trivial to follow. Python and TypeScript get a cursory section at the end. The principles transfer directly.</p>
+    <p class="lead">Exceptions are the primary way PHP code communicates that something has gone wrong. Get them right and the stack trace, the log line, and the API error response all tell the same coherent story. Get them wrong and you end up parsing human-readable messages with regex, swallowing errors "temporarily", and turning every production incident into an archaeology dig. This article lays out a set of simple hard rules, with a PHP 8.4 implementation pattern that makes them trivial to follow. Python and TypeScript get a cursory section at the end, since the principles transfer directly.</p>
 </div>
 
 <section>
@@ -481,7 +481,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
         <li><strong>Never encode data inside message strings.</strong> Data belongs on typed properties. The message is synthesised from those properties via a published sprintf constant.</li>
         <li><strong>Use named static factory methods:</strong> <code>create</code> and <code>createWithPrevious</code>. No more wondering which constructor overload you are looking at.</li>
         <li><strong>Messages live in class constants as sprintf formats.</strong> One source of truth. Tests reuse the constant, so changing wording never breaks a test and never creates a magic string to hunt down.</li>
-        <li><strong>Never, ever, ever swallow an exception.</strong> Catching without rethrowing, recovering, or translating is fraud. The caller is told everything worked when it did not.</li>
+        <li><strong>Never, ever, ever swallow an exception.</strong> Catching without rethrowing, recovering, or translating is fraud. The caller is told everything worked when it didn't.</li>
     </ol>
 
     <p>The rest of this article is the machinery that makes all of the above easy.</p>
@@ -497,8 +497,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     <p>The single most important division is between <strong>\\LogicException</strong> and <strong>\\RuntimeException</strong>. It is a binary question about whose fault the failure is:</p>
 
     <ul>
-        <li><strong>\\LogicException</strong> means <em>the code is wrong</em>. This should never happen. If it does, a developer needs to fix the code. No amount of retrying or recovery will help.</li>
-        <li><strong>\\RuntimeException</strong> means <em>the environment is wrong</em>. The database went away. The network timed out. The disk is full. The code is fine. The world is misbehaving.</li>
+        <li><strong>\\LogicException</strong> means <em>the code is wrong</em>. This should never happen, and if it does, a developer needs to fix the code rather than retry or recover from it.</li>
+        <li><strong>\\RuntimeException</strong> means <em>the environment is wrong</em>: the database went away, the network timed out, or the disk is full. The code is fine; the world is misbehaving.</li>
     </ul>
 
     <p>Here is the distinction in practice:</p>
@@ -515,7 +515,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>This is worth stating twice because it is the rule most often violated.</p>
 
-    <p><strong>No layer of the application may catch a bare <code>RuntimeException</code> except the outermost one.</strong> Not the service layer. Not the repository. Not the controller. Only the kernel or top-level exception listener that turns failures into a user-facing "something went wrong" response.</p>
+    <p><strong>No layer of the application may catch a bare <code>RuntimeException</code> except the outermost one</strong> - not the service layer, not the repository, not the controller, only the kernel or top-level exception listener that turns failures into a user-facing "something went wrong" response.</p>
 
     <p>If you find yourself wanting to catch a <code>RuntimeException</code> in the middle of the stack, stop and ask: <em>why is this failure expected here?</em> If you can answer that question, the failure deserves its own project-level exception class that describes what happened in domain terms. Replace the bare <code>RuntimeException</code> with that new class, and now the catch block has a name and a contract.</p>
 
@@ -617,7 +617,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
         <li>Log parsers (if you really must) reference the constant, not the literal string.</li>
     </ul>
 
-    <p>Change the wording in one place. Every caller and every test stays green automatically.</p>
+    <p>Change the wording in one place and every caller and every test stays green automatically.</p>
 
     <pre><code class="language-php">{{SNIPPET:php-exception-best-practices/testing-exceptions.php}}</code></pre>
 
@@ -627,11 +627,11 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>Always Chain the Previous Exception</h2>
 
-    <p>PHP's <code>Exception</code> constructor takes a <code>?Throwable $previous</code> argument specifically for this. Use it. Every. Single. Time.</p>
+    <p>PHP's <code>Exception</code> constructor takes a <code>?Throwable $previous</code> argument specifically for this - use it every single time.</p>
 
     <p>When you translate a low-level exception into a domain-meaningful one at a boundary, the low-level exception is not noise to be discarded. It is the root cause of the failure. Stack traces, connection IDs, driver error codes, provider-specific details all live on that original throwable. Throw it away and future you will be guessing.</p>
 
-    <p>Monolog's default formatter walks the entire previous chain. Symfony's profiler shows every level. PHPUnit's <code>expectException</code> output includes it. All of this works automatically, provided you chain.</p>
+    <p>Monolog's default formatter walks the entire previous chain, Symfony's profiler shows every level, and PHPUnit's <code>expectException</code> output includes it - all of it automatic, provided you chain.</p>
 
     <p>The boundary conversion pattern looks like this:</p>
 
@@ -655,7 +655,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
         <li><strong>Translate.</strong> Throw a different exception that the caller is documented (via <code>@throws</code>) to expect. This is a rethrow with wrapping.</li>
     </ol>
 
-    <p>Logging and then not rethrowing is still swallowing. The caller is told via a normal return that everything succeeded. It did not. This is lying to your own code.</p>
+    <p>Logging and then not rethrowing is still swallowing: the caller is told via a normal return that everything succeeded, when it didn't, and that is lying to your own code.</p>
 
     <p>If you are ever tempted to write an empty <code>catch</code>, write a comment first explaining which of the three options above you are doing and why. Nine times out of ten, the act of writing the comment will reveal that you are about to do something wrong.</p>
 </section>
@@ -716,9 +716,9 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-yaml">{{SNIPPET:php-exception-best-practices/phpstan-throws.neon}}</code></pre>
 
-    <p>Combined with the project-level hierarchy and typed properties, this closes the loop. The set of exceptions a function can throw is now part of its signature. Static analysis enforces it. Adding a new throw somewhere deep in the call graph surfaces as a required <code>@throws</code> update everywhere the exception can propagate, or a required <code>try</code> / <code>catch</code> at a natural boundary.</p>
+    <p>Combined with the project-level hierarchy and typed properties, this closes the loop. The set of exceptions a function can throw is now part of its signature, enforced by static analysis. Adding a new throw somewhere deep in the call graph surfaces as a required <code>@throws</code> update everywhere the exception can propagate, or a required <code>try</code> / <code>catch</code> at a natural boundary.</p>
 
-    <p>Bare <code>RuntimeException</code> and <code>LogicException</code> are left in <code>uncheckedExceptionClasses</code> on purpose. You do not want the type-checker demanding that every function declare that it might throw one. They are truly unexpected by definition. The outer handler catches them.</p>
+    <p>Bare <code>RuntimeException</code> and <code>LogicException</code> are left in <code>uncheckedExceptionClasses</code> on purpose. You don't want the type-checker demanding that every function declare that it might throw one, since they are truly unexpected by definition and it's the outer handler that catches them.</p>
 </section>
 
 <section>
@@ -744,9 +744,9 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>Exceptions Are Not For Control Flow</h2>
 
-    <p>If "not found" is an expected outcome of a finder method, do not throw. Return null, or a result object. Exceptions are for <em>failure</em>, not for signalling a normal code path that happened to yield no result.</p>
+    <p>If "not found" is an expected outcome of a finder method, do not throw; return null, or a result object, instead. Exceptions are for <em>failure</em>, not for signalling a normal code path that happened to yield no result.</p>
 
-    <p>The moment "throw and catch" becomes part of the happy path, the signal value of exceptions degrades. Logs fill with noise. Stack traces become routine. The outer handler stops meaning "something genuinely went wrong" and starts meaning "one of fifty expected things happened". Every rule in this article depends on exceptions being rare and meaningful. Using them for control flow breaks that assumption at the root.</p>
+    <p>The moment "throw and catch" becomes part of the happy path, the signal value of exceptions degrades: logs fill with noise, stack traces become routine, and the outer handler stops meaning "something genuinely went wrong" and starts meaning "one of fifty expected things happened". Every rule in this article depends on exceptions being rare and meaningful, and using them for control flow breaks that assumption at the root.</p>
 </section>
 
 <section>
@@ -828,7 +828,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>A Brief History: From Swagger to OpenAPI</h2>
 
-    <p>The story starts in 2009 when Tony Tam, CTO of the online dictionary service Wordnik, needed a way to document and manage their growing JSON API. The internal tool he built became <strong>Swagger</strong> &mdash; a name suggested by colleague Zeke Sikelianos as a playful jab at WADL (Web Application Description Language), the XML-heavy alternative that nobody enjoyed using.</p>
+    <p>The story starts in 2009 when Tony Tam, CTO of the online dictionary service Wordnik, needed a way to document and manage their growing JSON API. The internal tool he built became <strong>Swagger</strong> - a name suggested by colleague Zeke Sikelianos as a playful jab at WADL (Web Application Description Language), the XML-heavy alternative that nobody enjoyed using.</p>
 
     <h3>The Swagger Years</h3>
 
@@ -840,11 +840,11 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <h3>The OpenAPI Era</h3>
 
-    <p>In March 2015, SmartBear Software acquired the Swagger specification. Later that year, SmartBear donated it to the newly formed <strong>OpenAPI Initiative</strong> under the Linux Foundation, with founding members including Google, IBM, Microsoft, and PayPal. On 1 January 2016, the specification was officially renamed to the <strong>OpenAPI Specification</strong> (OAS). The Swagger brand lived on as SmartBear's commercial tooling &mdash; the Editor, the UI, and Codegen &mdash; but the specification itself was now community-governed.</p>
+    <p>In March 2015, SmartBear Software acquired the Swagger specification. Later that year, SmartBear donated it to the newly formed <strong>OpenAPI Initiative</strong> under the Linux Foundation, with founding members including Google, IBM, Microsoft, and PayPal. On 1 January 2016, the specification was officially renamed to the <strong>OpenAPI Specification</strong> (OAS). The Swagger brand lived on as SmartBear's commercial tooling - the Editor, the UI, and Codegen - but the specification itself was now community-governed.</p>
 
     <p><strong>OpenAPI 3.0</strong> (July 2017) was a major restructuring. It introduced the <code>components</code> object to consolidate reusable definitions, replaced the flat <code>host</code>/<code>basePath</code>/<code>schemes</code> fields with a flexible <code>servers</code> array supporting multiple environments, added <code>callbacks</code> for describing webhooks, introduced <code>links</code> for expressing relationships between operations, and overhauled request body handling with proper content negotiation via media types.</p>
 
-    <p><strong>OpenAPI 3.1</strong> (February 2021) achieved full compatibility with JSON Schema Draft 2020-12 &mdash; the single most requested change. The OpenAPI-specific <code>nullable</code> keyword was replaced by JSON Schema's native type arrays (<code>type: [string, null]</code>), <code>$ref</code> could finally coexist with sibling keywords like <code>description</code>, and a new top-level <code>webhooks</code> field provided first-class support for event-driven APIs. The <code>paths</code> field became optional, allowing specifications that described only webhooks or shared components.</p>
+    <p><strong>OpenAPI 3.1</strong> (February 2021) achieved full compatibility with JSON Schema Draft 2020-12, the single most requested change. The OpenAPI-specific <code>nullable</code> keyword was replaced by JSON Schema's native type arrays (<code>type: [string, null]</code>), <code>$ref</code> could finally coexist with sibling keywords like <code>description</code>, and a new top-level <code>webhooks</code> field provided first-class support for event-driven APIs. The <code>paths</code> field became optional, allowing specifications that described only webhooks or shared components.</p>
 
     <p><strong>OpenAPI 3.2</strong> (September 2025) added hierarchical tags for better API organisation, support for the <code>QUERY</code> HTTP method, streaming support for Server-Sent Events and JSON Lines, OAuth 2.0 Device Authorisation Flow, and the <code>additionalOperations</code> keyword for non-standard HTTP verbs.</p>
 </section>
@@ -867,7 +867,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-yaml">{{SNIPPET:openapi-automatic-code-generation/openapi-spec-example.yaml}}</code></pre>
 
-    <p>That single document is both human-readable documentation and a machine-readable contract. It tells you what every endpoint expects, what it returns, how authentication works, and what the data looks like. More importantly, it tells <em>tools</em> all of that too &mdash; which is where code generation comes in.</p>
+    <p>That single document is both human-readable documentation and a machine-readable contract. It tells you what every endpoint expects, what it returns, how authentication works, and what the data looks like. More importantly, it tells <em>tools</em> all of that too, which is where code generation comes in.</p>
 </section>
 
 <section>
@@ -889,7 +889,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
         <li><strong>Configuration</strong> &mdash; base URL, timeouts, custom headers</li>
     </ul>
 
-    <p>For a server stub, it generates the routing, controller interfaces, request validation, and model classes &mdash; you fill in the business logic.</p>
+    <p>For a server stub, it generates the routing, controller interfaces, request validation, and model classes. You fill in the business logic.</p>
 
     <h3>Supported Languages and Frameworks</h3>
 
@@ -929,9 +929,9 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>And in Python:</p>
 
-    <pre><code class="language-bash">{{SNIPPET:openapi-automatic-code-generation/generated-python-dataclass.py}}</code></pre>
+    <pre><code class="language-python">{{SNIPPET:openapi-automatic-code-generation/generated-python-dataclass.py}}</code></pre>
 
-    <p>One specification. Three languages. All type-safe. All consistent.</p>
+    <p>One specification generates all three, each of them type-safe and consistent with the others.</p>
 </section>
 
 <section>
@@ -976,7 +976,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-php">{{SNIPPET:openapi-automatic-code-generation/jane-openapi-config.php}}</code></pre>
 
-    <p>The generator produces typed PHP model classes and API client code from your specification. Because it runs natively in PHP, it integrates cleanly into existing Composer scripts and CI pipelines without any additional runtime dependencies. No Docker, no Java, no separate toolchain. Just PHP generating PHP.</p>
+    <p>The generator produces typed PHP model classes and API client code from your specification. Because it runs natively in PHP, it integrates cleanly into existing Composer scripts and CI pipelines without any additional runtime dependencies. No Docker, no Java, no separate toolchain, just PHP generating PHP.</p>
 </section>
 
 <section>
@@ -986,7 +986,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-yaml">{{SNIPPET:openapi-automatic-code-generation/ci-generate-sdk.yaml}}</code></pre>
 
-    <p>Every time someone updates the API specification, the pipeline regenerates all client libraries and commits the changes. No manual steps. No drift between spec and code. The specification is the single source of truth, and the generated code follows it automatically.</p>
+    <p>Every time someone updates the API specification, the pipeline regenerates all client libraries and commits the changes, with no manual steps and no drift between spec and code. The specification is the single source of truth, and the generated code follows it automatically.</p>
 </section>
 
 <section>
@@ -1016,7 +1016,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <h3>When to Use Generated Code vs Hand-Written</h3>
 
-    <p>Generated code excels at the repetitive structural work: models, serialisation, HTTP transport, parameter handling. It is not the right tool for business logic, complex validation rules, or domain-specific behaviour. The sweet spot is to use generated code as a foundation layer &mdash; the plumbing &mdash; and build your application logic on top of it.</p>
+    <p>Generated code excels at the repetitive structural work: models, serialisation, HTTP transport, parameter handling. It is not the right tool for business logic, complex validation rules, or domain-specific behaviour. The sweet spot is to use generated code as a foundation layer, the plumbing, and build your application logic on top of it.</p>
 
     <p>If you find yourself fighting the generator to produce code that matches your needs, that is a signal to either customise the templates or write that particular layer by hand. The goal is less boilerplate, not zero hand-written code.</p>
 </section>
@@ -1036,15 +1036,15 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-bash">{{SNIPPET:openapi-automatic-code-generation/fetch-external-spec.sh}}</code></pre>
 
-    <p>You now have a typed PHP client with proper models, authentication handling, and IDE autocompletion for every endpoint. No guessing at parameter names. No manually mapping JSON to arrays. No discovering at runtime that a field was renamed three versions ago.</p>
+    <p>You now have a typed PHP client with proper models, authentication handling, and IDE autocompletion for every endpoint, so there is no guessing at parameter names, no manually mapping JSON to arrays, and no discovering at runtime that a field was renamed three versions ago.</p>
 
     <h3>When the Spec and Reality Diverge</h3>
 
     <p>Here is the problem nobody warns you about: external API specifications are often wrong. Not maliciously, but because keeping a specification perfectly in sync with a live API is hard, and most teams do not validate their own specs rigorously. You will encounter responses with extra fields not in the spec, missing fields that the spec says are required, types that do not match (a string where the spec says integer), and entire endpoints that behave differently from what is documented.</p>
 
-    <p>This is where strict validation tooling becomes essential. <a href="https://github.com/LongTermSupport/strict-openapi-validator" target="_blank" rel="noopener">strict-openapi-validator</a> is a PHP library designed for exactly this problem. It validates API requests and responses against an OpenAPI specification with zero tolerance for deviation. No type coercion, no silently ignoring extra fields, no glossing over missing required properties. If the data does not match the spec exactly, it tells you.</p>
+    <p>This is where strict validation tooling becomes essential. <a href="https://github.com/LongTermSupport/strict-openapi-validator" target="_blank" rel="noopener">strict-openapi-validator</a> is a PHP library designed for exactly this problem. It validates API requests and responses against an OpenAPI specification with zero tolerance for deviation: no type coercion, no silently ignoring extra fields, no glossing over missing required properties. If the data does not match the spec exactly, it tells you.</p>
 
-    <p>When integrating with external APIs, the validator's <strong>Client mode</strong> is particularly useful. It validates your outgoing requests strictly (catching your mistakes before they hit the wire) while validating incoming responses with warnings rather than hard failures. This is a pragmatic design choice: you control your requests, so those should be correct. But you do not control the external API's responses, and you do not want your application to crash because the provider's spec is slightly out of date.</p>
+    <p>When integrating with external APIs, the validator's <strong>Client mode</strong> is particularly useful. It validates your outgoing requests strictly (catching your mistakes before they hit the wire) whilst validating incoming responses with warnings rather than hard failures. This is a pragmatic design choice: you control your requests, so those should be correct. But you do not control the external API's responses, and you do not want your application to crash because the provider's spec is slightly out of date.</p>
 
     <pre><code class="language-php">{{SNIPPET:openapi-automatic-code-generation/client-mode-validation.php}}</code></pre>
 
@@ -1068,7 +1068,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <pre><code class="language-php">{{SNIPPET:openapi-automatic-code-generation/server-mode-validation.php}}</code></pre>
 
-    <p>The strict typing enforcement is particularly important for APIs consumed across languages. If your spec says a field is an integer but your PHP code returns the string <code>"123"</code>, a JavaScript client might not care, but a Go or Rust client will fail to deserialise. The validator catches this: string <code>"123"</code> is not integer <code>123</code>, full stop. No type coercion, no silent conversion.</p>
+    <p>The strict typing enforcement is particularly important for APIs consumed across languages. If your spec says a field is an integer but your PHP code returns the string <code>"123"</code>, a JavaScript client might not care, but a Go or Rust client will fail to deserialise. The validator catches this: string <code>"123"</code> is not integer <code>123</code>, full stop, with no type coercion and no silent conversion.</p>
 
     <h3>Integrating Validation into Your Development Workflow</h3>
 
@@ -1080,15 +1080,15 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>The validator accumulates all errors before throwing, so you get the complete picture in one test run rather than fixing issues one at a time. And because the error output includes JSONPath locations and spec line references, you can pinpoint the exact source of the problem without digging through layers of code.</p>
 
-    <p>For PHP teams building APIs that others depend on, this combination of OpenAPI code generation and strict validation closes the loop. The specification defines the contract, code generation implements the boilerplate, and strict validation ensures the implementation matches the contract. No drift. No surprises. No "it works on my machine" when a consumer reports that your API returns something different from what the docs say.</p>
+    <p>For PHP teams building APIs that others depend on, this combination of OpenAPI code generation and strict validation closes the loop. The specification defines the contract, code generation implements the boilerplate, and strict validation ensures the implementation matches the contract. That leaves no drift, no surprises, and no "it works on my machine" when a consumer reports that your API returns something different from what the docs say.</p>
 </section>
 
 <section>
-    <h2>The Bigger Picture</h2>
+    <h2>The Contract Is the Code</h2>
 
     <p>OpenAPI code generation is not just a convenience. It changes the development model. Instead of building clients by hand and hoping they stay in sync with the API, you have a single specification that drives everything: documentation, client SDKs, server stubs, request validation, mock servers, and contract tests. When the API changes, you update one YAML file and regenerate. Every consumer gets the update automatically.</p>
 
-    <p>For PHP teams in particular, this is a practical win. You can generate a type-safe client library for any third-party API that publishes an OpenAPI spec &mdash; and increasingly, most do. You can publish your own APIs with generated SDKs for every client team, whether they work in TypeScript, Python, Go, or anything else. And you can do it all from a single source of truth that lives in version control right next to your code.</p>
+    <p>For PHP teams in particular, this is a practical win. You can generate a type-safe client library for any third-party API that publishes an OpenAPI spec, and increasingly, most do. You can publish your own APIs with generated SDKs for every client team, whether they work in TypeScript, Python, Go, or anything else. And you can do it all from a single source of truth that lives in version control right next to your code.</p>
 
     <p>The specification is the contract. The generated code is the implementation. Keep them in sync and you eliminate an entire class of integration bugs.</p>
 </section>`,
@@ -1097,7 +1097,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     id: 'errors-vs-bugs-the-difference-that-matters',
     title: 'Errors vs Bugs: The Difference That Actually Matters',
     description:
-      'An error tells you what went wrong. A bug makes you figure it out. This fundamental distinction shapes how you should write code, handle failures, and think about the cost of debugging.',
+      'An error tells you what went wrong, whilst a bug makes you figure it out yourself - a distinction that shapes how you should write code, handle failures, and think about the cost of debugging.',
     date: '2026-03-11',
     category: CATEGORIES.qa.id,
     readingTime: 12,
@@ -1113,15 +1113,15 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
       creditUrl: 'https://commons.wikimedia.org/wiki/File:First_Computer_Bug,_1947.jpg',
     },
     content: `<div class="intro">
-    <p class="lead">Software fails. That is not the interesting part. The interesting part is <em>how</em> it fails, because not all failures are the same. There is a fundamental distinction between two kinds of failure: <strong>errors</strong> and <strong>bugs</strong>. Most developers use these words interchangeably despite them meaning completely different things. Getting clear on this distinction will change how you write code, how you handle failures, and how much time you spend staring at production logs at two in the morning.</p>
+    <p class="lead">Software fails, and that alone is not the interesting part - what matters is <em>how</em> it fails, because not all failures are the same. There is a fundamental distinction between two kinds of failure: <strong>errors</strong> and <strong>bugs</strong>. Most developers use these words interchangeably despite them meaning completely different things. Getting clear on this distinction will change how you write code, how you handle failures, and how much time you spend staring at production logs at two in the morning.</p>
 </div>
 
 <section>
     <h2>What Is an Error?</h2>
 
-    <p>An error is a failure that the system knows about. Something went wrong, the system detected it, and it told you. You get a message, a location, a stack trace, context. The system is shouting: "This broke, here is where, here is why."</p>
+    <p>An error is a failure that the system knows about: something went wrong, the system detected it, and it told you. You get a message, a location, a stack trace, context. The system is shouting: "This broke, here is where, here is why."</p>
 
-    <p>When you receive an error, you are not investigating. You are <em>responding</em>. The hard work of figuring out what happened has already been done by the code that threw the error in the first place.</p>
+    <p>When you receive an error, you are not so much investigating as <em>responding</em>. The hard work of figuring out what happened has already been done by the code that threw the error in the first place.</p>
 
     <p>In PHP, the typical mechanism is an exception:</p>
 
@@ -1193,7 +1193,7 @@ final class PaymentService
 
     <p>That is an error.</p>
 
-    <p>Now imagine something different. Over the past few weeks, your car has been losing power gradually. Fuel consumption is creeping up. Sometimes the engine hesitates when you accelerate. There is no warning light. No diagnostic code. Just a vague sense that something is not right. You take it to a mechanic and they start investigating. Could be the fuel injectors. Could be the catalytic converter. Could be an air leak in the intake manifold. Could be a dozen other things. That process of diagnosis, elimination, and detective work is expensive and slow.</p>
+    <p>Now imagine something different. Over the past few weeks, your car has been losing power gradually. Fuel consumption is creeping up. Sometimes the engine hesitates when you accelerate. There is no warning light. No diagnostic code. Just a vague sense that something is not right. You take it to a mechanic and they start investigating. Could be the fuel injectors, the catalytic converter, an air leak in the intake manifold, or a dozen other things. That process of diagnosis, elimination, and detective work is expensive and slow.</p>
 
     <p>That is a bug.</p>
 
@@ -1203,9 +1203,9 @@ final class PaymentService
 <section>
     <h2>What Is a Bug?</h2>
 
-    <p>A bug is something that has gone wrong, but the system has no idea. No exception is thrown. No warning is logged. The code runs to completion and produces a result. The problem is that the result is <em>wrong</em>, and nobody knows until the consequences surface as <strong>symptoms</strong> somewhere else entirely, possibly weeks later.</p>
+    <p>A bug is something that has gone wrong, but the system has no idea: no exception is thrown, no warning is logged, and the code runs to completion and produces a result. The problem is that the result is <em>wrong</em>, and nobody knows until the consequences surface as <strong>symptoms</strong> somewhere else entirely, possibly weeks later.</p>
 
-    <p>You never find a bug directly. You find symptoms. Then you have to work backwards to figure out the cause. That is bug fixing, and it is one of the most expensive activities in software development.</p>
+    <p>You never find a bug directly, only symptoms, and then you have to work backwards to figure out the cause. That is bug fixing, and it is one of the most expensive activities in software development.</p>
 
     <p>Here is a PHP example. See if you can spot it:</p>
 
@@ -1223,9 +1223,9 @@ final class DiscountCalculator
     }
 }</code></pre>
 
-    <p>This code runs without complaint. No exceptions. Static analysis probably will not flag it. But if <code>$discountPercent</code> is 15, then <code>(100 - 15) / 100</code> performs integer division and evaluates to <code>0</code>, not <code>0.85</code>. Every customer gets a 100% discount. The system processes orders at zero cost with absolutely no indication that anything is wrong.</p>
+    <p>This code runs without complaint. No exceptions. Static analysis probably will not flag it. But nothing stops <code>$discountPercent</code> from being 150, the result of a stacked-discount calculation gone wrong upstream, or a plain data entry error. <code>(100 - 150) / 100</code> evaluates to <code>-0.5</code>, and <code>$price-&gt;multiply(-0.5)</code> silently returns a negative <code>Money</code> value. No exception, no warning. The system now pays the customer instead of charging them, and processes the order with absolutely no indication that anything is wrong.</p>
 
-    <p>What is the symptom? Maybe a finance report three weeks later showing revenue has collapsed. Maybe a customer support ticket from someone puzzled about being charged nothing. Maybe an inventory anomaly. The symptom appears far from the cause, separated by time and layers of code, and the investigation to connect the two is where the real cost lives.</p>
+    <p>What is the symptom? Maybe a finance report three weeks later showing revenue has collapsed, maybe a customer support ticket from someone puzzled about being charged nothing, or maybe just an inventory anomaly nobody can immediately explain. The symptom appears far from the cause, separated by time and layers of code, and the investigation to connect the two is where the real cost lives.</p>
 
     <p>Here is a TypeScript example with the same dynamic:</p>
 
@@ -1255,7 +1255,7 @@ app.put('/preferences', (req, res) =&gt; {
 <section>
     <h2>Why the Distinction Matters: Cost</h2>
 
-    <p>The difference between errors and bugs is not academic. It is financial. They have fundamentally different cost profiles.</p>
+    <p>The difference between errors and bugs is financial rather than academic, because they have fundamentally different cost profiles.</p>
 
     <p>When an error fires in production:</p>
 
@@ -1278,7 +1278,7 @@ app.put('/preferences', (req, res) =&gt; {
         <li>Data cleanup and remediation, if needed (hours to days)</li>
     </ol>
 
-    <p>The error took minutes. The bug took days or weeks. And the bug had a much longer window to cause damage because nobody knew it was there. The error was a fire alarm. The bug was a slow gas leak.</p>
+    <p>The error took minutes to resolve, whilst the bug took days or weeks and had a much longer window to cause damage because nobody knew it was there. The error was a fire alarm; the bug was a slow gas leak.</p>
 </section>
 
 <section>
@@ -1315,7 +1315,7 @@ calculateTax("not a number", 0.2);
 
     <h3>Value Objects and Domain Assertions</h3>
 
-    <p>The integer division bug from the discount calculator can be made impossible with a value object:</p>
+    <p>The unclamped-percentage bug from the discount calculator can be made impossible with a value object:</p>
 
     <pre><code class="language-php">&lt;?php
 
@@ -1388,7 +1388,7 @@ app.put('/preferences', (req, res) =&gt; {
 
 declare(strict_types=1);
 
-// PHPStan level 8+ catches this:
+// PHPStan catches this:
 function findUser(array $users, string $email): User
 {
     foreach ($users as $user) {
@@ -1398,8 +1398,9 @@ function findUser(array $users, string $email): User
     }
     // PHPStan: Method findUser() should return User
     //          but return statement is missing.
-    // Without PHPStan, this silently returns null: a bug.
-    // With PHPStan, this is caught at development time: an error.
+    // Without PHPStan, this is only caught the first time this path
+    // executes in production: a TypeError, but a late one.
+    // With PHPStan, it is caught at development time, before it ships.
 }</code></pre>
 
     <pre><code class="language-typescript">// @typescript-eslint/switch-exhaustiveness-check
@@ -1422,9 +1423,9 @@ function getStatusLabel(status: Status): string {
 <section>
     <h2>Fail Fast: The Only Sane Response</h2>
 
-    <p>Once you understand the cost difference between errors and bugs, there is really only one rational strategy: <strong>fail fast</strong>. The moment something is wrong, stop. Throw an exception. Return an error. Refuse to continue. Do not try to soldier on in a semi-broken state hoping things will work out.</p>
+    <p>Once you understand the cost difference between errors and bugs, there is really only one rational strategy: <strong>fail fast</strong>. The moment something is wrong, stop - throw an exception, return an error, refuse to continue, and do not try to soldier on in a semi-broken state hoping things will work out.</p>
 
-    <p>A system that fails fast converts every problem into an error. A system that tries to be "resilient" by swallowing failures and pressing on converts every problem into a bug. The first system is cheap to operate. The second is a minefield.</p>
+    <p>A system that fails fast converts every problem into an error, whilst a system that tries to be "resilient" by swallowing failures and pressing on converts every problem into a bug. The first is cheap to operate; the second is a minefield.</p>
 
     <p>Consider what happens when you catch an exception and silently continue:</p>
 
@@ -1447,7 +1448,7 @@ function loadConfig(string $path): array
     }
 }</code></pre>
 
-    <p>This code looks defensive and safe. It is neither. When the config file is missing or malformed, the system continues running with an empty config. No error is raised. No alert fires. The application just quietly behaves differently from what you expect, and you have no idea why. You have taken a perfectly good error and turned it back into a bug.</p>
+    <p>This code looks defensive and safe, but it is neither. When the config file is missing or malformed, the system continues running with an empty config. No error is raised. No alert fires. The application just quietly behaves differently from what you expect, and you have no idea why. You have taken a perfectly good error and turned it back into a bug.</p>
 
     <p>The fail-fast version is better in every way:</p>
 
@@ -1475,17 +1476,17 @@ function loadConfig(string $path): array
 
     <p>If anything is wrong, you know about it immediately. There is no window of time where the system runs in a broken state accumulating invisible damage. The failure is loud, specific, and caught within seconds of deployment.</p>
 
-    <p>The same principle applies everywhere. A database query returns unexpected data? Do not patch it up and continue. An API response is missing a required field? Do not substitute a default. A configuration value is outside its valid range? Do not clamp it silently. Every one of these "helpful" fallbacks is a bug waiting to happen. Every one of them trades a cheap, obvious error now for an expensive, mysterious investigation later.</p>
+    <p>The same principle applies everywhere. If a database query returns unexpected data, do not patch it up and continue; if an API response is missing a required field, do not substitute a default; if a configuration value is outside its valid range, do not clamp it silently. Every one of these "helpful" fallbacks is a bug waiting to happen, and every one of them trades a cheap, obvious error now for an expensive, mysterious investigation later.</p>
 
-    <p>Fail fast is not about being fragile. It is about being honest. A system that crashes when something is wrong is telling you the truth. A system that limps along pretending everything is fine is lying to you, and you will pay for that lie eventually.</p>
+    <p>Fail fast is about being honest rather than fragile. A system that crashes when something is wrong is telling you the truth, whilst a system that limps along pretending everything is fine is lying to you, and you will pay for that lie eventually.</p>
 </section>
 
 <section>
-    <h2>The Mindset Shift</h2>
+    <h2>Design for the Failure You'll Actually Get</h2>
 
     <p>Once you internalise the error vs bug distinction, it changes how you think about every line of code you write. Error handling stops looking like defensive overhead and starts looking like an investment that pays for itself many times over.</p>
 
-    <p>The goal is not to write code that never fails. That is impossible and not even desirable. The goal is to write code that <strong>fails loudly, clearly, and early</strong>. A system full of well-crafted errors is a system that is cheap to operate. A system full of silent bugs is a system that is slowly, invisibly rotting, and every rotten piece is a future investigation waiting to consume someone's week.</p>
+    <p>The goal is not to write code that never fails. That is impossible and not even desirable. The goal is to write code that <strong>fails loudly, clearly, and early</strong>. A system full of well-crafted errors stays cheap to operate, whilst a system full of silent bugs rots slowly and invisibly, and every rotten piece is a future investigation waiting to consume someone's week.</p>
 
     <p>The question to ask yourself when writing any piece of logic is not "what if this fails?" It is: "if this fails silently, how long before anyone notices, and how much damage will it do in the meantime?" If the answer makes you uncomfortable, add a check. Turn that potential bug into an error. Your future self will thank you for it.</p>
 </section>
@@ -1495,7 +1496,7 @@ function loadConfig(string $path): array
     id: 'ansible-vault-strings-vs-file-encryption',
     title: 'Stop Encrypting Entire Files with Ansible Vault. Use Vault Strings Instead.',
     description:
-      'Ansible Vault file encryption creates opaque blobs that break git diffs, block code review, and resist AI tooling. Vault encrypted strings keep your keys visible and your values safe. It is a strictly better workflow for infrastructure secrets.',
+      'Ansible Vault file encryption creates opaque blobs that break git diffs, block code review, and resist AI tooling. Vault encrypted strings keep your keys visible and your values safe, making them a strictly better workflow for infrastructure secrets.',
     date: '2026-03-03',
     category: CATEGORIES.infrastructure.id,
     heroImage: {
@@ -1512,13 +1513,13 @@ function loadConfig(string $path): array
     tags: [],
     subreddit: 'ansible',
     content: `<div class="intro">
-    <p class="lead">Ansible Vault is the built-in answer to a real problem: you need secrets in your infrastructure code, and you can't commit plaintext passwords to git. But the way most teams use Vault, encrypting entire files, creates more problems than it solves. Since Ansible 2.3, there's been a better option: encrypting individual variable values with <code>ansible-vault encrypt_string</code>. After years of managing Ansible across production environments, I'm convinced that vault strings are the correct default and that file-level encryption should be treated as a legacy pattern.</p>
+    <p class="lead">Ansible Vault is the built-in answer to a real problem: you need secrets in your infrastructure code, and you can't commit plaintext passwords to git. But the way most teams use Vault, encrypting entire files, creates more problems than it solves. Since Ansible 2.3, there's been a better option: encrypting individual variable values with <code>ansible-vault encrypt_string</code>. Vault strings are the correct default, and file-level encryption should be treated as a legacy pattern.</p>
 </div>
 
 <section>
     <h2>Two Approaches to the Same Problem</h2>
 
-    <p>Ansible Vault offers two distinct encryption strategies. The difference between them isn't cosmetic. It fundamentally changes how you work with secrets across your entire development lifecycle.</p>
+    <p>Ansible Vault offers two distinct encryption strategies, and the difference between them isn't cosmetic - it fundamentally changes how you work with secrets across your entire development lifecycle.</p>
 
     <h3>File-Level Encryption</h3>
 
@@ -1538,11 +1539,11 @@ function loadConfig(string $path): array
 38653638323336366163383337636435316366393766323030316133333462356465
 33386262333432653261633632633633363833363034623234396235336530376565</code></pre>
 
-    <p>That is your variables file. Good luck reviewing it.</p>
+    <p>That is your variables file, and good luck reviewing it.</p>
 
     <h3>Variable-Level Encryption (Vault Strings)</h3>
 
-    <p>Introduced in Ansible 2.3, <code>encrypt_string</code> encrypts individual values while leaving variable names in plaintext. The encrypted value is embedded directly in your YAML using the <code>!vault |</code> tag. Only the sensitive data is encrypted. The structure, the keys, and any non-sensitive values remain perfectly readable.</p>
+    <p>Introduced in Ansible 2.3, <code>encrypt_string</code> encrypts individual values whilst leaving variable names in plaintext. The encrypted value is embedded directly in your YAML using the <code>!vault |</code> tag. Only the sensitive data is encrypted. The structure, the keys, and any non-sensitive values remain perfectly readable.</p>
 
     <pre><code class="language-yaml"># group_vars/production/main.yml
 ---
@@ -1570,13 +1571,13 @@ api_secret_key: !vault |
 redis_host: redis-prod.internal
 redis_port: 6379</code></pre>
 
-    <p>Look at the difference. You can see exactly what this file configures. You know the database host, the port, the application settings. The only things you can't see are the actual password and the API key, which is precisely the security boundary you want.</p>
+    <p>Look at the difference: you can see exactly what this file configures, right down to the database host, the port, and the application settings. The only things you can't see are the actual password and the API key, which is precisely the security boundary you want.</p>
 </section>
 
 <section>
     <h2>The Case Against File-Level Encryption</h2>
 
-    <p>File-level encryption isn't just less convenient than vault strings. It actively harms four aspects of modern infrastructure development: safety, reviewability, searchability, and AI-assisted workflows.</p>
+    <p>File-level encryption costs you more than convenience: it actively harms four aspects of modern infrastructure development, namely safety, reviewability, searchability, and AI-assisted workflows.</p>
 
     <h3>The Decrypt-Edit-Re-encrypt Workflow Is Dangerous</h3>
 
@@ -1598,7 +1599,7 @@ ansible-vault encrypt group_vars/production/vault.yml</code></pre>
         <p style="color: #7f1d1d; margin: 0;">Deleting a file or overwriting a value does not remove it from git history. Anyone with access to the repository can recover every version of every file ever committed. If a plaintext secret hits a commit, even briefly, the only safe remediation is to rotate that secret immediately. Tools like <code>git filter-branch</code> or BFG Repo-Cleaner can rewrite history, but they require force-pushing to every remote and every clone. On a public repository, you must assume the secret has already been scraped. There is no undo.</p>
     </div>
 
-    <p>Pre-commit hooks are often cited as the solution here. They're a band-aid. They catch the mistake after it's already happened in the working directory. They don't prevent the plaintext from existing in the first place. And they only work if every developer on the team has them installed and hasn't bypassed them with <code>--no-verify</code>.</p>
+    <p>Pre-commit hooks are often cited as the solution here, but they're a band-aid: they catch the mistake after it's already happened in the working directory, they don't prevent the plaintext from existing in the first place, and they only work if every developer on the team has them installed and hasn't bypassed them with <code>--no-verify</code>.</p>
 
     <h3>Completely Opaque in Git</h3>
 
@@ -1618,7 +1619,7 @@ index 3a7b2c1..8f4e9d2 100644
 +36353433323139383736353433323139383736353433323139383736353433323139
 +38373635343332313938373635343332313938373635343332313938373635343332</code></pre>
 
-    <p>What changed? A password? An API key? A database hostname? A comment? You've got absolutely no idea. Code review is impossible. The reviewer has to either trust the author blindly or decrypt the file locally, diff the plaintext, and hope nothing else changed that they missed.</p>
+    <p>What changed? A password, an API key, a database hostname, a comment? There's no way to tell, which makes code review effectively impossible. The reviewer has to either trust the author blindly or decrypt the file locally, diff the plaintext, and hope nothing else changed that they missed.</p>
 
     <p>Git's <code>textconv</code> feature can be configured to decrypt vault files for local diffs, but it only works in the CLI. It doesn't work on GitHub, GitLab, or any web-based PR review interface. Since most teams review pull requests in their browser, <code>textconv</code> solves the problem in exactly the place where nobody is looking.</p>
 
@@ -1655,7 +1656,7 @@ $ grep -r "db_password" group_vars/
 
     <h3>Values Stay Encrypted Throughout Development</h3>
 
-    <p>With vault strings, sensitive values are never decrypted during development, during git operations, or during code review. They're only decrypted at Ansible runtime, when a playbook actually needs them. There's no decrypt-edit-re-encrypt cycle. There's no window where plaintext secrets exist in your working directory.</p>
+    <p>With vault strings, sensitive values are never decrypted during development, during git operations, or during code review. They're only decrypted at Ansible runtime, when a playbook actually needs them. There's no decrypt-edit-re-encrypt cycle, and no window where plaintext secrets exist in your working directory.</p>
 
     <p>To change a vault string, you generate a new encrypted value and paste it in:</p>
 
@@ -1668,7 +1669,7 @@ db_password: !vault |
     39303132333435363738393031323334353637383930313233343536373839303132
     33343536373839303132333435363738393031323334353637383930313233343536</code></pre>
 
-    <p>You copy that output, replace the old encrypted block in your YAML file, and commit. At no point did the old secret exist in plaintext in your working directory. At no point was any file fully decrypted. The safety improvement isn't marginal. It eliminates an entire class of accidental exposure.</p>
+    <p>You copy that output, replace the old encrypted block in your YAML file, and commit. At no point does the old secret exist in plaintext in your working directory, and no file is ever fully decrypted. That's a substantial safety improvement, not a marginal one: it eliminates an entire class of accidental exposure.</p>
 
     <h3>Git Diffs That Actually Tell You Something</h3>
 
@@ -1757,7 +1758,7 @@ vault_identity_list = production@~/.vault_pass_prod, staging@~/.vault_pass_stagi
 <section>
     <h2>What About the Official vars/vault Separation Pattern?</h2>
 
-    <p>The <a href="https://docs.ansible.com/projects/ansible/latest/tips_tricks/ansible_tips_tricks.html">official Ansible documentation</a> recommends an alternative pattern for keeping variable names visible while using file-level encryption. The idea is to split each group into two files:</p>
+    <p>The <a href="https://docs.ansible.com/projects/ansible/latest/tips_tricks/ansible_tips_tricks.html">official Ansible documentation</a> recommends an alternative pattern for keeping variable names visible whilst using file-level encryption. The idea is to split each group into two files:</p>
 
     <pre><code class="language-bash">group_vars/
   production/
@@ -1778,7 +1779,7 @@ vault_api_secret_key: "actual-api-key-value"</code></pre>
 
     <p>This pattern exists precisely because full-file encryption breaks discoverability. It's Ansible's official admission that encrypting entire files hides too much. But look at the overhead: you now maintain two files per group, with a naming convention (<code>vault_</code> prefix) and Jinja2 indirection for every single secret. Every secret requires a variable in <code>vars.yml</code> that references a variable in <code>vault.yml</code>. Add a new secret and you have to update both files. Rename a variable and you have to update both files.</p>
 
-    <p>Vault strings eliminate this indirection entirely. One file, one variable, one place to look. The variable name is visible because it is not encrypted. The value is encrypted because it is a secret. No duplication, no indirection, no <code>vault_</code> prefix convention to remember.</p>
+    <p>Vault strings eliminate this indirection entirely: one file, one variable, one place to look, with the variable name visible because it is not encrypted and the value encrypted because it is a secret. There's no duplication and no <code>vault_</code> prefix convention to remember.</p>
 </section>
 
 <section>
@@ -1793,7 +1794,7 @@ ansible-vault rekey group_vars/production/vault.yml</code></pre>
 
     <p>With vault strings, there's no built-in rekey command. To rotate your vault password, you have to re-encrypt each individual string with the new password. For a handful of secrets this is a minor inconvenience. For a large inventory with dozens of encrypted strings across many files, it would be genuinely tedious to do by hand.</p>
 
-    <p>The key word there is "would be." This is a solved problem. The <a href="https://github.com/LongTermSupport/ansible-role-vault-scripts" target="_blank" rel="noopener">LongTermSupport/ansible-role-vault-scripts</a> Ansible role includes a <code>rekeyVaultFile.bash</code> script that automates the entire process. It reads each encrypted variable from a file, decrypts it with the old key, re-encrypts it with the new key, and writes a new file. You run one command per file and the rotation is done:</p>
+    <p>The key word there is "would be," because this is a solved problem: the <a href="https://github.com/LongTermSupport/ansible-role-vault-scripts" target="_blank" rel="noopener">LongTermSupport/ansible-role-vault-scripts</a> Ansible role includes a <code>rekeyVaultFile.bash</code> script that automates the entire process. It reads each encrypted variable from a file, decrypts it with the old key, re-encrypts it with the new key, and writes a new file. You run one command per file and the rotation is done:</p>
 
     <pre><code class="language-bash"># Rekey all vault files in a single environment
 bash shellscripts/vault/rekeyVaultFile.bash \\
@@ -1805,7 +1806,7 @@ bash shellscripts/vault/rekeyVaultFile.bash \\
 
     <p>The script creates new files prefixed with <code>new_</code> so you can verify them before replacing the originals. It isn't destructive by default.</p>
 
-    <p>Here's my honest assessment: I've rotated vault passwords perhaps three or four times across all the Ansible-managed infrastructure I've worked with. It's not a frequent operation. The safety and ergonomic benefits of vault strings are felt every single day, on every commit, every PR review, every grep, and every time an AI assistant reads your inventory. Trading a slightly more involved (but infrequent and fully scriptable) rekey process for a dramatically better daily workflow is an easy decision.</p>
+    <p>Password rotation is not a frequent operation on most Ansible-managed infrastructure. The safety and ergonomic benefits of vault strings are felt every single day, on every commit, every PR review, every grep, and every time an AI assistant reads your inventory. Trading a slightly more involved (but infrequent and fully scriptable) rekey process for a dramatically better daily workflow is an easy decision.</p>
 </section>
 
 <section>
@@ -1827,7 +1828,7 @@ bash shellscripts/vault/rekeyVaultFile.bash \\
     web-prod-01/
       main.yml                # Host-specific vars with inline vault strings</code></pre>
 
-    <p>Each file is self-contained. Secrets live alongside the configuration they belong to, encrypted at the value level. There's no indirection layer, no <code>vault_</code> prefix convention, and no separate encrypted file to keep in sync.</p>
+    <p>Each file is self-contained, with secrets living alongside the configuration they belong to, encrypted at the value level. There's no indirection layer and no separate encrypted file to keep in sync.</p>
 
     <p>A complete example of a production variables file:</p>
 
@@ -1871,7 +1872,7 @@ monitoring_webhook_url: https://hooks.slack.com/services/T00/B00/xxxxx
 backup_s3_bucket: my-app-backups-prod
 backup_retention_days: 30</code></pre>
 
-    <p>Readable, greppable, reviewable, AI-parseable, and secure. That is the entire point.</p>
+    <p>Readable, greppable, reviewable, AI-parseable, and secure - that is the entire point.</p>
 </section>
 
 <section>
@@ -1958,7 +1959,7 @@ ansible-vault encrypt_string \\
 <section>
     <h2>Summary: Why Vault Strings Win</h2>
 
-    <p>The comparison isn't close.</p>
+    <p>Set the two approaches side by side and there's no contest.</p>
 
     <table>
         <thead>
@@ -2037,13 +2038,13 @@ ansible-vault encrypt_string \\
     tags: [],
     subreddit: 'sysadmin',
     content: `<div class="intro">
-    <p class="lead">Cron is one of the oldest and most reliable tools in the Unix toolkit. It has been scheduling tasks since the 1970s, and it works. But "works" is doing a lot of heavy lifting there. Cron has no structured logging, no dependency management, no built-in protection against overlapping runs, and zero security isolation. It runs your scripts as your full user with every privilege and capability you possess, with no record of what happened unless you wrote the logging yourself. systemd timers, introduced with systemd and now standard across every major enterprise Linux distribution, solve all of these problems, and on Red Hat Enterprise Linux, Rocky Linux, and Fedora, they are already running dozens of system tasks that used to live in crontabs.</p>
+    <p class="lead">Cron is one of the oldest and most reliable tools in the Unix toolkit. It has been scheduling tasks since the 1970s, and it works, though "works" is doing a lot of heavy lifting there. Cron has no structured logging, no dependency management, no built-in protection against overlapping runs, and zero security isolation. It runs your scripts as your full user with every privilege and capability you possess, with no record of what happened unless you wrote the logging yourself. systemd timers, introduced with systemd and now standard across every major enterprise Linux distribution, solve all of these problems. On Red Hat Enterprise Linux, Rocky Linux, and Fedora, they are already running dozens of system tasks that used to live in crontabs.</p>
 </div>
 
 <section>
     <h2>What Cron Actually Gives You</h2>
 
-    <p>Before dismissing cron unfairly, it is worth being precise about what it does well. A crontab entry is five fields of schedule followed by a command. It is universally understood, requires no service files, and can be written in thirty seconds. For a developer who needs to run a script at 3am and never thinks about it again, cron is perfectly adequate.</p>
+    <p>Before dismissing cron unfairly, it's worth being precise about what it does well. A crontab entry is five fields of schedule followed by a command. It is universally understood, requires no service files, and can be written in thirty seconds. For a developer who needs to run a script at 3am and never thinks about it again, cron is perfectly adequate.</p>
 
     <p>The problems emerge at scale and in production. When a cron job fails, the output goes into <code>/dev/null</code>, or to the local mailbox of the running user, which nobody reads. There is no centralised log. There is no way to query "when did this last run and what was its exit code?" without implementing that infrastructure yourself. If the server was off at 3am, the job simply did not run, with no record that it was missed. And if the job takes longer than its schedule interval, cron will cheerfully launch a second (and third) instance alongside the first.</p>
 
@@ -2055,7 +2056,7 @@ ansible-vault encrypt_string \\
 
     <p>Every systemd timer consists of exactly two unit files: a <code>.timer</code> unit that defines <em>when</em> to run, and a <code>.service</code> unit that defines <em>what</em> to run. They are linked by name, so <code>backup.timer</code> activates <code>backup.service</code> automatically. You can override this with <code>Unit=</code> in the timer if you need a different pairing.</p>
 
-    <p>The service unit is a perfectly ordinary systemd service. This is the key insight: every hardening directive, every resource limit, every dependency declaration available to long-running services is equally available to timer-activated services. You are not working with a stripped-down scheduler. You have the full systemd service model available to you.</p>
+    <p>The service unit is a perfectly ordinary systemd service. This is the key insight: every hardening directive, every resource limit, every dependency declaration available to long-running services is equally available to timer-activated services. You're not working with a stripped-down scheduler. You have the full systemd service model available to you.</p>
 
     <p>A minimal example pair:</p>
 
@@ -2132,7 +2133,7 @@ OnActiveSec=5min</code></pre>
 
     <h3>Persistent Timers: Replacing Missed Runs</h3>
 
-    <p><code>Persistent=true</code> instructs systemd to record the last time the timer activated. On next boot, if the scheduled time was missed while the system was off, the timer fires immediately. This is the equivalent of <code>anacron</code> behaviour, and it is one line in your timer file rather than a separate tool to install and configure.</p>
+    <p><code>Persistent=true</code> instructs systemd to record the last time the timer activated. On next boot, if the scheduled time was missed whilst the system was off, the timer fires immediately. This is the equivalent of <code>anacron</code> behaviour, and it is one line in your timer file rather than a separate tool to install and configure.</p>
 
     <pre><code class="language-bash">[Timer]
 OnCalendar=daily
@@ -2207,13 +2208,13 @@ Normalized form: *-*-* *:00/15:00
        (in UTC): Thu 2026-02-26 11:15:00 UTC
        From now: 14min left</code></pre>
 
-    <p>The "Normalized form" output is what systemd actually interprets. If it does not match your intention, adjust your expression before committing it to a unit file. This one command prevents an entire category of "why is my timer not running?" debugging sessions.</p>
+    <p>The "Normalized form" output is what systemd actually interprets. If it doesn't match your intention, adjust your expression before committing it to a unit file. This one command prevents an entire category of "why is my timer not running?" debugging sessions.</p>
 </section>
 
 <section>
     <h2>System-Level Timers: Running as Root</h2>
 
-    <p>System-level timer units live in <code>/etc/systemd/system/</code> (for locally created units) or <code>/usr/lib/systemd/system/</code> (for units shipped by packages). The <code>/etc/systemd/system/</code> path takes precedence over the package-supplied path, which is how you override vendor defaults without editing package files. This is a crucial pattern on RHEL and Rocky Linux where packages may be updated by DNF.</p>
+    <p>System-level timer units live in <code>/etc/systemd/system/</code> (for locally created units) or <code>/usr/lib/systemd/system/</code> (for units shipped by packages). The <code>/etc/systemd/system/</code> path takes precedence over the package-supplied path, which is how you override vendor defaults without editing package files. This matters on RHEL and Rocky Linux, where packages may be updated by DNF.</p>
 
     <p>The full lifecycle for a system timer:</p>
 
@@ -2283,7 +2284,7 @@ journalctl --user -u sync-files.service</code></pre>
 
     <h3>loginctl enable-linger: The Critical Server Setting</h3>
 
-    <p>By default, the systemd user instance for a given user only runs while that user has an active login session. Log out and your user timers stop. On a server where you deploy an application as a non-root service account, this makes user timers seemingly useless, because the deploy user has no interactive session.</p>
+    <p>By default, the systemd user instance for a given user only runs whilst that user has an active login session. Log out and your user timers stop. On a server where you deploy an application as a non-root service account, this makes user timers seemingly useless, because the deploy user has no interactive session.</p>
 
     <p>The solution is <code>loginctl enable-linger</code>. This instructs systemd to start the user instance at boot and keep it running indefinitely, regardless of whether the user is logged in:</p>
 
@@ -2306,7 +2307,7 @@ ls /var/lib/systemd/linger/
 <section>
     <h2>Security Hardening: Where systemd Leaves Cron Behind</h2>
 
-    <p>This is the section that should convert any engineer who manages production infrastructure. Cron runs your job as your user. That is it. No isolation, no restrictions, no sandboxing. If your backup script is compromised, the attacker has every capability and every file permission you have. systemd services support an extensive set of hardening directives that provide genuine defence-in-depth.</p>
+    <p>This is the section that should convert any engineer who manages production infrastructure. Cron runs your job as your user, and that's it: no isolation, no restrictions, no sandboxing. If your backup script is compromised, the attacker has every capability and every file permission you have. systemd services support an extensive set of hardening directives that provide genuine defence-in-depth.</p>
 
     <h3>Privilege Dropping</h3>
 
@@ -2340,7 +2341,7 @@ PrivateTmp=true
 # Whitelist specific paths that need to be writable
 ReadWritePaths=/var/backups /var/log/myapp</code></pre>
 
-    <p><code>ProtectSystem=strict</code> is the most aggressive option: the entire filesystem is read-only except for <code>/dev</code>, <code>/proc</code>, and <code>/sys</code>. The service cannot modify anything on disk unless you explicitly list it in <code>ReadWritePaths=</code>. A compromised backup script cannot write to <code>/etc</code>, install binaries in <code>/usr/local/bin</code>, or tamper with other services' data.</p>
+    <p><code>ProtectSystem=strict</code> is the most aggressive option: the entire filesystem is read-only except for <code>/dev</code>, <code>/proc</code>, and <code>/sys</code>. The service can't modify anything on disk unless you explicitly list it in <code>ReadWritePaths=</code>. A compromised backup script cannot write to <code>/etc</code>, install binaries in <code>/usr/local/bin</code>, or tamper with other services' data.</p>
 
     <h3>Capability Restrictions</h3>
 
@@ -2430,7 +2431,7 @@ IPAddressDeny=any</code></pre>
 <section>
     <h2>Red Hat, Fedora, and Rocky Linux: The Native Ecosystem</h2>
 
-    <p>On RHEL-family systems, systemd timers are not a curiosity. They are the standard. Several core system functions ship as timer units out of the box, and understanding them is useful both as documentation of the pattern and as a source of real-world examples to learn from.</p>
+    <p>On RHEL-family systems, systemd timers aren't a curiosity. They are the standard. Several core system functions ship as timer units out of the box, and understanding them is useful both as documentation of the pattern and as a source of real-world examples to learn from.</p>
 
     <h3>Timers That Ship with RHEL 9 / Rocky Linux 9</h3>
 
@@ -2510,19 +2511,19 @@ Description=Sync data to remote server
 After=network-online.target
 Wants=network-online.target</code></pre>
 
-    <p>On RHEL 9 / Rocky Linux 9 with NetworkManager, <code>network-online.target</code> is reached after NetworkManager has confirmed that at least one network interface is online. Note that <code>network.target</code> is weaker: it only guarantees that networking <em>configuration</em> has been applied, not that connectivity exists.</p>
+    <p>On RHEL 9 / Rocky Linux 9 with NetworkManager, <code>network-online.target</code> is reached after NetworkManager has confirmed that at least one network interface is online. By contrast, <code>network.target</code> is weaker: it only guarantees that networking <em>configuration</em> has been applied, not that connectivity exists.</p>
 
     <h3>RHEL 8 vs RHEL 9 / Rocky 8 vs Rocky 9</h3>
 
-    <p>RHEL 8 and Rocky 8 are fully systemd-based and support all the timer features described in this article. The key differences on RHEL 9 / Rocky 9 are: more system jobs have migrated from cron to timer units (logrotate being the most notable), <code>cronie</code> is still installed by default but is no longer used for most system tasks, and the default SELinux policy is stricter in several areas relevant to service execution. If you are migrating cron jobs on RHEL 8, the timer unit files you write will work unchanged on RHEL 9.</p>
+    <p>RHEL 8 and Rocky 8 are fully systemd-based and support all the timer features described in this article. The key differences on RHEL 9 / Rocky 9 are that more system jobs have migrated from cron to timer units (logrotate being the most notable) and <code>cronie</code> is still installed by default but no longer used for most system tasks. The default SELinux policy is also stricter in several areas relevant to service execution. If you are migrating cron jobs on RHEL 8, the timer unit files you write will work unchanged on RHEL 9.</p>
 </section>
 
 <section>
     <h2>Preventing Overlapping Execution</h2>
 
-    <p>Cron has no mechanism to prevent a second instance of a job from starting if the first is still running. This is a genuine operational hazard: a backup job that normally takes 20 minutes, triggered at an unusual time by a large dataset, will have a second instance start 60 minutes in if the schedule is hourly, and the two instances will fight over the same files.</p>
+    <p>Cron has no mechanism to prevent a second instance of a job from starting if the first is still running. This is a genuine operational hazard: a backup job that normally takes 20 minutes, triggered at an unusual time by a large dataset, will have a second instance start 60 minutes in if the schedule is hourly. The two instances will then fight over the same files.</p>
 
-    <p>systemd's solution is elegant: set <code>Type=oneshot</code> on the service. A <code>oneshot</code> service is considered "active" from start until the process exits. If the timer fires while the previous run is still active, systemd queues the activation rather than launching a second instance.</p>
+    <p>systemd's solution is elegant: set <code>Type=oneshot</code> on the service. A <code>oneshot</code> service is considered "active" from start until the process exits. If the timer fires whilst the previous run is still active, systemd queues the activation rather than launching a second instance.</p>
 
     <pre><code class="language-bash">[Service]
 Type=oneshot
@@ -2663,7 +2664,7 @@ ReadWritePaths=/var/log/backup
 
 # Privilege hardening
 NoNewPrivileges=true
-CapabilityBoundingSet=CAP_NET_ADMIN
+CapabilityBoundingSet=
 AmbientCapabilities=
 
 # Kernel hardening
@@ -2879,9 +2880,9 @@ WantedBy=timers.target</code></pre>
 </section>
 
 <section>
-    <h2>The Verdict</h2>
+    <h2>Migrate the Critical Jobs First</h2>
 
-    <p>The case for systemd timers over cron is not that cron is broken. Cron works. The case is that cron was designed for a simpler era, and its assumptions are increasingly at odds with how production infrastructure is managed: that logging is optional, that security isolation is someone else's problem, that missed runs are acceptable, that all jobs run in a homogeneous environment.</p>
+    <p>The case for systemd timers over cron isn't that cron is broken. Cron works. The case is that cron was designed for a simpler era, and its assumptions are increasingly at odds with how production infrastructure is managed: that logging is optional, that security isolation is someone else's problem, that missed runs are acceptable, that all jobs run in a homogeneous environment.</p>
 
     <p>systemd timers require more upfront work: two files instead of one line, four commands to enable instead of one <code>crontab -e</code>. But every hour saved debugging "why did this job not run?" or "what output did last night's backup produce?" pays that cost back with interest. On RHEL 9 and Rocky Linux 9, the system itself has already made the migration. Application jobs should follow.</p>
 
@@ -2893,7 +2894,7 @@ WantedBy=timers.target</code></pre>
     id: 'defence-before-fix-static-analysis',
     title: 'Defence Before Fix: Preventing Bug Classes with Static Analysis',
     description:
-      'Defence Before Fix is a phase that runs before a defect is fixed: treat the bug as evidence of a class, build the rule that detects the class everywhere, prove it by making it fire, then sweep and fix every instance. The method in six clauses, a worked PHPStan example, and the specification and toolchains that now implement it.',
+      'A method for turning a single bug report into a permanent, provable defence against its whole class, in six clauses, with a worked PHPStan example and the specification and toolchains that now implement it.',
     date: '2026-02-22',
     category: CATEGORIES.qa.id,
     heroImage: {
@@ -2920,7 +2921,7 @@ WantedBy=timers.target</code></pre>
 
     <p>The name is meant literally. The defence comes before the fix in time, because the moment you fix the bug the evidence you would have built the defence from is gone, and I have found that this is the part people most often skip whilst believing they have done it.</p>
 
-    <p>I did not arrive at this from nowhere, and it is probably worth saying where I did arrive from. I have spent a long time, going back well before I had a name for any of it, believing that tooling rather than discipline is what actually makes quality stick in a codebase: php-qa-ci and the precursors that came before it are the practical result of that belief, a project's own checks wired into one entry point that nobody can forget to run because the pipeline runs them regardless of who is under deadline pressure that week. What has changed, and changed quite recently, is not the belief but the cost of acting on it. Writing a bespoke rule used to take long enough that only the most obviously recurring problems ever earned one, and everything smaller went into a code review comment and quietly reappeared a few months later under a different ticket number. An agent can now draft, prove and wire in a rule from a single reported bug in roughly the time it used to take to write that comment, so the calculation that used to favour fixing it and moving on has more or less flipped. Defence Before Fix is the name I have given to actually acting on that, every time, rather than only on the bugs that were annoying enough to justify the old cost.</p>
+    <p>I didn't arrive at this from nowhere, and it is probably worth saying where I did arrive from. I have spent a long time, going back well before I had a name for any of it, believing that tooling rather than discipline is what actually makes quality stick in a codebase: php-qa-ci and the precursors that came before it are the practical result of that belief, a project's own checks wired into one entry point that nobody can forget to run because the pipeline runs them regardless of who is under deadline pressure that week. What has changed, and changed quite recently, is not the belief but the cost of acting on it. Writing a bespoke rule used to take long enough that only the most obviously recurring problems ever earned one, and everything smaller went into a code review comment and quietly reappeared a few months later under a different ticket number. An agent can now draft, prove and wire in a rule from a single reported bug in roughly the time it used to take to write that comment, so the calculation that used to favour fixing it and moving on has more or less flipped. Defence Before Fix is the name I have given to actually acting on that, every time, rather than only on the bugs that were annoying enough to justify the old cost.</p>
 </section>
 
 <section>
@@ -3025,7 +3026,7 @@ WantedBy=timers.target</code></pre>
 
     <pre><code class="language-yaml">{{SNIPPET:defence-before-fix-static-analysis/phpstan-register.neon}}</code></pre>
 
-    <p>Note the rule is drawn to the empty string specifically. A non-empty default such as <code>?? 'unknown'</code> is a real decision that states what the absent case means, and a rule that flagged it would be firing on code that does not carry the hazard, which the upper bound forbids. In my experience a single report on innocent code is enough to make people stop trusting a rule, so I would not tolerate any rate of false positives at all.</p>
+    <p>Note the rule is drawn to the empty string specifically. A non-empty default such as <code>?? 'unknown'</code> is a real decision that states what the absent case means, and a rule that flagged it would be firing on code that does not carry the hazard, which the upper bound forbids. In my experience a single report on innocent code is enough to make people stop trusting a rule, so I wouldn't tolerate any rate of false positives at all.</p>
 
     <h3>Clause 3: prove the net by making it fire</h3>
 
@@ -3113,7 +3114,7 @@ WantedBy=timers.target</code></pre>
 
     <pre><code class="language-bash">{{SNIPPET:defence-before-fix-static-analysis/toolchain-commands.sh}}</code></pre>
 
-    <p>I want to be careful about what I am and am not claiming, because the territory next to this is well populated. Defensive programming is decades old, preventing classes of bug rather than instances predates this by a long way, and static analysis, custom lint rules and blocking quality gates are all long-established practice, so I claim none of them. What I am claiming is the term, which I could not find in use as a named practice when I published it, the placement of the work before the fix, and the requirement that a rule be proven by firing before it is trusted. It is a method I named and published, and that is the whole of the claim; I am not asserting that anyone else has adopted it.</p>
+    <p>I want to be careful about what I am and am not claiming, because the territory next to this is well populated. Defensive programming is decades old, preventing classes of bug rather than instances predates this by a long way, and static analysis, custom lint rules and blocking quality gates are all long-established practice, so I claim none of them. What I am claiming is the term, which I couldn't find in use as a named practice when I published it, the placement of the work before the fix, and the requirement that a rule be proven by firing before it is trusted. It is a method I named and published, and that is the whole of the claim; I am not asserting that anyone else has adopted it.</p>
 </section>
 
 <section>
@@ -3133,7 +3134,7 @@ WantedBy=timers.target</code></pre>
 <section>
     <h2>The ratchet</h2>
 
-    <p>The goal is not zero bugs, which I do not think is achievable for anyone. The goal is that every bug leaves the system better defended than it found it, so that each incident leaves behind a defence as well as a fix and a test, and the categories of bug that can survive in the codebase shrink over time. A codebase with a mature set of custom rules has a different character from one without: code review spends its attention on logic and architecture rather than on patterns the linter could find, new contributors are held to the established safe patterns from their first commit, and the mistakes of the past become structurally impossible to repeat rather than merely discouraged.</p>
+    <p>The goal is not zero bugs, which I don't think is achievable for anyone. The goal is that every bug leaves the system better defended than it found it, so that each incident leaves behind a defence as well as a fix and a test, and the categories of bug that can survive in the codebase shrink over time. A codebase with a mature set of custom rules has a different character from one without: code review spends its attention on logic and architecture rather than on patterns the linter could find, new contributors are held to the established safe patterns from their first commit, and the mistakes of the past become structurally impossible to repeat rather than merely discouraged.</p>
 
     <p>So the next time a bug reaches production, before you write the test, ask what pattern allowed it and whether a machine could be made to recognise that pattern everywhere. Do not decide in advance whether it can; attempt it, because failing to write a rule within the bounds is itself the evidence that the defect is out of scope, and it is cheaper and more reliable than a judgement made before trying. Where it can, write the rule first, prove it by making it fire, commit that proof, sweep, fix every instance, enforce it, and document it. Then, and only then, fix the bug in the ordinary way.
     <a href="https://defence-before-fix.github.io/" target="_blank" rel="noopener">The specification</a>
@@ -3161,6 +3162,7 @@ WantedBy=timers.target</code></pre>
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'Database',
+    register: 'formal',
     content: `
 <div class="intro">
             <p class="lead">
@@ -3172,11 +3174,11 @@ WantedBy=timers.target</code></pre>
             <h2>Why Direct Database Access Matters</h2>
 
             <p>
-                ORMs like <a href="https://www.doctrine-project.org/" target="_blank" rel="noopener">Doctrine</a> and <a href="https://laravel.com/docs/eloquent" target="_blank" rel="noopener">Eloquent</a> provide convenience and rapid development, but they introduce overhead that becomes significant at scale. According to <a href="https://umatechnology.org/performance-benchmarks-for-php-environments-in-2025/" target="_blank" rel="noopener">2025 performance benchmarks</a>, direct PDO queries can be 3-5x faster than ORM-generated queries for complex operations. The difference becomes dramatic when processing millions of rows or performing bulk updates.
+                ORMs like <a href="https://www.doctrine-project.org/" target="_blank" rel="noopener">Doctrine</a> and <a href="https://laravel.com/docs/eloquent" target="_blank" rel="noopener">Eloquent</a> provide convenience and rapid development, but they introduce overhead that becomes significant at scale. Direct PDO queries are noticeably faster than ORM-generated queries for complex operations, and the gap widens when processing millions of rows or performing bulk updates.
             </p>
 
             <p>
-                The patterns in this article come from production systems handling high-volume database operations. They address real-world challenges: connection failures, memory exhaustion, slow bulk updates, and brittle tests that pass despite broken SQL. These aren't theoretical patterns - they're battle-tested solutions.
+                The patterns in this article come from production systems handling high-volume database operations, addressing real-world challenges such as connection failures, memory exhaustion, slow bulk updates, and brittle tests that pass despite broken SQL, rather than being purely theoretical.
             </p>
 
             <h3>The Hybrid Approach</h3>
@@ -3198,13 +3200,13 @@ WantedBy=timers.target</code></pre>
             <h2>Pattern 1: Retry Mechanisms for Transient Failures</h2>
 
             <p>
-                Database connections fail. MySQL servers restart. Networks hiccup. Long-running processes encounter "MySQL server has gone away" errors. Production systems need to handle these transient failures gracefully without crashing or requiring manual intervention.
+                Database connections fail, MySQL servers restart, and networks hiccup, so long-running processes will eventually run into a "MySQL server has gone away" error - production systems need to handle these transient failures gracefully, without crashing or requiring manual intervention.
             </p>
 
             <h3>The Problem</h3>
 
             <p>
-                When your application loses its database connection mid-operation, the default behavior is catastrophic: exceptions bubble up, processes crash, and data operations fail. For batch jobs processing millions of records, a single connection timeout can waste hours of work.
+                When your application loses its database connection mid-operation, the default behaviour is catastrophic: exceptions bubble up, processes crash, and data operations fail. For batch jobs processing millions of records, a single connection timeout can waste hours of work.
             </p>
 
             <h3>The Solution: Automatic Retry with Connection Reset</h3>
@@ -3221,7 +3223,7 @@ WantedBy=timers.target</code></pre>
 </code></pre>
 
             <p>
-                The retry mechanism implementation handles multiple connection error types and provides configurable retry behavior:
+                The retry mechanism implementation handles multiple connection error types and provides configurable retry behaviour:
             </p>
 
             <pre><code class="language-php">{{SNIPPET:advanced-php-database-patterns/retry-mechanism.php}}
@@ -3230,7 +3232,7 @@ WantedBy=timers.target</code></pre>
             <h3>Key Features</h3>
 
             <ul>
-                <li><strong>Automatic detection</strong> - Recognizes 11+ types of connection errors including deadlocks, timeouts, and SSL failures</li>
+                <li><strong>Automatic detection</strong> - Recognises 11+ types of connection errors including deadlocks, timeouts, and SSL failures</li>
                 <li><strong>Configurable retries</strong> - Set maximum attempts and delay between retries based on your environment</li>
                 <li><strong>Connection reset</strong> - Forces PDO to establish a new connection after failures</li>
                 <li><strong>Logging integration</strong> - Uses <a href="https://www.php-fig.org/psr/psr-3/" target="_blank" rel="noopener">PSR-3 LoggerInterface</a> for monitoring retry patterns</li>
@@ -3240,7 +3242,7 @@ WantedBy=timers.target</code></pre>
             <h3>Real-World Impact</h3>
 
             <p>
-                In production systems, this pattern eliminates manual intervention for transient failures. Batch jobs that once required monitoring and manual restarts now complete reliably. The retry logic adds negligible overhead (microseconds) while providing significant resilience.
+                In production systems, this pattern eliminates manual intervention for transient failures. Batch jobs that once required monitoring and manual restarts now complete reliably. The retry logic adds negligible overhead (microseconds) whilst providing significant resilience.
             </p>
         </section>
 
@@ -3248,7 +3250,7 @@ WantedBy=timers.target</code></pre>
             <h2>Pattern 2: Prepared Statement Caching</h2>
 
             <p>
-                <a href="https://www.php.net/manual/en/pdo.prepare.php" target="_blank" rel="noopener">Prepared statements</a> are essential for security and performance, but repeatedly preparing the same statement wastes resources. While MySQL caches execution plans server-side, PHP destroys PDOStatement objects between requests. Within a single request, however, you can cache prepared statements for significant performance gains.
+                <a href="https://www.php.net/manual/en/pdo.prepare.php" target="_blank" rel="noopener">Prepared statements</a> are essential for security and performance, but repeatedly preparing the same statement wastes resources. Whilst MySQL caches execution plans server-side, PHP destroys PDOStatement objects between requests. Within a single request, however, you can cache prepared statements for significant performance gains.
             </p>
 
             <h3>The Problem</h3>
@@ -3269,7 +3271,7 @@ WantedBy=timers.target</code></pre>
             <h3>Performance Characteristics</h3>
 
             <p>
-                According to <a href="https://stackoverflow.com/questions/2132524/php-pdo-how-does-re-preparing-a-statement-affect-performance" target="_blank" rel="noopener">benchmarks on Stack Overflow</a>, statement reuse provides 15-30% performance improvement for queries executed in loops. The gain comes from:
+                Reusing a prepared statement instead of re-preparing it on every iteration measurably reduces overhead for queries executed in loops (see this <a href="https://stackoverflow.com/questions/2132524/php-pdo-how-does-re-preparing-a-statement-affect-performance" target="_blank" rel="noopener">discussion of PDO statement re-preparation costs</a> for the underlying mechanics). The gain comes from:
             </p>
 
             <ul>
@@ -3289,7 +3291,7 @@ WantedBy=timers.target</code></pre>
             <h2>Pattern 3: Bulk Update Single Column</h2>
 
             <p>
-                Updating thousands of rows individually is painfully slow. Each UPDATE statement involves a full round-trip to the database. For 10,000 rows, that's 10,000 network round-trips. The bulk update pattern uses MySQL's <a href="https://dev.mysql.com/doc/refman/8.0/en/case.html" target="_blank" rel="noopener">CASE WHEN</a> clause to update thousands of rows in a single query.
+                Updating thousands of rows individually is painfully slow, because each UPDATE statement involves a full round-trip to the database - for 10,000 rows, that's 10,000 network round-trips. The bulk update pattern uses MySQL's <a href="https://dev.mysql.com/doc/refman/8.0/en/case.html" target="_blank" rel="noopener">CASE WHEN</a> clause to update thousands of rows in a single query.
             </p>
 
             <h3>The Problem</h3>
@@ -3351,7 +3353,7 @@ WHERE id IN (101, 102, 103, ...)</code></pre>
             <h2>Pattern 4: Query, Statement, and Generator Classes</h2>
 
             <p>
-                Raw SQL strings scattered throughout your codebase create maintenance nightmares. Changes to table structure require hunting through hundreds of files. SQL injection vulnerabilities hide in plain sight. The solution: encapsulate SQL in dedicated classes with clear purposes.
+                Raw SQL strings scattered throughout your codebase create maintenance nightmares: changes to table structure mean hunting through hundreds of files, and SQL injection vulnerabilities can hide in plain sight. Encapsulating SQL in dedicated classes with clear purposes solves both problems.
             </p>
 
             <h3>Query Classes: Execute Once in Constructor</h3>
@@ -3363,7 +3365,7 @@ WHERE id IN (101, 102, 103, ...)</code></pre>
             <pre><code class="language-php">{{SNIPPET:advanced-php-database-patterns/query-class-pattern.php}}
 </code></pre>
 
-            <h3>PreparedStmt Classes: Reusable Parameterized Queries</h3>
+            <h3>PreparedStmt Classes: Reusable Parameterised Queries</h3>
 
             <p>
                 Unlike Query classes, PreparedStmt classes have methods to execute with different parameters. Use them for queries called multiple times with varying inputs:
@@ -3375,7 +3377,7 @@ WHERE id IN (101, 102, 103, ...)</code></pre>
             <h3>Generator Classes: Memory-Efficient Streaming</h3>
 
             <p>
-                Generator classes use <a href="https://www.php.net/manual/en/language.generators.php" target="_blank" rel="noopener">PHP generators</a> for memory-efficient processing of large result sets. According to <a href="https://medium.com/@catcatduatiga/10-million-rows-one-php-process-streaming-etl-with-generators-backpressure-and-constant-memory-c7726357be48" target="_blank" rel="noopener">2025 benchmarks</a>, generators can process millions of rows while using constant memory (typically 2-5MB regardless of result set size):
+                Generator classes use <a href="https://www.php.net/manual/en/language.generators.php" target="_blank" rel="noopener">PHP generators</a> for memory-efficient processing of large result sets. Because a generator yields one row at a time instead of materialising the whole result set, memory use stays flat regardless of how many rows you process:
             </p>
 
             <pre><code class="language-php">{{SNIPPET:advanced-php-database-patterns/generator-pattern.php}}
@@ -3397,7 +3399,7 @@ WHERE id IN (101, 102, 103, ...)</code></pre>
             <h3>Buffered vs Unbuffered Queries</h3>
 
             <p>
-                The <a href="https://www.php.net/manual/en/mysqlinfo.concepts.buffering.php" target="_blank" rel="noopener">PHP manual</a> explains the difference: buffered queries (default) load all results into memory immediately, while unbuffered queries fetch rows on demand. Generators use unbuffered queries internally for memory efficiency.
+                The <a href="https://www.php.net/manual/en/mysqlinfo.concepts.buffering.php" target="_blank" rel="noopener">PHP manual</a> explains the difference: buffered queries (default) load all results into memory immediately, whilst unbuffered queries fetch rows on demand. Generators use unbuffered queries internally for memory efficiency.
             </p>
         </section>
 
@@ -3405,7 +3407,7 @@ WHERE id IN (101, 102, 103, ...)</code></pre>
             <h2>Pattern 5: Derived Tables for Performance</h2>
 
             <p>
-                Complex queries often benefit from <a href="https://dev.mysql.com/doc/refman/8.0/en/derived-tables.html" target="_blank" rel="noopener">derived tables</a> (subqueries in the FROM clause). MySQL's query optimizer can materialize derived tables, drastically reducing the result set size before joins. According to the <a href="https://dev.mysql.com/doc/refman/9.1/en/subquery-optimization.html" target="_blank" rel="noopener">MySQL 9.1 documentation</a>, derived table optimization can improve query performance by 10-100x for complex aggregations.
+                Complex queries often benefit from <a href="https://dev.mysql.com/doc/refman/8.0/en/derived-tables.html" target="_blank" rel="noopener">derived tables</a> (subqueries in the FROM clause). MySQL's query optimiser can materialise derived tables, drastically reducing the result set size before joins. According to the <a href="https://dev.mysql.com/doc/refman/9.1/en/subquery-optimization.html" target="_blank" rel="noopener">MySQL 9.1 documentation</a>, derived table optimisation can improve query performance by 10-100x for complex aggregations.
             </p>
 
             <h3>The Problem</h3>
@@ -3424,7 +3426,7 @@ GROUP BY c.id</code></pre>
             <h3>The Solution: Aggregate in Derived Table</h3>
 
             <p>
-                Pre-aggregate in a derived table before joining. MySQL materializes the aggregated result set (much smaller), then joins against it:
+                Pre-aggregate in a derived table before joining. MySQL materialises the aggregated result set (much smaller), then joins against it:
             </p>
 
             <pre><code class="language-php">{{SNIPPET:advanced-php-database-patterns/derived-table-optimization.php}}
@@ -3442,7 +3444,7 @@ GROUP BY c.id</code></pre>
             </ul>
 
             <p>
-                The MySQL optimizer uses <a href="https://dev.mysql.com/doc/refman/8.4/en/subquery-materialization.html" target="_blank" rel="noopener">materialization strategies</a> to create temporary tables for derived tables, enabling index usage and reducing memory requirements.
+                The MySQL optimiser uses <a href="https://dev.mysql.com/doc/refman/8.4/en/subquery-materialization.html" target="_blank" rel="noopener">materialisation strategies</a> to create temporary tables for derived tables, enabling index usage and reducing memory requirements.
             </p>
         </section>
 
@@ -3481,7 +3483,7 @@ GROUP BY c.id</code></pre>
             </ul>
 
             <p>
-                As noted in <a href="https://webreference.com/php/database/transactions/" target="_blank" rel="noopener">PHP transaction best practices</a>, always wrap transactions in try-catch blocks to ensure rollback on failure. Keep transactions short to minimize locking.
+                As noted in <a href="https://webreference.com/php/database/transactions/" target="_blank" rel="noopener">PHP transaction best practices</a>, always wrap transactions in try-catch blocks to ensure rollback on failure. Keep transactions short to minimise locking.
             </p>
         </section>
 
@@ -3564,7 +3566,7 @@ GROUP BY c.id</code></pre>
             </p>
 
             <ul>
-                <li><strong>String processing required</strong> - Normalizing, trimming, regex matching, or case-insensitive comparisons</li>
+                <li><strong>String processing required</strong> - Normalising, trimming, regex matching, or case-insensitive comparisons</li>
                 <li><strong>Complex matching logic</strong> - Business rules that don't map cleanly to SQL WHERE clauses</li>
                 <li><strong>Multiple passes needed</strong> - Iterative processing where each row affects subsequent decisions</li>
                 <li><strong>Small-to-medium datasets</strong> - Under 100,000 rows that fit comfortably in memory</li>
@@ -3574,16 +3576,16 @@ GROUP BY c.id</code></pre>
             <h3>The Hash Lookup Pattern</h3>
 
             <p>
-                PHP arrays with <code>$array[$key] = true</code> structure provide O(1) lookup performance. According to <a href="https://www.npopov.com/2014/12/22/PHPs-new-hashtable-implementation.html" target="_blank" rel="noopener">PHP's hashtable implementation</a>, this is one of the most optimized data structures in PHP:
+                PHP arrays with <code>$array[$key] = true</code> structure provide O(1) lookup performance. According to <a href="https://www.npopov.com/2014/12/22/PHPs-new-hashtable-implementation.html" target="_blank" rel="noopener">PHP's hashtable implementation</a>, this is one of the most optimised data structures in PHP:
             </p>
 
             <pre><code class="language-php">{{SNIPPET:advanced-php-database-patterns/php-hash-lookups.php}}
 </code></pre>
 
-            <h3>Real-World Example: Deduplication with Normalization</h3>
+            <h3>Real-World Example: Deduplication with Normalisation</h3>
 
             <p>
-                Consider matching customer records between two systems where names might have extra whitespace, different casing, or special characters. SQL can do fuzzy matching with <code>LOWER()</code> and <code>TRIM()</code>, but complex normalization is cleaner in PHP:
+                Consider matching customer records between two systems where names might have extra whitespace, different casing, or special characters. SQL can do fuzzy matching with <code>LOWER()</code> and <code>TRIM()</code>, but complex normalisation is cleaner in PHP:
             </p>
 
             <pre><code class="language-php">{{SNIPPET:advanced-php-database-patterns/php-vs-sql-normalization.php}}
@@ -3612,7 +3614,7 @@ GROUP BY c.id</code></pre>
 
             <ul>
                 <li>Dataset fits in available memory (check with <code>memory_get_usage()</code>)</li>
-                <li>Each row requires multiple string operations (regex, normalization, validation)</li>
+                <li>Each row requires multiple string operations (regex, normalisation, validation)</li>
                 <li>Business logic is complex and would require multiple SQL passes</li>
                 <li>You're joining more than 3-4 tables with complex conditions</li>
             </ul>
@@ -3655,17 +3657,17 @@ GROUP BY c.id</code></pre>
             <h3>Connection Pooling in PHP</h3>
 
             <p>
-                Traditional PHP-FPM doesn't support true connection pooling due to PHP's stateless nature. However, <a href="https://openswoole.com/" target="_blank" rel="noopener">OpenSwoole</a> and <a href="https://www.swoole.co.uk/" target="_blank" rel="noopener">Swoole</a> extensions enable connection pooling in PHP. According to <a href="https://medium.com/@dollyaswin/improve-php-application-performance-with-database-connection-pooling-a93a5e372fce" target="_blank" rel="noopener">performance studies</a>, connection pooling allows 10 database connections to serve 300 concurrent HTTP requests efficiently.
+                Traditional PHP-FPM doesn't support true connection pooling due to PHP's stateless nature. However, <a href="https://openswoole.com/" target="_blank" rel="noopener">OpenSwoole</a> and <a href="https://www.swoole.co.uk/" target="_blank" rel="noopener">Swoole</a> extensions enable connection pooling in PHP, letting a small, fixed pool of database connections serve a much larger number of concurrent HTTP requests efficiently.
             </p>
 
             <p>
-                For traditional PHP-FPM deployments, use <a href="https://www.php.net/manual/en/features.persistent-connections.php" target="_blank" rel="noopener">persistent connections</a> via the <code>PDO::ATTR_PERSISTENT</code> option. While not true pooling, persistent connections reduce connection overhead when using PHP-FPM's worker processes.
+                For traditional PHP-FPM deployments, use <a href="https://www.php.net/manual/en/features.persistent-connections.php" target="_blank" rel="noopener">persistent connections</a> via the <code>PDO::ATTR_PERSISTENT</code> option. Whilst not true pooling, persistent connections reduce connection overhead when using PHP-FPM's worker processes.
             </p>
 
             <h3>Query Result Caching</h3>
 
             <p>
-                For frequently-accessed data that changes infrequently, implement query result caching using <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a> or <a href="https://memcached.org/" target="_blank" rel="noopener">Memcached</a>. According to <a href="https://andro0.medium.com/mastering-php-in-2025-advanced-strategies-expert-tips-and-best-practices-bec0d69c9113" target="_blank" rel="noopener">2025 PHP best practices</a>, caching can improve access times by more than 80% for read-heavy workloads.
+                For frequently-accessed data that changes infrequently, implement query result caching using <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a> or <a href="https://memcached.org/" target="_blank" rel="noopener">Memcached</a>. For read-heavy workloads, serving a cached result is dramatically faster than re-running the underlying query on every request.
             </p>
 
             <h3>Database Indexing Strategy</h3>
@@ -3682,13 +3684,13 @@ GROUP BY c.id</code></pre>
             </ul>
 
             <p>
-                Use <a href="https://dev.mysql.com/doc/refman/8.0/en/explain.html" target="_blank" rel="noopener">EXPLAIN</a> to analyze query execution plans and identify missing indexes.
+                Use <a href="https://dev.mysql.com/doc/refman/8.0/en/explain.html" target="_blank" rel="noopener">EXPLAIN</a> to analyse query execution plans and identify missing indexes.
             </p>
 
             <h3>Read Replicas and Scaling</h3>
 
             <p>
-                For high-traffic applications, implement <a href="https://dev.mysql.com/doc/refman/8.0/en/replication.html" target="_blank" rel="noopener">MySQL replication</a> with read replicas. Route read queries to replicas and write queries to the primary server. This pattern, discussed in <a href="https://www.linkedin.com/advice/0/how-do-you-scale-mysqli-connections-high-traffic-php-applications" target="_blank" rel="noopener">scaling strategies</a>, distributes load and improves throughput.
+                For high-traffic applications, implement <a href="https://dev.mysql.com/doc/refman/8.0/en/replication.html" target="_blank" rel="noopener">MySQL replication</a> with read replicas. Route read queries to replicas and write queries to the primary server. Splitting traffic this way distributes load and improves throughput.
             </p>
         </section>
 
@@ -3696,26 +3698,26 @@ GROUP BY c.id</code></pre>
             <h2>Conclusion</h2>
 
             <p>
-                These patterns represent years of production experience handling high-volume database operations in PHP. They're not theoretical exercises - they solve real problems that emerge at scale:
+                These patterns represent years of production experience handling high-volume database operations in PHP, solving real problems that emerge as systems grow rather than being theoretical exercises:
             </p>
 
             <ul>
                 <li><strong>Retry mechanisms</strong> eliminate manual intervention for transient failures</li>
-                <li><strong>Statement caching</strong> improves loop performance by 15-30%</li>
-                <li><strong>Bulk updates</strong> reduce operation time by 100-1000x</li>
-                <li><strong>Query/Statement/Generator classes</strong> organize SQL and provide type safety</li>
-                <li><strong>Derived tables</strong> optimize complex queries by 10-100x</li>
+                <li><strong>Statement caching</strong> cuts overhead for queries executed in loops</li>
+                <li><strong>Bulk updates</strong> turn many round trips into a handful, cutting operation time dramatically</li>
+                <li><strong>Query/Statement/Generator classes</strong> organise SQL and provide type safety</li>
+                <li><strong>Derived tables</strong> can outperform correlated subqueries substantially for complex queries</li>
                 <li><strong>Transaction isolation</strong> balances correctness with performance</li>
                 <li><strong>PHPStan rules</strong> catch SQL errors at development time</li>
                 <li><strong>PHP hash lookups</strong> can outperform SQL for complex string processing and business logic</li>
             </ul>
 
             <p>
-                The key insight: use the right tool for each job. ORMs for typical CRUD operations, direct database access for performance-critical code. The patterns in this article give you the tools to build high-performance database layers when you need them, while maintaining the productivity benefits of ORMs for standard operations.
+                The key insight: use the right tool for each job. ORMs for typical CRUD operations, direct database access for performance-critical code. The patterns in this article give you the tools to build high-performance database layers when you need them, whilst maintaining the productivity benefits of ORMs for standard operations.
             </p>
 
             <p>
-                Remember that premature optimization wastes time. Start with an ORM for rapid development. Profile your application under realistic load. When you identify database bottlenecks, apply these patterns strategically to the hot paths. The combination of thoughtful design and targeted optimization produces applications that are both maintainable and performant.
+                Remember that premature optimisation wastes time - start with an ORM for rapid development, profile your application under realistic load, and only once you've identified genuine database bottlenecks should you apply these patterns to the hot paths. The combination of thoughtful design and targeted optimisation produces applications that are both maintainable and performant.
             </p>
         </section>
 
@@ -3723,7 +3725,7 @@ GROUP BY c.id</code></pre>
             <h3>Further Reading</h3>
             <ul>
                 <li><a href="https://www.php.net/manual/en/book.pdo.php" target="_blank" rel="noopener">PHP PDO Documentation</a> - Official PDO reference</li>
-                <li><a href="https://dev.mysql.com/doc/refman/8.0/en/optimization.html" target="_blank" rel="noopener">MySQL Optimization Guide</a> - Comprehensive optimization strategies</li>
+                <li><a href="https://dev.mysql.com/doc/refman/8.0/en/optimization.html" target="_blank" rel="noopener">MySQL Optimisation Guide</a> - Comprehensive optimisation strategies</li>
                 <li><a href="https://phpstan.org/developing-extensions/rules" target="_blank" rel="noopener">PHPStan Custom Rules</a> - Creating your own static analysis rules</li>
                 <li><a href="https://www.php.net/manual/en/language.generators.php" target="_blank" rel="noopener">PHP Generators</a> - Official generator documentation</li>
                 <li><a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html" target="_blank" rel="noopener">InnoDB Transaction Isolation</a> - Understanding isolation levels</li>
@@ -3754,18 +3756,18 @@ GROUP BY c.id</code></pre>
 <!-- Article lead/introduction -->
 <section class="intro">
 <p class="lead">
-How to leverage AI tools like GitHub Copilot and OpenAI APIs to boost PHP development efficiency without compromising quality.
+How AI tools like GitHub Copilot and OpenAI's APIs can speed up PHP development, without you handing over your judgement about what good code actually looks like.
 </p>
 </section>
 <!-- Article content sections -->
 <section>
-<p>AI is transforming software development, and PHP developers who embrace these tools are seeing significant productivity gains. But AI isn't magic. It's a powerful assistant that amplifies your existing skills when used correctly.</p>
-<p>I've been integrating AI tools into my PHP development workflow for over a year now. I've learned what works, what doesn't, and how to maintain code quality while leveraging AI's capabilities.</p>
+<p>AI tools are genuinely useful for PHP development, though it's worth being honest about what that actually means in practice: they amplify the skill you already have rather than replace your judgement, so any productivity gain only really shows up if you're still doing the reviewing yourself.</p>
+<p>The tools below fall into two rough categories: pair-programming assistants for boilerplate and test generation, and API-level integrations for code review, refactoring, and error analysis. What matters more than the tools themselves is how you validate what they produce.</p>
 </section>
 <section>
 <h2>The AI Development Toolkit</h2>
-<h3>GitHub Copilot: Your AI Pair Programmer</h3>
-<p>GitHub Copilot excels at:</p>
+<h3>GitHub Copilot</h3>
+<p>GitHub Copilot is good at:</p>
 <ul>
 <li><strong>Boilerplate code generation:</strong> Controllers, models, service classes</li>
 <li><strong>Test case creation:</strong> Unit tests, integration tests, mock objects</li>
@@ -3773,184 +3775,28 @@ How to leverage AI tools like GitHub Copilot and OpenAI APIs to boost PHP develo
 <li><strong>Code completion:</strong> Complex function implementations, regex patterns</li>
 </ul>
 <p>Example workflow with Copilot:</p>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppServicesUser;
-use AppRepositoriesUserRepository;
-use AppValueObjects{UserId, EmailAddress, UserName, HashedPassword};
-use AppEntitiesUser;
-use AppExceptions{ValidationException, UserCreationException};
-// Type this comment:
-// Create a UserService class with methods to create, update, and delete users
-// Modern AI-generated code with proper typing:
-final readonly class UserService
-{
-public function __construct(
-private UserRepository $userRepository,
-private UserValidator $validator,
-private PasswordHasher $passwordHasher,
-) {}
-public function createUser(array $userData): User
-{
-$validationResult = $this-&gt;validator-&gt;validate($userData);
-if (!$validationResult-&gt;isValid()) {
-throw new ValidationException($validationResult-&gt;getErrors());
-}
-$user = User::create(
-UserId::generate(),
-EmailAddress::fromString($userData[&#39;email&#39;]),
-UserName::fromString($userData[&#39;name&#39;]),
-$this-&gt;passwordHasher-&gt;hash($userData[&#39;password&#39;])
-);
-return $this-&gt;userRepository-&gt;save($user);
-}
-public function updateUser(UserId $id, array $userData): User
-{
-$user = $this-&gt;userRepository-&gt;findById($id)
-?? throw new UserNotFoundException(&quot;User not found: {$id-&gt;value}&quot;);
-if (isset($userData[&#39;email&#39;])) {
-$user-&gt;changeEmail(EmailAddress::fromString($userData[&#39;email&#39;]));
-}
-if (isset($userData[&#39;name&#39;])) {
-$user-&gt;changeName(UserName::fromString($userData[&#39;name&#39;]));
-}
-return $this-&gt;userRepository-&gt;save($user);
-}
-public function deleteUser(UserId $id): void
-{
-$user = $this-&gt;userRepository-&gt;findById($id)
-?? throw new UserNotFoundException(&quot;User not found: {$id-&gt;value}&quot;);
-$this-&gt;userRepository-&gt;delete($user);
-}
-}</code></pre>
-<h3>OpenAI APIs: Custom AI Integration</h3>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/user-service.php}}</code></pre>
+<h3>OpenAI APIs</h3>
 <p>OpenAI APIs can be integrated directly into your PHP applications:</p>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppAICodeReview;
-use AppValueObjects{CodeSnippet, ReviewResult, AIPrompt};
-use AppExceptions{AIServiceException, CodeReviewException};
-use AppContractsAIClientInterface;
-use PsrLogLoggerInterface;
-final readonly class AICodeReviewer
-{
-public function __construct(
-private AIClientInterface $aiClient,
-private LoggerInterface $logger,
-private string $model = &#39;gpt-4-turbo&#39;,
-private int $maxTokens = 2000,
-) {}
-public function reviewCode(CodeSnippet $code): ReviewResult
-{
-$systemPrompt = AIPrompt::system(&lt;&lt;&lt; &#39;PROMPT&#39;
-You are a senior PHP 8.3+ developer reviewing code for:
-- Modern PHP syntax and features
-- Type safety and strict typing
-- Security vulnerabilities
-- Performance optimizations
-- SOLID principles adherence
-- Best practices and code quality
-Provide specific, actionable feedback with code examples.
-PROMPT);
-$userPrompt = AIPrompt::user(
-&quot;Please review this PHP code:
-&quot; . $code-&gt;content
-);
-try {
-$response = $this-&gt;aiClient-&gt;chat([
-&#39;model&#39; =&gt; $this-&gt;model,
-&#39;max_tokens&#39; =&gt; $this-&gt;maxTokens,
-&#39;temperature&#39; =&gt; 0.1, // Low temperature for consistent reviews
-&#39;messages&#39; =&gt; [
-$systemPrompt-&gt;toArray(),
-$userPrompt-&gt;toArray(),
-],
-]);
-$reviewContent = $response[&#39;choices&#39;][0][&#39;message&#39;][&#39;content&#39;];
-$this-&gt;logger-&gt;info(&#39;Code review completed&#39;, [
-&#39;code_length&#39; =&gt; strlen($code-&gt;content),
-&#39;tokens_used&#39; =&gt; $response[&#39;usage&#39;][&#39;total_tokens&#39;],
-]);
-return $this-&gt;parseReviewResponse($reviewContent);
-} catch (Throwable $e) {
-$this-&gt;logger-&gt;error(&#39;AI code review failed&#39;, [
-&#39;error&#39; =&gt; $e-&gt;getMessage(),
-&#39;code_snippet&#39; =&gt; substr($code-&gt;content, 0, 100) . &#39;...&#39;,
-]);
-throw new CodeReviewException(
-&quot;Code review failed: {$e-&gt;getMessage()}&quot;,
-previous: $e
-);
-}
-}
-private function parseReviewResponse(string $response): ReviewResult
-{
-// Parse structured review response
-return ReviewResult::fromAIResponse($response);
-}
-public function batchReviewFiles(array $files): array
-{
-$reviews = [];
-foreach ($files as $file) {
-$code = CodeSnippet::fromFile($file);
-$reviews[$file] = $this-&gt;reviewCode($code);
-}
-return $reviews;
-}
-}</code></pre>
-<h3>Claude AI: Complex Problem Solving</h3>
-<p>Claude excels at:</p>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/ai-code-reviewer.php}}</code></pre>
+<h3>Claude</h3>
+<p>Claude tends to be stronger on:</p>
 <ul>
 <li>Architecture discussions and design patterns</li>
 <li>Complex refactoring strategies</li>
-<li>Performance optimization analysis</li>
+<li>Performance optimisation analysis</li>
 <li>Security vulnerability assessment</li>
 </ul>
 <h2>AI-Enhanced Development Workflows</h2>
 <h3>1. Test-Driven Development with AI</h3>
-<p>AI can accelerate TDD by generating comprehensive test cases:</p>
-<pre><code class="language-php">// Describe your class functionality
-// Generate test cases for a UserValidator class that validates email, password strength, and required fields
-// AI generates:
-class UserValidatorTest extends TestCase {
-private $validator;
-protected function setUp(): void {
-$this-&gt;validator = new UserValidator();
-}
-public function testValidEmailIsAccepted() {
-$result = $this-&gt;validator-&gt;validateEmail('user@example.com');
-$this-&gt;assertTrue($result-&gt;isValid());
-}
-public function testInvalidEmailIsRejected() {
-$result = $this-&gt;validator-&gt;validateEmail('invalid-email');
-$this-&gt;assertFalse($result-&gt;isValid());
-$this-&gt;assertContains('Invalid email format', $result-&gt;getErrors());
-}
-// ... more test cases
-}</code></pre>
+<p>AI can speed up TDD by generating a solid set of test cases:</p>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/user-validator-test.php}}</code></pre>
 <h3>2. Code Review Automation</h3>
 <p>Integrate AI into your review process:</p>
-<pre><code class="language-bash">#!/bin/bash
-# Git hook that runs AI code review
-git diff --cached --name-only | grep &#39;.php$&#39; | while read file; do
-if [ -f &quot;$file&quot; ]; then
-echo &quot;AI reviewing $file...&quot;
-php ai-review.php &quot;$file&quot;
-fi
-done</code></pre>
+<pre><code class="language-bash">{{SNIPPET:ai-enhanced-php-development/git-hook.sh}}</code></pre>
 <h3>3. Documentation Generation</h3>
-<p>AI can generate comprehensive documentation:</p>
-<pre><code class="language-php">/**
-* AI-generated PHPDoc example
-*
-* @param array $orderData The order data containing items, customer info, and payment details
-* @throws InvalidOrderException When order data is invalid or incomplete
-* @throws PaymentException When payment processing fails
-* @return OrderResult Contains order ID, status, and transaction details
-*/
-public function processOrder(array $orderData): OrderResult {
-// Implementation...
-}</code></pre>
+<p>AI can generate a first pass at documentation:</p>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/order-processing-docblock.php}}</code></pre>
 <h2>Best Practices for AI-Enhanced PHP Development</h2>
 <h3>1. Validate AI-Generated Code</h3>
 <p>Never trust AI-generated code blindly. Always review and test it:</p>
@@ -3962,263 +3808,21 @@ public function processOrder(array $orderData): OrderResult {
 </ul>
 <h3>2. Use AI for Rapid Prototyping</h3>
 <p>AI is great for creating initial implementations that you can then refine:</p>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppShopping;
-use AppValueObjects{ProductId, Quantity, Money};
-use AppEntitiesProduct;
-use AppExceptions{InvalidQuantityException, ProductNotFoundException};
-use AppCollectionsCartItemCollection;
-// AI-generated prototype (basic)
-class ShoppingCart {
-private $items = [];
-public function addItem(Product $product, int $quantity = 1): void {
-$this-&gt;items[] = ['product' =&gt; $product, 'quantity' =&gt; $quantity];
-}
-public function getTotal(): float {
-return array_sum(array_map(function($item) {
-return $item['product']-&gt;getPrice() * $item['quantity'];
-}, $this-&gt;items));
-}
-}
-// Refine with modern PHP patterns and proper domain modeling
-final class ShoppingCart
-{
-private CartItemCollection $items;
-public function __construct()
-{
-$this-&gt;items = new CartItemCollection();
-}
-public function addItem(Product $product, Quantity $quantity): void
-{
-if ($quantity-&gt;isZero()) {
-throw new InvalidQuantityException('Quantity must be positive');
-}
-$existingItem = $this-&gt;items-&gt;findByProductId($product-&gt;getId());
-if ($existingItem !== null) {
-$existingItem-&gt;increaseQuantity($quantity);
-} else {
-$this-&gt;items-&gt;add(new CartItem($product, $quantity));
-}
-}
-public function removeItem(ProductId $productId): void
-{
-$item = $this-&gt;items-&gt;findByProductId($productId)
-?? throw new ProductNotFoundException("Product not found: {$productId-&gt;value}");
-$this-&gt;items-&gt;remove($item);
-}
-public function getTotal(): Money
-{
-return $this-&gt;items-&gt;reduce(
-Money::zero(),
-fn(Money $total, CartItem $item) =&gt; $total-&gt;add($item-&gt;getSubtotal())
-);
-}
-public function getItemCount(): int
-{
-return $this-&gt;items-&gt;count();
-}
-public function isEmpty(): bool
-{
-return $this-&gt;items-&gt;isEmpty();
-}
-public function clear(): void
-{
-$this-&gt;items = new CartItemCollection();
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/shopping-cart-prototype.php}}</code></pre>
+<p>Once the prototype proves the concept, refine it with value objects, a proper collection, and the domain rules a shopping cart actually needs:</p>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/shopping-cart-refined.php}}</code></pre>
 <h3>3. AI-Assisted Refactoring</h3>
 <p>You can use AI to spot refactoring opportunities:</p>
-<pre><code class="language-yaml">&lt;?php
-declare(strict_types=1);
-namespace AppServicesUser;
-use AppValueObjects{EmailAddress, Password, UserRegistrationData};
-use AppExceptions{ValidationException, UserRegistrationException};
-use AppValidatorsUserRegistrationValidator;
-use AppRepositoriesUserRepository;
-// Ask AI: "How can I refactor this method to improve readability and maintainability?"
-// Before: Basic validation with mixed concerns
-public function processUserRegistration($data) {
-if (!isset($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-throw new Exception('Invalid email');
-}
-if (!isset($data['password']) || strlen($data['password']) &lt; 8) {
-throw new Exception('Password too short');
-}
-return $this-&gt;userRepository-&gt;create($data);
-}
-// After: Modern refactored version with proper separation of concerns
-final readonly class UserRegistrationService
-{
-public function __construct(
-private UserRegistrationValidator $validator,
-private UserRepository $userRepository,
-private PasswordHasher $passwordHasher,
-private EventDispatcher $eventDispatcher,
-) {}
-public function processUserRegistration(array $data): User
-{
-$registrationData = $this-&gt;createRegistrationData($data);
-$validationResult = $this-&gt;validator-&gt;validate($registrationData);
-if (!$validationResult-&gt;isValid()) {
-throw new ValidationException($validationResult-&gt;getViolations());
-}
-$user = $this-&gt;createUser($registrationData);
-$this-&gt;userRepository-&gt;save($user);
-$this-&gt;eventDispatcher-&gt;dispatch(
-new UserRegisteredEvent($user-&gt;getId(), $user-&gt;getEmail())
-);
-return $user;
-}
-private function createRegistrationData(array $data): UserRegistrationData
-{
-return new UserRegistrationData(
-email: EmailAddress::fromString($data['email'] ?? ''),
-password: Password::fromString($data['password'] ?? ''),
-name: UserName::fromString($data['name'] ?? '')
-);
-}
-private function createUser(UserRegistrationData $data): User
-{
-return User::register(
-UserId::generate(),
-$data-&gt;email,
-$data-&gt;name,
-$this-&gt;passwordHasher-&gt;hash($data-&gt;password)
-);
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/user-registration-before.php}}</code></pre>
+<p>Asked to refactor for readability and maintainability, AI can propose a proper separation of concerns, with validation, persistence, and event dispatch each becoming their own responsibility:</p>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/user-registration-service.php}}</code></pre>
 <h2>Implementing AI in Business Processes</h2>
 <h3>Automated Code Generation</h3>
 <p>You can generate CRUD operations, API endpoints, and admin interfaces with AI:</p>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppCodeGeneration;
-use AppValueObjects{EntityName, FieldDefinition, CodeTemplate};
-use AppExceptionsCodeGenerationException;
-use AppContractsAIClientInterface;
-use PsrLogLoggerInterface;
-final readonly class AICodeGenerator
-{
-public function __construct(
-private AIClientInterface $aiClient,
-private LoggerInterface $logger,
-private CodeTemplateRepository $templateRepository,
-) {}
-/** @param array&lt;FieldDefinition--&gt; $fields */
-public function generateCRUD(EntityName $entityName, array $fields): string
-{
-$template = $this-&gt;templateRepository-&gt;getTemplate('modern-php-entity');
-$prompt = $this-&gt;buildPrompt($entityName, $fields, $template);
-try {
-$generatedCode = $this-&gt;aiClient-&gt;generateCode($prompt);
-$this-&gt;logger-&gt;info('CRUD code generated successfully', [
-'entity' =&gt; $entityName-&gt;value,
-'fields_count' =&gt; count($fields),
-]);
-return $this-&gt;postProcessCode($generatedCode);
-} catch (Throwable $e) {
-throw new CodeGenerationException(
-"Failed to generate CRUD for {$entityName-&gt;value}: {$e-&gt;getMessage()}",
-previous: $e
-);
-}
-}
-/** @param array<fielddefinition> $fields */
-private function buildPrompt(EntityName $entityName, array $fields, CodeTemplate $template): string
-{
-$fieldDescriptions = array_map(
-fn(FieldDefinition $field) =&gt; $field-&gt;toPromptString(),
-$fields
-);
-return $template-&gt;render([
-'entity_name' =&gt; $entityName-&gt;value,
-'fields' =&gt; implode(', ', $fieldDescriptions),
-'requirements' =&gt; [
-'Use PHP 8.3+ features',
-'Include strict typing with declare(strict_types=1)',
-'Use readonly properties where appropriate',
-'Include proper validation and error handling',
-'Follow domain-driven design principles',
-'Use value objects for complex data',
-'Include comprehensive PHPDoc',
-],
-]);
-}
-private function postProcessCode(string $code): string
-{
-// Post-process generated code to ensure consistency
-return $code;
-}
-}</fielddefinition></code></pre>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/crud-generator.php}}</code></pre>
 <h3>Intelligent Error Handling</h3>
 <p>AI can suggest solutions for common errors you encounter:</p>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppErrorHandling;
-use AppValueObjects{ErrorContext, ErrorSolution};
-use AppExceptionsErrorAnalysisException;
-use AppContractsAIClientInterface;
-use PsrLogLoggerInterface;
-use Throwable;
-final readonly class AIErrorHandler
-{
-public function __construct(
-private AIClientInterface $aiClient,
-private LoggerInterface $logger,
-private ErrorContextBuilder $contextBuilder,
-) {}
-public function handleError(Throwable $error): ErrorSolution
-{
-$context = $this-&gt;contextBuilder-&gt;buildFromThrowable($error);
-try {
-$solution = $this-&gt;aiClient-&gt;suggestSolution($context);
-$this-&gt;logger-&gt;info('AI error solution generated', [
-'error_type' =&gt; $error::class,
-'error_message' =&gt; $error-&gt;getMessage(),
-'solution_confidence' =&gt; $solution-&gt;getConfidence(),
-]);
-return $solution;
-} catch (Throwable $e) {
-$this-&gt;logger-&gt;error('Failed to generate AI solution', [
-'original_error' =&gt; $error-&gt;getMessage(),
-'ai_error' =&gt; $e-&gt;getMessage(),
-]);
-throw new ErrorAnalysisException(
-"Failed to analyze error: {$e-&gt;getMessage()}",
-previous: $e
-);
-}
-}
-public function analyzePerformanceIssue(string $slowQuery, array $metrics): ErrorSolution
-{
-$context = new ErrorContext(
-type: 'performance',
-description: 'Slow database query detected',
-metadata: [
-'query' =&gt; $slowQuery,
-'execution_time' =&gt; $metrics['execution_time'],
-'memory_usage' =&gt; $metrics['memory_usage'],
-'affected_rows' =&gt; $metrics['affected_rows'],
-]
-);
-return $this-&gt;aiClient-&gt;suggestSolution($context);
-}
-public function analyzeSecurityVulnerability(string $code, array $scanResults): ErrorSolution
-{
-$context = new ErrorContext(
-type: 'security',
-description: 'Security vulnerability detected',
-metadata: [
-'code_snippet' =&gt; $code,
-'vulnerability_type' =&gt; $scanResults['type'],
-'severity' =&gt; $scanResults['severity'],
-'cwe_id' =&gt; $scanResults['cwe_id'] ?? null,
-]
-);
-return $this-&gt;aiClient-&gt;suggestSolution($context);
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:ai-enhanced-php-development/ai-error-handler.php}}</code></pre>
 <h2>Measuring AI Impact</h2>
 <p>Track these metrics to see how AI impacts your development process:</p>
 <ul>
@@ -4227,7 +3831,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
 <li><strong>Test coverage:</strong> Automated test generation effectiveness</li>
 <li><strong>Developer satisfaction:</strong> Reduced repetitive tasks</li>
 </ul>
-<h2>Common Pitfalls and How to Avoid Them</h2>
+<h2>Where AI-Generated PHP Goes Wrong</h2>
 <h3>Over-reliance on AI</h3>
 <p>Don't let AI replace your brain:</p>
 <ul>
@@ -4247,7 +3851,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
 <ul>
 <li>Profile generated code for performance bottlenecks</li>
 <li>Consider database query efficiency</li>
-<li>Optimize algorithms for your specific use case</li>
+<li>Optimise algorithms for your specific use case</li>
 </ul>
 <h2>The Future of AI in PHP Development</h2>
 <p>AI tools evolve fast. Stay ahead by:</p>
@@ -4257,8 +3861,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
 <li>Sharing knowledge with the PHP community</li>
 <li>Balancing AI efficiency with human expertise</li>
 </ul>
-<p>Here's the bottom line: AI amplifies your capabilities, but it doesn't replace them. The most successful developers learn to work with AI while keeping their critical thinking sharp.</p>
-<p>Embrace AI, but keep learning and growing. The future belongs to developers who can blend human creativity with artificial intelligence.</p>
+<p>The pattern running through every example here is the same: use AI to generate a first draft, whether that's a prototype, a test suite, or a refactor, then apply the same scrutiny you'd give a junior developer's pull request, checking the output, the security implications, and the performance rather than taking any of it on trust. The tools save you time on the typing; they don't save you from understanding what the code actually does.</p>
 </section>
     `,
   },
@@ -4304,7 +3907,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
             <p>Understanding and managing this 80/20 split has become a critical senior-level skill. The developers who thrive aren't the ones who write the most code. They're the ones who can:</p>
 
             <ul>
-                <li><strong>Recognize the 20%</strong>: Spot subtle incorrectness before it reaches production</li>
+                <li><strong>Recognise the 20%</strong>: Spot subtle incorrectness before it reaches production</li>
                 <li><strong>Verify quickly</strong>: Apply <a href="https://www.techtarget.com/whatis/definition/static-analysis-static-code-analysis" target="_blank" rel="noopener">static analysis</a> (automated code checking without running the program), comprehensive testing, and code review to catch AI errors</li>
                 <li><strong>Make strategic decisions</strong>: Determine when AI acceleration is appropriate versus when deterministic code is essential</li>
                 <li><strong>Context management</strong>: Provide AI with the right information to maximize the 80% and minimize the 20%</li>
@@ -4316,7 +3919,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
         <section>
             <h2>The Mid-Level Extinction Event</h2>
 
-            <p>Let's address the elephant in the room: mediocre mid-level developers are becoming obsolete. Not in five years. Now. The harsh reality is that AI can produce their typical output faster and often more consistently.</p>
+            <p>Let's address the elephant in the room: mediocre mid-level developers are becoming obsolete, and not in five years' time but right now, because AI can already produce their typical output faster and often more consistently.</p>
 
             <h3>Why Mid-Level Roles Are Vulnerable</h3>
 
@@ -4335,7 +3938,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
 
             <p>The economics are straightforward: organisations can now achieve mid-level output with fewer people. The developers they do hire must provide value beyond code production. They need to understand systems deeply enough to verify AI output, catch subtle bugs, and make architectural decisions that AI cannot.</p>
 
-            <p>This creates a brutal filter. Developers who relied on volume rather than insight are struggling. Those who built deep technical understanding and critical thinking skills are thriving. The distinction matters more every month.</p>
+            <p>This creates a brutal filter. Developers who relied on volume rather than insight are struggling, whilst those who built deep technical understanding and critical thinking skills are thriving, and the distinction matters more every month.</p>
         </section>
 
         <section>
@@ -4375,9 +3978,11 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
 
             <h3>The Subsidy Reality</h3>
 
-            <p>Every AI coding assistant is currently subsidised by venture capital or corporate strategic investment. <a href="https://www.cursor.com/" target="_blank" rel="noopener">Cursor</a>, which generates <a href="https://altersquare.io/cursor-github-copilot-claude-ai-coding-tool-comparison/" target="_blank" rel="noopener">$500 million in annualised recurring revenue</a>, reportedly sends 100% of that revenue straight to <a href="https://www.anthropic.com/" target="_blank" rel="noopener">Anthropic</a> to pay for model access. They're losing money on every customer.</p>
+            <p>Every AI coding assistant is currently subsidised by venture capital or corporate strategic investment.
+            <a href="https://www.cursor.com/" target="_blank" rel="noopener">Cursor</a>, which generates <a href="https://altersquare.io/cursor-github-copilot-claude-ai-coding-tool-comparison/" target="_blank" rel="noopener">$500 million in annualised recurring revenue</a>,
+            spends most of that on inference costs across the model providers it supports, including <a href="https://www.anthropic.com/" target="_blank" rel="noopener">Anthropic</a>. They're losing money on every customer.</p>
 
-            <p>This is intentional. Like crack dealers getting everyone hooked before raising prices, AI companies are building dependency before implementing sustainable pricing. The strategy is working: <a href="https://www.qodo.ai/reports/state-of-ai-code-quality/" target="_blank" rel="noopener">82% of developers</a> now use AI coding assistants daily or weekly.</p>
+            <p>I think this is intentional. Rather like crack dealers getting everyone hooked before raising prices, AI companies appear to be building dependency before implementing sustainable pricing, and the strategy is working: <a href="https://www.qodo.ai/reports/state-of-ai-code-quality/" target="_blank" rel="noopener">82% of developers</a> now use AI coding assistants daily or weekly.</p>
 
             <h3>When the Bill Comes Due</h3>
 
@@ -4386,7 +3991,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
             <ul>
                 <li><strong>Usage-based costs will increase</strong>: Per-token or per-request pricing will rise substantially</li>
                 <li><strong>Free tiers will disappear</strong>: Current generous limits will shrink or vanish</li>
-                <li><strong>Organizational costs will spike</strong>: A 500-developer team using <a href="https://github.com/features/copilot" target="_blank" rel="noopener">GitHub Copilot Business</a> currently faces <a href="https://getdx.com/blog/ai-coding-assistant-pricing/" target="_blank" rel="noopener">$114k annually</a>. Without massive improvements in model efficiency, consumption costs could explode to levels we cannot predict</li>
+                <li><strong>Organisational costs will spike</strong>: A 500-developer team using <a href="https://github.com/features/copilot" target="_blank" rel="noopener">GitHub Copilot Business</a> currently faces <a href="https://getdx.com/blog/ai-coding-assistant-pricing/" target="_blank" rel="noopener">$114k annually</a>. Without massive improvements in model efficiency, consumption costs could explode to levels we cannot predict</li>
                 <li><strong>Strategic differentiation will emerge</strong>: Organisations that use AI efficiently will have massive cost advantages</li>
             </ul>
 
@@ -4411,7 +4016,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
         <section>
             <h2>Strategic Decision Framework: AI Versus Deterministic Code</h2>
 
-            <p>The most valuable skill for senior developers and technical leaders is knowing when to use AI and when to write traditional <a href="https://en.wikipedia.org/wiki/Deterministic_algorithm" target="_blank" rel="noopener">deterministic code</a> (code that always produces the same output for the same input, with predictable, reliable behaviour). This isn't just about cost efficiency. It's about system reliability, maintainability, and long-term viability.</p>
+            <p>The most valuable skill for senior developers and technical leaders is knowing when to use AI and when to write traditional <a href="https://en.wikipedia.org/wiki/Deterministic_algorithm" target="_blank" rel="noopener">deterministic code</a> (code that always produces the same output for the same input, with predictable, reliable behaviour). The value here goes beyond cost efficiency: it's also about system reliability, maintainability, and long-term viability.</p>
 
             <h3>When AI Excels</h3>
 
@@ -4467,13 +4072,12 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
             <p>Architecture decisions made today should account for future AI economics:</p>
 
             <ul>
-                <li><strong>Modular design</strong>: Structure systems so components can be implemented with or without AI assistance</li>
-                <li><strong>Clear boundaries</strong>: Define which parts of your codebase are AI-appropriate and which require deterministic development</li>
+                <li><strong>Modular design with clear boundaries</strong>: Structure systems so components can be implemented with or without AI assistance, and define which parts of your codebase are AI-appropriate versus which require deterministic development</li>
                 <li><strong>Verification infrastructure</strong>: Build comprehensive testing, <a href="https://psalm.dev/" target="_blank" rel="noopener">static analysis</a>, and code review processes that catch AI errors systematically</li>
                 <li><strong>Knowledge capture</strong>: Document architectural decisions and domain knowledge so AI has better context</li>
             </ul>
 
-            <h3>Organizational Capability Development</h3>
+            <h3>Organisational Capability Development</h3>
 
             <p>Beyond technical architecture, organisations need to develop specific competencies:</p>
 
@@ -4535,8 +4139,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
 
             <ul>
                 <li><strong>Business context</strong>: How critical is this code to business operations?</li>
-                <li><strong>Risk assessment</strong>: What's the impact if this code has subtle bugs?</li>
-                <li><strong>Economic calculation</strong>: Is the AI efficiency gain worth the verification overhead?</li>
+                <li><strong>Risk versus reward</strong>: What's the impact if this code has subtle bugs, and is the AI efficiency gain worth the verification overhead?</li>
                 <li><strong>Long-term implications</strong>: How will this decision affect maintainability and technical debt?</li>
             </ul>
 
@@ -4546,7 +4149,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
 
             <p>There's a category of expertise that AI fundamentally cannot provide: reading people. Experienced developers bring interpersonal intelligence that goes far beyond code review and technical decisions. They understand context that exists between the lines of Slack messages, recognise when team members are struggling, and sense the difference between what someone says they need and what they actually need.</p>
 
-            <p>Consider the classic <a href="https://xyproblem.info/" target="_blank" rel="noopener">XY Problem</a>. A client, product manager, or CEO asks how to implement X, but what they really need is Y. They've fixated on what they believe is the solution (X) and are asking about their attempted solution rather than their actual underlying problem (Y). AI takes questions literally. Ask it for X, it gives you X. An experienced developer senses something's off. They ask "What are you actually trying to accomplish?" and uncover the real problem. This isn't just technical knowledge. It's human intuition developed through years of conversations, requirements gathering, and watching stakeholders work through problems. You recognise the pattern because you've seen it dozens of times. The junior developer builds exactly what was requested. The senior developer digs deeper to find out what's actually needed.</p>
+            <p>Consider the classic <a href="https://xyproblem.info/" target="_blank" rel="noopener">XY Problem</a>. A client, product manager, or CEO asks how to implement X, but what they really need is Y. They've fixated on what they believe is the solution (X) and are asking about their attempted solution rather than their actual underlying problem (Y). AI takes questions literally. Ask it for X, it gives you X. An experienced developer senses something's off. They ask "What are you actually trying to accomplish?" and uncover the real problem. That's more than technical knowledge - it's human intuition developed through years of conversations, requirements gathering, and watching stakeholders work through problems. You recognise the pattern because you've seen it dozens of times. The junior developer builds exactly what was requested. The senior developer digs deeper to find out what's actually needed.</p>
 
             <p>This human intelligence extends to reading situations that never make it into written communication. Steve's being erratic today because his wife just left him. Sarah's pushing back on this proposal not because of technical concerns but because she feels her expertise is being dismissed. The team's productivity dropped not because of the new framework but because morale collapsed after redundancies. Experienced developers read <a href="https://www.paulekman.com/resources/micro-expressions/" target="_blank" rel="noopener">micro-expressions</a> (involuntary facial expressions lasting fractions of a second that reveal suppressed emotions), tone shifts in written communication, and contextual awareness that comes from knowing people's circumstances. You learn to gauge someone's emotional state from a code review comment. You recognise when someone needs support versus when they need to be pushed. You see the brief flash of frustration on someone's face before they say "I'm fine with that approach."</p>
 
@@ -4576,12 +4179,12 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
                 <li><strong>Maintain junior programmes</strong>: Continue hiring and training entry-level developers despite short-term cost pressures</li>
                 <li><strong>Establish quality standards</strong>: Implement <a href="https://www.sonarqube.org/" target="_blank" rel="noopener">static analysis</a>, comprehensive testing, and rigorous code review for all AI-assisted code</li>
                 <li><strong>Track AI economics</strong>: Monitor usage patterns and costs to prepare for inevitable pricing increases</li>
-                <li><strong>Build verification culture</strong>: Emphasize that AI suggestions require validation, not blind acceptance</li>
+                <li><strong>Build verification culture</strong>: Emphasise that AI suggestions require validation, not blind acceptance</li>
                 <li><strong>Define appropriate use</strong>: Create clear guidelines for when AI is appropriate versus when deterministic code is required</li>
                 <li><strong>Invest in senior talent</strong>: Experienced developers who can verify AI output and make strategic decisions are critical</li>
             </ul>
 
-            <h3>For Organizations</h3>
+            <h3>For Organisations</h3>
 
             <ul>
                 <li><strong>Strategic architecture</strong>: Design systems with clear boundaries between AI-appropriate and deterministic components</li>
@@ -4603,7 +4206,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
 
             <p>The strategic opportunity is clear: use AI to amplify productivity whilst maintaining the deep technical expertise and rigorous verification practices that ensure reliability. Build systems that make intelligent decisions about when to use AI versus deterministic code. Invest in talent development despite short-term pressures. Prepare for economic realities when AI subsidies end.</p>
 
-            <p>The paradigm shift isn't just happening. It's accelerating. The question isn't whether AI will transform software development. It's whether your organisation will be one that harnesses that transformation strategically or one that's overwhelmed by it. The answer depends on decisions you make today about architecture, talent and engineering culture.</p>
+            <p>The paradigm shift is accelerating, and AI transforming software development is no longer really in question. Whether your organisation harnesses that transformation strategically, or gets overwhelmed by it, depends on the decisions you make today about architecture, talent and engineering culture.</p>
 
             <p>We're not washing our faces with a garden hose anymore. We're managing industrial-grade water pressure. Learn to control the valve, understand when to use it, and maintain alternative approaches for situations where precision matters more than volume. That's the strategic skill that separates thriving from surviving in the AI development era.</p>
         </section>
@@ -4633,11 +4236,11 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
 <div class="intro">
             <p class="lead">
                 <a href="https://www.ansible.com/" target="_blank" rel="noopener">Ansible</a> fact caching promises
-                performance improvements and cross-playbook fact persistence. Instead, it delivers frustrating limitations 
-                that have plagued operations teams for years. You can't use memory caching with 
-                <a href="https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html#cmdoption-ansible-playbook-limit" target="_blank" rel="noopener">--limit operations</a>. 
-                There's no way to configure dynamic cache locations. These problems create operational complexity 
-                with no elegant solutions.
+                performance improvements and cross-playbook fact persistence, but in practice it delivers a couple of
+                frustrating limitations that have plagued operations teams for years: you can't use memory caching with
+                <a href="https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html#cmdoption-ansible-playbook-limit" target="_blank" rel="noopener">--limit operations</a>,
+                and there's no way to configure dynamic cache locations. Neither problem has an elegant solution, which
+                leaves operations teams carrying the resulting complexity themselves.
             </p>
         </div>
 
@@ -4645,15 +4248,15 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
             <h2>The Memory Cache --limit Catastrophe</h2>
             <p>
                 <a href="https://docs.ansible.com/ansible/latest/plugins/cache.html" target="_blank" rel="noopener">Ansible's memory cache plugin</a>
-                is the default fact caching mechanism. It stores facts only for the current playbook execution. 
-                This breaks targeted deployments when you use the --limit flag.
+                is the default fact caching mechanism, and it only stores facts for the current playbook execution,
+                which breaks targeted deployments the moment you bring the --limit flag into play.
             </p>
             
             <h3>The Core Problem</h3>
             <p>
-                When you use memory caching with --limit, <a href="https://docs.ansible.com/ansible/latest/" target="_blank" rel="noopener">Ansible</a> 
-                only gathers facts for hosts within the limit scope. Playbook tasks that reference 
-                <code>hostvars</code> for hosts outside the limit will fail:
+                When you use memory caching with --limit, <a href="https://docs.ansible.com/ansible/latest/" target="_blank" rel="noopener">Ansible</a>
+                only gathers facts for hosts within the limit scope, which means playbook tasks that reference
+                <code>hostvars</code> for hosts outside that limit will fail:
             </p>
             
             <pre><code class="language-yaml">{{SNIPPET:ansible-fact-caching-problems/memory-cache-issue.yml}}
@@ -4683,23 +4286,23 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
         <section>
             <h2>File-Based Caching: Trading One Problem for Another</h2>
             <p>
-                The obvious solution is switching to 
-                <a href="https://docs.ansible.com/ansible/latest/collections/ansible/builtin/jsonfile_cache.html" target="_blank" rel="noopener">persistent cache plugins</a> 
-                like <code>jsonfile</code> or <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a>. 
-                This solves the --limit problem. But it introduces equally frustrating environment separation issues.
+                The obvious solution is switching to
+                <a href="https://docs.ansible.com/ansible/latest/collections/ansible/builtin/jsonfile_cache.html" target="_blank" rel="noopener">persistent cache plugins</a>
+                like <code>jsonfile</code> or <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a>, which solves the
+                --limit problem but introduces an equally frustrating environment separation issue of its own.
             </p>
             
             <h3>The Environment Isolation Problem</h3>
             <p>
-                Multi-environment infrastructures need isolated fact caches. This prevents cross-contamination 
-                between development, staging, and production environments. But Ansible provides no 
-                mechanism to dynamically configure cache locations.
+                Multi-environment infrastructures need isolated fact caches to prevent cross-contamination between
+                development, staging and production environments, but Ansible provides no mechanism to configure
+                cache locations dynamically.
             </p>
-            
+
             <p>
-                The <code>fact_caching_connection</code> parameter is read once at startup from 
-                <a href="https://docs.ansible.com/ansible/latest/reference_appendices/config.html" target="_blank" rel="noopener">ansible.cfg</a>. 
-                You can't change it dynamically. This makes shared configurations impossible:
+                The <code>fact_caching_connection</code> parameter is read once at startup from
+                <a href="https://docs.ansible.com/ansible/latest/reference_appendices/config.html" target="_blank" rel="noopener">ansible.cfg</a>
+                and can't be changed dynamically, which makes a single shared configuration impossible across environments:
             </p>
             
             <pre><code class="language-yaml">{{SNIPPET:ansible-fact-caching-problems/attempted-dynamic-cache.yml}}
@@ -4709,8 +4312,8 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
         <section>
             <h2>The Only Working Solutions: Operational Workarounds</h2>
             <p>
-                After years of this limitation, operations teams have developed several workarounds. 
-                None of them are elegant or maintainable at scale.
+                After years of living with this limitation, operations teams have developed several workarounds,
+                though I'd stop short of calling any of them elegant or something you'd want to maintain at scale.
             </p>
             
             <h3>Workaround 1: Pre-populate Cache Strategy</h3>
@@ -4802,8 +4405,8 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
         <section>
             <h2>Alternative Cache Plugins: Same Problems, Different Complexity</h2>
             <p>
-                <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a> and other persistent 
-                cache plugins solve the --limit problem. But they don't address environment separation:
+                <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a> and other persistent
+                cache plugins solve the --limit problem, but they don't address environment separation:
             </p>
             
             <pre><code class="language-ini">{{SNIPPET:ansible-fact-caching-problems/redis-cache-config.ini}}
@@ -4819,9 +4422,9 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
             
             <h3>Memory Usage Concerns</h3>
             <p>
-                Recent <a href="https://github.com/ansible/awx/issues/15827" target="_blank" rel="noopener">AWX issue reports</a> 
-                highlight memory consumption problems with fact caching in large inventories. Each job can 
-                consume 1.7GB+ of memory when caching facts for 1700+ hosts. This leads to controller 
+                Recent <a href="https://github.com/ansible/awx/issues/15827" target="_blank" rel="noopener">AWX issue reports</a>
+                highlight memory consumption problems with fact caching in large inventories: each job can consume 1.7GB+
+                of memory when caching facts for 1700+ hosts, which is enough to push the controller into
                 <a href="https://en.wikipedia.org/wiki/Out_of_memory" target="_blank" rel="noopener">OOM conditions</a>.
             </p>
         </section>
@@ -4829,7 +4432,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
         <section>
             <h2>The Real-World Impact</h2>
             <p>
-                These limitations create operational friction that affects entire organizations:
+                These limitations create operational friction that affects entire organisations:
             </p>
             
             <h3>DevOps Team Frustration</h3>
@@ -4856,7 +4459,7 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
         <section>
             <h2>What Ansible Should Provide (But Doesn't)</h2>
             <p>
-                The Ansible community has requested these features for years. They remain unimplemented:
+                The Ansible community has requested these features for years, and they remain unimplemented:
             </p>
             
             <h3>Dynamic Cache Configuration</h3>
@@ -4864,39 +4467,28 @@ return $this-&gt;aiClient-&gt;suggestSolution($context);
                 The ability to set cache locations dynamically would solve the environment separation problem:
             </p>
             
-            <pre><code class="language-yaml"># This should work but doesn't
----
-- name: Set environment-specific cache
-  set_fact:
-    fact_caching_connection: "/tmp/facts-{{ ansible_environment }}"
-    cacheable: yes</code></pre>
-            
+            <pre><code class="language-yaml">{{SNIPPET:ansible-fact-caching-problems/hypothetical-dynamic-set-fact.yml}}</code></pre>
+
             <h3>Environment Variables for Cache Paths</h3>
             <p>
                 Environment variable support for all cache plugin parameters would enable flexible deployments:
             </p>
-            
-            <pre><code class="language-bash"># This should work but doesn't
-export ANSIBLE_FACT_CACHE_CONNECTION="/tmp/facts-\${ENVIRONMENT}"
-ansible-playbook deploy.yml</code></pre>
-            
+
+            <pre><code class="language-bash">{{SNIPPET:ansible-fact-caching-problems/hypothetical-env-var-cache.sh}}</code></pre>
+
             <h3>Cache Key Prefixing</h3>
             <p>
                 Built-in support for cache key prefixes would enable environment separation with shared backends:
             </p>
-            
-            <pre><code class="language-ini"># This should be possible but isn't
-[defaults]
-fact_caching = redis
-fact_caching_connection = localhost:6379:0
-fact_caching_prefix = "\${ENVIRONMENT}"</code></pre>
+
+            <pre><code class="language-ini">{{SNIPPET:ansible-fact-caching-problems/hypothetical-cache-prefix.ini}}</code></pre>
         </section>
 
         <section>
             <h2>Performance and Scalability Considerations</h2>
             <p>
-                Beyond functionality issues, fact caching introduces performance considerations. 
-                Operations teams must carefully manage these:
+                Beyond functionality issues, fact caching introduces performance considerations that operations
+                teams need to manage carefully:
             </p>
             
             <h3>Memory Consumption Patterns</h3>
@@ -4924,13 +4516,13 @@ fact_caching_prefix = "\${ENVIRONMENT}"</code></pre>
         <section>
             <h2>Best Practices for Working Around the Pain</h2>
             <p>
-                Until Ansible addresses these fundamental limitations, operations teams can minimize 
+                Until Ansible addresses these fundamental limitations, operations teams can minimise
                 the pain with disciplined practices:
             </p>
             
             <h3>Operational Discipline</h3>
             <ul>
-                <li><strong>Standardize scripts</strong>: Always use wrapper scripts for environment selection</li>
+                <li><strong>Standardise scripts</strong>: Always use wrapper scripts for environment selection</li>
                 <li><strong>Document extensively</strong>: Clear procedures for cache management</li>
                 <li><strong>Automate cache warming</strong>: <a href="https://docs.ansible.com/ansible/latest/collections/ansible/builtin/cron_module.html" target="_blank" rel="noopener">Cron jobs</a> to pre-populate caches</li>
                 <li><strong>Monitor cache health</strong>: Alerts for cache staleness and size</li>
@@ -4938,7 +4530,7 @@ fact_caching_prefix = "\${ENVIRONMENT}"</code></pre>
             
             <h3>Architecture Patterns</h3>
             <ul>
-                <li><strong>Minimize cross-references</strong>: Reduce dependencies between host groups</li>
+                <li><strong>Minimise cross-references</strong>: Reduce dependencies between host groups</li>
                 <li><strong>External discovery</strong>: Use <a href="https://consul.io/" target="_blank" rel="noopener">Consul</a> or similar for service discovery</li>
                 <li><strong>Template pre-processing</strong>: Generate configurations outside Ansible</li>
                 <li><strong>Incremental deployments</strong>: Design for full-environment updates</li>
@@ -4956,7 +4548,7 @@ fact_caching_prefix = "\${ENVIRONMENT}"</code></pre>
         <section>
             <h2>Alternative Tools and Migration Strategies</h2>
             <p>
-                Some organizations eventually abandon Ansible fact caching entirely. They migrate to 
+                Some organisations eventually abandon Ansible fact caching entirely and migrate to
                 tools with better architectural support for these use cases:
             </p>
             
@@ -4980,19 +4572,19 @@ fact_caching_prefix = "\${ENVIRONMENT}"</code></pre>
         <section>
             <h2>The Path Forward: Community and Vendor Response</h2>
             <p>
-                This pain has persisted for years despite extensive community discussion. The 
-                <a href="https://github.com/ansible/ansible" target="_blank" rel="noopener">Ansible project</a> 
-                acknowledges these limitations. But it provides no roadmap for resolution.
+                This pain has persisted for years despite extensive community discussion, and whilst the
+                <a href="https://github.com/ansible/ansible" target="_blank" rel="noopener">Ansible project</a>
+                acknowledges these limitations, it offers no roadmap for resolving them.
             </p>
             
             <h3>Community Workarounds</h3>
             <p>
-                The community has developed numerous workarounds. They remain fragmented and 
-                organization-specific. Popular approaches include:
+                The community has developed numerous workarounds, though they remain fragmented and
+                organisation-specific. Popular approaches include:
             </p>
             
             <ul>
-                <li><strong>Custom cache plugins</strong>: Organization-specific solutions</li>
+                <li><strong>Custom cache plugins</strong>: Organisation-specific solutions</li>
                 <li><strong>Wrapper tooling</strong>: Scripts and frameworks around Ansible</li>
                 <li><strong>Hybrid architectures</strong>: Combining Ansible with other tools</li>
                 <li><strong>Process changes</strong>: Adapting workflows to tool limitations</li>
@@ -5000,41 +4592,39 @@ fact_caching_prefix = "\${ENVIRONMENT}"</code></pre>
             
             <h3>Vendor Solutions</h3>
             <p>
-                <a href="https://www.redhat.com/en/technologies/management/ansible" target="_blank" rel="noopener">Red Hat's Ansible Automation Platform</a> 
-                provides some improvements through <a href="https://docs.ansible.com/automation-controller/" target="_blank" rel="noopener">Automation Controller</a> 
-                (formerly AWX/Tower). But the core fact caching limitations remain.
+                <a href="https://www.redhat.com/en/technologies/management/ansible" target="_blank" rel="noopener">Red Hat's Ansible Automation Platform</a>
+                provides some improvements through <a href="https://docs.ansible.com/automation-controller/" target="_blank" rel="noopener">Automation Controller</a>
+                (formerly AWX/Tower), but the core fact caching limitations remain.
             </p>
         </section>
 
         <section>
             <h2>Conclusion: Living with the Pain</h2>
             <p>
-                Ansible fact caching represents one of those infrastructure tools that promises 
-                elegant solutions but delivers operational complexity. The fundamental limitations 
-                around --limit operations and environment separation have no clean solutions. 
-                This forces operations teams into elaborate workarounds.
+                Ansible fact caching is one of those infrastructure tools that promises elegant solutions but delivers
+                operational complexity instead: the fundamental limitations around --limit operations and environment
+                separation have no clean solution, which forces operations teams into elaborate workarounds.
             </p>
             
             <p>
-                The memory cache --limit incompatibility makes the default configuration unsuitable 
-                for production operations. Persistent caching requires complex configuration 
-                management to achieve environment separation. After years of community requests, 
-                these problems remain unaddressed.
+                The memory cache --limit incompatibility makes the default configuration unsuitable for production
+                operations, and persistent caching only trades that problem for a different one: the complex
+                configuration management needed to achieve environment separation. After years of community
+                requests, both problems remain unaddressed.
             </p>
             
             <p>
-                Organizations serious about infrastructure automation eventually develop patterns 
-                that work around these limitations. Or they migrate to tools with better architectural 
-                support for multi-environment operations. The key is recognizing these limitations 
-                early and designing operational processes that account for them. Don't fight 
-                against the tool's constraints.
+                Organisations serious about infrastructure automation eventually develop patterns that work around
+                these limitations, or they migrate to tools with better architectural support for multi-environment
+                operations. Either way, the key is recognising these limitations early and designing operational
+                processes that account for them, rather than fighting the tool's constraints.
             </p>
             
             <p>
-                Until Ansible provides dynamic cache configuration and proper environment isolation, 
-                operations teams must choose between operational complexity and architectural 
-                compromises. Neither choice is ideal. But understanding the tradeoffs enables 
-                informed decisions about tooling and process design.
+                Until Ansible provides dynamic cache configuration and proper environment isolation, operations
+                teams are choosing between operational complexity and architectural compromise, and neither choice
+                is ideal. Understanding the tradeoffs, though, at least enables informed decisions about tooling
+                and process design.
             </p>
         </section>
     `,
@@ -5062,549 +4652,84 @@ fact_caching_prefix = "\${ENVIRONMENT}"</code></pre>
     subreddit: 'devops',
     content: `
 <section class="intro">
-<p class="lead">Building robust, repeatable infrastructure deployment pipelines using Ansible for PHP applications.</p>
-<p>Manual server configuration is a recipe for disaster. You get inconsistent environments, configuration drift, and human errors. These create maintenance nightmares that slow down development and increase downtime. After years of managing PHP infrastructure, I've found Ansible to be the most effective tool for automating PHP application deployments.</p>
-<p>This article covers proven Ansible strategies for PHP applications. We'll go from basic server provisioning to complex multi-environment deployments.</p>
+<p class="lead">Building repeatable infrastructure deployment pipelines using Ansible for PHP applications.</p>
+<p>Manual server configuration is a recipe for disaster, since you get inconsistent environments, configuration drift, and human errors, and those create maintenance nightmares that slow down development and increase downtime. After years of managing PHP infrastructure, I've found Ansible to be one of the most effective tools for automating PHP application deployments.</p>
+<p>This article covers proven Ansible strategies for PHP applications, and we'll go from basic server provisioning to complex multi-environment deployments.</p>
 </section>
 <section>
 <h2>Why Ansible for PHP Infrastructure?</h2>
 <h3>Simplicity and Readability</h3>
-<p>Ansible playbooks are written in YAML. This makes them readable by both developers and operations teams:</p>
-<pre><code class="language-yaml">---
-- name: Install and configure PHP application
-hosts: webservers
-become: yes
-tasks:
-- name: Install PHP packages
-apt:
-name:
-- php8.2-fpm
-- php8.2-mysql
-- php8.2-curl
-- php8.2-xml
-state: present
-update_cache: yes</code></pre>
+<p>Ansible playbooks are written in YAML, which makes them readable by both developers and operations teams:</p>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/basic-playbook.yml}}</code></pre>
 <h3>Agentless Architecture</h3>
-<p>You don't need to install agents on target servers. Ansible uses SSH, which is already available on all Linux servers.</p>
+<p>You don't need to install agents on target servers, since Ansible uses SSH, which is already available on all Linux servers.</p>
 <h3>Idempotency</h3>
-<p>You can run playbooks multiple times safely. Ansible only makes changes when needed. This ensures consistent state.</p>
+<p>You can run playbooks multiple times safely, since Ansible only makes changes when needed, which keeps things in a consistent state.</p>
 </section>
 <section>
 <h2>Essential Ansible Structure for PHP Projects</h2>
 <h3>Directory Structure</h3>
-<pre><code class="language-text">ansible/
-├── inventories/
-│   ├── production/
-│   │   ├── hosts
-│   │   └── group_vars/
-│   ├── staging/
-│   │   ├── hosts
-│   │   └── group_vars/
-│   └── development/
-│       ├── hosts
-│       └── group_vars/
-├── roles/
-│   ├── common/
-│   ├── php/
-│   ├── nginx/
-│   ├── mysql/
-│   └── application/
-├── playbooks/
-│   ├── site.yml
-│   ├── deploy.yml
-│   └── maintenance.yml
-├── templates/
-├── files/
-└── ansible.cfg</code></pre>
+<pre><code class="language-text">{{SNIPPET:ansible-php-infrastructure/directory-structure.txt}}</code></pre>
 <h3>Inventory Configuration</h3>
 <p>Here's how to define your servers and groups:</p>
-<pre><code class="language-php"># inventories/production/hosts
-[webservers]
-web1.example.com ansible_host=192.168.1.10
-web2.example.com ansible_host=192.168.1.11
-[dbservers]
-db1.example.com ansible_host=192.168.1.20
-[loadbalancers]
-lb1.example.com ansible_host=192.168.1.30
-[production:children]
-webservers
-dbservers
-loadbalancers</code></pre>
+<pre><code class="language-text">{{SNIPPET:ansible-php-infrastructure/inventory-hosts.ini}}</code></pre>
 </section>
 <section>
 <h2>Core Ansible Roles for PHP Infrastructure</h2>
 <h3>Common Role</h3>
 <p>This handles base configuration for all servers:</p>
-<pre><code class="language-yaml"># roles/common/tasks/main.yml
----
-- name: Update package cache
-apt:
-update_cache: yes
-cache_valid_time: 3600
-- name: Install essential packages
-apt:
-name:
-- curl
-- wget
-- unzip
-- git
-- htop
-- fail2ban
-- ufw
-state: present
-- name: Configure firewall
-ufw:
-rule: allow
-port: "{{ item }}"
-proto: tcp
-loop:
-- 22
-- 80
-- 443
-- name: Enable firewall
-ufw:
-state: enabled
-policy: deny
-- name: Configure SSH security
-lineinfile:
-path: /etc/ssh/sshd_config
-regexp: "{{ item.regexp }}"
-line: "{{ item.line }}"
-backup: yes
-loop:
-- { regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
-- { regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
-- { regexp: '^#?PubkeyAuthentication', line: 'PubkeyAuthentication yes' }
-notify: restart ssh</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/common-role-playbook.yml}}</code></pre>
 <h3>PHP Role</h3>
 <p>This role handles PHP-FPM installation and configuration:</p>
-<pre><code class="language-yaml"># roles/php/tasks/main.yml
----
-- name: Add PHP repository
-apt_repository:
-repo: "ppa:ondrej/php"
-state: present
-- name: Install PHP and extensions
-apt:
-name:
-- php{{ php_version }}-fpm
-- php{{ php_version }}-mysql
-- php{{ php_version }}-curl
-- php{{ php_version }}-xml
-- php{{ php_version }}-json
-- php{{ php_version }}-mbstring
-- php{{ php_version }}-zip
-- php{{ php_version }}-gd
-- php{{ php_version }}-opcache
-- php{{ php_version }}-redis
-state: present
-- name: Configure PHP-FPM
-template:
-src: php-fpm.conf.j2
-dest: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
-backup: yes
-notify: restart php-fpm
-- name: Configure PHP settings
-template:
-src: php.ini.j2
-dest: /etc/php/{{ php_version }}/fpm/php.ini
-backup: yes
-notify: restart php-fpm
-- name: Install Composer
-shell: |
-curl -sS https://getcomposer.org/installer | php
-mv composer.phar /usr/local/bin/composer
-chmod +x /usr/local/bin/composer
-args:
-creates: /usr/local/bin/composer</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/php-role-playbook.yml}}</code></pre>
 <h3>Nginx Role</h3>
 <p>Here's the web server configuration:</p>
-<pre><code class="language-yaml"># roles/nginx/tasks/main.yml
----
-- name: Install Nginx
-apt:
-name: nginx
-state: present
-- name: Remove default Nginx site
-file:
-path: /etc/nginx/sites-enabled/default
-state: absent
-notify: restart nginx
-- name: Configure Nginx main config
-template:
-src: nginx.conf.j2
-dest: /etc/nginx/nginx.conf
-backup: yes
-notify: restart nginx
-- name: Create application vhost
-template:
-src: vhost.conf.j2
-dest: /etc/nginx/sites-available/{{ app_name }}
-notify: restart nginx
-- name: Enable application vhost
-file:
-src: /etc/nginx/sites-available/{{ app_name }}
-dest: /etc/nginx/sites-enabled/{{ app_name }}
-state: link
-notify: restart nginx
-- name: Create SSL certificate directory
-file:
-path: /etc/nginx/ssl
-state: directory
-mode: '0755'
-- name: Generate SSL certificate
-command: |
-openssl req -x509 -nodes -days 365 -newkey rsa:2048
--keyout /etc/nginx/ssl/{{ app_name }}.key
--out /etc/nginx/ssl/{{ app_name }}.crt
--subj "/C=US/ST=State/L=City/O=Organization/CN={{ app_domain }}"
-args:
-creates: /etc/nginx/ssl/{{ app_name }}.crt</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/nginx-config.yml}}</code></pre>
 </section>
 <section>
 <h2>Application Deployment Playbook</h2>
 <h3>Zero-Downtime Deployment</h3>
-<pre><code class="language-yaml"># playbooks/deploy.yml
----
-- name: Deploy PHP application
-hosts: webservers
-become: yes
-serial: "{{ deploy_serial | default(1) }}"
-vars:
-app_path: /var/www/{{ app_name }}
-release_path: "{{ app_path }}/releases/{{ ansible_date_time.epoch }}"
-current_path: "{{ app_path }}/current"
-shared_path: "{{ app_path }}/shared"
-tasks:
-- name: Create application directories
-file:
-path: "{{ item }}"
-state: directory
-owner: www-data
-group: www-data
-mode: '0755'
-loop:
-- "{{ app_path }}"
-- "{{ app_path }}/releases"
-- "{{ shared_path }}"
-- "{{ shared_path }}/logs"
-- "{{ shared_path }}/uploads"
-- name: Clone application repository
-git:
-repo: "{{ app_repo }}"
-dest: "{{ release_path }}"
-version: "{{ app_version | default('main') }}"
-force: yes
-become_user: www-data
-- name: Install Composer dependencies
-composer:
-command: install
-working_dir: "{{ release_path }}"
-optimize_autoloader: yes
-no_dev: "{{ 'yes' if app_env == 'production' else 'no' }}"
-become_user: www-data
-- name: Create shared symlinks
-file:
-src: "{{ shared_path }}/{{ item }}"
-dest: "{{ release_path }}/{{ item }}"
-state: link
-force: yes
-loop:
-- logs
-- uploads
-become_user: www-data
-- name: Copy environment configuration
-template:
-src: .env.j2
-dest: "{{ release_path }}/.env"
-owner: www-data
-group: www-data
-mode: '0640'
-- name: Run database migrations
-shell: |
-cd {{ release_path }}
-php artisan migrate --force
-become_user: www-data
-when: run_migrations | default(false)
-- name: Clear application cache
-shell: |
-cd {{ release_path }}
-php artisan cache:clear
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-become_user: www-data
-- name: Update current symlink
-file:
-src: "{{ release_path }}"
-dest: "{{ current_path }}"
-state: link
-force: yes
-notify: restart php-fpm
-- name: Set proper permissions
-file:
-path: "{{ current_path }}"
-owner: www-data
-group: www-data
-recurse: yes
-- name: Remove old releases
-shell: |
-cd {{ app_path }}/releases
-ls -1dt */ | tail -n +{{ keep_releases | default(5) }} | xargs rm -rf
-become_user: www-data</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/deployment-playbook.yml}}</code></pre>
 </section>
 <section>
 <h2>Advanced Deployment Strategies</h2>
 <h3>Blue-Green Deployment</h3>
-<pre><code class="language-yaml"># playbooks/blue-green-deploy.yml
----
-- name: Blue-Green deployment
-hosts: webservers
-become: yes
-vars:
-current_env: "{{ 'blue' if active_env == 'green' else 'green' }}"
-tasks:
-- name: Determine current active environment
-slurp:
-src: /etc/nginx/sites-enabled/{{ app_name }}
-register: current_config
-- name: Set active environment
-set_fact:
-active_env: "{{ 'blue' if 'blue' in current_config.content | b64decode else 'green' }}"
-- name: Deploy to inactive environment
-include_tasks: deploy-to-env.yml
-vars:
-deploy_env: "{{ current_env }}"
-- name: Health check new deployment
-uri:
-url: "http://{{ inventory_hostname }}:{{ deploy_env == 'blue' ? '8080' : '8081' }}/health"
-method: GET
-status_code: 200
-retries: 10
-delay: 5
-- name: Switch traffic to new environment
-template:
-src: nginx-{{ current_env }}.conf.j2
-dest: /etc/nginx/sites-enabled/{{ app_name }}
-notify: restart nginx
-- name: Stop old environment
-systemd:
-name: "{{ app_name }}-{{ active_env }}"
-state: stopped</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/blue-green-deploy-playbook.yml}}</code></pre>
 <h3>Database Migration Handling</h3>
-<pre><code class="language-yaml"># roles/application/tasks/migrate.yml
----
-- name: Check if migrations are needed
-shell: |
-cd {{ app_path }}/current
-php artisan migrate:status | grep -c "N"
-register: pending_migrations
-failed_when: false
-changed_when: false
-- name: Create database backup before migration
-mysql_db:
-name: "{{ app_db_name }}"
-state: dump
-target: "/tmp/{{ app_db_name }}_{{ ansible_date_time.epoch }}.sql"
-when: pending_migrations.stdout | int &gt; 0
-- name: Run database migrations
-shell: |
-cd {{ app_path }}/current
-php artisan migrate --force
-when: pending_migrations.stdout | int &gt; 0
-- name: Seed database if needed
-shell: |
-cd {{ app_path }}/current
-php artisan db:seed --force
-when:
-- pending_migrations.stdout | int &gt; 0
-- app_env != 'production'</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/migrate-playbook.yml}}</code></pre>
 </section>
 <section>
 <h2>Monitoring and Maintenance</h2>
 <h3>Log Rotation</h3>
-<pre><code class="language-yaml"># roles/application/tasks/logs.yml
----
-- name: Configure log rotation
-template:
-src: logrotate.conf.j2
-dest: /etc/logrotate.d/{{ app_name }}
-mode: '0644'
-# templates/logrotate.conf.j2
-{{ app_path }}/shared/logs/*.log {
-daily
-rotate 30
-compress
-delaycompress
-missingok
-notifempty
-copytruncate
-su www-data www-data
-}</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/logs-playbook.yml}}</code></pre>
+<p>The corresponding logrotate template:</p>
+<pre><code class="language-text">{{SNIPPET:ansible-php-infrastructure/logrotate-template.conf.j2}}</code></pre>
 <h3>Performance Monitoring</h3>
-<pre><code class="language-yaml"># roles/monitoring/tasks/main.yml
----
-- name: Install monitoring tools
-apt:
-name:
-- htop
-- iotop
-- nethogs
-- sysstat
-state: present
-- name: Configure PHP-FPM status page
-lineinfile:
-path: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
-regexp: '^;?pm.status_path'
-line: 'pm.status_path = /status'
-notify: restart php-fpm
-- name: Configure Nginx status
-blockinfile:
-path: /etc/nginx/sites-available/{{ app_name }}
-insertafter: "server_name"
-block: |
-location /nginx_status {
-stub_status on;
-access_log off;
-allow 127.0.0.1;
-deny all;
-}
-notify: restart nginx</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/monitoring-playbook.yml}}</code></pre>
 </section>
 <section>
 <h2>Security Hardening</h2>
 <h3>SSL/TLS Configuration</h3>
-<pre><code class="language-nginx"># roles/nginx/templates/vhost.conf.j2
-server {
-listen 80;
-server_name {{ app_domain }};
-return 301 https://$server_name$request_uri;
-}
-server {
-listen 443 ssl http2;
-server_name {{ app_domain }};
-ssl_certificate /etc/nginx/ssl/{{ app_name }}.crt;
-ssl_certificate_key /etc/nginx/ssl/{{ app_name }}.key;
-ssl_protocols TLSv1.2 TLSv1.3;
-ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384;
-ssl_prefer_server_ciphers off;
-ssl_session_cache shared:SSL:10m;
-ssl_session_timeout 10m;
-add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-add_header X-Frame-Options DENY always;
-add_header X-Content-Type-Options nosniff always;
-add_header X-XSS-Protection "1; mode=block" always;
-root {{ app_path }}/current/public;
-index index.php;
-location / {
-try_files $uri $uri/ /index.php?$query_string;
-}
-location ~ .php$ {
-fastcgi_pass unix:/var/run/php/php{{ php_version }}-fpm.sock;
-fastcgi_index index.php;
-fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-include fastcgi_params;
-}
-location ~ /.(?!well-known).* {
-deny all;
-}
-}</code></pre>
+<pre><code class="language-nginx">{{SNIPPET:ansible-php-infrastructure/nginx-template.conf}}</code></pre>
 </section>
 <section>
 <h2>Environment-Specific Configuration</h2>
 <h3>Group Variables</h3>
-<pre><code class="language-yaml"># inventories/production/group_vars/all.yml
----
-app_name: myapp
-app_domain: myapp.com
-app_env: production
-php_version: 8.2
-keep_releases: 5
-run_migrations: true
-deploy_serial: 1
-# Database configuration
-app_db_host: db1.example.com
-app_db_name: myapp_production
-app_db_user: myapp_user
-# Performance settings
-php_memory_limit: 512M
-php_max_execution_time: 300
-php_upload_max_filesize: 64M</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/group-vars-production.yml}}</code></pre>
 <h3>Staging Environment</h3>
-<pre><code class="language-yaml"># inventories/staging/group_vars/all.yml
----
-app_name: myapp
-app_domain: staging.myapp.com
-app_env: staging
-php_version: 8.2
-keep_releases: 3
-run_migrations: true
-deploy_serial: 0
-# Different database
-app_db_host: staging-db.example.com
-app_db_name: myapp_staging
-app_db_user: myapp_staging_user
-# Debug settings
-php_display_errors: "On"
-php_log_errors: "On"
-app_debug: true</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/group-vars-staging.yml}}</code></pre>
 </section>
 <section>
-<h2>Continuous Integration Integration</h2>
+<h2>Continuous Integration</h2>
 <h3>GitLab CI Integration</h3>
-<pre><code class="language-php"># .gitlab-ci.yml
-stages:
-- test
-- deploy
-test:
-stage: test
-script:
-- composer install
-- php artisan test
-only:
-- branches
-deploy_staging:
-stage: deploy
-script:
-- ansible-playbook -i inventories/staging/hosts playbooks/deploy.yml
-only:
-- develop
-environment:
-name: staging
-url: https://staging.myapp.com
-deploy_production:
-stage: deploy
-script:
-- ansible-playbook -i inventories/production/hosts playbooks/deploy.yml
-only:
-- main
-environment:
-name: production
-url: https://myapp.com
-when: manual</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/gitlab-ci.yml}}</code></pre>
 </section>
 <section>
 <h2>Troubleshooting Common Issues</h2>
 <h3>Connection Problems</h3>
-<pre><code class="language-php"># Test connectivity
-ansible all -m ping -i inventories/production/hosts
-# Check SSH configuration
-ansible all -m setup -i inventories/production/hosts | grep ansible_ssh
-# Debug playbook execution
-ansible-playbook -i inventories/production/hosts playbooks/deploy.yml -vvv</code></pre>
+<pre><code class="language-bash">{{SNIPPET:ansible-php-infrastructure/troubleshooting-commands.sh}}</code></pre>
 <h3>Permission Issues</h3>
-<pre><code class="language-php"># Fix common permission problems
-- name: Fix application permissions
-file:
-path: "{{ item }}"
-owner: www-data
-group: www-data
-mode: '0755'
-recurse: yes
-loop:
-- "{{ app_path }}/current/storage"
-- "{{ app_path }}/current/bootstrap/cache"
-- "{{ shared_path }}/logs"</code></pre>
+<pre><code class="language-yaml">{{SNIPPET:ansible-php-infrastructure/permission-fix-playbook.yml}}</code></pre>
 </section>
 <section>
 <h2>Best Practices</h2>
@@ -5618,7 +4743,7 @@ loop:
 </ul>
 <h2>Conclusion</h2>
 <p>Ansible transforms PHP infrastructure management from a manual, error-prone process into a reliable, repeatable system. The investment in setting up proper automation pays off with reduced downtime, consistent environments, and faster deployments.</p>
-<p>Start with basic server provisioning. Then gradually add more sophisticated deployment strategies like blue-green deployments and automated rollbacks. Your future self will thank you for the time invested in proper automation.</p>
+<p>Start with basic server provisioning, then gradually add more sophisticated deployment strategies like blue-green deployments and automated rollbacks. Your future self will thank you for the time invested in proper automation.</p>
 </section>
 <footer class="article-footer">
 <div class="article-tags">
@@ -5658,10 +4783,10 @@ loop:
     content: `
 <div class="intro">
             <p class="lead">
-                Performance optimization often comes down to avoiding redundant work. Two fundamental techniques for this are
+                Performance optimisation often comes down to avoiding redundant work. Two fundamental techniques for this are
                 <a href="https://en.wikipedia.org/wiki/Cache_(computing)" target="_blank" rel="noopener">caching</a> and
                 <a href="https://en.wikipedia.org/wiki/Memoization" target="_blank" rel="noopener">memoization</a>, but
-                developers frequently confuse them or use them interchangeably. While both store computed results to avoid
+                developers frequently confuse them or use them interchangeably. Whilst both store computed results to avoid
                 recalculation, they serve different purposes and have distinct trade-offs. Understanding when to use each can
                 mean the difference between a responsive application and one that struggles under load.
             </p>
@@ -5672,7 +4797,7 @@ loop:
 
             <h3>What is Caching?</h3>
             <p>
-                Caching is a broad optimization technique that stores data in a fast-access layer to avoid expensive operations
+                Caching is a broad optimisation technique that stores data in a fast-access layer to avoid expensive operations
                 like database queries, API calls, or file I/O. Caches typically live outside the application scope and persist
                 across multiple requests, users, or even application instances.
             </p>
@@ -5690,7 +4815,7 @@ loop:
 
             <h3>What is Memoization?</h3>
             <p>
-                Memoization is a specific optimization technique for <a href="https://en.wikipedia.org/wiki/Pure_function" target="_blank" rel="noopener">pure functions</a>
+                Memoization is a specific optimisation technique for <a href="https://en.wikipedia.org/wiki/Pure_function" target="_blank" rel="noopener">pure functions</a>
                 that caches the return value based on input parameters. The term comes from the Latin "memorandum" (to be remembered) and was coined by
                 <a href="https://en.wikipedia.org/wiki/Donald_Michie" target="_blank" rel="noopener">Donald Michie</a> in 1968.
             </p>
@@ -5706,7 +4831,7 @@ loop:
             <h3>The Fundamental Difference</h3>
             <p>
                 The distinction is simple: <strong>memoization is a specific type of caching for pure function results</strong>.
-                All memoization is caching, but not all caching is memoization. Caching applies to any data storage optimization,
+                All memoization is caching, but not all caching is memoization. Caching applies to any data storage optimisation,
                 including database results, API responses, and file contents. Memoization specifically caches deterministic function
                 outputs based on their inputs.
             </p>
@@ -5722,8 +4847,8 @@ loop:
 
             <h3>Database Query Results</h3>
             <p>
-                Database queries are often the slowest part of web applications. Caching query results can reduce response
-                times by 50% or more. Here's a practical example using <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a>
+                Database queries are often the slowest part of web applications, and caching query results can reduce response
+                times dramatically. Here's a practical example using <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a>
                 with <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a>:
             </p>
 
@@ -5791,7 +4916,7 @@ loop:
             <pre><code class="language-python">{{SNIPPET:caching-vs-memoization/lru-cache-python.py}}
 </code></pre>
 
-            <h3>React Component Optimization</h3>
+            <h3>React Component Optimisation</h3>
             <p>
                 In <a href="https://react.dev/" target="_blank" rel="noopener">React</a>, memoization prevents unnecessary re-renders.
                 <a href="https://react.dev/reference/react/memo" target="_blank" rel="noopener"><code>React.memo</code></a>,
@@ -5871,8 +4996,8 @@ loop:
             <h3>Memory Implications</h3>
             <p>
                 Caching uses memory in a dedicated service with sophisticated eviction policies. Memoization uses application memory,
-                which can lead to memory pressure if not carefully managed. Most cloud applications see load time reductions of 40-50%
-                after implementing proper caching strategies.
+                which can lead to memory pressure if not carefully managed. Many cloud applications see substantial load-time
+                improvements after implementing proper caching strategies.
             </p>
         </section>
 
@@ -5903,15 +5028,15 @@ loop:
 </code></pre>
 
             <p>
-                Real-world impact: The <a href="https://github.com/ianstormtaylor/slate" target="_blank" rel="noopener">Slate editor</a>
-                experienced production crashes due to unbounded caches. Always implement an eviction strategy like
+                Unbounded caches are a well-documented cause of production memory exhaustion in long-running processes.
+                Always implement an eviction strategy like
                 <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)" target="_blank" rel="noopener">LRU</a>
                 (Least Recently Used) or set TTL values.
             </p>
 
             <h3>Cache Everything Syndrome</h3>
             <p>
-                Not everything benefits from caching. Adding cache layers without measuring adds complexity, debugging difficulty,
+                Not everything benefits from caching, since adding cache layers without measuring adds complexity, debugging difficulty,
                 and potential staleness without guaranteed performance gains. Start by profiling to identify actual bottlenecks.
             </p>
 
@@ -5928,8 +5053,8 @@ loop:
 
             <h3>Cache Stampede</h3>
             <p>
-                When a popular cache entry expires, multiple requests simultaneously try to regenerate it, overwhelming your database.
-                This is also called the "thundering herd" problem. The solution is to use locking:
+                When a popular cache entry expires, multiple requests simultaneously try to regenerate it, overwhelming your database -
+                this is also called the "thundering herd" problem, and the usual solution is to use locking:
             </p>
 
             <pre><code class="language-php">{{SNIPPET:caching-vs-memoization/cache-stampede-solution.php}}
@@ -5947,16 +5072,7 @@ loop:
                 Two objects with identical contents are different keys:
             </p>
 
-            <pre><code class="language-javascript">const cache = new Map();
-
-function memoized(obj) {
-  if (cache.has(obj)) return cache.get(obj);
-  // ...
-}
-
-memoized({ id: 1 }); // Cache miss
-memoized({ id: 1 }); // Cache miss again! Different object reference
-</code></pre>
+            <pre><code class="language-javascript">{{SNIPPET:caching-vs-memoization/object-argument-memoization.js}}</code></pre>
 
             <p>
                 Solutions include serializing objects to strings (JSON.stringify), using primitive values as keys, or implementing
@@ -5966,7 +5082,7 @@ memoized({ id: 1 }); // Cache miss again! Different object reference
             <h3>Testing Cached Code</h3>
             <p>
                 Cached code is notoriously difficult to test because tests may pass due to cache hits rather than correct logic.
-                Always clear caches between tests and write specific tests for cache behavior (hits, misses, invalidation). Consider
+                Always clear caches between tests and write specific tests for cache behaviour (hits, misses, invalidation). Consider
                 making cache layers mockable in your architecture.
             </p>
 
@@ -5982,9 +5098,9 @@ memoized({ id: 1 }); // Cache miss again! Different object reference
         <section>
             <h2>Best Practices and Top Tips</h2>
 
-            <h3>1. Measure Before Optimizing</h3>
+            <h3>1. Measure Before Optimising</h3>
             <p>
-                Premature optimization wastes time and adds complexity. Use profiling tools like
+                Premature optimisation wastes time and adds complexity. Use profiling tools like
                 <a href="https://xdebug.org/" target="_blank" rel="noopener">Xdebug</a>,
                 <a href="https://www.blackfire.io/" target="_blank" rel="noopener">Blackfire</a>, or
                 <a href="https://nodejs.org/api/perf_hooks.html" target="_blank" rel="noopener">Node.js Performance Hooks</a>
@@ -6000,23 +5116,15 @@ memoized({ id: 1 }); // Cache miss again! Different object reference
 
             <h3>3. Choose Cache Keys Wisely</h3>
             <p>
-                Cache keys should be specific enough to avoid collisions but general enough to maximize hit rates. Include versioning
+                Cache keys should be specific enough to avoid collisions but general enough to maximise hit rates. Include versioning
                 in keys to enable instant invalidation:
             </p>
 
-            <pre><code class="language-php">// Good: Specific and versioned
-$key = "user:profile:{$userId}:v2";
-
-// Bad: Too general, likely to collide
-$key = "profile";
-
-// Bad: Includes changing data, low hit rate
-$key = "user:{$userId}:{$timestamp}";
-</code></pre>
+            <pre><code class="language-php">{{SNIPPET:caching-vs-memoization/cache-key-examples.php}}</code></pre>
 
             <h3>4. Implement Monitoring</h3>
             <p>
-                Track cache hit rates, miss rates, and eviction rates. A hit rate below 80% suggests your cache strategy needs adjustment.
+                Track cache hit rates, miss rates, and eviction rates. A hit rate that keeps dropping is a sign your cache strategy needs adjustment.
                 Tools like <a href="https://redis.io/commands/info/" target="_blank" rel="noopener">Redis INFO</a> and
                 <a href="https://www.php.net/manual/en/function.apcu-cache-info.php" target="_blank" rel="noopener">apcu_cache_info()</a>
                 provide valuable metrics.
@@ -6042,9 +5150,9 @@ $key = "user:{$userId}:{$timestamp}";
                 implementations.
             </p>
 
-            <h3>7. Document Cache Behavior</h3>
+            <h3>7. Document Cache Behaviour</h3>
             <p>
-                Cached code is harder to understand because the relationship between code and behavior isn't obvious. Document:
+                Cached code is harder to understand because the relationship between code and behaviour isn't obvious. Document:
             </p>
 
             <ul>
@@ -6066,11 +5174,10 @@ $key = "user:{$userId}:{$timestamp}";
             <h2>Decision Framework</h2>
 
             <p>
-                Use this flowchart logic to determine which optimization strategy fits your needs:
+                Use this flowchart logic to determine which optimisation strategy fits your needs:
             </p>
 
-            <pre><code class="language-python">{{SNIPPET:caching-vs-memoization/decision-flow-pseudocode.txt}}
-</code></pre>
+            <pre><code>{{SNIPPET:caching-vs-memoization/decision-flow-pseudocode.txt}}</code></pre>
 
             <h3>When to Use Both</h3>
             <p>
@@ -6078,52 +5185,7 @@ $key = "user:{$userId}:{$timestamp}";
                 then cache the final result across requests:
             </p>
 
-            <pre><code class="language-php">class ReportGenerator
-{
-    private array $memo = [];
-    private Redis $redis;
-
-    // Memoized helper - fast within single request
-    private function calculateMetric(array $data): float
-    {
-        $key = md5(serialize($data));
-
-        if (isset($this->memo[$key])) {
-            return $this->memo[$key];
-        }
-
-        // Expensive calculation
-        $result = /* complex math */;
-        $this->memo[$key] = $result;
-
-        return $result;
-    }
-
-    // Cached result - shared across requests
-    public function generateReport(int $reportId): array
-    {
-        $cacheKey = "report:{$reportId}";
-
-        // Check cache first
-        $cached = $this->redis->get($cacheKey);
-        if ($cached !== false) {
-            return json_decode($cached, true);
-        }
-
-        // Generate report using memoized helpers
-        $report = [
-            'metric1' => $this->calculateMetric($data1),
-            'metric2' => $this->calculateMetric($data2),
-            // Memoization prevents duplicate calculations within this request
-        ];
-
-        // Cache for other requests
-        $this->redis->setex($cacheKey, 3600, json_encode($report));
-
-        return $report;
-    }
-}
-</code></pre>
+            <pre><code class="language-php">{{SNIPPET:caching-vs-memoization/report-generator.php}}</code></pre>
 
             <p>
                 This pattern combines the best of both worlds: fast local memoization for repeated calculations within a request,
@@ -6135,21 +5197,16 @@ $key = "user:{$userId}:{$timestamp}";
             <h2>Conclusion</h2>
 
             <p>
-                Caching and memoization are powerful optimization techniques with distinct use cases. Caching excels at storing
-                external data (database queries, API calls) that's shared across requests and users. Memoization optimizes pure
+                Caching and memoization are powerful optimisation techniques with distinct use cases. Caching excels at storing
+                external data (database queries, API calls) that's shared across requests and users. Memoization optimises pure
                 function calls within a single execution context.
             </p>
 
-            <p>Key takeaways:</p>
+            <p>The distinction that matters most:</p>
 
             <ul>
                 <li><strong>Caching</strong> is for external data and shared state across requests</li>
                 <li><strong>Memoization</strong> is for pure function results within a request</li>
-                <li>Always measure before optimizing - premature optimization adds complexity without guaranteed benefit</li>
-                <li>Implement proper eviction strategies to prevent unbounded memory growth</li>
-                <li>Cache invalidation is hard - plan for it from the start</li>
-                <li>Monitor cache performance metrics to validate your strategy</li>
-                <li>Balance performance gains against maintenance complexity</li>
             </ul>
 
             <p>
@@ -6175,7 +5232,7 @@ $key = "user:{$userId}:{$timestamp}";
     id: 'claude-code-custom-commands-cc-commands',
     title: 'Building Better Claude Code Workflows with CC-Commands',
     description:
-      'Discover how the CC-Commands repository solves the pain points of managing custom Claude Code commands across multiple projects with elegant automation and intelligent synchronization.',
+      'Discover how the CC-Commands repository solves the pain points of managing custom Claude Code commands across multiple projects with straightforward automation and intelligent synchronisation.',
     date: '2025-07-18',
     category: CATEGORIES.ai.id,
     readingTime: 8,
@@ -6192,7 +5249,7 @@ $key = "user:{$userId}:{$timestamp}";
     content: `
 <section class="intro">
 <p class="lead">
-Claude Code has revolutionized how developers work with AI assistance, but managing custom commands across multiple projects quickly becomes a nightmare. Enter <strong>CC-Commands</strong>, an elegant solution that transforms command management from a tedious chore into an automated, intelligent workflow.
+Claude Code has revolutionised how developers work with AI assistance, but managing custom commands across multiple projects quickly becomes a nightmare. Enter <strong>CC-Commands</strong>, an elegant solution that transforms command management from a tedious chore into an automated, intelligent workflow.
 </p>
 </section>
 <section>
@@ -6207,8 +5264,7 @@ The power of Claude Code lies in its extensibility. Custom slash commands allow 
 <li><strong>Automate deployment processes</strong> with intelligent error handling and rollback capabilities</li>
 <li><strong>Orchestrate testing workflows</strong> that adapt to different environments and configurations</li>
 <li><strong>Manage database operations</strong> with safety checks and automated backups</li>
-<li><strong>Generate project documentation</strong> that stays synchronized with code changes</li>
-<li><strong>Integrate with external APIs</strong> and services through custom authentication and error handling</li>
+<li><strong>Generate project documentation</strong> that stays synchronised with code changes</li>
 </ul>
 <p>
 But as projects grow and multiply, a critical problem emerges. How do you manage these valuable commands across multiple repositories?
@@ -6224,63 +5280,61 @@ Every developer who has worked with Claude Code across multiple projects has exp
 The typical journey starts innocently enough. You create a useful command like <code>/deploy:staging</code> that handles environment setup, runs tests, and deploys with proper error handling. It works beautifully, so you copy it to your next project. Then you improve it, adding better logging and rollback capabilities. Now you have two versions.
 </p>
 <p>
-Fast forward six months. You have eight projects, each with slightly different versions of the same commands. A bug fix in one project means manually updating seven others. A new feature requires careful synchronization across multiple repositories. The commands that were supposed to save time now consume it.
+Fast forward six months. You have eight projects, each with slightly different versions of the same commands. A bug fix in one project means manually updating seven others. A new feature requires careful synchronisation across multiple repositories. The commands that were supposed to save time now consume it.
 </p>
 <h3>The Maintenance Burden</h3>
 <p>
 The problems compound quickly:
 </p>
 <ul>
-<li><strong>Version drift</strong>: Commands evolve independently, creating inconsistent behavior across projects</li>
+<li><strong>Version drift</strong>: Commands evolve independently, creating inconsistent behaviour across projects</li>
 <li><strong>Bug multiplication</strong>: A single bug must be fixed multiple times in multiple places</li>
 <li><strong>Feature fragmentation</strong>: Improvements in one project don't benefit others</li>
-<li><strong>Documentation chaos</strong>: Different projects have different command documentation and usage patterns</li>
-<li><strong>Onboarding complexity</strong>: New team members must learn different command sets for each project</li>
+<li><strong>Documentation and onboarding chaos</strong>: different projects end up with different command documentation and usage patterns, so new team members have to learn a different set of commands each time they join one</li>
 </ul>
 <p>
-Traditional solutions fall short. Git submodules are too heavyweight and complex. Copying files is error-prone and doesn't scale. Package managers weren't designed for this use case. The developer community needed a better way.
+Traditional solutions fall short too: git submodules are too heavyweight and complex, copying files by hand is error-prone and doesn't scale, and package managers were never really designed for this kind of problem, so the developer community needed something better suited to it.
 </p>
 </section>
 <section>
-<h2>Enter CC-Commands: The Elegant Solution</h2>
+<h2>Enter CC-Commands: A Different Approach</h2>
 <p>
-<a href="https://github.com/LongTermSupport/cc-commands">CC-Commands</a> solves the multi-project command management problem with remarkable elegance. Instead of fighting against the natural evolution of commands, it embraces it while maintaining consistency and enabling seamless sharing.
+<a href="https://github.com/LongTermSupport/cc-commands">CC-Commands</a> solves the multi-project command management problem well, without a lot of extra apparatus. Instead of fighting against the natural evolution of commands, it embraces it whilst maintaining consistency and making it straightforward to share improvements.
 </p>
 <h3>The Self-Managing Command System</h3>
 <p>
-The brilliance of CC-Commands lies in its meta-circular design. <strong>It uses Claude Code commands to manage Claude Code commands</strong>. This isn't just clever, it's transformative. The system includes three core management commands:
+The brilliance of CC-Commands lies in its meta-circular design. <strong>It uses Claude Code commands to manage Claude Code commands</strong>, and that turns out to be the choice that makes the rest of the system work. There are three core management commands:
 </p>
 <ul>
 <li><strong><code>/g:command:create</code></strong>: Creates new commands with best practices built-in</li>
-<li><strong><code>/g:command:update</code></strong>: Updates existing commands while preserving functionality</li>
-<li><strong><code>/g:command:sync</code></strong>: Synchronizes commands across all projects</li>
+<li><strong><code>/g:command:update</code></strong>: Updates existing commands whilst preserving functionality</li>
+<li><strong><code>/g:command:sync</code></strong>: Synchronises commands across all projects</li>
 </ul>
 <p>
-You can build your command library directly within your Claude Code session without ever leaving your development environment. Need a new deployment command? Create it from within Claude Code. Want to enhance an existing command? Update it from within Claude Code. Need to share improvements across projects? Sync them from within Claude Code.
+You can build your command library directly within your Claude Code session, without ever leaving your development environment: create a new deployment command, enhance an existing one, or share improvements across every project you touch, all from inside the same session.
 </p>
 <h3>Intelligent Command Creation</h3>
 <p>
-The <code>/g:command:create</code> command isn't just a template generator. It's an intelligent assistant that understands Claude Code best practices. When you create a command, it:
+The <code>/g:command:create</code> command does more than generate a template: it acts as an assistant that understands Claude Code's best practices, and when you create a command it:
 </p>
 <ul>
-<li><strong>Analyzes your requirements</strong> to determine the appropriate tools and permissions</li>
+<li><strong>Analyses your requirements</strong> to determine the appropriate tools and permissions</li>
 <li><strong>Generates comprehensive documentation</strong> including usage examples and help text</li>
-<li><strong>Implements safety features</strong> like fail-fast validation and user confirmations</li>
-<li><strong>Optimizes for Claude Code</strong> using Task blocks instead of interactive bash commands</li>
-<li><strong>Includes error handling</strong> with recovery instructions and troubleshooting guidance</li>
+<li><strong>Implements safety features and error handling</strong>, including fail-fast validation, user confirmations, and recovery instructions with troubleshooting guidance</li>
+<li><strong>Optimises for Claude Code</strong> using Task blocks instead of interactive bash commands</li>
 </ul>
 <p>
 The result is commands that are functional, maintainable, documented, and follow established patterns.
 </p>
 </section>
 <section>
-<h2>The Synchronization Revolution</h2>
+<h2>The Synchronisation Revolution</h2>
 <p>
-Where CC-Commands truly shines is in its synchronization capabilities. The <code>/g:command:sync</code> command represents a masterclass in intelligent automation.
+Where CC-Commands truly shines is in its synchronisation capabilities. The <code>/g:command:sync</code> command is a genuinely well thought-out piece of automation, and it is worth looking at how it works.
 </p>
 <h3>Smart Commit Generation</h3>
 <p>
-Unlike traditional git workflows that require manual commit messages, CC-Commands analyzes your actual changes and generates intelligent commit messages automatically. It knows the difference between:
+Unlike traditional git workflows that require manual commit messages, CC-Commands analyses your actual changes and generates intelligent commit messages automatically. It knows the difference between:
 </p>
 <ul>
 <li><strong>Feature additions</strong>: "feat: add push command with GitHub Actions monitoring"</li>
@@ -6289,11 +5343,11 @@ Unlike traditional git workflows that require manual commit messages, CC-Command
 <li><strong>Refactoring</strong>: "refactor: simplify command argument parsing logic"</li>
 </ul>
 <p>
-This isn't just convenient. It creates a meaningful commit history that helps teams understand how commands evolve over time.
+That's convenient in itself, but it also builds a commit history a team can actually read back later, showing how the commands evolved.
 </p>
 <h3>Conflict-Free Collaboration</h3>
 <p>
-The synchronization system handles the complexities of multi-project collaboration. It automatically:
+The synchronisation system handles the complexities of multi-project collaboration. It automatically:
 </p>
 <ul>
 <li><strong>Detects changes</strong> across all command files</li>
@@ -6303,11 +5357,11 @@ The synchronization system handles the complexities of multi-project collaborati
 <li><strong>Pushes changes</strong> to share with all projects</li>
 </ul>
 <p>
-The result is a living command ecosystem that evolves continuously while maintaining consistency across all projects.
+This produces a living command ecosystem that evolves continuously whilst maintaining consistency across all projects.
 </p>
 </section>
 <section>
-<h2>Real-World Impact: A Case Study</h2>
+<h2>A Worked Example: Before and After</h2>
 <p>
 To understand the true impact of CC-Commands, consider a typical development scenario across multiple projects:
 </p>
@@ -6325,15 +5379,14 @@ A team maintains five PHP projects, each requiring similar deployment workflows.
 <p>
 When a critical bug is discovered in the deployment logic, it requires manual fixes across five repositories. When a new feature is added to one project, it must be carefully ported to the others.
 </p>
-<h3>After CC-Commands: The Elegant Solution</h3>
+<h3>After CC-Commands: One Command, Everywhere</h3>
 <p>
 With CC-Commands, the same team has a single, authoritative deployment command that:
 </p>
 <ul>
-<li><strong>Incorporates the best features</strong> from all previous versions</li>
-<li><strong>Maintains consistency</strong> across all projects</li>
+<li><strong>Incorporates the best features from all previous versions</strong>, maintaining consistency across every project</li>
 <li><strong>Evolves continuously</strong> as improvements are made</li>
-<li><strong>Synchronizes automatically</strong> when any project runs <code>/g:command:sync</code></li>
+<li><strong>Synchronises automatically</strong> when any project runs <code>/g:command:sync</code></li>
 <li><strong>Includes comprehensive documentation</strong> and error handling</li>
 </ul>
 <p>
@@ -6349,7 +5402,7 @@ CC-Commands comes with a thoughtfully curated set of commands that demonstrate b
 <ul>
 <li><strong><code>/g:command:create</code></strong>: Intelligent command creation with safety features</li>
 <li><strong><code>/g:command:update</code></strong>: Non-destructive command enhancement</li>
-<li><strong><code>/g:command:sync</code></strong>: Automated repository synchronization</li>
+<li><strong><code>/g:command:sync</code></strong>: Automated repository synchronisation</li>
 </ul>
 <h3>GitHub Integration Tools</h3>
 <ul>
@@ -6361,7 +5414,7 @@ CC-Commands comes with a thoughtfully curated set of commands that demonstrate b
 <li><strong><code>/g:w:plan</code></strong>: Generate project plans with progress tracking</li>
 </ul>
 <p>
-Each command represents hundreds of lines of carefully crafted logic, comprehensive error handling, and battle-tested workflows. They're not just utilities. They're examples of how to build robust, maintainable Claude Code commands.
+Each command carries real error handling and a workflow that has been used and refined in practice, not just a thin wrapper. They're examples of how to build robust, maintainable Claude Code commands.
 </p>
 </section>
 <section>
@@ -6371,15 +5424,15 @@ CC-Commands represents more than just a tool. It embodies a philosophy of intell
 </p>
 <h3>Automation That Understands Context</h3>
 <p>
-Rather than blind automation, CC-Commands analyzes context to make intelligent decisions. It understands the difference between different types of changes and generates appropriate commit messages. It recognizes when README files need updates and suggests improvements.
+Rather than blind automation, CC-Commands analyses context to make intelligent decisions. It understands the difference between different types of changes and generates appropriate commit messages, and it recognises when README files need updates and suggests improvements.
 </p>
 <h3>Safety Without Bureaucracy</h3>
 <p>
-The system includes comprehensive safety features like permission management, fail-fast validation, and user confirmations without creating bureaucratic overhead. Safety features prevent problems while maintaining development velocity.
+The system includes comprehensive safety features like permission management, fail-fast validation, and user confirmations, without creating bureaucratic overhead. Safety features prevent problems whilst maintaining development velocity.
 </p>
 <h3>Evolution Over Revolution</h3>
 <p>
-CC-Commands doesn't require wholesale changes to existing workflows. It integrates seamlessly with existing Claude Code setups and enhances them gradually. You can adopt commands incrementally, and the system grows with your needs.
+CC-Commands doesn't require wholesale changes to existing workflows. It fits into existing Claude Code setups and enhances them gradually, so you can adopt commands incrementally and let the system grow with your needs.
 </p>
 </section>
 <section>
@@ -6396,25 +5449,7 @@ Creating your first command is just as straightforward:
 </p>
 <pre><code class="language-bash">/g:command:create db:reset "Reset database to clean state with test data"</code></pre>
 <p>
-The system will analyze your requirements, generate a comprehensive command with proper error handling and documentation, and make it available for immediate use.
-</p>
-</section>
-<section>
-<h2>The Future of Command Management</h2>
-<p>
-CC-Commands represents the beginning of a new era in development tool management. As the system grows and evolves, several exciting developments are coming:
-</p>
-<h3>Community-Driven Command Library</h3>
-<p>
-The repository structure enables community contributions, allowing developers to share specialized commands for different frameworks, deployment platforms, and development workflows.
-</p>
-<h3>Intelligent Command Evolution</h3>
-<p>
-Future versions may include machine learning capabilities that analyze usage patterns and suggest optimizations or improvements to existing commands.
-</p>
-<h3>Integration Ecosystem</h3>
-<p>
-The foundation exists for broader integration with CI/CD platforms, monitoring systems, and development tools, creating a comprehensive automation ecosystem.
+The system will analyse your requirements, generate a comprehensive command with proper error handling and documentation, and make it available for immediate use.
 </p>
 </section>
 <section>
@@ -6423,24 +5458,16 @@ The foundation exists for broader integration with CI/CD platforms, monitoring s
 CC-Commands solves a fundamental problem in modern development: how to maintain consistency and share improvements across multiple projects without sacrificing agility or creating maintenance overhead.
 </p>
 <p>
-By embracing the meta-circular design of commands that manage commands, CC-Commands creates a self-improving system that grows more valuable over time. Each command created, each improvement made, and each synchronization run contributes to a shared knowledge base.
+By embracing the meta-circular design of commands that manage commands, CC-Commands creates a self-improving system that grows more valuable over time. Each command created, each improvement made, and each synchronisation run contributes to a shared knowledge base.
 </p>
 <p>
-The elegance of the solution lies not in its complexity, but in its simplicity. Three commands (create, update, and sync) solve the multi-project command management problem while enabling powerful workflows and intelligent automation.
+The solution here doesn't rely on complexity. Three commands (create, update, and sync) cover the whole multi-project management problem whilst still enabling powerful workflows and intelligent automation, and that simplicity is what makes it work.
 </p>
 <p>
-For developers working with Claude Code across multiple projects, CC-Commands isn't just a convenience. It's a necessity. It transforms command management from a tedious chore into an automated, intelligent process that enhances development velocity.
+For developers working with Claude Code across multiple projects, I'd call CC-Commands close to a necessity rather than just a convenience: it takes command management out of the category of tedious chores and turns it into something automated and largely hands-off.
 </p>
 <p>
-The question isn't whether you need CC-Commands. It's whether you can afford to keep managing commands manually. The answer is clear: it's time to let your commands manage themselves.
-</p>
-</section>
-<section class="cta">
-<h2>Ready to Transform Your Workflow?</h2>
-<p>
-Start building better Claude Code workflows today. Visit the
-<a href="https://github.com/LongTermSupport/cc-commands">CC-Commands repository</a>
-to explore the full documentation and get started with intelligent command management.
+Managing commands manually across multiple projects doesn't scale; letting commands manage themselves does. The project is open source: <a href="https://github.com/LongTermSupport/cc-commands">github.com/LongTermSupport/cc-commands</a>.
 </p>
 </section>
     `,
@@ -6448,7 +5475,7 @@ to explore the full documentation and get started with intelligent command manag
   // Migrating: claude-code-hooks-subagent-control.ejs
   {
     id: 'claude-code-hooks-subagent-control',
-    title: 'Advanced Claude Code Hooks: Controlling Sub-Agent Behavior',
+    title: 'Advanced Claude Code Hooks: Controlling Sub-Agent Behaviour',
     description:
       'Learn how to use Claude Code hooks to enforce execution rules for parallel sub-agents, preventing resource conflicts in test suites and other shared-resource scenarios.',
     date: '2025-10-24',
@@ -6468,7 +5495,7 @@ to explore the full documentation and get started with intelligent command manag
     subreddit: 'LLMDevs',
     content: `
 <div class="intro">
-            <p class="lead">Claude Code hooks are powerful automation tools that execute at specific points during AI coding sessions. While basic hooks can validate prompts or add context, advanced hooks can enforce sophisticated rules like preventing parallel sub-agents from running test suites that share database connections.</p>
+            <p class="lead">Claude Code hooks are powerful automation tools that execute at specific points during AI coding sessions. Whilst basic hooks can validate prompts or add context, advanced hooks can enforce sophisticated rules like preventing parallel sub-agents from running test suites that share database connections.</p>
         </div>
 
         <section>
@@ -6487,23 +5514,23 @@ to explore the full documentation and get started with intelligent command manag
 
         <section>
             <h2>The Problem: Parallel Execution and Shared Resources</h2>
-            <p>Claude Code's sub-agent system enables parallel task execution. Multiple agents can work simultaneously on different aspects of your codebase. This is excellent for productivity, but creates challenges when those tasks share resources.</p>
+            <p>Claude Code's sub-agent system enables parallel task execution, so multiple agents can work simultaneously on different aspects of your codebase - which is excellent for productivity, but creates challenges when those tasks share resources.</p>
 
-            <p>Consider a PHP project with PHPUnit tests that use a SQLite database. The test suite isn't optimized for parallel execution because:</p>
+            <p>Consider a PHP project with PHPUnit tests that use a SQLite database. The test suite isn't optimised for parallel execution because:</p>
             <ul>
                 <li><strong>Database locks</strong>: SQLite allows only one writer at a time</li>
                 <li><strong>Shared state</strong>: Tests may create or modify the same fixtures</li>
                 <li><strong>Race conditions</strong>: Parallel execution causes unpredictable failures</li>
             </ul>
 
-            <p>When Claude spawns multiple sub-agents to handle complex refactoring tasks, each might independently decide to run the test suite. The result? Database lock conflicts, failed tests, and confused AI agents.</p>
+            <p>When Claude spawns multiple sub-agents to handle complex refactoring tasks, each might independently decide to run the test suite, and the result is database lock conflicts, failed tests, and confused AI agents.</p>
         </section>
 
         <section>
             <h2>The Solution: Sub-Agent Detection and Control</h2>
-            <p>We can solve this by creating a hook that detects when it's running in a sub-agent context and blocks test execution, while still allowing other QA tools like static analysis and code style checks.</p>
+            <p>We can solve this by creating a hook that detects when it's running in a sub-agent context and blocks test execution, whilst still allowing other QA tools like static analysis and code style checks.</p>
 
-            <p>The key insight is that sub-agents run as child processes of the main <code>claude</code> process. By examining the parent process ID (PPID), we can determine whether we're in the main session or a sub-agent.</p>
+            <p>Sub-agents are not separate OS processes with a distinguishable parent-process chain, so PPID inspection doesn't work here. The real signal is in the hook payload itself: Claude Code includes an <code>agent_id</code> field when a tool call originates from a sub-agent, and omits it for main-session calls. That's the only documented, reliable way to make this distinction.</p>
         </section>
 
         <section>
@@ -6518,16 +5545,16 @@ to explore the full documentation and get started with intelligent command manag
             <h2>How It Works</h2>
 
             <h3>1. Sub-Agent Detection</h3>
-            <p>The <code>is_subagent()</code> function uses process inspection to determine context:</p>
+            <p>The <code>is_subagent()</code> function checks a field in the hook payload rather than inspecting processes:</p>
             <ul>
-                <li>Gets the parent process ID using <code>os.getppid()</code></li>
-                <li>Queries the parent's command name using <code>ps</code></li>
-                <li>Returns <code>True</code> if the parent is the <code>claude</code> process</li>
-                <li>Fails open (returns <code>False</code>) on errors to avoid blocking legitimate operations</li>
+                <li>Reads the <code>agent_id</code> field from the PreToolUse JSON payload</li>
+                <li>Returns <code>True</code> if <code>agent_id</code> is present (the call came from a sub-agent)</li>
+                <li>Returns <code>False</code> if it's absent (the call came from the main session)</li>
+                <li>The surrounding hook still fails open on any unexpected error, to avoid blocking legitimate operations</li>
             </ul>
 
             <h3>2. Command Pattern Matching</h3>
-            <p>The hook uses regex patterns to categorize commands:</p>
+            <p>The hook uses regex patterns to categorise commands:</p>
             <ul>
                 <li><strong>Test commands</strong>: PHPUnit, Infection, <code>bin/qa -t unit</code></li>
                 <li><strong>Allowed QA commands</strong>: <code>bin/qa -t allCs</code>, <code>bin/qa -t allStatic</code></li>
@@ -6568,7 +5595,7 @@ to explore the full documentation and get started with intelligent command manag
             <p>When a sub-agent attempts to run tests, it receives a structured JSON response explaining why the operation was blocked and what commands are allowed.</p>
 
             <h3>Fail-Safe Design</h3>
-            <p>The hook uses a "fail open" strategy. If it can't determine whether it's in a sub-agent, it allows the command. This prevents blocking legitimate operations due to hook errors.</p>
+            <p>The hook uses a "fail open" strategy - if it can't determine whether it's in a sub-agent, it allows the command rather than risk blocking a legitimate operation because of a hook error.</p>
         </section>
 
         <section>
@@ -6582,7 +5609,7 @@ to explore the full documentation and get started with intelligent command manag
                 <li><strong>Build artifacts</strong>: Prevent simultaneous builds that share directories</li>
             </ul>
 
-            <p>The core pattern remains the same: detect sub-agent context via PPID, match command patterns, and selectively allow or block operations based on resource constraints.</p>
+            <p>The core pattern remains the same: detect sub-agent context via the <code>agent_id</code> field, match command patterns, and selectively allow or block operations based on resource constraints.</p>
         </section>
 
         <section>
@@ -6598,19 +5625,19 @@ to explore the full documentation and get started with intelligent command manag
             <p>Structure your error messages as JSON with fields explaining what was blocked, why, and what alternatives are available.</p>
 
             <h3>Test Both Contexts</h3>
-            <p>Verify your hook works correctly in both main agent and sub-agent contexts. Use <code>echo $$</code> and <code>ps</code> commands to understand the process hierarchy.</p>
+            <p>Verify your hook works correctly in both main agent and sub-agent contexts. Trigger the same tool call from each and check <code>agent_id</code> in the logged payload - it should be present for the sub-agent call and absent for the main-agent one.</p>
 
             <h3>Keep Hooks Fast</h3>
-            <p>Hooks execute on every tool use. Keep them lightweight. This implementation completes in milliseconds.</p>
+            <p>Hooks execute on every tool use, so keep them lightweight - this implementation completes in milliseconds.</p>
         </section>
 
         <section>
             <h2>Conclusion</h2>
-            <p>Claude Code hooks unlock powerful automation capabilities beyond simple validation. By leveraging process inspection and pattern matching, you can enforce sophisticated execution policies that adapt to context. This allows parallel execution where safe, and prevents it where resources are shared.</p>
+            <p>Claude Code hooks do a lot more than simple validation, once you start reading the fields the payload already gives you. Matching the <code>agent_id</code> field against command patterns lets you enforce execution policies that adapt to context, allowing parallel execution where it's safe and blocking it where resources are shared.</p>
 
-            <p>This sub-agent control pattern transforms a potential source of race conditions and lock conflicts into a well-orchestrated parallel execution system. The main agent coordinates test execution, while sub-agents handle static analysis in parallel, maximizing productivity without sacrificing reliability.</p>
+            <p>This sub-agent control pattern turns a potential source of race conditions and lock conflicts into a well-orchestrated parallel execution system: the main agent coordinates test execution, whilst sub-agents handle static analysis in parallel, maximising productivity without sacrificing reliability.</p>
 
-            <p>Whether you're managing database locks, preventing concurrent migrations, or rate-limiting external API calls, this pattern provides a robust foundation for resource-aware parallel execution control.</p>
+            <p>Whether you're managing database locks, preventing concurrent migrations, or rate-limiting external API calls, the underlying idea holds: check the payload for the sub-agent signal, and let that decide what's allowed.</p>
         </section>
     `,
   },
@@ -6619,7 +5646,7 @@ to explore the full documentation and get started with intelligent command manag
     id: 'claude-code-latest-features',
     title: "Claude Code Latest Features: What's New in Autumn 2025",
     description:
-      'Explore the groundbreaking features added to Claude Code in the last three months, including checkpoints for fearless refactoring, autonomous subagents, plugin marketplace, web interface, and more.',
+      "A dated snapshot of Claude Code as of November 2025: how checkpoints, subagents, the plugin system, and MCP fit together, plus version-specific fixes and settings added across the 2.0.30-2.0.33 release run.",
     date: '2025-11-05',
     category: CATEGORIES.ai.id,
     heroImage: {
@@ -6633,9 +5660,10 @@ to explore the full documentation and get started with intelligent command manag
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'LLMDevs',
+    register: 'formal',
     content: `
 <div class="intro">
-            <p class="lead"><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener">Claude Code</a> has evolved dramatically in the last three months, transforming from a powerful terminal coding assistant into a comprehensive autonomous development platform. From September through November 2025, Anthropic introduced checkpoints for fearless code iteration, a plugin marketplace for sharing workflows, native VS Code integration, web and mobile interfaces, and significant model improvements with <a href="https://www.anthropic.com/news/claude-sonnet-4-5" target="_blank" rel="noopener">Claude Sonnet 4.5</a>. Let's explore what makes these updates game-changing for developers.</p>
+            <p class="lead"><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener">Claude Code</a> changed substantially between September and November 2025: checkpoints for reversible code iteration, a plugin marketplace for sharing workflows, native VS Code integration, web and mobile interfaces, and a model upgrade to <a href="https://www.anthropic.com/news/claude-sonnet-4-5" target="_blank" rel="noopener">Claude Sonnet 4.5</a>. This is a snapshot of that three-month window as it stood on the date below - treat any "latest" or version-specific claim below as dated to then, not as current fact.</p>
         </div>
 
         <section>
@@ -6686,13 +5714,13 @@ to explore the full documentation and get started with intelligent command manag
 
         <section>
             <h2>Subagents: Parallel Development Workflows</h2>
-            <p><a href="https://docs.claude.com/en/docs/claude-code/sub-agents" target="_blank" rel="noopener">Subagents</a> are specialized AI assistants that handle specific task types with their own context windows and tool permissions. Announced in late summer 2025 and refined through September, subagents enable true parallel development workflows.</p>
+            <p><a href="https://docs.claude.com/en/docs/claude-code/sub-agents" target="_blank" rel="noopener">Subagents</a> are specialised AI assistants that handle specific task types with their own context windows and tool permissions. Announced in late summer 2025 and refined through September, subagents enable true parallel development workflows.</p>
 
             <h3>How Subagents Work</h3>
-            <p>Each subagent operates in an isolated context window with a custom system prompt and specific tool permissions. When Claude encounters work matching a subagent's expertise, it delegates the task to the specialized agent. This provides three key advantages:</p>
+            <p>Each subagent operates in an isolated context window with a custom system prompt and specific tool permissions. When Claude encounters work matching a subagent's expertise, it delegates the task to the specialised agent. This provides three key advantages:</p>
             <ul>
-                <li><strong>Context preservation</strong>: Main conversation doesn't get cluttered with specialized task details</li>
-                <li><strong>Specialized expertise</strong>: Agents can be fine-tuned with domain-specific instructions</li>
+                <li><strong>Context preservation</strong>: Main conversation doesn't get cluttered with specialised task details</li>
+                <li><strong>Specialised expertise</strong>: Agents can be fine-tuned with domain-specific instructions</li>
                 <li><strong>Parallel execution</strong>: Multiple subagents can work simultaneously on different aspects of your codebase</li>
             </ul>
 
@@ -6701,13 +5729,13 @@ to explore the full documentation and get started with intelligent command manag
 
             <h3>Built-in Subagent Examples</h3>
             <ul>
-                <li><strong>Code reviewer</strong>: Analyzes changes for quality, security, and maintainability</li>
+                <li><strong>Code reviewer</strong>: Analyses changes for quality, security, and maintainability</li>
                 <li><strong>Debugger</strong>: Performs root cause analysis on errors and test failures</li>
                 <li><strong>Data scientist</strong>: Handles <a href="https://www.w3schools.com/sql/" target="_blank" rel="noopener">SQL</a> queries and <a href="https://cloud.google.com/bigquery" target="_blank" rel="noopener">BigQuery</a> operations</li>
             </ul>
 
             <h3>Real-World Application</h3>
-            <p>Imagine building a full-stack feature. The main agent coordinates while delegating backend API development to one subagent and frontend UI implementation to another. They work in parallel, each maintaining focused context on their specialized domain.</p>
+            <p>Imagine building a full-stack feature. The main agent coordinates whilst delegating backend API development to one subagent and frontend UI implementation to another. They work in parallel, each maintaining focused context on their specialised domain.</p>
         </section>
 
         <section>
@@ -6734,7 +5762,7 @@ to explore the full documentation and get started with intelligent command manag
             <h3>Hook Configuration</h3>
             <p>Hooks are configured in <code>~/.claude/settings.json</code> or <code>.claude/settings.json</code>. Each hook specifies a script path and optional metadata. The <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener">v2.0.30 release</a> added prompt-based stop hooks, enabling even more sophisticated control patterns.</p>
 
-            <p>For a detailed example of using hooks to control subagent behavior and prevent resource conflicts, see my article on <a href="/articles/claude-code-hooks-subagent-control">Advanced Claude Code Hooks: Controlling Sub-Agent Behavior</a>.</p>
+            <p>For a detailed example of using hooks to control subagent behaviour and prevent resource conflicts, see my article on <a href="/articles/claude-code-hooks-subagent-control">Advanced Claude Code Hooks: Controlling Sub-Agent Behaviour</a>.</p>
         </section>
 
         <section>
@@ -6744,26 +5772,26 @@ to explore the full documentation and get started with intelligent command manag
             <h3>What Plugins Include</h3>
             <ul>
                 <li><strong>Slash commands</strong>: Custom shortcuts for frequently-used operations</li>
-                <li><strong>Subagents</strong>: Purpose-built agents for specialized development tasks</li>
+                <li><strong>Subagents</strong>: Purpose-built agents for specialised development tasks</li>
                 <li><strong>MCP servers</strong>: Connect to tools and data sources through the Model Context Protocol</li>
-                <li><strong>Hooks</strong>: Customize Claude Code's behavior at key workflow points</li>
+                <li><strong>Hooks</strong>: Customise Claude Code's behaviour at key workflow points</li>
             </ul>
 
             <h3>Using the /plugin Command</h3>
             <p>Install plugins with the <code>/plugin</code> command. First, add a marketplace:</p>
-            <pre><code class="language-bash">/plugin marketplace add user-or-org/repo-name</code></pre>
+            <pre><code class="language-bash">{{SNIPPET:claude-code-latest-features/add-marketplace.sh}}</code></pre>
 
             <p>Then browse and install plugins:</p>
-            <pre><code class="language-bash">/plugin install plugin-name@marketplace-name</code></pre>
+            <pre><code class="language-bash">{{SNIPPET:claude-code-latest-features/install-plugin.sh}}</code></pre>
 
             <p>Plugins work across both terminal and <a href="https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code" target="_blank" rel="noopener">VS Code extension</a> environments, providing consistent functionality regardless of interface.</p>
 
             <h3>Creating Plugin Marketplaces</h3>
-            <p>Any <a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a> repository can host a plugin marketplace. Create a <code>.claude-plugin/marketplace.json</code> file with properly formatted plugin metadata, then share the repository URL. This decentralized approach enables teams to create internal plugin marketplaces for company-specific workflows.</p>
+            <p>Any <a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a> repository can host a plugin marketplace. Create a <code>.claude-plugin/marketplace.json</code> file with properly formatted plugin metadata, then share the repository URL. This decentralised approach enables teams to create internal plugin marketplaces for company-specific workflows.</p>
 
             <h3>Why Plugins Matter</h3>
             <ul>
-                <li><strong>Standardization</strong>: Engineering leaders enforce consistency across teams</li>
+                <li><strong>Standardisation</strong>: Engineering leaders enforce consistency across teams</li>
                 <li><strong>Knowledge sharing</strong>: Open source maintainers provide best-practice workflows</li>
                 <li><strong>Tool integration</strong>: Connect internal tools through MCP without custom development</li>
                 <li><strong>Productivity patterns</strong>: Share proven debugging, testing, and deployment workflows</li>
@@ -6772,7 +5800,7 @@ to explore the full documentation and get started with intelligent command manag
 
         <section>
             <h2>Agent Skills: Progressive Disclosure of Capabilities</h2>
-            <p>On October 16, 2025, Anthropic introduced <a href="https://www.anthropic.com/news/skills" target="_blank" rel="noopener">Agent Skills</a>, a new pattern for making specialized abilities available to Claude models. Skills use a "progressive disclosure" design that loads information only when relevant, making the system both token-efficient and scalable.</p>
+            <p>On October 16, 2025, Anthropic introduced <a href="https://www.anthropic.com/news/skills" target="_blank" rel="noopener">Agent Skills</a>, a new pattern for making specialised abilities available to Claude models. Skills use a "progressive disclosure" design that loads information only when relevant, making the system both token-efficient and scalable.</p>
 
             <h3>How Skills Work</h3>
             <p>Skills are folders containing instructions, scripts, and resources. Each skill takes only a few dozen tokens in the agent's context, with full details loaded only when the user requests a task the skill can solve. Claude automatically determines which skills are relevant and loads them as needed.</p>
@@ -6784,7 +5812,7 @@ to explore the full documentation and get started with intelligent command manag
             <p>Skills are available on Pro, Max, Team, and Enterprise plans as of October 16, 2025.</p>
 
             <h3>Skills vs Plugins</h3>
-            <p>While plugins bundle multiple customization types (commands, agents, hooks, MCP servers), skills focus specifically on specialized task capabilities. Think of skills as expertise modules and plugins as workflow packages.</p>
+            <p>Whilst plugins bundle multiple customisation types (commands, agents, hooks, MCP servers), skills focus specifically on specialised task capabilities. Think of skills as expertise modules and plugins as workflow packages.</p>
         </section>
 
         <section>
@@ -6801,7 +5829,7 @@ to explore the full documentation and get started with intelligent command manag
             </ul>
 
             <h3>Checkpoint Integration</h3>
-            <p>The checkpoint system works seamlessly in VS Code. Press <code>Esc</code> twice or use <code>/rewind</code> to access the rewind menu, with changes displayed in the IDE's native diff viewer for clear visual feedback.</p>
+            <p>The checkpoint system works the same way in VS Code. Press <code>Esc</code> twice or use <code>/rewind</code> to access the rewind menu, with changes displayed in the IDE's native diff viewer for clear visual feedback.</p>
 
             <h3>Terminal Parity</h3>
             <p>The extension maintains feature parity with the terminal interface. Subagents, hooks, skills, and plugins all function identically, ensuring consistent workflows across environments.</p>
@@ -6819,20 +5847,20 @@ to explore the full documentation and get started with intelligent command manag
                 <li><strong>GitHub integration</strong>: Connect repositories directly from <a href="https://claude.com/code" target="_blank" rel="noopener">claude.com/code</a></li>
                 <li><strong>Browser-based coding</strong>: No terminal or local installation required</li>
                 <li><strong>Sandbox security</strong>: Every task runs in an isolated environment with network and filesystem restrictions</li>
-                <li><strong>Git proxy service</strong>: Secure authentication ensures Claude can only access authorized repositories</li>
+                <li><strong>Git proxy service</strong>: Secure authentication ensures Claude can only access authorised repositories</li>
             </ul>
 
             <h3>Mobile Support</h3>
-            <p>The iOS app enables exploratory coding on mobile devices. While not intended for production development, it allows code review, bug fixes, and prototyping from anywhere.</p>
+            <p>The iOS app enables exploratory coding on mobile devices. Whilst not intended for production development, it allows code review, bug fixes, and prototyping from anywhere.</p>
 
             <h3>Availability</h3>
             <p>Claude Code on the web is in research preview for <a href="https://www.anthropic.com/pricing" target="_blank" rel="noopener">Pro and Max users</a>. Visit <a href="https://claude.com/code" target="_blank" rel="noopener">claude.com/code</a> to connect your first repository.</p>
 
             <h3>Security Architecture</h3>
-            <p>The web interface uses isolated sandbox environments for all code execution. Network and filesystem access is restricted, and Git operations go through a secure proxy that validates repository permissions. This architecture prevents malicious code execution while maintaining full development capabilities.</p>
+            <p>The web interface uses isolated sandbox environments for all code execution. Network and filesystem access is restricted, and Git operations go through a secure proxy that validates repository permissions. This architecture prevents malicious code execution whilst maintaining full development capabilities.</p>
 
             <h3>Performance Impact</h3>
-            <p>According to <a href="https://techcrunch.com/2025/10/20/anthropic-brings-claude-code-to-the-web/" target="_blank" rel="noopener">TechCrunch</a>, Claude Code has grown 10x in users since its broader launch in May 2025, and now accounts for more than $500 million in annualized revenue for Anthropic.</p>
+            <p>According to <a href="https://techcrunch.com/2025/10/20/anthropic-brings-claude-code-to-the-web/" target="_blank" rel="noopener">TechCrunch</a>, Claude Code has grown 10x in users since its broader launch in May 2025, and now accounts for more than $500 million in annualised revenue for Anthropic.</p>
         </section>
 
         <section>
@@ -6859,7 +5887,7 @@ to explore the full documentation and get started with intelligent command manag
             <p>Claude Code displays warnings when MCP tool output exceeds 10,000 tokens, with a default maximum of 25,000 tokens (configurable). This prevents context window exhaustion from verbose tool responses.</p>
 
             <h3>Current Protocol Version</h3>
-            <p>As of November 2025, the current MCP protocol version is <code>2025-03-26</code>. The specification continues to evolve with breaking changes as it matures.</p>
+            <p>As of early November 2025, the current MCP protocol version was <code>2025-06-18</code> (a newer revision, <code>2025-11-25</code>, followed later that month). The specification continues to evolve with breaking changes as it matures.</p>
         </section>
 
         <section>
@@ -6882,11 +5910,11 @@ to explore the full documentation and get started with intelligent command manag
         </section>
 
         <section>
-            <h2>Configuration and Customization Improvements</h2>
-            <p>Recent releases added several quality-of-life improvements for advanced users who need fine-grained control over Claude Code's behavior.</p>
+            <h2>Configuration and Customisation Improvements</h2>
+            <p>Recent releases added several quality-of-life improvements for advanced users who need fine-grained control over Claude Code's behaviour.</p>
 
             <h3>Security and Sandbox Controls</h3>
-            <p>Version 2.0.30 introduced <code>allowUnsandboxedCommands</code> setting for policy-level restrictions, and <code>disallowedTools</code> field for custom agent definitions to explicitly block specific tools. These features enable organizations to enforce security policies while maintaining development flexibility.</p>
+            <p>Version 2.0.30 introduced <code>allowUnsandboxedCommands</code> setting for policy-level restrictions, and <code>disallowedTools</code> field for custom agent definitions to explicitly block specific tools. These features enable organisations to enforce security policies whilst maintaining development flexibility.</p>
 
             <h3>MCP Configuration</h3>
             <ul>
@@ -6904,22 +5932,21 @@ to explore the full documentation and get started with intelligent command manag
 
         <section>
             <h2>Getting Started with New Features</h2>
-            <p>Ready to explore these new capabilities? Here's how to get started with each major feature.</p>
+            <p>Each feature below has a quick way to try it.</p>
 
             <h3>Update Claude Code</h3>
             <p>First, ensure you're running the latest version:</p>
-            <pre><code class="language-bash">npm update -g @anthropic-ai/claude-code</code></pre>
+            <pre><code class="language-bash">{{SNIPPET:claude-code-latest-features/update-claude-code.sh}}</code></pre>
 
             <h3>Try Checkpoints</h3>
             <p>Start a coding session and make some changes. Then press <code>Esc</code> twice to open the rewind menu. Experiment with reverting code, conversation, or both to understand the workflow.</p>
 
             <h3>Create a Subagent</h3>
-            <p>Use the <code>/agents</code> command to create a specialized agent for a common task in your workflow. For example, create a "test runner" agent that validates changes before commits.</p>
+            <p>Use the <code>/agents</code> command to create a specialised agent for a common task in your workflow. For example, create a "test runner" agent that validates changes before commits.</p>
 
             <h3>Install a Plugin</h3>
             <p>Add the official marketplace and explore available plugins:</p>
-            <pre><code class="language-bash">/plugin marketplace add anthropics/plugins
-/plugin install your-chosen-plugin</code></pre>
+            <pre><code class="language-bash">{{SNIPPET:claude-code-latest-features/install-official-plugin.sh}}</code></pre>
 
             <h3>Try the VS Code Extension</h3>
             <p>Search for "Claude Code" in the VS Code Extension Marketplace and install it. Use <code>Cmd+Esc</code> (Mac) or <code>Ctrl+Esc</code> (Windows/Linux) to launch Claude in your IDE.</p>
@@ -6933,28 +5960,26 @@ to explore the full documentation and get started with intelligent command manag
 
         <section>
             <h2>What's Next for Claude Code?</h2>
-            <p>Based on the rapid pace of innovation over the last three months, several trends suggest future directions:</p>
+            <p>These were the trends visible from where things stood in early November 2025 - worth reading as a forecast to check against what actually shipped, not as a roadmap:</p>
 
             <ul>
-                <li><strong>Extended autonomous operation</strong>: With 30-hour task persistence already demonstrated, expect longer-running development sessions with better error recovery</li>
-                <li><strong>Team collaboration features</strong>: Shared plugins, subagents, and hooks could enable team-wide consistency</li>
-                <li><strong>Enhanced mobile experience</strong>: The iOS app is just the beginning - expect more sophisticated mobile workflows</li>
-                <li><strong>Deeper IDE integrations</strong>: VS Code extension is in beta; expect stable release and potential <a href="https://www.jetbrains.com/" target="_blank" rel="noopener">JetBrains</a> integration</li>
-                <li><strong>Enterprise features</strong>: Security controls and audit logging for regulated industries</li>
+                <li><strong>Extended autonomous operation</strong>: With 30-hour task persistence already demonstrated, longer-running sessions with better error recovery seemed likely</li>
+                <li><strong>Team collaboration features</strong>: Shared plugins, subagents, and hooks looked positioned to enable team-wide consistency</li>
+                <li><strong>Enhanced mobile experience</strong>: The iOS app looked like a first step rather than a finished mobile workflow</li>
+                <li><strong>Deeper IDE integrations</strong>: the VS Code extension was still in beta, with a stable release and possible <a href="https://www.jetbrains.com/" target="_blank" rel="noopener">JetBrains</a> integration plausible next</li>
+                <li><strong>Enterprise features</strong>: security controls and audit logging for regulated industries looked like an open gap</li>
             </ul>
 
-            <p>The foundation is clear: Claude Code is evolving from a coding assistant into a comprehensive autonomous development platform that works across terminals, IDEs, web browsers, and mobile devices.</p>
+            <p>The pattern across that period was consistent: Claude Code moving from a coding assistant into a broader development platform spanning terminals, IDEs, web browsers, and mobile devices.</p>
         </section>
 
         <section>
-            <h2>Conclusion</h2>
-            <p>The last three months have fundamentally transformed Claude Code. Checkpoints eliminate fear of experimentation. Subagents enable parallel development workflows. Plugins create a sharing economy for development patterns. The VS Code extension brings AI assistance directly into the IDE. Web and mobile interfaces make coding accessible anywhere. And Claude Sonnet 4.5 provides the intelligence to make it all work reliably.</p>
+            <h2>From Coding Assistant to Development Platform</h2>
+            <p>Checkpoints gave a way to undo experiments, subagents split work into isolated, specialised context windows, and plugins packaged and shared both of those, plus hooks and MCP servers, as installable units. The VS Code extension and the web and mobile interfaces then moved all of that out of a single terminal window, with Claude Sonnet 4.5 as the model change underneath most of it.</p>
 
-            <p>These aren't incremental improvements - they represent a shift in how we think about AI-assisted development. Rather than replacing developers, Claude Code augments capabilities: handle routine tasks autonomously, experiment fearlessly with instant rollback, delegate specialized work to focused agents, and maintain productivity across any environment.</p>
+            <p>Individually, several of these are conveniences, but together, over three months, they moved Claude Code from a tool you run to a platform you configure: routine tasks delegated to subagents, experiments made reversible by checkpoints, and workflows packaged as plugins rather than repeated by hand.</p>
 
-            <p>For developers building modern applications in <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a>, <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>, <a href="https://www.python.org/" target="_blank" rel="noopener">Python</a>, <a href="https://go.dev/" target="_blank" rel="noopener">Go</a>, or any other language, Claude Code now offers a mature, extensible platform for AI-augmented development. The features are stable, the documentation is comprehensive, and the community is building plugins and sharing workflows.</p>
-
-            <p>Start with checkpoints for risk-free experimentation. Add subagents for specialized tasks. Install plugins that match your workflow. The future of development is autonomous, and it's available today.</p>
+            <p>For developers working in <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a>, <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a>, <a href="https://www.python.org/" target="_blank" rel="noopener">Python</a>, <a href="https://go.dev/" target="_blank" rel="noopener">Go</a>, or anything else, the practical starting point is checkpoints, since they cost nothing to try and remove the main reason to hold back from letting Claude Code make larger changes unsupervised.</p>
 
             <h3>Additional Resources</h3>
             <ul>
@@ -6975,7 +6000,7 @@ to explore the full documentation and get started with intelligent command manag
     id: 'claude-code-planning-execution-workflows',
     title: 'Claude Code Planning and Execution Workflows: From Built-in Modes to Parallel Agents',
     description:
-      "A comprehensive guide to Claude Code's planning features, from built-in Plan Mode to formal planning workflows with parallel agent execution for complex development tasks",
+      'How to structure Claude Code planning work: a PlanWorkflow.md contract, GitHub issue-driven tracking, and the workflow tiers from built-in Plan Mode through parallel agents and custom subagents',
     date: '2025-10-01',
     category: CATEGORIES.ai.id,
     heroImage: {
@@ -6990,6 +6015,7 @@ to explore the full documentation and get started with intelligent command manag
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'LLMDevs',
+    register: 'formal',
     content: `
 <div class="intro">
     <p class="lead">
@@ -7000,7 +6026,7 @@ to explore the full documentation and get started with intelligent command manag
 <section>
     <h2>Built-in Plan Mode: The Foundation</h2>
     <p>
-        <a href="https://docs.claude.com/en/docs/claude-code/common-workflows" target="_blank" rel="noopener">Plan Mode</a> is Claude Code's core feature for safe, read-only code analysis. It creates a deliberate boundary between research and execution, preventing accidental changes while exploring codebases.
+        <a href="https://docs.claude.com/en/docs/claude-code/common-workflows" target="_blank" rel="noopener">Plan Mode</a> is Claude Code's core feature for safe, read-only code analysis. It creates a deliberate boundary between research and execution, preventing accidental changes whilst exploring codebases.
     </p>
 
     <h3>Activating Plan Mode</h3>
@@ -7044,19 +6070,19 @@ to explore the full documentation and get started with intelligent command manag
         <li><strong>Exploring unfamiliar codebases</strong>: Understanding architecture before making changes</li>
         <li><strong>Multi-step implementation planning</strong>: Breaking down complex features into actionable steps</li>
         <li><strong>Code review and analysis</strong>: Examining code without modification risk</li>
-        <li><strong>Security audits</strong>: Analyzing code without executing it</li>
+        <li><strong>Security audits</strong>: Analysing code without executing it</li>
         <li><strong>Interactive refinement</strong>: Iterating on plans before execution</li>
     </ul>
 
     <h3>Limitations of Built-in Plan Mode</h3>
     <p>
-        While powerful, built-in Plan Mode has constraints:
+        Whilst powerful, built-in Plan Mode has constraints:
     </p>
     <ul>
         <li><strong>No persistent artifacts</strong>: Plans exist only in the conversation</li>
-        <li><strong>Single-threaded</strong>: Cannot parallelize research across multiple areas</li>
+        <li><strong>Single-threaded</strong>: Cannot parallelise research across multiple areas</li>
         <li><strong>Context mixing</strong>: Planning and execution share the same context window</li>
-        <li><strong>No structured tracking</strong>: No standardized format for progress tracking</li>
+        <li><strong>No structured tracking</strong>: No standardised format for progress tracking</li>
     </ul>
     <p>
         These limitations become apparent in complex projects that require formal planning, team collaboration, or parallel workstreams.
@@ -7071,7 +6097,7 @@ to explore the full documentation and get started with intelligent command manag
 
     <h3>Directory Structure</h3>
     <p>
-        Formal planning workflows use a standardized directory structure:
+        Formal planning workflows use a standardised directory structure:
     </p>
     <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/directory-structure.sh}}
 </code></pre>
@@ -7107,7 +6133,7 @@ to explore the full documentation and get started with intelligent command manag
 
     <h3>Documenting Your Plan Workflow</h3>
     <p>
-        Every project using formal planning should document its workflow in <code>CLAUDE/PlanWorkflow.md</code>. This serves as the contract between developers and Claude Code, defining how planning and execution work in your project.
+        Every project using formal planning should document its workflow in <code>CLAUDE/PlanWorkflow.md</code>. This is the contract between developers and Claude Code, defining how planning and execution work in your project.
     </p>
 
     <h4>Basic PlanWorkflow.md Template</h4>
@@ -7119,7 +6145,7 @@ to explore the full documentation and get started with intelligent command manag
 
     <h3>Advanced: Parallel Execution Workflows</h3>
     <p>
-        For projects leveraging parallel agents, extend your <code>PlanWorkflow.md</code> with parallel execution structure. This enables sophisticated multi-agent orchestration.
+        For projects that use parallel agents, extend your <code>PlanWorkflow.md</code> with parallel execution structure. This enables sophisticated multi-agent orchestration.
     </p>
 
     <h4>Parallel Execution Plan Structure</h4>
@@ -7140,7 +6166,7 @@ to explore the full documentation and get started with intelligent command manag
     <pre><code class="language-markdown">{{SNIPPET:claude-code-planning-execution-workflows/agent-communication-protocol.md}}
 </code></pre>
 
-    <h4>Optimization Strategies</h4>
+    <h4>Optimisation Strategies</h4>
     <pre><code class="language-markdown">{{SNIPPET:claude-code-planning-execution-workflows/optimization-strategies.md}}
 </code></pre>
 
@@ -7153,7 +6179,7 @@ to explore the full documentation and get started with intelligent command manag
 
     <h3>Plan Document Structure</h3>
     <p>
-        Individual plan documents follow a standardized format:
+        Individual plan documents follow a standardised format:
     </p>
     <pre><code class="language-markdown">{{SNIPPET:claude-code-planning-execution-workflows/basic-plan-document.md}}
 </code></pre>
@@ -7205,7 +6231,7 @@ to explore the full documentation and get started with intelligent command manag
 <section>
     <h2>Parallel Agent Execution</h2>
     <p>
-        <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">Claude Code's parallel agent architecture</a> enables sophisticated orchestration of multiple specialized agents working simultaneously. This represents a significant evolution from sequential, single-agent workflows.
+        Claude Code's parallel agent architecture enables sophisticated orchestration of multiple specialised agents working simultaneously. This is a significant evolution from sequential, single-agent workflows, and follows a similar pattern to <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">the multi-agent architecture Anthropic built for its Research product</a>.
     </p>
 
     <h3>Understanding Parallel Agents</h3>
@@ -7213,9 +6239,9 @@ to explore the full documentation and get started with intelligent command manag
         <a href="https://docs.claude.com/en/docs/claude-code/sub-agents" target="_blank" rel="noopener">Subagents</a> operate in separate context windows, each with their own expertise and tool access. This provides:
     </p>
     <ul>
-        <li><strong>Context isolation</strong>: Each agent uses full context for specialized tasks</li>
+        <li><strong>Context isolation</strong>: Each agent uses full context for specialised tasks</li>
         <li><strong>Parallel execution</strong>: Multiple research or implementation streams run concurrently</li>
-        <li><strong>Specialized focus</strong>: Agents can be experts in specific domains</li>
+        <li><strong>Specialised focus</strong>: Agents can be experts in specific domains</li>
         <li><strong>Additive capacity</strong>: Multiple agents provide more total reasoning capacity</li>
     </ul>
 
@@ -7223,14 +6249,7 @@ to explore the full documentation and get started with intelligent command manag
     <p>
         Tell Claude Code to execute your plan with parallel agents:
     </p>
-    <pre><code class="language-bash"># Simple parallel execution
-"Execute plan with sub agents"
-
-# Specify parallelism level
-"Explore the codebase using 4 tasks in parallel"
-
-# Targeted parallel execution
-"Use parallel agents to research authentication, database, and API layers simultaneously"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/parallel-execution-examples.sh}}
 </code></pre>
 
     <h3>Multi-Agent Orchestration Patterns</h3>
@@ -7242,11 +6261,11 @@ to explore the full documentation and get started with intelligent command manag
     <ul>
         <li><strong>Agent 1</strong>: Database schema and query patterns</li>
         <li><strong>Agent 2</strong>: API endpoints and routing</li>
-        <li><strong>Agent 3</strong>: Authentication and authorization</li>
+        <li><strong>Agent 3</strong>: Authentication and authorisation</li>
         <li><strong>Agent 4</strong>: Frontend integration points</li>
     </ul>
     <p>
-        Each agent produces a report, which the lead agent synthesizes into a comprehensive plan.
+        Each agent produces a report, which the lead agent synthesises into a comprehensive plan.
     </p>
 
     <h4>Pattern 2: Parallel Implementation</h4>
@@ -7268,7 +6287,7 @@ to explore the full documentation and get started with intelligent command manag
         <li><strong>Product manager agent</strong>: Creates detailed requirements and acceptance criteria</li>
         <li><strong>Architect agent</strong>: Designs technical approach and data structures</li>
         <li><strong>Implementation agent</strong>: Writes code following architecture</li>
-        <li><strong>Review agent</strong>: Analyzes code quality and suggests improvements</li>
+        <li><strong>Review agent</strong>: Analyses code quality and suggests improvements</li>
         <li><strong>Refinement agent</strong>: Applies review feedback</li>
         <li><strong>QA agent</strong>: Validates implementation against requirements</li>
     </ol>
@@ -7278,50 +6297,37 @@ to explore the full documentation and get started with intelligent command manag
         Parallel agent architectures have trade-offs:
     </p>
     <ul>
-        <li><strong>Token usage</strong>: Multi-agent systems use approximately <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">15× more tokens</a> than single-agent chats</li>
-        <li><strong>Quality improvement</strong>: Multi-agent Claude Opus 4 (lead) + Sonnet 4 (subagents) outperformed single-agent Opus by <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">90.2% on internal research evaluations</a></li>
+        <li><strong>Token usage</strong>: For a comparable multi-agent architecture Anthropic built for its Research product, multi-agent systems used approximately <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">15× more tokens</a> than single-agent chats. Expect a similar order-of-magnitude increase with Claude Code's subagents</li>
+        <li><strong>Quality improvement</strong>: In that same Research product architecture, multi-agent Claude Opus 4 (lead) + Sonnet 4 (subagents) outperformed single-agent Opus by <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">90.2% on internal research evaluations</a>, though Claude Code's own subagent feature has not published equivalent benchmarks</li>
         <li><strong>Cost vs. speed</strong>: Parallel execution completes faster but consumes more resources</li>
-        <li><strong>Non-determinism</strong>: AI behavior varies across runs; test agent prompts thoroughly</li>
+        <li><strong>Non-determinism</strong>: AI behaviour varies across runs; test agent prompts thoroughly</li>
     </ul>
 
     <h3>When to Use Parallel Agents</h3>
     <p>
-        Parallel agent execution is most effective for:
+        The common thread across good candidates for parallel execution is independence: the work splits into pieces that don't need to read each other's output mid-task. Researching four unrelated modules of a codebase fits; refactoring a single function that touches all four doesn't. See "Choosing Your Workflow" below for the full breakdown of when this tier beats built-in Plan Mode or formal planning.
     </p>
-    <ul>
-        <li><strong>Large codebase exploration</strong>: Researching multiple modules simultaneously</li>
-        <li><strong>Multi-component features</strong>: Implementing backend, frontend, and tests in parallel</li>
-        <li><strong>Cross-cutting changes</strong>: Refactoring patterns across multiple files</li>
-        <li><strong>Complex investigations</strong>: Researching multiple potential solutions concurrently</li>
-    </ul>
 
     <h3>Example: Plan Segment Execution</h3>
     <p>
         Given a comprehensive plan with multiple independent sections, Claude Code can execute segments in parallel. For example, given this plan:
     </p>
-    <pre><code class="language-markdown">## Progress
-
-[ ] Research authentication system (Auth Service, JWT handling)
-[ ] Research database layer (ORM patterns, query optimization)
-[ ] Research API layer (routing, middleware, error handling)
-[ ] Research frontend integration (state management, API clients)
-[ ] Design unified architecture
-[ ] Implement changes
+    <pre><code class="language-markdown">{{SNIPPET:claude-code-planning-execution-workflows/progress-checklist-example.md}}
 </code></pre>
 
     <p>
         You can trigger parallel execution:
     </p>
-    <pre><code class="language-bash">"Execute the four research tasks in parallel with sub agents"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/execute-parallel-research.sh}}
 </code></pre>
 
     <p>
         Claude Code will:
     </p>
     <ol>
-        <li>Launch four specialized agents, each researching one area</li>
+        <li>Launch four specialised agents, each researching one area</li>
         <li>Each agent produces a detailed research report</li>
-        <li>The lead agent synthesizes findings into a unified design</li>
+        <li>The lead agent synthesises findings into a unified design</li>
         <li>Updates the plan document with research results</li>
         <li>Marks research tasks as complete</li>
     </ol>
@@ -7330,7 +6336,7 @@ to explore the full documentation and get started with intelligent command manag
 <section>
     <h2>Custom Subagents</h2>
     <p>
-        While built-in parallel agents are powerful, <a href="https://docs.claude.com/en/docs/claude-code/sub-agents" target="_blank" rel="noopener">custom subagents</a> provide fine-grained control over agent behavior, tool access, and specialization. This is a deep topic that warrants its own dedicated article.
+        Whilst built-in parallel agents are powerful, <a href="https://docs.claude.com/en/docs/claude-code/sub-agents" target="_blank" rel="noopener">custom subagents</a> provide fine-grained control over agent behaviour, tool access, and specialisation. This is a deep topic that warrants its own dedicated article.
     </p>
 
     <h3>Quick Overview</h3>
@@ -7338,7 +6344,7 @@ to explore the full documentation and get started with intelligent command manag
         Custom subagents enable:
     </p>
     <ul>
-        <li><strong>Specialized system prompts</strong>: Tailored instructions for specific tasks</li>
+        <li><strong>Specialised system prompts</strong>: Tailored instructions for specific tasks</li>
         <li><strong>Tool access control</strong>: Limit agents to relevant tools only</li>
         <li><strong>Model selection</strong>: Use different models for different tasks (e.g., Opus for planning, Sonnet for implementation)</li>
         <li><strong>Reusable configurations</strong>: Share agent definitions across projects</li>
@@ -7349,7 +6355,7 @@ to explore the full documentation and get started with intelligent command manag
     <p>
         Use the <code>/agents</code> command to create a new subagent:
     </p>
-    <pre><code class="language-bash">/agents
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/agents-command.sh}}
 </code></pre>
 
     <p>
@@ -7358,7 +6364,7 @@ to explore the full documentation and get started with intelligent command manag
     <ul>
         <li><strong>Name</strong>: Unique identifier (e.g., <code>code-reviewer</code>, <code>php-expert</code>)</li>
         <li><strong>Description</strong>: Purpose and expertise area</li>
-        <li><strong>System prompt</strong>: Detailed instructions and behavioral constraints</li>
+        <li><strong>System prompt</strong>: Detailed instructions and behavioural constraints</li>
         <li><strong>Tool access</strong>: Which tools the agent can use</li>
         <li><strong>Model</strong>: Which Claude model to use</li>
     </ul>
@@ -7385,27 +6391,12 @@ to explore the full documentation and get started with intelligent command manag
         <li><strong>Version control</strong>: Commit project-level agents to Git</li>
     </ul>
 
-    <h3>Future Coverage</h3>
-    <p>
-        Custom subagents deserve comprehensive coverage, including:
-    </p>
-    <ul>
-        <li>Detailed agent configuration syntax</li>
-        <li>System prompt engineering strategies</li>
-        <li>Tool permission patterns and security considerations</li>
-        <li>Real-world agent examples (code reviewers, test generators, documentation writers)</li>
-        <li>Multi-agent coordination patterns</li>
-        <li>Debugging and iterating on agent behavior</li>
-    </ul>
-    <p>
-        This will be covered in a future dedicated article on advanced Claude Code agent architectures.
-    </p>
-</section>
+    </section>
 
 <section>
     <h2>GitHub Integration for High-Level Tracking</h2>
     <p>
-        For project management at scale, integrate Claude Code workflows with <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a> for issue tracking and PR management.
+        For larger projects that need proper issue tracking and PR management, integrate Claude Code workflows with <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a>.
     </p>
 
     <h3>Issue-Driven Development Workflow</h3>
@@ -7415,7 +6406,7 @@ to explore the full documentation and get started with intelligent command manag
 
     <h4>1. Create Issue</h4>
     <p>Ask Claude Code to create an issue describing the feature or bug:</p>
-    <pre><code class="language-bash">"Use gh to create a GitHub issue for implementing JWT authentication with refresh tokens"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/gh-create-issue.sh}}
 </code></pre>
     <p>
         Claude Code will execute <code>gh issue create</code> with appropriate title and body, then return the issue number for reference.
@@ -7423,8 +6414,7 @@ to explore the full documentation and get started with intelligent command manag
 
     <h4>2. Create and Commit Plan</h4>
     <p>Request plan creation and commit it with issue reference:</p>
-    <pre><code class="language-bash">"Create a detailed plan for JWT authentication in CLAUDE/plan/feature-auth-system.md
-and commit it with message referencing issue #123"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/gh-create-plan-commit.sh}}
 </code></pre>
     <p>
         Claude Code will create the plan file, commit with proper message format, and push to the remote repository.
@@ -7432,7 +6422,7 @@ and commit it with message referencing issue #123"
 
     <h4>3. Update Issue with Plan Link</h4>
     <p>Link the plan document to the issue for tracking:</p>
-    <pre><code class="language-bash">"Use gh to add a comment to issue #123 linking to the plan file and the commit SHA"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/gh-comment-plan-link.sh}}
 </code></pre>
     <p>
         Claude Code will get the commit SHA and add a formatted comment to the issue with a GitHub permalink to the plan file.
@@ -7440,7 +6430,7 @@ and commit it with message referencing issue #123"
 
     <h4>4. Execute Plan</h4>
     <p>Start implementation by referencing the plan document:</p>
-    <pre><code class="language-bash">"Execute the plan in CLAUDE/plan/feature-auth-system.md"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/gh-execute-plan.sh}}
 </code></pre>
     <p>
         Claude Code will read the plan, break down the tasks, and systematically implement each component with proper error handling and testing.
@@ -7448,8 +6438,7 @@ and commit it with message referencing issue #123"
 
     <h4>5. Commit Implementation</h4>
     <p>After execution, commit the changes with detailed summary:</p>
-    <pre><code class="language-bash">"Commit the implementation with a detailed message referencing issue #123
-and summarizing the changes"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/gh-commit-implementation.sh}}
 </code></pre>
     <p>
         Claude Code will stage relevant files, create a descriptive multi-line commit message with issue reference, and push to remote.
@@ -7457,8 +6446,7 @@ and summarizing the changes"
 
     <h4>6. Update Issue with Completion Summary</h4>
     <p>Document the implementation results in the issue:</p>
-    <pre><code class="language-bash">"Use gh to add a comment to issue #123 with an implementation summary including
-the commit SHA, test coverage results, and confirmation that it's ready for PR"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/gh-comment-completion.sh}}
 </code></pre>
     <p>
         Claude Code will retrieve the execution commit SHA, format a comprehensive summary with markdown, and post it to the issue.
@@ -7466,10 +6454,10 @@ the commit SHA, test coverage results, and confirmation that it's ready for PR"
 
     <h4>7. Create Pull Request</h4>
     <p>Finally, create a PR directly from the completed work:</p>
-    <pre><code class="language-bash">"Use gh to create a pull request for the JWT authentication implementation"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/gh-create-pr.sh}}
 </code></pre>
     <p>
-        Claude Code will analyze the commits, generate PR title and body with summary/changes/testing sections, and create the PR targeting the main branch with proper issue closure reference.
+        Claude Code will analyse the commits, generate PR title and body with summary/changes/testing sections, and create the PR targeting the main branch with proper issue closure reference.
     </p>
 
     <div class="note">
@@ -7482,8 +6470,7 @@ the commit SHA, test coverage results, and confirmation that it's ready for PR"
     <p>
         Use Claude Code to create PRs directly from plan completion:
     </p>
-    <pre><code class="language-bash"># After completing plan execution
-"Create a pull request for this feature implementation"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/gh-create-pr-after-plan.sh}}
 </code></pre>
 
     <p>
@@ -7499,7 +6486,7 @@ the commit SHA, test coverage results, and confirmation that it's ready for PR"
 
     <h3>Tracking Plan Status via GitHub</h3>
     <p>
-        Use GitHub Projects to visualize plan progress:
+        Use GitHub Projects to visualise plan progress:
     </p>
     <ul>
         <li><strong>Backlog</strong>: Plans not yet started</li>
@@ -7514,20 +6501,14 @@ the commit SHA, test coverage results, and confirmation that it's ready for PR"
     <p>
         For features spanning multiple repositories:
     </p>
-    <pre><code class="language-bash"># Create tracking issue in each repo
-gh issue create -R org/backend --title "Auth API endpoints"
-gh issue create -R org/frontend --title "Auth UI components"
-gh issue create -R org/infrastructure --title "Auth service deployment"
-
-# Link related issues
-gh issue comment 123 --body "Related: org/frontend#456, org/infrastructure#789"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/gh-cross-repo-issues.sh}}
 </code></pre>
 </section>
 
 <section>
     <h2>Extended Thinking Mode</h2>
     <p>
-        Claude Code supports <a href="https://www.anthropic.com/news/extended-thinking" target="_blank" rel="noopener">extended thinking</a>, where Claude uses additional reasoning tokens before responding. This is particularly valuable during the planning phase.
+        Claude Code supports <a href="https://www.anthropic.com/news/visible-extended-thinking" target="_blank" rel="noopener">extended thinking</a>, where Claude uses additional reasoning tokens before responding. This is particularly valuable during the planning phase.
     </p>
 
     <h3>Triggering Extended Thinking</h3>
@@ -7549,12 +6530,11 @@ gh issue comment 123 --body "Related: org/frontend#456, org/infrastructure#789"
         <li><strong>Architecture decisions</strong>: Evaluating multiple design approaches</li>
         <li><strong>Complex refactoring</strong>: Understanding interconnected code changes</li>
         <li><strong>Security analysis</strong>: Identifying subtle vulnerabilities</li>
-        <li><strong>Performance optimization</strong>: Analyzing algorithmic complexity</li>
+        <li><strong>Performance optimisation</strong>: Analysing algorithmic complexity</li>
     </ul>
 
     <h3>Example: Planning with Extended Thinking</h3>
-    <pre><code class="language-bash">"Think hard about the best approach to refactor the authentication system.
-Consider security implications, backward compatibility, and migration strategy."
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/extended-thinking-example.sh}}
 </code></pre>
 
     <p>
@@ -7566,67 +6546,19 @@ Consider security implications, backward compatibility, and migration strategy."
     <h2>Practical Workflow Examples</h2>
 
     <h3>Example 1: Simple Feature with Built-in Plan Mode</h3>
-    <pre><code class="language-bash"># Activate Plan Mode
-Shift+Tab (twice)
-
-# Research and plan
-"Analyze how the current user profile system works and create a plan
-to add avatar upload functionality"
-
-# Review plan, exit Plan Mode
-Shift+Tab
-
-# Execute
-"Implement the plan we just created"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/workflow-example-simple-feature.sh}}
 </code></pre>
 
     <h3>Example 2: Complex Feature with Formal Planning</h3>
-    <pre><code class="language-bash"># Start in Planning Mode (formal)
-"Create a plan for implementing OAuth2 integration.
-Store it in CLAUDE/plan/oauth2-integration.md"
-
-# Claude researches and creates detailed plan document
-
-# Review plan, give approval
-"The plan looks good. Execute the OAuth2 integration plan."
-
-# Claude works through tasks, updating plan document as it progresses
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/workflow-example-formal-planning.sh}}
 </code></pre>
 
     <h3>Example 3: Multi-Repository Feature with Parallel Agents</h3>
-    <pre><code class="language-bash"># Create comprehensive plan
-"Create a plan for implementing real-time notifications across our stack.
-This will require changes to:
-- Backend API (Node.js)
-- Frontend UI (React)
-- Infrastructure (WebSocket server)
-- Database schema
-
-Store the plan in CLAUDE/plan/realtime-notifications.md"
-
-# Execute with parallel agents
-"Execute the plan using parallel agents. Have separate agents work on:
-- Backend WebSocket implementation
-- Frontend notification UI
-- Infrastructure deployment config
-- Database migrations
-
-Coordinate the changes to ensure they work together."
-
-# Create PRs for each component
-"Create a PR for each repository with the changes"
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/workflow-example-multi-repo.sh}}
 </code></pre>
 
     <h3>Example 4: Large Codebase Exploration</h3>
-    <pre><code class="language-bash"># Research with parallel agents
-"Use 5 parallel agents to explore this codebase. Have each agent research:
-1. Authentication and authorization patterns
-2. Database models and relationships
-3. API routes and controllers
-4. Frontend architecture and state management
-5. Testing patterns and coverage
-
-Create a comprehensive architecture document from the findings."
+    <pre><code class="language-bash">{{SNIPPET:claude-code-planning-execution-workflows/workflow-example-codebase-exploration.sh}}
 </code></pre>
 </section>
 
@@ -7645,7 +6577,7 @@ Create a comprehensive architecture document from the findings."
 
     <h3>Do: Use Parallel Agents for Independent Work</h3>
     <p>
-        Deploy parallel agents when tasks are truly independent. Don't parallelize tightly coupled changes.
+        Deploy parallel agents when tasks are truly independent. Don't parallelise tightly coupled changes.
     </p>
 
     <h3>Don't: Mix Planning and Execution Context</h3>
@@ -7653,7 +6585,7 @@ Create a comprehensive architecture document from the findings."
         Keep planning conversations separate from execution conversations. Use formal plan documents as the handoff point.
     </p>
 
-    <h3>Don't: Parallelize Without Clear Boundaries</h3>
+    <h3>Don't: Parallelise Without Clear Boundaries</h3>
     <p>
         Parallel agents need clear, independent scopes. Overlapping responsibilities lead to conflicts and rework.
     </p>
@@ -7702,7 +6634,7 @@ Create a comprehensive architecture document from the findings."
     <h3>Custom Subagents</h3>
     <p><strong>Best for:</strong></p>
     <ul>
-        <li>Repeated specialized tasks</li>
+        <li>Repeated specialised tasks</li>
         <li>Project-specific workflows</li>
         <li>Enforcing coding standards</li>
         <li>Multi-stage pipelines</li>
@@ -7713,10 +6645,7 @@ Create a comprehensive architecture document from the findings."
 <section>
     <h2>Conclusion</h2>
     <p>
-        Claude Code's planning capabilities range from simple built-in modes to sophisticated parallel agent architectures. The right approach depends on your project complexity, team structure, and workflow requirements.
-    </p>
-    <p>
-        Start with built-in Plan Mode for simple tasks. Graduate to formal planning workflows (CLAUDE/plan) as projects grow in complexity. Deploy parallel agents when you need speed and have independent workstreams. Create custom subagents when you have repeated, specialized needs.
+        Claude Code's planning capabilities range from simple built-in modes to sophisticated parallel agent architectures. The right approach depends on your project complexity, team structure, and workflow requirements - see "Choosing Your Workflow" above for a breakdown of which tier fits which situation.
     </p>
     <p>
         Most importantly: <strong>always separate planning from execution</strong>. This single principle, regardless of which workflow you choose, will dramatically improve the quality and maintainability of your AI-assisted development.
@@ -7731,7 +6660,7 @@ Create a comprehensive architecture document from the findings."
         <li><a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">How We Built Our Multi-Agent Research System</a> - Anthropic's deep dive on parallel agents</li>
         <li><a href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank" rel="noopener">Claude Code Best Practices</a> - Official best practices from Anthropic</li>
         <li><a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a> - Command-line tool for GitHub integration</li>
-        <li><a href="https://www.anthropic.com/news/extended-thinking" target="_blank" rel="noopener">Extended Thinking</a> - Anthropic's announcement of extended thinking capabilities</li>
+        <li><a href="https://www.anthropic.com/news/visible-extended-thinking" target="_blank" rel="noopener">Extended Thinking</a> - Anthropic's announcement of extended thinking capabilities</li>
         <li><a href="https://claudelog.com/mechanics/plan-mode/" target="_blank" rel="noopener">ClaudeLog: Plan Mode Mechanics</a> - Community guide to Plan Mode</li>
         <li><a href="https://github.com/wshobson/agents" target="_blank" rel="noopener">Production-Ready Subagents Collection</a> - Community-created agent examples</li>
     </ul>
@@ -7743,7 +6672,7 @@ Create a comprehensive architecture document from the findings."
     id: 'defensive-programming-principles',
     title: 'Defensive Programming Principles: YAGNI, Invalid States, and Domain Purity',
     description:
-      'Master three fundamental defensive programming principles: YAGNI for avoiding unnecessary complexity, making invalid states unrepresentable through type safety, and maintaining domain object purity for clean architecture.',
+      'A practical look at three techniques - YAGNI, type-driven invalid-state prevention, and domain object purity - for cutting whole categories of bugs out of PHP and TypeScript codebases before they can exist.',
     date: '2025-08-07',
     category: CATEGORIES.php.id,
     readingTime: 14,
@@ -7761,10 +6690,11 @@ Create a comprehensive architecture document from the findings."
     content: `
 <div class="intro">
     <p class="lead">
-        Defensive programming isn't just about handling edge cases. It's about designing systems that prevent
-        entire classes of bugs from existing in the first place. Three fundamental principles stand out: YAGNI
-        (You Aren't Gonna Need It), making invalid states unrepresentable, and maintaining domain object purity.
-        These principles create codebases that are more reliable, more maintainable, and easier to reason about.
+        Handling edge cases is only the surface of defensive programming; the deeper aim is designing systems
+        that prevent entire classes of bugs from existing in the first place, and three principles do most of
+        that work: YAGNI (You Aren't Gonna Need It), making invalid states unrepresentable, and maintaining
+        domain object purity. Together they produce codebases that are more reliable, more maintainable, and
+        easier to reason about.
     </p>
 </div>
 
@@ -7773,7 +6703,7 @@ Create a comprehensive architecture document from the findings."
     <p>
         Defensive programming has evolved beyond simple input validation and error checking. Modern defensive 
         programming focuses on <em>preventing problems by design</em> rather than catching them after they occur. 
-        The three principles we'll explore work together to create a robust development approach:
+        The three principles we'll explore work together to create a practical development approach:
     </p>
     
     <ul>
@@ -7783,18 +6713,18 @@ Create a comprehensive architecture document from the findings."
     </ul>
     
     <p>
-        These aren't theoretical concepts. They're practical techniques with immediate benefits for any codebase, 
-        from small PHP applications to large-scale TypeScript systems.
+        These are practical techniques with immediate benefits for any codebase, from small PHP applications
+        to large-scale TypeScript systems.
     </p>
 </section>
 
 <section>
     <h2>YAGNI: Rejecting Unnecessary Complexity</h2>
     <p>
-        YAGNI, coined by <a href="https://martinfowler.com/bliki/Yagni.html">Martin Fowler</a> and rooted in 
-        Extreme Programming, states that you shouldn't add functionality until you actually need it. This 
-        principle directly combats over-engineering. You know, the tendency to build "flexible" solutions for 
-        problems that don't exist.
+        YAGNI ("You Aren't Gonna Need It"), which emerged from Extreme Programming and is explained in depth
+        by <a href="https://martinfowler.com/bliki/Yagni.html">Martin Fowler</a>, states that you shouldn't
+        add functionality until you actually need it. This principle directly combats over-engineering. You
+        know, the tendency to build "flexible" solutions for problems that don't exist.
     </p>
     
     <h3>Understanding YAGNI Through Pseudocode</h3>
@@ -7809,7 +6739,7 @@ Create a comprehensive architecture document from the findings."
     <p>
         This pseudocode illustrates the fundamental YAGNI principle: focus on solving the actual requirement 
         with the simplest possible solution. The over-engineered approach creates extensive abstractions for 
-        hypothetical future needs, while the YAGNI-compliant version addresses the immediate problem directly.
+        hypothetical future needs, whilst the YAGNI-compliant version addresses the immediate problem directly.
     </p>
     
     <h3>YAGNI in PHP: A Real-World Example</h3>
@@ -7823,7 +6753,7 @@ Create a comprehensive architecture document from the findings."
 
     <p>
         This represents months of development time invested in abstract base classes, multiple implementations, 
-        factory patterns, and configuration systems. All for a simple session storage need.
+        factory patterns, and configuration systems, all for a simple session storage need.
     </p>
     
     <p>
@@ -7836,8 +6766,8 @@ Create a comprehensive architecture document from the findings."
     <p>
         This simple implementation solves the immediate need without unnecessary abstraction. The key insight 
         from <a href="https://www.techtarget.com/whatis/definition/You-arent-gonna-need-it">YAGNI's definition</a> 
-        is that when additional caching features are actually needed, refactoring this code is straightforward. And 
-        you'll have concrete requirements to guide the design.
+        is that when additional caching features are actually needed, refactoring this code is straightforward,
+        and you'll have concrete requirements to guide the design.
     </p>
     
     <h3>YAGNI in Infrastructure as Code</h3>
@@ -7871,7 +6801,7 @@ Create a comprehensive architecture document from the findings."
 <section>
     <h2>Make Invalid States Unrepresentable</h2>
     <p>
-        This principle, <a href="https://www.improving.com/thoughts/make-invalid-states-unrepresentable/">popularized in functional programming</a>, 
+        This principle, <a href="https://www.improving.com/thoughts/make-invalid-states-unrepresentable/">popularised in functional programming</a>,
         uses type systems to prevent invalid data from being represented in your program. When you implement it 
         correctly, the compiler prevents entire classes of runtime errors.
     </p>
@@ -7888,10 +6818,11 @@ Create a comprehensive architecture document from the findings."
     <p>
         This pseudocode demonstrates the fundamental shift from runtime validation to compile-time safety. 
         When invalid states are unrepresentable in the type system, entire categories of bugs become impossible. 
-        Business logic becomes simpler because it doesn't need defensive validation. The types guarantee data integrity.
+        Business logic becomes simpler because it doesn't need defensive validation, since the types guarantee
+        data integrity on their own.
     </p>
     
-    <h3>PHP 8.4: Type-Safe Domain Modeling</h3>
+    <h3>PHP 8.4: Type-Safe Domain Modelling</h3>
     <p>
         Here's how weak typing creates problems in traditional object-oriented PHP code:
     </p>
@@ -7906,7 +6837,7 @@ Create a comprehensive architecture document from the findings."
     </p>
     
     <p>
-        PHP 8.4's enums, readonly classes, property hooks, and asymmetric visibility enable safer domain modeling:
+        PHP 8.4's enums, readonly classes, property hooks, and asymmetric visibility enable safer domain modelling:
     </p>
     
     <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/invalid-states-good.php}}
@@ -7915,51 +6846,22 @@ Create a comprehensive architecture document from the findings."
     <p>
         Now invalid states are literally impossible to construct. The enum restricts status values, constructor 
         validation ensures data integrity, and readonly properties prevent mutation. The match expression ensures 
-        exhaustive handling of all cases. This approach eliminates an entire category of bugs at compile time.
+        exhaustive handling of all cases, which eliminates an entire category of bugs at compile time.
     </p>
     
     <h3>PHP 8.4 Property Hooks for Defensive Programming</h3>
     <p>
         <a href="https://www.php.net/manual/en/language.oop5.property-hooks.php">Property hooks</a>, 
-        introduced in PHP 8.4, revolutionize how we implement defensive validation by moving it directly 
+        introduced in PHP 8.4, change how we implement defensive validation by moving it directly
         into the type system:
     </p>
     
-    <pre><code class="language-php">readonly class Money 
-{
-    public int $amount {
-        set {
-            if ($value < 0) {
-                throw new InvalidArgumentException('Amount cannot be negative');
-            }
-            $this->amount = $value;
-        }
-    }
-    
-    public string $currency {
-        set {
-            if (!in_array($value, ['USD', 'EUR', 'GBP'])) {
-                throw new InvalidArgumentException('Unsupported currency');
-            }
-            $this->currency = strtoupper($value);
-        }
-    }
-    
-    public function __construct(int $amount, string $currency) 
-    {
-        $this->amount = $amount;   // Triggers validation hook
-        $this->currency = $currency; // Triggers validation hook
-    }
-}
-
-// Property hooks ensure validation happens automatically
-$price = new Money(1000, 'usd'); // Currency normalized to 'USD'
-// $invalid = new Money(-50, 'USD'); // Throws InvalidArgumentException
+    <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/property-hooks-money.php}}
 </code></pre>
 
     <p>
-        Property hooks eliminate the need for separate validation methods or complex constructor logic. 
-        The validation is <em>part of the property definition</em>. This makes it impossible to bypass and 
+        Property hooks eliminate the need for separate validation methods or complex constructor logic, because
+        the validation is <em>part of the property definition</em>, which makes it impossible to bypass and
         reduces the surface area for bugs.
     </p>
     
@@ -7970,49 +6872,13 @@ $price = new Money(1000, 'usd'); // Currency normalized to 'USD'
         public interfaces without sacrificing internal flexibility:
     </p>
     
-    <pre><code class="language-php">class OrderLine 
-{
-    // Publicly readable, privately settable
-    public private(set) ProductId $productId;
-    public private(set) int $quantity;
-    public private(set) Money $unitPrice;
-    
-    // Computed property - publicly readable only
-    public Money $totalPrice {
-        get => new Money(
-            $this->quantity * $this->unitPrice->amount,
-            $this->unitPrice->currency
-        );
-    }
-    
-    public function __construct(ProductId $productId, int $quantity, Money $unitPrice) 
-    {
-        if ($quantity <= 0) {
-            throw new InvalidArgumentException('Quantity must be positive');
-        }
-        
-        $this->productId = $productId;
-        $this->quantity = $quantity;
-        $this->unitPrice = $unitPrice;
-    }
-    
-    public function changeQuantity(int $newQuantity): OrderLine 
-    {
-        return new OrderLine($this->productId, $newQuantity, $this->unitPrice);
-    }
-}
-
-// External code can read but not modify properties
-$line = new OrderLine($product, 5, new Money(1000, 'USD'));
-echo $line->quantity; // Works: 5
-echo $line->totalPrice->amount; // Works: 5000 (computed property)
-// $line->quantity = 10; // Compile error: property is private(set)
+    <pre><code class="language-php">{{SNIPPET:defensive-programming-principles/asymmetric-visibility-order-line.php}}
 </code></pre>
 
     <p>
-        This pattern prevents the common mistake of accidentally mutating objects that should be immutable. 
-        It provides a clean, readable public API. The computed properties also demonstrate how property 
-        hooks can create derived values without exposing internal state management complexity.
+        This pattern prevents the common mistake of accidentally mutating objects that should be immutable,
+        whilst still providing a clean, readable public API. The computed properties also demonstrate how
+        property hooks can create derived values without exposing internal state management complexity.
     </p>
     
     <h3>TypeScript's Nominal Typing</h3>
@@ -8024,7 +6890,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 </code></pre>
 
     <p>
-        The branded types and union types prevent invalid states while maintaining TypeScript's ergonomics. 
+        The branded types and union types prevent invalid states whilst maintaining TypeScript's ergonomics.
         Smart constructors ensure validation happens at object creation, not scattered throughout the application.
     </p>
     
@@ -8075,9 +6941,9 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 </code></pre>
 
     <p>
-        This Order class violates domain purity by depending on four external services. The business logic 
-        is scattered across database queries, payment processing, and email sending. Testing requires 
-        mocking multiple services. Changes to infrastructure affect domain logic.
+        This Order class violates domain purity by depending on four external services, scattering business
+        logic across database queries, payment processing, and email sending, so that testing requires mocking
+        multiple services and changes to infrastructure end up affecting domain logic.
     </p>
     
     <p>
@@ -8088,9 +6954,9 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 </code></pre>
 
     <p>
-        The pure Order object contains only business logic and state transitions. It returns domain events 
-        that describe what happened. This allows application services to handle infrastructure concerns. This 
-        separation, as described in <a href="https://khorikov.org/posts/2021-05-17-domain-model-purity/">Vladimir Khorikov's analysis</a>, 
+        The pure Order object contains only business logic and state transitions, returning domain events that
+        describe what happened so that application services can handle infrastructure concerns. This
+        separation, as described in <a href="https://khorikov.org/posts/2021-05-17-domain-model-purity/">Vladimir Khorikov's analysis</a>,
         makes the code easier to test, understand, and modify.
     </p>
     
@@ -8138,9 +7004,9 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 </code></pre>
 
     <p>
-        Notice how even in a shell script, we validate inputs early and handle errors explicitly with proper 
-        exit codes. We structure functions to have single responsibilities. The YAGNI principle applies 
-        here too. This script does exactly what's needed without unnecessary complexity.
+        Notice how even in a shell script, we validate inputs early, handle errors explicitly with proper exit
+        codes, and structure functions to have single responsibilities. The YAGNI principle applies here too;
+        this script does exactly what's needed without unnecessary complexity.
     </p>
     
     <h3>Complete Reference: All Principles in Pseudocode</h3>
@@ -8149,7 +7015,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
         programming language:
     </p>
     
-    <pre><code class="language-python">{{SNIPPET:defensive-programming-principles/pseudocode-principles.py}}
+    <pre><code class="language-plaintext">{{SNIPPET:defensive-programming-principles/pseudocode-principles.txt}}
 </code></pre>
 
     <p>
@@ -8180,7 +7046,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     </p>
     
     <ul>
-        <li><strong>PHP 8.4</strong>: Leverage enums, readonly classes, property hooks, asymmetric visibility, and union types</li>
+        <li><strong>PHP 8.4</strong>: Use enums, readonly classes, property hooks, asymmetric visibility, and union types</li>
         <li><strong>TypeScript</strong>: Use union types, branded types, and discriminated unions</li>
         <li><strong>Any language</strong>: Create value objects with validation in constructors</li>
     </ul>
@@ -8203,7 +7069,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     
     <h3>YAGNI Misapplications</h3>
     <p>
-        YAGNI doesn't mean writing poor code. <a href="https://martinfowler.com/bliki/Yagni.html">Martin Fowler emphasizes</a> 
+        YAGNI doesn't mean writing poor code. <a href="https://martinfowler.com/bliki/Yagni.html">Martin Fowler emphasises</a>
         that activities making code more modifiable aren't YAGNI violations. Refactoring, clean coding practices, 
         and good architecture are fine. The principle targets <em>features</em> built for presumptive 
         needs, not code quality improvements.
@@ -8211,11 +7077,11 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     
     <h3>Type Safety vs. Performance</h3>
     <p>
-        Some developers worry that type-safe domain modeling hurts performance. In reality, modern PHP 8.4 and 
-        TypeScript engines optimize value object creation effectively. PHP 8.4's property hooks are particularly 
-        efficient because validation logic compiles directly into the property access pattern. The performance 
-        cost of additional objects is typically negligible compared to the bugs you prevent and the development 
-        speed you gain through better tooling support.
+        Some developers worry that type-safe domain modelling hurts performance. In practice, modern PHP
+        8.4 and TypeScript engines optimise value object creation well enough that this is rarely a real
+        concern, and PHP 8.4's property hooks move validation into the type definition itself, so it can't be
+        bypassed by direct property access. The performance cost of additional objects is typically negligible
+        compared to the bugs you prevent and the development speed you gain through better tooling support.
     </p>
     
     <h3>Purity vs. Completeness Trade-off</h3>
@@ -8317,17 +7183,17 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 <section>
     <h2>Conclusion: Building Antifragile Code</h2>
     <p>
-        These three defensive programming principles work together to create what Nassim Taleb calls 
-        "antifragile" systems. Code that becomes stronger under stress rather than breaking. YAGNI prevents 
-        unnecessary complexity that would make systems brittle. Type safety eliminates entire classes of 
-        failures. Domain purity creates clear boundaries that limit the blast radius of changes.
+        These three defensive programming principles work together to create what Nassim Taleb calls
+        "antifragile" systems, ones that become stronger under stress rather than breaking: YAGNI prevents
+        unnecessary complexity that would make systems brittle, type safety eliminates entire classes of
+        failures, and domain purity creates clear boundaries that limit the blast radius of changes.
     </p>
     
     <p>
-        The investment in learning and applying these principles pays dividends throughout a system's lifetime. 
-        Code becomes more reliable and more enjoyable to work with. Debugging sessions become less 
-        frequent. Feature development becomes more predictable. System complexity stays manageable as 
-        applications grow.
+        The investment in learning and applying these principles pays dividends throughout a system's lifetime:
+        code becomes more reliable and more enjoyable to work with, debugging sessions grow less frequent,
+        feature development becomes more predictable, and system complexity stays manageable as applications
+        grow.
     </p>
     
     <p>
@@ -8363,9 +7229,10 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     id: 'dependency-inversion-final-classes-pragmatic-testing',
     title: 'Dependency Inversion, Final Classes, and Pragmatic Testing in PHP 8.4',
     description:
-      'Master dependency inversion with final classes in PHP 8.4, learn when to use real objects vs mocks, and discover the pragmatic testing approach that combines Detroit and London schools for maintainable, testable code.',
+      "Why final classes push dependency inversion toward composition over inheritance, and how the Detroit/London testing split resolves into a simpler rule for when to reach for a mock.",
     date: '2025-08-11',
     category: CATEGORIES.php.id,
+    register: 'formal',
     heroImage: {
       src: '/images/dependency-inversion-final-classes-pragmatic-testing/hero.webp',
       alt: 'A bank of three-phase knife switches on a 1930s-era industrial switchboard, each identical switch assembly mounted on its own labelled panel along a shared bus structure',
@@ -8380,9 +7247,9 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
     subreddit: 'PHP',
     content: `
 <div class="intro">
-            <p class="lead">PHP 8.4 brings powerful features that change how we approach dependency inversion, class design, and testing strategies. SOLID principles remain timeless, but the implementation details have evolved with modern PHP capabilities. The testing community has moved beyond the traditional "mock everything" mentality.</p>
-            
-            <p>This guide explores three critical concepts: dependency inversion principle (DIP) with PHP 8.4's final classes, composition over inheritance patterns, and the pragmatic testing philosophy that combines Detroit School (classical) and London School (mockist) approaches. We'll examine when to use real objects versus mocks, how to leverage union types for flexible testing, and why the "mockist vs classical TDD" debate has evolved into a more sophisticated understanding of testing strategies.</p>
+            <p class="lead">PHP 8.4 brings powerful features that change how we approach dependency inversion, class design and testing strategies, and whilst SOLID principles remain timeless, the implementation details have evolved considerably with these new capabilities. The testing community, too, has largely moved beyond the old "mock everything" mentality.</p>
+
+            <p>This guide explores three critical concepts: dependency inversion principle (DIP) with PHP 8.4's final classes, composition over inheritance patterns, and the pragmatic testing philosophy that combines Detroit School (classical) and London School (mockist) approaches. We'll examine when to use real objects versus mocks, how to use union types for flexible testing, and why the "mockist vs classical TDD" debate has evolved into a more sophisticated understanding of testing strategies.</p>
         </div>
 
         <section>
@@ -8394,7 +7261,7 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
             
             <p>Let's first examine what <em>not</em> to do. The following pseudocode demonstrates a classic violation of DIP:</p>
 
-            <pre><code class="language-python">{{SNIPPET:dependency-inversion-final-classes/pseudocode-concepts.txt}}
+            <pre><code class="language-plaintext">{{SNIPPET:dependency-inversion-final-classes/pseudocode-concepts.txt}}
 </code></pre>
 
             <p>This inheritance-heavy approach creates several problems:</p>
@@ -8413,7 +7280,10 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 
             <h3>The Solution: Final Classes with Dependency Inversion</h3>
             
-            <p>The modern PHP 8.4 approach leverages <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final classes</a> combined with <a href="https://www.php.net/manual/en/language.oop5.decon.php#language.oop5.decon.constructor.promotion" target="_blank" rel="noopener">dependency injection</a> to achieve proper inversion of control. Final classes prevent inheritance, forcing developers to use composition. This aligns perfectly with dependency inversion principles.</p>
+            <p>The modern PHP 8.4 approach combines
+                <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final classes</a>
+                with <a href="https://www.php.net/manual/en/language.oop5.decon.php#language.oop5.decon.constructor.promotion" target="_blank" rel="noopener">dependency injection</a>
+                to achieve proper inversion of control - because final classes prevent inheritance, they force developers towards composition instead, which is really dependency inversion applied at the class level.</p>
 
             <pre><code class="language-php">{{SNIPPET:dependency-inversion-final-classes/right-approach.php}}
 </code></pre>
@@ -8425,18 +7295,22 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
                 <li><strong>Clear contracts</strong>: Interfaces define explicit contracts between components</li>
                 <li><strong>Easy testing</strong>: Dependencies can be easily swapped for testing</li>
                 <li><strong>Better encapsulation</strong>: Final classes prevent unwanted extension and maintain integrity</li>
-                <li><strong>PHP 8.4 optimizations</strong>: Final classes enable better opcache optimizations</li>
+                <li><strong>Opcache-friendly</strong>: Final classes let opcache optimise calls more aggressively, since it knows a method can't be overridden</li>
             </ul>
         </section>
 
         <section>
             <h2>The Testing Philosophy: Detroit vs London Schools</h2>
             
-            <p>The testing community has long been divided between two approaches. The <a href="https://martinfowler.com/articles/mocksArentStubs.html#ClassicalAndMockistTesting" target="_blank" rel="noopener">Detroit School</a> (classical/state-based testing) and <a href="https://martinfowler.com/articles/mocksArentStubs.html#ClassicalAndMockistTesting" target="_blank" rel="noopener">London School</a> (mockist/interaction-based testing). But modern practice has evolved toward a more pragmatic approach that combines both strategies.</p>
+            <p>The testing community has long been divided between the
+                <a href="https://martinfowler.com/articles/mocksArentStubs.html#ClassicalAndMockistTesting" target="_blank" rel="noopener">Detroit School</a>
+                (classical, state-based testing) and the
+                <a href="https://martinfowler.com/articles/mocksArentStubs.html#ClassicalAndMockistTesting" target="_blank" rel="noopener">London School</a>
+                (mockist, interaction-based testing), but modern practice has evolved toward a more pragmatic approach that combines both strategies.</p>
 
             <h3>Detroit School: Testing with Real Objects</h3>
             
-            <p>The Detroit School, also known as the Classical approach, emphasizes:</p>
+            <p>The Detroit School, also known as the Classical approach, emphasises:</p>
             
             <ul>
                 <li><strong>State-based verification</strong>: Test what the system produces, not how it produces it</li>
@@ -8458,14 +7332,14 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
 
             <h3>The Pragmatic Approach: When to Use Each</h3>
             
-            <p>Modern testing practice recognizes that both approaches have merit and should be used contextually:</p>
+            <p>Modern testing practice recognises that both approaches have merit and should be used contextually:</p>
 
             <pre><code class="language-php">{{SNIPPET:dependency-inversion-final-classes/pragmatic-testing.php}}
 </code></pre>
 
             <h3>Decision Matrix: Real Objects vs Mocks</h3>
             
-            <table class="decision-matrix">
+            <table>
                 <thead>
                     <tr>
                         <th>Use Real Objects When</th>
@@ -8478,8 +7352,8 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
                         <td>External dependencies (database, HTTP)</td>
                     </tr>
                     <tr>
-                        <td>Deterministic behavior</td>
-                        <td>Non-deterministic behavior (random, time)</td>
+                        <td>Deterministic behaviour</td>
+                        <td>Non-deterministic behaviour (random, time)</td>
                     </tr>
                     <tr>
                         <td>No side effects</td>
@@ -8495,23 +7369,6 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
                     </tr>
                 </tbody>
             </table>
-        </section>
-
-        <section>
-            <h2>TypeScript Patterns: Learning from Structural Typing</h2>
-            
-            <p><a href="https://www.typescriptlang.org/" target="_blank" rel="noopener">TypeScript</a> offers valuable insights for PHP developers working with dependency inversion. PHP uses <a href="https://www.php.net/manual/en/language.oop5.basic.php" target="_blank" rel="noopener">nominal typing</a> (class-based), but TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/type-compatibility.html#structural-typing" target="_blank" rel="noopener">structural typing</a> provides interesting patterns we can adapt:</p>
-
-            <pre><code class="language-typescript">{{SNIPPET:dependency-inversion-final-classes/typescript-patterns.ts}}
-</code></pre>
-
-            <h3><a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types" target="_blank" rel="noopener">Union Types</a> for Flexible Testing</h3>
-            
-            <p>The TypeScript code above demonstrates several advanced patterns that PHP developers can learn from. These include <a href="https://egghead.io/blog/using-branded-types-in-typescript" target="_blank" rel="noopener">branded types</a> for stronger type safety, <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions" target="_blank" rel="noopener">discriminated unions</a> for result types, and <a href="https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html" target="_blank" rel="noopener">template literal types</a> for advanced configurations.</p>
-            
-            <p>TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types" target="_blank" rel="noopener">union types</a> inspire a flexible testing approach where the same interface can accommodate both real implementations and mocks. PHP doesn't have union types in the same way, but we can achieve similar flexibility through careful interface design.</p>
-
-            <p>The key insight from TypeScript is that testing interfaces should be designed to accommodate both real and mock implementations naturally. You don't have to force a choice between approaches. The <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-properties" target="_blank" rel="noopener">readonly pattern</a> in TypeScript also provides inspiration for creating immutable dependencies in PHP.</p>
         </section>
 
         <section>
@@ -8559,64 +7416,22 @@ echo $line->totalPrice->amount; // Works: 5000 (computed property)
             
             <p>PHP 8.4 introduces several features that enhance dependency inversion implementation:</p>
 
-            <h3><a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener">Property Hooks</a> for Lazy Initialization</h3>
+            <h3><a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener">Property Hooks</a> for Lazy Initialisation</h3>
             
-            <pre><code class="language-php">class LazyOrderProcessor
-{
-    private ?OrderStorageInterface $storage = null;
-    
-    public OrderStorageInterface $storage {
-        get {
-            return $this->storage ??= $this->createStorage();
-        }
-        
-        set {
-            $this->storage = $value;
-        }
-    }
-    
-    private function createStorage(): OrderStorageInterface
-    {
-        return match($this->environment) {
-            'testing' => new InMemoryOrderStorage(),
-            'production' => new MySqlOrderStorage($this->connection),
-            default => new SqliteOrderStorage()
-        };
-    }
-}</code></pre>
+            <pre><code class="language-php">{{SNIPPET:dependency-inversion-final-classes/property-hooks-lazy-storage.php}}
+</code></pre>
 
             <h3><a href="https://wiki.php.net/rfc/asymmetric-visibility" target="_blank" rel="noopener">Asymmetric Visibility</a> for Immutable Dependencies</h3>
             
-            <pre><code class="language-php">final class SecureOrderProcessor
-{
-    // Public read, private write - prevents external modification
-    public private(set) PaymentGatewayInterface $paymentGateway;
-    
-    public function __construct(PaymentGatewayInterface $paymentGateway)
-    {
-        $this->paymentGateway = $paymentGateway;
-    }
-    
-    // Gateway cannot be modified after construction
-    // but can be read for testing and debugging
-}</code></pre>
+            <pre><code class="language-php">{{SNIPPET:dependency-inversion-final-classes/asymmetric-visibility-secure-processor.php}}
+</code></pre>
 
             <h3><a href="https://wiki.php.net/rfc/lazy_objects" target="_blank" rel="noopener">Lazy Objects</a> for Performance</h3>
             
             <p>PHP 8.4's <a href="https://wiki.php.net/rfc/lazy_objects" target="_blank" rel="noopener">lazy objects</a> feature allows sophisticated dependency injection patterns:</p>
             
-            <pre><code class="language-php">$lazyDatabase = LazyObjectFactory::create(
-    MySqlDatabase::class,
-    function() {
-        return new MySqlDatabase(
-            $this->config['database']['host'],
-            $this->config['database']['name']
-        );
-    }
-);
-
-// Database connection only created when first accessed
-$processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</code></pre>
+            <pre><code class="language-php">{{SNIPPET:dependency-inversion-final-classes/lazy-objects-database.php}}
+</code></pre>
         </section>
 
         <section>
@@ -8627,7 +7442,7 @@ $processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</cod
             <h3>Runtime Performance</h3>
             
             <ul>
-                <li><strong>Final classes</strong>: Enable better opcache optimizations in PHP 8.4</li>
+                <li><strong>Final classes</strong>: Opcache can optimise calls more aggressively when a method can't be overridden</li>
                 <li><strong>Interface calls</strong>: Minimal overhead in modern PHP versions</li>
                 <li><strong>Lazy loading</strong>: Defer expensive object creation until needed</li>
                 <li><strong>Container caching</strong>: Cache dependency injection container configuration</li>
@@ -8639,7 +7454,7 @@ $processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</cod
                 <li><strong>Real objects</strong>: Often faster than mocks for simple operations</li>
                 <li><strong>In-memory implementations</strong>: Provide realistic testing without I/O overhead</li>
                 <li><strong>Mock setup overhead</strong>: Consider the cost of mock configuration</li>
-                <li><strong>Parallel testing</strong>: Real objects enable better test parallelization</li>
+                <li><strong>Parallel testing</strong>: Real objects enable better test parallelisation</li>
             </ul>
         </section>
 
@@ -8659,7 +7474,7 @@ $processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</cod
             <h3>Inheritance Instead of Composition</h3>
             
             <p><strong>Problem</strong>: Using abstract base classes instead of dependency injection.</p>
-            <p><strong>Solution</strong>: Favor final classes with injected dependencies over inheritance hierarchies.</p>
+            <p><strong>Solution</strong>: Favour final classes with injected dependencies over inheritance hierarchies.</p>
 
             <h3>Configuration Explosion</h3>
             
@@ -8693,8 +7508,8 @@ $processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</cod
             <h3>PHP 8.4 Specific Guidelines</h3>
             
             <ol>
-                <li><strong>Leverage property hooks</strong>: Use for lazy initialization and validation</li>
-                <li><strong>Use asymmetric visibility</strong>: Prevent unwanted modifications while maintaining transparency</li>
+                <li><strong>Use property hooks</strong>: For lazy initialisation and validation</li>
+                <li><strong>Use asymmetric visibility</strong>: Prevent unwanted modifications whilst maintaining transparency</li>
                 <li><strong>Adopt lazy objects</strong>: For expensive dependencies that may not be used</li>
                 <li><strong>Final by default</strong>: Make classes final unless extension is explicitly needed</li>
                 <li><strong>Type everything</strong>: Use PHP 8.4's enhanced type system for better static analysis</li>
@@ -8745,43 +7560,7 @@ $processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</cod
                 <li><strong>Pragmatism over purity</strong>: Combine approaches based on practical concerns instead of ideological adherence</li>
             </ol>
 
-            <p>As the PHP ecosystem continues to evolve, these patterns will become increasingly important for building scalable, maintainable applications. The investment in understanding and applying these concepts pays dividends in code quality, testing confidence, and long-term maintainability.</p>
-
-            <p>The future of PHP development doesn't lie in choosing between different approaches. It lies in understanding when and how to apply each technique for maximum benefit. Whether you're building microservices, monoliths, or anything in between, these principles provide a solid foundation for clean, testable, and maintainable code.</p>
         </section>
-
-        <style>
-        .decision-matrix {
-            width: 100%;
-            margin: 2rem 0;
-            border-collapse: collapse;
-            background: var(--surface-color);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .decision-matrix th,
-        .decision-matrix td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .decision-matrix th {
-            background: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-        
-        .decision-matrix tr:nth-child(even) {
-            background: rgba(var(--primary-color-rgb), 0.02);
-        }
-        
-        .decision-matrix tr:hover {
-            background: rgba(var(--primary-color-rgb), 0.05);
-        }
-        </style>
     `,
   },
   // Migrating: dynamic-gradient-headings.ejs
@@ -8789,9 +7568,9 @@ $processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</cod
     id: 'dynamic-gradient-headings',
     title: 'Dynamic Gradient Headings: A CSS and JavaScript Implementation',
     description:
-      'A straightforward approach to creating mouse-responsive gradient text effects using CSS custom properties and vanilla JavaScript',
+      'How a single CSS custom property and a throttled mousemove listener are enough to make heading gradients track the cursor, with no per-element recalculation.',
     date: '2025-07-21',
-    category: CATEGORIES.php.id,
+    category: CATEGORIES.typescript.id,
     readingTime: 6,
     author: 'Joseph Edmonds',
     tags: [],
@@ -8828,23 +7607,12 @@ $processor = new OrderProcessor($validator, $taxCalculator, $lazyDatabase);</cod
         First, establish the gradient system with a custom property for the angle:
     </p>
     
-    <pre><code class="language-css">:root {
-    --gradient-angle: 135deg;
-}
-
-h1, h2 {
-    background: linear-gradient(var(--gradient-angle), 
-        var(--color-text) 0%, 
-        var(--color-primary-dark) 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}</code></pre>
+    <pre><code class="language-css">{{SNIPPET:dynamic-gradient-headings/css-foundation.css}}
+</code></pre>
 
     <p>
-        The initial 135-degree angle provides a pleasant diagonal gradient. All headings inherit this 
-        direction through the custom property, ensuring consistency.
+        The initial 135-degree angle provides a pleasant diagonal gradient, and all headings inherit
+        this direction through the custom property so they stay consistent.
     </p>
 </section>
 
@@ -8854,27 +7622,8 @@ h1, h2 {
         The mouse tracking calculates angles relative to the viewport centre:
     </p>
 
-    <pre><code class="language-javascript">function initializeDynamicGradients() {
-    const dynamicGradientHandler = utils.throttle((e) => {
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        const deltaX = e.clientX - centerX;
-        const deltaY = e.clientY - centerY;
-        
-        const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 135;
-        
-        document.documentElement.style.setProperty(
-            '--gradient-angle', 
-            \`\${angle}deg\`
-        );
-    }, 16);
-    
-    document.addEventListener('mousemove', dynamicGradientHandler);
-    
-    document.addEventListener('mouseleave', () => {
-        document.documentElement.style.setProperty('--gradient-angle', '135deg');
-    });
-}</code></pre>
+    <pre><code class="language-javascript">{{SNIPPET:dynamic-gradient-headings/gradient-tracker.js}}
+</code></pre>
 </section>
 
 <section>
@@ -8906,8 +7655,10 @@ h1, h2 {
 <section>
     <h2>Browser Compatibility</h2>
     <p>
-        Background-clip text requires vendor prefixes for WebKit browsers. The implementation degrades 
-        gracefully - older browsers simply show regular text colour rather than gradients.
+        The vendor-prefixed <code>-webkit-background-clip</code> is only needed for Safari versions older
+        than 15.5; recent Safari, Firefox 49+, and Chrome/Edge 120+ all support the unprefixed
+        <code>background-clip: text</code>. The implementation degrades gracefully regardless - older
+        browsers simply show regular text colour rather than gradients.
     </p>
     
     <p>
@@ -9052,22 +7803,22 @@ h1, h2 {
 </code></pre>
     
     <p>
-        The modernized version separates concerns cleanly. Each guard clause is a dedicated task with a specific 
-        validation purpose. The <code>any_errors_fatal: true</code> directive implements fail-fast behavior across 
+        The modernised version separates concerns cleanly. Each guard clause is a dedicated task with a specific
+        validation purpose. The <code>any_errors_fatal: true</code> directive implements fail-fast behaviour across
         all hosts. Individual tasks use <code>failed_when</code> conditions to define explicit failure criteria.
     </p>
-    
+
     <p>
-        This approach leverages <a href="https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_error_handling.html" target="_blank" rel="noopener">Ansible's error handling features</a> 
+        This approach uses <a href="https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_error_handling.html" target="_blank" rel="noopener">Ansible's error handling features</a>
         to create maintainable infrastructure-as-code that's easy to debug and extend.
     </p>
 </section>
 
 <section>
-    <h2>PHP: Modern Guard Clauses with 8.4 Style</h2>
+    <h2>PHP: Modern Guard Clauses</h2>
     <p>
-        PHP's evolution toward more explicit, typed code makes guard clauses even more powerful. Here's a refactored 
-        order processing method using modern PHP 8.4 practices:
+        PHP's evolution toward more explicit, typed code makes guard clauses even more powerful. Here's a refactored
+        order processing method using modern PHP practices:
     </p>
     
     <h3>Before: The Pyramid of Doom</h3>
@@ -9079,23 +7830,23 @@ h1, h2 {
 </code></pre>
     
     <p>
-        The refactored version showcases several PHP 8.4 improvements: nullable parameter types, named arguments 
-        in constructor calls, and explicit null checking. Each guard clause handles one specific validation concern. 
-        This makes the code self-documenting and testable.
+        The refactored version demonstrates nullable parameter types, named constructor arguments, and explicit null
+        checking, each guard clause handling one specific validation concern. This makes the code self-documenting
+        and testable.
     </p>
-    
+
     <p>
-        Following the <a href="https://www.php-fig.org/psr/psr-12/" target="_blank" rel="noopener">PSR-12 coding standard</a>, 
-        we maintain consistent formatting and leverage PHP's strong typing system to catch errors at the language level 
+        Following the <a href="https://www.php-fig.org/psr/psr-12/" target="_blank" rel="noopener">PSR-12 coding standard</a>,
+        we maintain consistent formatting and use PHP's strong typing system to catch errors at the language level
         rather than runtime.
     </p>
 </section>
 
 <section>
-    <h2>TypeScript: Modern Patterns for 2025</h2>
+    <h2>TypeScript: Modern Guard Clause Patterns</h2>
     <p>
-        TypeScript keeps evolving to provide better tools for writing defensive code. Here's how modern 
-        ES2025 features enhance the guard clause pattern:
+        TypeScript keeps evolving to provide better tools for writing defensive code. Here's how a couple of
+        ES2020 features enhance the guard clause pattern:
     </p>
     
     <h3>Before: Nested Conditional Chaos</h3>
@@ -9107,10 +7858,9 @@ h1, h2 {
 </code></pre>
     
     <p>
-        The modern implementation uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing" target="_blank" rel="noopener">nullish coalescing</a> 
-        (<code>??</code>) and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining" target="_blank" rel="noopener">optional chaining</a> 
-        (<code>?.</code>) operators. These were introduced in ES2020 and are seeing broader adoption in 2025. They reduce 
-        boilerplate while maintaining type safety.
+        The modern implementation uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining" target="_blank" rel="noopener">optional chaining</a>
+        (<code>?.</code>), introduced in ES2020, to guard the incoming ID without a separate null check. It reduces
+        boilerplate whilst maintaining type safety.
     </p>
     
     <p>
@@ -9122,23 +7872,23 @@ h1, h2 {
 <section>
     <h2>The Cyclomatic Complexity Reality Check</h2>
     <p>
-        Here's a crucial insight: early returns don't actually reduce cyclomatic complexity. They transform how 
-        that complexity is expressed and experienced by developers. Let's examine this with a concrete example:
+        Early returns don't actually reduce cyclomatic complexity - they change how that complexity is expressed
+        and experienced by developers. Let's examine this with a concrete example:
     </p>
     
     <pre><code class="language-javascript">{{SNIPPET:early-return-patterns/complexity-example.ts}}
 </code></pre>
     
     <p>
-        Both functions have identical cyclomatic complexity (7), but the cognitive load differs dramatically. The 
-        nested version requires mental stack management. You must track multiple open conditions simultaneously. 
-        The early return version processes linearly, like reading a checklist.
+        Both functions have identical cyclomatic complexity (7), but the cognitive load differs dramatically - the
+        nested version requires mental stack management, forcing you to track multiple open conditions
+        simultaneously, whilst the early return version processes linearly, like reading a checklist.
     </p>
     
     <p>
-        <a href="https://linearb.io/blog/cyclomatic-complexity" target="_blank" rel="noopener">Modern code quality research</a> shows that 
-        cognitive complexity matters more than raw cyclomatic complexity. Tools like <a href="https://www.sonarqube.org/" target="_blank" rel="noopener">SonarQube</a> 
-        now track both metrics. They recognize that readable code leads to fewer bugs and faster development cycles.
+        <a href="https://linearb.io/blog/cyclomatic-complexity" target="_blank" rel="noopener">LinearB's analysis</a> argues
+        cognitive complexity matters more than raw cyclomatic complexity. Tools like <a href="https://www.sonarqube.org/" target="_blank" rel="noopener">SonarQube</a>
+        now track both metrics, recognising that readable code leads to fewer bugs and faster development cycles.
     </p>
 </section>
 
@@ -9150,17 +7900,11 @@ h1, h2 {
         guard clauses identify failure conditions before they can complicate your main logic.
     </p>
     
-    <p>
-        Think of it this way: your function is a nightclub. Guard clauses are the bouncers. They check IDs 
-        at the door (validate inputs), verify dress codes (check permissions), and ensure capacity limits aren't 
-        exceeded (resource availability). Only guests who pass all checks get to enjoy the main event inside.
-    </p>
-    
     <h3>Benefits of the Guard Clause Pattern:</h3>
     <ul>
         <li><strong>Reduced Mental Load:</strong> Linear validation flow versus nested condition tracking</li>
         <li><strong>Easier Debugging:</strong> Clear failure points with specific error messages</li>
-        <li><strong>Improved Testability:</strong> Each guard clause represents a discrete test case</li>
+        <li><strong>Improved Testability:</strong> Each guard clause is a discrete test case</li>
         <li><strong>Enhanced Readability:</strong> Main business logic flows uninterrupted at the bottom</li>
         <li><strong>Simplified Maintenance:</strong> Adding new validations doesn't increase nesting depth</li>
     </ul>
@@ -9204,9 +7948,10 @@ h1, h2 {
     <h2>Best Practices for Implementation</h2>
     <h3>Keep Functions Small</h3>
     <p>
-        <a href="https://medium.com/@billocsic/early-return-and-cyclomatic-complexity-dc61453607e8" target="_blank" rel="noopener">Research suggests</a> 
-        that early returns work best in functions under 30 lines. In larger functions, multiple return statements 
-        become harder to track. This may indicate the function needs refactoring into smaller, focused units.
+        As a rule of thumb, early returns work best in functions under 30 lines, as discussed in
+        <a href="https://medium.com/@billocsic/early-return-and-cyclomatic-complexity-dc61453607e8" target="_blank" rel="noopener">Bill Ocsic's piece on early return and cyclomatic complexity</a>.
+        In larger functions, multiple return statements become harder to track, which may indicate the function
+        needs refactoring into smaller, focused units.
     </p>
     
     <h3>Use Descriptive Error Messages</h3>
@@ -9231,15 +7976,15 @@ h1, h2 {
 <section>
     <h2>Conclusion: Cleaner Exits for Cleaner Code</h2>
     <p>
-        Early return patterns aren't just about reducing nesting. They're about creating code that communicates 
-        intent clearly and fails gracefully. When you implement guard clauses as your code's exit strategy, you 
-        transform complex conditional logic into readable, maintainable, and debuggable functions.
+        Early return patterns do more than reduce nesting. Used well, guard clauses become your code's exit
+        strategy, transforming complex conditional logic into functions that communicate intent clearly, fail
+        gracefully, and stay readable, maintainable, and debuggable.
     </p>
-    
+
     <p>
-        Remember: good code isn't just code that works. It's code that works, reads well, and makes the next 
-        developer's job easier. Early return patterns help achieve all three goals. They make your functions 
-        more robust and your debugging sessions shorter.
+        Remember that good code does more than simply work: it reads well and makes the next developer's job
+        easier too, and early return patterns help with all three, leaving you with more reliable functions and
+        shorter debugging sessions.
     </p>
     
     <p>
@@ -9255,7 +8000,7 @@ h1, h2 {
     id: 'fail-fast-programming-philosophy',
     title: 'Fail Fast Programming: Why Your Code Should Crash Spectacularly',
     description:
-      'Master the fail-fast programming philosophy with practical examples in PHP 8.4, TypeScript, Bash, and Ansible. Learn to write high-trust code that fails early, clearly, and at the exact point of deviation from expectations.',
+      'A practical look at fail-fast programming in PHP, TypeScript, Bash, and Ansible - writing high-trust code that fails early, clearly, and at the exact point of deviation from expectations.',
     date: '2025-08-04',
     category: CATEGORIES.php.id,
     readingTime: 12,
@@ -9273,8 +8018,8 @@ h1, h2 {
     content: `
 <div class="intro">
     <p class="lead">
-        In the world of programming, there are two philosophies: "fingers crossed" programming where you hope 
-        everything works and hide errors behind null coalescence and try-catch blocks, and "fail fast" programming 
+        In the world of programming, there are two philosophies: "fingers crossed" programming where you hope
+        everything works and hide errors behind null coalescing and try-catch blocks, and "fail fast" programming
         where you validate aggressively and crash spectacularly at the exact moment something goes wrong. 
         One leads to 3 AM debugging sessions hunting mysterious bugs; the other leads to clear error messages 
         and quick fixes. Guess which one your future self will thank you for?
@@ -9285,8 +8030,8 @@ h1, h2 {
     <h2>The Two Programming Philosophies</h2>
     <p>
         Every programmer falls into one of two camps when it comes to error handling. The first group practices 
-        "defensive programming." They wrap everything in try-catch blocks, use null coalescence operators 
-        liberally, and design their code to limp forward no matter what goes wrong. They think they're being 
+        "defensive programming." They wrap everything in try-catch blocks, use null coalescing operators
+        liberally, and design their code to limp forward no matter what goes wrong. They think they're being
         helpful by preventing crashes.
     </p>
     
@@ -9297,8 +8042,8 @@ h1, h2 {
     </p>
     
     <p>
-        The difference isn't just philosophical. It's practical. <a href="https://martinfowler.com/ieeeSoftware/failFast.pdf" target="_blank" rel="noopener">Martin Fowler's research on fail-fast systems</a> 
-        shows that applications designed to fail early and clearly spend significantly less time in 
+        The difference isn't just philosophical - it's practical, and <a href="https://martinfowler.com/ieeeSoftware/failFast.pdf" target="_blank" rel="noopener">Martin Fowler's research on fail-fast systems</a>
+        shows that applications designed to fail early and clearly spend significantly less time in
         debugging phases and have fewer production incidents.
     </p>
 </section>
@@ -9306,8 +8051,8 @@ h1, h2 {
 <section>
     <h2>Understanding the Fail-Fast Mindset</h2>
     <p>
-        Fail-fast programming isn't about giving up easily. It's about creating systems with <strong>clear 
-        failure boundaries</strong>. When your code encounters invalid data, missing dependencies, or violated 
+        Fail-fast programming is about creating systems with <strong>clear failure boundaries</strong>, rather
+        than giving up easily: when your code encounters invalid data, missing dependencies, or violated
         assumptions, it should stop immediately and provide detailed information about what went wrong and where.
     </p>
     
@@ -9337,15 +8082,15 @@ h1, h2 {
 </code></pre>
     
     <p>
-        Notice how the defensive approach hides problems behind fallback values and vague error messages. The 
-        fail-fast approach validates everything upfront and provides specific error details. The defensive 
-        version might return a result even when fundamental prerequisites are missing. This leads to mysterious 
+        Notice how the defensive approach hides problems behind fallback values and vague error messages, whilst
+        the fail-fast approach validates everything upfront and provides specific error details. The defensive
+        version might return a result even when fundamental prerequisites are missing, which leads to mysterious
         failures downstream.
     </p>
 </section>
 
 <section>
-    <h2>PHP 8.4: Embracing Strict Types and Clear Failures</h2>
+    <h2>PHP: Embracing Strict Types and Clear Failures</h2>
     <p>
         PHP's evolution toward stricter typing and better error handling makes it an excellent language for 
         fail-fast programming. Let's examine how modern PHP practices can eliminate error hiding:
@@ -9360,7 +8105,7 @@ h1, h2 {
 </code></pre>
     
     <p>
-        The fail-fast version leverages <a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.strict" target="_blank" rel="noopener">PHP's strict type declarations</a> 
+        The fail-fast version uses <a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.strict" target="_blank" rel="noopener">PHP's strict type declarations</a>
         and creates specific exception classes for different failure scenarios. <a href="https://roman-huliak.medium.com/php-error-handling-and-exceptions-best-practices-for-robust-applications-c02cf5e225f7" target="_blank" rel="noopener">Modern PHP error handling best practices</a> 
         show this approach significantly reduces debugging time and prevents data corruption.
     </p>
@@ -9383,9 +8128,10 @@ h1, h2 {
 </code></pre>
     
     <p>
-        <a href="https://dev.to/paulthedev/type-guards-in-typescript-2025-next-level-type-safety-for-ai-era-developers-6me" target="_blank" rel="noopener">TypeScript 2025 best practices</a> 
-        identify this as a critical challenge. With 47% of codebases using AI tools, type guards act as essential 
-        safeguards against hallucinated code that bypasses type checks.
+        As AI coding assistants generate more of the code that ends up in production,
+        <a href="https://dev.to/paulthedev/type-guards-in-typescript-2025-next-level-type-safety-for-ai-era-developers-6me" target="_blank" rel="noopener">a growing body of TypeScript advice</a>
+        treats this as a critical challenge - type guards act as essential safeguards against hallucinated code
+        that bypasses type checks.
     </p>
     
     <p>
@@ -9396,25 +8142,25 @@ h1, h2 {
     
     <h3>Integration with Modern Validation Libraries</h3>
     <p>
-        For production applications, consider pairing type guards with <a href="https://zod.dev/" target="_blank" rel="noopener">Zod 4.0</a> 
-        for comprehensive runtime validation. This combination provides both TypeScript inference and detailed 
-        validation error messages. It creates the ideal fail-fast environment.
+        For production applications, consider pairing type guards with <a href="https://zod.dev/" target="_blank" rel="noopener">Zod 4.0</a>
+        for thorough runtime validation. This combination provides both TypeScript inference and detailed
+        validation error messages, creating the ideal fail-fast environment.
     </p>
 </section>
 
 <section>
     <h2>Bash: Fail-Fast Scripting for Infrastructure</h2>
     <p>
-        Shell scripts are notorious for silent failures and undefined behavior. Fail-fast bash scripting 
-        transforms unreliable deployment scripts into robust automation:
+        Shell scripts are notorious for silent failures and undefined behaviour. Fail-fast bash scripting
+        transforms unreliable deployment scripts into dependable automation:
     </p>
     
     <pre><code class="language-bash">{{SNIPPET:fail-fast-programming/bash-fail-fast.sh}}
 </code></pre>
     
     <p>
-        The fail-fast bash implementation uses <code>set -euo pipefail</code> for strict error handling and 
-        implements comprehensive guard clauses for all prerequisites. This follows <a href="https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html" target="_blank" rel="noopener">GNU Bash manual recommendations</a> 
+        The fail-fast bash implementation uses <code>set -euo pipefail</code> for strict error handling and
+        implements guard clauses covering every prerequisite. This follows <a href="https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html" target="_blank" rel="noopener">GNU Bash manual recommendations</a>
         for robust script design.
     </p>
     
@@ -9436,8 +8182,8 @@ h1, h2 {
 </code></pre>
     
     <p>
-        The fail-fast Ansible approach uses <code>any_errors_fatal: true</code> and comprehensive <code>assert</code> 
-        modules to validate all prerequisites before proceeding. This follows <a href="https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_error_handling.html" target="_blank" rel="noopener">Ansible's error handling best practices</a> 
+        The fail-fast Ansible approach uses <code>any_errors_fatal: true</code> and thorough <code>assert</code>
+        modules to validate all prerequisites before proceeding. This follows <a href="https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_error_handling.html" target="_blank" rel="noopener">Ansible's error handling best practices</a>
         for production deployments.
     </p>
     
@@ -9451,11 +8197,12 @@ h1, h2 {
 <section>
     <h2>Error Propagation Strategies</h2>
     <p>
-        Effective fail-fast programming requires proper error propagation. Exceptions and failures must bubble 
-        up through your application layers with sufficient context for debugging:
+        Effective fail-fast programming requires proper error propagation. Exceptions and failures must bubble
+        up through your application layers with sufficient context for debugging. Here's the propagation logic
+        from <code>FailFastOrderProcessor::getUserOrFail()</code> shown earlier, isolated:
     </p>
-    
-    <pre><code class="language-php">{{SNIPPET:fail-fast-programming/php-fail-fast.php}}
+
+    <pre><code class="language-php">{{SNIPPET:fail-fast-programming/php-error-propagation.php}}
 </code></pre>
     
     <p>
@@ -9478,27 +8225,11 @@ h1, h2 {
         error messages, writing tests becomes straightforward. Each guard clause represents a specific test case:
     </p>
     
-    <pre><code class="language-php">// Each guard clause becomes a test case
-public function testProcessOrderFailsWithMissingOrderId(): void
-{
-    $this->expectException(InvalidArgumentException::class);
-    $this->expectExceptionMessage('Order must have a valid ID');
-    
-    $this->processor->processOrder(['user_id' => 123]);
-}
-
-public function testProcessOrderFailsWithInsufficientPermissions(): void
-{
-    $this->expectException(InsufficientPermissionsException::class);
-    $this->expectExceptionMessage('lacks required permission: order_process');
-    
-    $orderData = ['id' => 'ORDER-123', 'user_id' => 456, 'item_id' => 'ITEM-789', 'quantity' => 1];
-    $this->processor->processOrder($orderData);
-}
+    <pre><code class="language-php">{{SNIPPET:fail-fast-programming/php-guard-clause-tests.php}}
 </code></pre>
     
     <p>
-        This creates a virtuous cycle. Fail-fast code is easier to test, comprehensive tests catch failures 
+        This creates a virtuous cycle. Fail-fast code is easier to test, thorough tests catch failures
         early, and early failures make debugging faster. The result is higher confidence in production deployments.
     </p>
 </section>
@@ -9518,57 +8249,10 @@ public function testProcessOrderFailsWithInsufficientPermissions(): void
     </ul>
     
     <p>
-        More importantly, fail-fast systems are more reliable because they have predictable failure modes. 
-        When something goes wrong, you get immediate, clear feedback. You don't get mysterious issues that 
+        More importantly, fail-fast systems are more reliable because they have predictable failure modes:
+        when something goes wrong, you get immediate, clear feedback rather than mysterious issues that
         appear hours or days later.
     </p>
-</section>
-
-<section>
-    <h2>Common Anti-Patterns to Avoid</h2>
-    <h3>1. The Null Coalescence Trap</h3>
-    <pre><code class="language-php">// Anti-pattern: Hide missing data with defaults
-$userId = $data['user_id'] ?? 0;  // 0 hides the missing field problem
-$email = $data['email'] ?? '';    // Empty string disguises validation issues
-
-// Fail-fast approach: Validate explicitly
-if (!isset($data['user_id']) || !is_int($data['user_id'])) {
-    throw new InvalidArgumentException('user_id must be a valid integer');
-}
-</code></pre>
-    
-    <h3>2. The Try-Catch Swallowing Pattern</h3>
-    <pre><code class="language-php">// Anti-pattern: Catch and hide all exceptions
-try {
-    $result = $this->riskyOperation();
-} catch (Exception $e) {
-    error_log($e->getMessage());  // Hide the error
-    return null;  // Pretend nothing happened
-}
-
-// Fail-fast approach: Let exceptions propagate or handle specifically
-try {
-    $result = $this->riskyOperation();
-} catch (SpecificException $e) {
-    // Only catch what you can handle meaningfully
-    throw new DomainException("Operation failed: " . $e->getMessage(), 0, $e);
-}
-</code></pre>
-    
-    <h3>3. The Silent Return Pattern</h3>
-    <pre><code class="language-bash"># Anti-pattern: Continue despite failures
-download_file() {
-    wget "$1" -O "$2" 2>/dev/null || return 0  # Hide download failures
-}
-
-# Fail-fast approach: Explicit error handling
-download_file() {
-    if ! wget "$1" -O "$2"; then
-        echo "ERROR: Failed to download $1" >&2
-        exit 1
-    fi
-}
-</code></pre>
 </section>
 
 <section>
@@ -9592,7 +8276,7 @@ download_file() {
     
     <h3>3. Create Validation Layers</h3>
     <p>
-        Add validation middleware or decorators to existing services. This provides fail-fast behavior without 
+        Add validation middleware or decorators to existing services. This provides fail-fast behaviour without
         modifying core business logic immediately.
     </p>
     
@@ -9634,8 +8318,8 @@ download_file() {
 <section>
     <h2>Monitoring and Observability</h2>
     <p>
-        Fail-fast systems generate more explicit errors. This makes them easier to monitor and debug. Leverage this 
-        with proper observability tools:
+        Fail-fast systems generate more explicit errors, which makes them easier to monitor and debug - put that
+        to good use with proper observability tools:
     </p>
     
     <h3>Error Aggregation</h3>
@@ -9647,22 +8331,22 @@ download_file() {
     
     <h3>Structured Logging</h3>
     <p>
-        Use structured logging formats (JSON) with consistent error categorization. This enables automated 
+        Use structured logging formats (JSON) with consistent error categorisation. This enables automated
         alerting on specific failure types and trend analysis.
     </p>
     
     <h3>Health Checks</h3>
     <p>
-        Implement comprehensive health checks that validate all system prerequisites. These should fail fast 
-        when dependencies are unavailable. This provides clear signals to orchestration systems.
+        Implement health checks that validate every system prerequisite. These should fail fast
+        when dependencies are unavailable, giving clear signals to orchestration systems.
     </p>
 </section>
 
 <section>
     <h2>Conclusion: Building High-Trust Systems</h2>
     <p>
-        Fail-fast programming isn't about giving up easily. It's about building systems you can trust. When 
-        your code validates assumptions explicitly and fails clearly at the point of deviation, you create 
+        Fail-fast programming is about building systems you can trust, not about giving up easily: when
+        your code validates assumptions explicitly and fails clearly at the point of deviation, you create
         applications that are easier to debug, test, and maintain.
     </p>
     
@@ -9673,8 +8357,8 @@ download_file() {
     </p>
     
     <p>
-        Remember this: a system that fails fast and clearly is infinitely more valuable than one that limps forward 
-        silently corrupting data. Embrace the crash. It's your code's way of communicating what needs to be fixed.
+        Remember this: a system that fails fast and clearly is infinitely more valuable than one that limps forward
+        silently corrupting data, so embrace the crash - it's your code's way of communicating what needs to be fixed.
     </p>
     
     <p>
@@ -9690,10 +8374,11 @@ download_file() {
     id: 'fedora-42-breakthrough-features',
     title: "Fedora 42: What's New in KDE Plasma, COSMIC, and the Installer",
     description:
-      'Discover the groundbreaking features of Fedora 42, including KDE Plasma promotion to full edition status, the revolutionary COSMIC desktop environment, and the modernized Anaconda WebUI installer that transforms Linux computing.',
+      "A look at Fedora 42's headline changes - KDE Plasma promoted to a full edition alongside GNOME, an official (alpha-quality) COSMIC Spin, a WebUI-based Anaconda installer for Workstation, and the toolchain updates underneath.",
     date: '2025-07-18',
     category: CATEGORIES.infrastructure.id,
-    readingTime: 7,
+    readingTime: 4,
+    register: 'formal',
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'Fedora',
@@ -9707,99 +8392,62 @@ download_file() {
     },
     content: `
 <section class="intro">
-      <p class="lead">Discover the groundbreaking features of Fedora 42, including KDE Plasma promotion to full edition status, the revolutionary COSMIC desktop environment, and the modernized Anaconda WebUI installer that transforms Linux computing.</p>
-      <p>Fedora 42 represents one of the most significant releases in the distribution's history, introducing transformative changes that reshape the Linux desktop landscape. From elevating KDE Plasma to full edition status to introducing the revolutionary COSMIC desktop environment, this release marks a new era of innovation and user choice.</p>
+      <p class="lead">Fedora 42 promotes KDE Plasma from a spin to a full edition alongside GNOME, ships an official (but still alpha-quality) COSMIC Spin, and switches the Workstation installer to a new WebUI. Underneath, the toolchain and kernel move forward by their usual one release's worth of versions.</p>
+      <p>The most user-visible change is KDE Plasma's promotion; the most experimental is COSMIC. Between them sits a genuinely modernised installer and the usual round of package updates.</p>
     </section>
 
     <section class="content">
       <h2>KDE Plasma Promotion: A New Chapter</h2>
-      <p>The most significant change in Fedora 42 is the promotion of KDE Plasma from a spin to a full edition, standing alongside GNOME as an equal partner. This historic decision reflects the maturity and popularity of the KDE desktop environment within the Fedora ecosystem.</p>
-      
+      <p>The most significant change in Fedora 42 is the promotion of KDE Plasma from a spin to a full edition, standing alongside GNOME as an equal partner. It reflects the maturity and popularity of the KDE desktop environment within the Fedora ecosystem.</p>
+
       <h3>What This Means for Users</h3>
-      <p>The promotion brings several immediate benefits:</p>
+      <p>The promotion brings a couple of concrete changes:</p>
       <ul>
         <li><strong>Equal Support:</strong> KDE Plasma receives the same level of testing, integration, and support as GNOME</li>
-        <li><strong>Improved Hardware Support:</strong> Better integration with Fedora's hardware enablement stack</li>
-        <li><strong>Enhanced Performance:</strong> Optimizations specifically tailored for Fedora's underlying technologies</li>
-        <li><strong>Professional Recognition:</strong> Acknowledges KDE as a first-class desktop option for enterprise and development use</li>
+        <li><strong>Release-Blocking Status:</strong> KDE-specific bugs can now block a Fedora release, the same as GNOME bugs</li>
       </ul>
 
-      <h2>COSMIC Desktop Environment: The Future is Here</h2>
-      <p>Fedora 42 introduces the revolutionary COSMIC desktop environment, developed by System76 as a Rust-based, highly customizable desktop solution. This marks the first major distribution to include COSMIC as a standard offering.</p>
+      <h2>COSMIC Desktop Environment: Official, Not Yet Finished</h2>
+      <p>Fedora 42 ships an official COSMIC Spin, built by System76 as a Rust-based, tiling-capable desktop. It's one of the first major distributions to package COSMIC as an official Spin, but Fedora's own guidance is clear that it's still alpha-quality and intended for testing rather than daily-driver use at this stage.</p>
 
-      <h3>Revolutionary Features</h3>
-      <p>COSMIC brings several groundbreaking capabilities:</p>
+      <h3>Notable Characteristics</h3>
       <ul>
-        <li><strong>Rust Performance:</strong> Built entirely in Rust for memory safety and performance</li>
-        <li><strong>Tiling by Default:</strong> Native tiling window management with intuitive keyboard shortcuts</li>
-        <li><strong>Cosmic Settings:</strong> Unified, modern settings application replacing fragmented configuration tools</li>
-        <li><strong>Extensible Architecture:</strong> Plugin system allowing deep customization without system modifications</li>
+        <li><strong>Rust-Based:</strong> Built entirely in Rust for memory safety and performance</li>
+        <li><strong>Tiling by Default:</strong> Native tiling window management with keyboard shortcuts</li>
+        <li><strong>Cosmic Settings:</strong> A unified settings application replacing fragmented configuration tools</li>
       </ul>
 
-      <h2>Anaconda WebUI: Modern Installation Experience</h2>
-      <p>The traditional Anaconda installer receives a complete overhaul with the new WebUI implementation, bringing modern web technologies to system installation.</p>
+      <h2>Anaconda WebUI: A New Default for Workstation</h2>
+      <p>The Workstation Live ISO now defaults to a PatternFly-based WebUI installer in place of the traditional Anaconda interface, including a redesigned storage-partitioning flow. Other Spins, Editions, and DNF-based installs weren't covered by this change in Fedora 42.</p>
 
-      <h3>Key Improvements</h3>
+      <h3>Key Changes</h3>
       <ul>
-        <li><strong>Responsive Design:</strong> Works seamlessly across different screen sizes and resolutions</li>
-        <li><strong>Improved Accessibility:</strong> Better support for screen readers and accessibility tools</li>
-        <li><strong>Streamlined Workflow:</strong> Simplified installation process with better error handling</li>
-        <li><strong>Modern UI/UX:</strong> Contemporary interface design following current usability standards</li>
+        <li><strong>Responsive Design:</strong> Works across different screen sizes and resolutions</li>
+        <li><strong>Redesigned Partitioning:</strong> A reworked storage-configuration flow for the web interface</li>
+        <li><strong>Modern UI:</strong> A web-based interface replacing the older Anaconda GUI toolkit</li>
       </ul>
 
-      <h2>Developer Experience Enhancements</h2>
-      <p>Fedora 42 significantly improves the developer experience with several targeted enhancements:</p>
+      <h2>Developer Experience: Toolchain Updates</h2>
+      <p>Fedora 42 carries the usual release's worth of toolchain updates:</p>
 
-      <h3>Toolchain Updates</h3>
       <ul>
-        <li><strong>GCC 14:</strong> Latest compiler with improved optimization and C++23 support</li>
-        <li><strong>LLVM 18:</strong> Enhanced Clang with better diagnostics and performance</li>
-        <li><strong>Python 3.12:</strong> Improved performance and new language features</li>
-        <li><strong>Node.js 20 LTS:</strong> Long-term support version with enhanced security</li>
+        <li><strong>GCC 15:</strong> The GNU toolchain update also brings binutils 2.44, glibc 2.41, and gdb 15+</li>
+        <li><strong>LLVM 20:</strong> Updated Clang and the rest of the LLVM subprojects</li>
+        <li><strong>Python:</strong> Python 3.8 is retired; applications must target 3.9 or newer</li>
       </ul>
 
-      <h2>Infrastructure and Performance</h2>
-      <p>Under the hood, Fedora 42 includes significant infrastructure improvements that benefit all desktop environments and use cases.</p>
-
-      <h3>Kernel and System Improvements</h3>
+      <h2>Infrastructure: Kernel and Package Management</h2>
+      <p>Under the hood:</p>
       <ul>
-        <li><strong>Linux 6.8 Kernel:</strong> Latest kernel with improved hardware support and security features</li>
-        <li><strong>systemd 255:</strong> Enhanced service management and boot performance</li>
-        <li><strong>DNF5:</strong> Next-generation package manager with improved dependency resolution</li>
-        <li><strong>Wayland Improvements:</strong> Better compatibility and performance across all desktop environments</li>
+        <li><strong>Linux 6.14 Kernel:</strong> The kernel Fedora 42 shipped with at general availability</li>
+        <li><strong>DNF5:</strong> Already the default since Fedora 41; Fedora 42 adds automatic handling of expired or obsolete repository signing keys</li>
+        <li><strong>Drm Panic:</strong> Improves the visibility of kernel panic information on the display itself</li>
       </ul>
 
-      <h2>Security and Privacy Enhancements</h2>
-      <p>Fedora 42 strengthens security posture with several important additions:</p>
-      <ul>
-        <li><strong>Enhanced SELinux Policies:</strong> More granular security controls for modern applications</li>
-        <li><strong>Improved Sandboxing:</strong> Better isolation for Flatpak and container applications</li>
-        <li><strong>Hardware Security:</strong> Enhanced TPM 2.0 integration for secure boot and encryption</li>
-        <li><strong>Privacy Controls:</strong> More granular permission management for applications</li>
-      </ul>
+      <h2>Where This Leaves Things</h2>
+      <p>KDE Plasma's promotion to full-edition status is the change worth paying attention to here - it's a real shift in how Fedora tests and supports the desktop, not just a labelling change. COSMIC, by contrast, is worth trying on a spare machine or in a VM rather than treating as a daily driver yet; Fedora's own packaging guidance says as much.</p>
 
-      <h2>Migration and Compatibility</h2>
-      <p>Fedora 42 maintains excellent backward compatibility while providing clear migration paths for users upgrading from previous versions.</p>
-
-      <h3>Upgrade Process</h3>
-      <p>The upgrade process has been streamlined with:</p>
-      <ul>
-        <li><strong>DNF System Upgrade:</strong> Improved reliability and rollback capabilities</li>
-        <li><strong>Configuration Preservation:</strong> Better handling of custom configurations during upgrades</li>
-        <li><strong>Compatibility Layer:</strong> Maintains compatibility with most existing applications and workflows</li>
-      </ul>
-
-      <h2>Community and Ecosystem Impact</h2>
-      <p>The changes in Fedora 42 reflect broader trends in the Linux ecosystem and demonstrate Fedora's continued leadership in desktop innovation.</p>
-
-      <p>The promotion of KDE Plasma to full edition status signals a recognition of desktop diversity as a strength rather than fragmentation. The inclusion of COSMIC shows Fedora's commitment to supporting innovative projects that push the boundaries of what's possible in desktop computing.</p>
-
-      <h2>Looking Forward</h2>
-      <p>Fedora 42 sets the stage for the future of Linux desktop computing. By embracing both established excellence (KDE Plasma) and cutting-edge innovation (COSMIC), this release demonstrates that the Linux desktop ecosystem is more vibrant and innovative than ever.</p>
-
-      <p>For developers, system administrators, and power users, Fedora 42 offers unprecedented choice and capability. The combination of mature, stable desktop environments with experimental, forward-thinking alternatives ensures that users can find the perfect match for their workflow and preferences.</p>
-
-      <p>This release proves that Fedora continues to be the platform where the future of Linux is built, tested, and refined before making its way to the broader ecosystem.</p>
+      <p>The WebUI installer and the toolchain bumps are the kind of steady, incremental progress every Fedora release carries. None of it is dramatic on its own, but it's what keeps the distribution current.</p>
     </section>
 
     <footer class="article-footer">
@@ -9814,10 +8462,11 @@ download_file() {
     id: 'fedora-desktop-automation-ansible',
     title: 'Automating Fedora 42 Desktop Development: Open Source Infrastructure as Code',
     description:
-      'Comprehensive guide to transforming a fresh Fedora 42 installation into a fully configured development environment using Ansible automation, exploring the LongTermSupport/fedora-desktop repository and the philosophy of infrastructure-as-code for personal workstations.',
+      "What a real Ansible repository for provisioning a Fedora desktop looks like, and why baseline automation should stay narrow so project-specific stacks can build on top of it.",
     date: '2025-09-03',
     category: CATEGORIES.infrastructure.id,
     readingTime: 12,
+    register: 'formal',
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'Fedora',
@@ -9832,15 +8481,15 @@ download_file() {
 <div class="intro">
             <p class="lead">
                 Every developer knows the pain: fresh OS installation, hours of manual configuration,
-                hunting down packages, setting up SSH keys, configuring Git, installing development 
-                tools, and customizing the environment. What if a single command could transform a 
-                vanilla <a href="https://fedoraproject.org/" target="_blank" rel="noopener">Fedora 42</a> 
-                installation into a fully configured development powerhouse? The 
-                <a href="https://github.com/LongTermSupport/fedora-desktop" target="_blank" rel="noopener">LongTermSupport/fedora-desktop</a> 
-                repository demonstrates the transformative power of infrastructure-as-code applied to 
-                personal workstations, showcasing how <a href="https://www.ansible.com/" target="_blank" rel="noopener">Ansible</a>, 
-                <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a>, and other 
-                open source tools can eliminate manual setup drudgery forever.
+                hunting down packages, setting up SSH keys, configuring Git, installing development
+                tools, and customising the environment. What if a single command could turn a
+                vanilla <a href="https://fedoraproject.org/" target="_blank" rel="noopener">Fedora 42</a>
+                installation into a fully configured development environment? The
+                <a href="https://github.com/LongTermSupport/fedora-desktop" target="_blank" rel="noopener">LongTermSupport/fedora-desktop</a>
+                repository is a working example of infrastructure-as-code applied to
+                personal workstations, using <a href="https://www.ansible.com/" target="_blank" rel="noopener">Ansible</a>,
+                <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a>, and other
+                open source tools to cut out most of the manual setup drudgery.
             </p>
         </div>
 
@@ -9849,14 +8498,14 @@ download_file() {
             
             <p>
                 <a href="https://www.redhat.com/en/topics/automation/what-is-infrastructure-as-code-iac" target="_blank" rel="noopener">Infrastructure as Code (IaC)</a> 
-                has revolutionized how we manage servers and cloud resources, but its principles apply 
+                has revolutionised how we manage servers and cloud resources, but its principles apply
                 equally powerfully to personal development environments. The concept treats your desktop 
                 configuration as <a href="https://git-scm.com/" target="_blank" rel="noopener">version-controlled</a>, 
                 <a href="https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html" target="_blank" rel="noopener">idempotent</a>, 
                 and reproducible code rather than a collection of manual setup steps you hope to remember.
             </p>
 
-            <pre><code class="language-python">{{SNIPPET:fedora-desktop-automation-ansible/iac-philosophy-pseudocode.txt}}
+            <pre><code class="language-plaintext">{{SNIPPET:fedora-desktop-automation-ansible/iac-philosophy-pseudocode.txt}}
 </code></pre>
 
             <p>
@@ -9886,7 +8535,7 @@ download_file() {
                 The <a href="https://github.com/LongTermSupport/fedora-desktop" target="_blank" rel="noopener">fedora-desktop repository</a> 
                 exemplifies modern desktop automation philosophy. Built specifically for 
                 <a href="https://fedoraproject.org/wiki/Releases/40/ChangeSet" target="_blank" rel="noopener">Fedora 40+</a>, 
-                it takes a "fresh install to fully configured" approach that emphasizes security, 
+                it takes a "fresh install to fully configured" approach that emphasises security,
                 developer productivity, and maintainable automation.
             </p>
 
@@ -9902,16 +8551,16 @@ download_file() {
                 <li><strong>environment/localhost/</strong>: Host-specific configurations</li>
                 <li><strong>files/</strong>: Static files to be deployed</li>
                 <li><strong>vars/</strong>: Variable definitions and configuration</li>
-                <li><strong>untracked/</strong>: Local customizations (gitignored)</li>
+                <li><strong>untracked/</strong>: Local customisations (gitignored)</li>
                 <li><strong>run.bash</strong>: Bootstrap script that handles initial setup</li>
             </ul>
 
             <h3>The Bootstrap Process</h3>
             
             <p>
-                The magic begins with a single command that leverages 
-                <a href="https://curl.se/" target="_blank" rel="noopener">curl</a> to download and execute 
-                the bootstrap script directly from the repository. This approach, while requiring trust 
+                It begins with a single command that uses
+                <a href="https://curl.se/" target="_blank" rel="noopener">curl</a> to download and execute
+                the bootstrap script directly from the repository. This approach, whilst requiring trust
                 in the source, enables truly one-command environment setup:
             </p>
             
@@ -9919,14 +8568,13 @@ download_file() {
 </code></pre>
 
             <p>
-                The bootstrap script demonstrates several important patterns for robust automation:
+                The bootstrap script follows several patterns worth reusing in your own automation:
             </p>
 
             <ul>
                 <li><strong>Strict error handling</strong>: Uses <code>set -euo pipefail</code> to fail fast on errors</li>
-                <li><strong>Comprehensive logging</strong>: Structured logging with different severity levels</li>
+                <li><strong>Structured logging</strong>: Different severity levels for different kinds of messages</li>
                 <li><strong>Preflight checks</strong>: Validates system requirements before proceeding</li>
-                <li><strong>Graceful cleanup</strong>: Trap handlers ensure clean failure states</li>
                 <li><strong>User safety</strong>: Prevents execution as root to avoid system damage</li>
             </ul>
         </section>
@@ -9935,9 +8583,9 @@ download_file() {
             <h2>Core Automation: What Gets Configured Automatically</h2>
             
             <p>
-                The main Ansible playbook orchestrates a comprehensive transformation of the base 
-                <a href="https://fedoraproject.org/workstation/" target="_blank" rel="noopener">Fedora Workstation</a> 
-                installation. Understanding what happens automatically versus what requires user choice 
+                The main Ansible playbook works through a long list of changes to the base
+                <a href="https://fedoraproject.org/workstation/" target="_blank" rel="noopener">Fedora Workstation</a>
+                installation. Understanding what happens automatically versus what requires user choice
                 helps you adapt the approach to your own needs.
             </p>
 
@@ -9960,7 +8608,7 @@ download_file() {
             <h4>Development Tools</h4>
             <p>
                 Based on the <a href="https://github.com/LongTermSupport/fedora-desktop/blob/F42/README.md" target="_blank" rel="noopener">repository documentation</a>, 
-                the automation installs a comprehensive development toolkit:
+                the automation installs a wide range of development tools:
             </p>
             
             <ul>
@@ -9980,11 +8628,11 @@ download_file() {
                 <li><strong>Multi-account support</strong>: GitHub CLI configuration for work/personal separation</li>
             </ul>
 
-            <h4>Container and Virtualization</h4>
+            <h4>Container and Virtualisation</h4>
             <ul>
-                <li><strong><a href="https://linuxcontainers.org/lxc/" target="_blank" rel="noopener">LXC containers</a></strong>: Lightweight virtualization for development</li>
+                <li><strong><a href="https://linuxcontainers.org/lxc/" target="_blank" rel="noopener">LXC containers</a></strong>: Lightweight virtualisation for development</li>
                 <li><strong><a href="https://podman.io/" target="_blank" rel="noopener">Podman</a></strong>: Daemonless container engine (Fedora's Docker alternative)</li>
-                <li><strong><a href="https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/" target="_blank" rel="noopener">Toolbox</a></strong>: Containerized development environments</li>
+                <li><strong><a href="https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/" target="_blank" rel="noopener">Toolbox</a></strong>: Containerised development environments</li>
             </ul>
         </section>
 
@@ -10001,8 +8649,8 @@ download_file() {
 
             <p>
                 The <a href="https://github.blog/changelog/2023-12-17-log-in-to-multiple-github-accounts-with-the-cli/" target="_blank" rel="noopener">GitHub CLI's native multi-account support</a> 
-                (introduced in late 2023) revolutionizes this workflow, and the fedora-desktop repository 
-                showcases how to automate its configuration:
+                (introduced in late 2023) makes this workflow far less painful, and the fedora-desktop repository
+                shows how to automate its configuration:
             </p>
 
             <pre><code class="language-yaml">{{SNIPPET:fedora-desktop-automation-ansible/git-multi-account.yml}}
@@ -10011,27 +8659,29 @@ download_file() {
             <h3>Modern Multi-Account Workflow</h3>
             
             <p>
-                The automation sets up a sophisticated workflow that eliminates the confusion of 
+                The automation sets up a workflow that removes most of the confusion of
                 managing multiple GitHub identities:
             </p>
 
             <pre><code class="language-bash">{{SNIPPET:fedora-desktop-automation-ansible/github-multi-setup.sh}}
 </code></pre>
 
-            <h3>Conditional Git Configuration</h3>
-            
+            <h3>Detecting Which Account a Repository Uses</h3>
+
             <p>
-                Beyond just GitHub CLI management, the automation implements 
-                <a href="https://git-scm.com/docs/git-config#_conditional_includes" target="_blank" rel="noopener">Git's conditional includes</a> 
-                to automatically switch between work and personal configurations based on project location. 
-                This means your commits automatically use the correct email and signing key without manual switching.
+                Beyond GitHub CLI management, the repository includes a <code>git-account-helper</code> script.
+                It reads the SSH host alias embedded in a repo's remote URL (<code>git@github.com-work:owner/repo.git</code>
+                versus <code>github.com-personal</code>) to work out which configured account that repository
+                belongs to, and can look up that account's email. It's a building block for your own
+                identity-switching wrapper, not a fully automatic Git identity switch - it doesn't rewrite
+                <code>git config</code> for you.
             </p>
 
             <h3>Benefits of Automated Multi-Account Setup</h3>
-            
+
             <ul>
-                <li><strong>Context switching</strong>: Seamless transitions between work and personal projects</li>
-                <li><strong>Correct attribution</strong>: Commits always use the appropriate identity</li>
+                <li><strong>Context switching</strong>: Quick transitions between work and personal projects</li>
+                <li><strong>Account detection</strong>: A single command tells you which account a given repo belongs to</li>
                 <li><strong>Security isolation</strong>: Separate SSH keys and authentication tokens</li>
                 <li><strong>Workflow consistency</strong>: Same commands work regardless of active account</li>
                 <li><strong>Team onboarding</strong>: New developers get properly configured multi-account setup</li>
@@ -10042,9 +8692,9 @@ download_file() {
             <h2>Optional Playbooks: Choose Your Own Adventure</h2>
             
             <p>
-                While the main playbook handles universal development needs, the repository 
-                architecture supports optional playbooks for specialized requirements. This 
-                modular approach prevents bloat while enabling customization.
+                Whilst the main playbook handles universal development needs, the repository
+                architecture supports optional playbooks for specialised requirements. This
+                modular approach prevents bloat whilst enabling customisation.
             </p>
 
             <h3>Flatpak Application Management</h3>
@@ -10066,7 +8716,7 @@ download_file() {
                 specific needs. Whether you need to configure 
                 <a href="https://www.jetbrains.com/idea/" target="_blank" rel="noopener">IntelliJ IDEA</a>, 
                 set up <a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a> 
-                development environments, or configure specialized tools like 
+                development environments, or configure specialised tools like
                 <a href="https://kubernetes.io/" target="_blank" rel="noopener">Kubernetes</a> 
                 clients, the pattern remains consistent.
             </p>
@@ -10087,8 +8737,8 @@ download_file() {
             
             <p>
                 Desktop automation introduces unique security considerations that server 
-                infrastructure automation doesn't typically face. The fedora-desktop repository 
-                demonstrates several important security practices.
+                infrastructure automation doesn't typically face. The fedora-desktop repository
+                follows several security practices worth calling out.
             </p>
 
             <h3>Encryption and Filesystem Security</h3>
@@ -10096,8 +8746,8 @@ download_file() {
             <p>
                 The repository strongly recommends full disk encryption during Fedora installation, 
                 using <a href="https://gitlab.com/cryptsetup/cryptsetup" target="_blank" rel="noopener">LUKS</a> 
-                (Linux Unified Key Setup) for protecting data at rest. The recommended partition layout 
-                prioritizes security:
+                (Linux Unified Key Setup) for protecting data at rest. The recommended partition layout
+                prioritises security:
             </p>
 
             <ul>
@@ -10111,7 +8761,7 @@ download_file() {
             
             <p>
                 The automation generates <a href="https://ed25519.cr.yp.to/" target="_blank" rel="noopener">Ed25519 SSH keys</a>, 
-                which offer superior security compared to traditional RSA keys while maintaining 
+                which offer superior security compared to traditional RSA keys whilst maintaining
                 compatibility with modern systems. The key generation includes:
             </p>
 
@@ -10119,7 +8769,7 @@ download_file() {
                 <li><strong>Strong key generation</strong>: Ed25519 algorithm with proper randomness</li>
                 <li><strong>Descriptive comments</strong>: Keys include hostname and purpose identification</li>
                 <li><strong>Proper permissions</strong>: Correct file permissions (600 for private keys)</li>
-                <li><strong>SSH agent integration</strong>: Automated key loading for seamless authentication</li>
+                <li><strong>SSH agent integration</strong>: Automated key loading, so authentication just works</li>
             </ul>
 
             <h3>Third-Party Repository Management</h3>
@@ -10143,9 +8793,9 @@ download_file() {
             <h2>The Baseline Philosophy: Foundation for Project-Specific Automation</h2>
             
             <p>
-                The true power of the fedora-desktop repository lies not in trying to be everything 
-                to everyone, but in providing a solid, known baseline that other automation can 
-                reliably build upon. Rather than cramming every possible development stack into 
+                The true power of the fedora-desktop repository lies not in trying to be everything
+                to everyone, but in providing a solid, known baseline that other automation can
+                reliably build upon. Rather than cramming every possible development stack into
                 one monolithic playbook, the repository establishes a foundation of essential tools 
                 and configurations that project-specific automation can assume will be present.
             </p>
@@ -10180,15 +8830,15 @@ download_file() {
             <h3>The Power of Forking</h3>
             
             <p>
-                Forking the fedora-desktop repository makes tremendous sense for personalization 
-                and organizational customization. Your fork becomes your organization's 
+                Forking the fedora-desktop repository makes tremendous sense for personalisation
+                and organisational customisation. Your fork becomes your organisation's
                 "known good desktop state", a guaranteed foundation that all team members share.
                 From this common base, project-specific automation can make reliable assumptions 
                 about available tools and configurations.
             </p>
             
             <p>
-                <strong>Example organizational fork customizations:</strong>
+                <strong>Example organisational fork customisations:</strong>
             </p>
             
             <ul>
@@ -10201,10 +8851,10 @@ download_file() {
             <h3>Container-First Project Development</h3>
             
             <p>
-                With the baseline providing robust container support through LXC and Docker, 
+                With the baseline providing solid container support through LXC and Docker,
                 project-specific stacks become much more manageable. Instead of polluting the 
                 host system with multiple language versions and conflicting dependencies, 
-                each project gets its own containerized environment.
+                each project gets its own containerised environment.
             </p>
             
             <p>
@@ -10243,7 +8893,7 @@ download_file() {
             <p>
                 Fedora 42's deep integration with <a href="https://podman.io/" target="_blank" rel="noopener">Podman 5.x</a> 
                 and improved <a href="https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/" target="_blank" rel="noopener">Toolbox</a> 
-                support makes containerized development environments a first-class citizen. This is 
+                support makes containerised development environments a first-class citizen. This is
                 particularly valuable for teams working with multiple technology stacks.
             </p>
 
@@ -10274,7 +8924,7 @@ download_file() {
             <h2>Lessons Learned and Best Practices</h2>
             
             <p>
-                After analyzing the fedora-desktop repository and modern desktop automation practices, 
+                After analysing the fedora-desktop repository and modern desktop automation practices,
                 several key lessons emerge for anyone implementing infrastructure-as-code for 
                 personal or team workstations.
             </p>
@@ -10313,7 +8963,7 @@ download_file() {
             <h3>Test on Clean Systems</h3>
             
             <p>
-                Regular testing on fresh virtual machines ensures your automation works for new team 
+                Regular testing on fresh virtual machines ensures your automation works for new team
                 members or system recovery scenarios. 
                 <a href="https://www.virtualbox.org/" target="_blank" rel="noopener">VirtualBox</a>, 
                 <a href="https://virt-manager.org/" target="_blank" rel="noopener">virt-manager</a>, 
@@ -10333,9 +8983,9 @@ download_file() {
             <h2>The Broader Impact: Open Source Toolchain Integration</h2>
             
             <p>
-                The fedora-desktop repository showcases how modern open source tools integrate 
-                seamlessly to create powerful automation workflows. This is about more than Ansible
-                and Fedora. It's an ecosystem approach to infrastructure management.
+                The fedora-desktop repository shows how modern open source tools fit together to
+                create effective automation workflows, and the approach goes beyond Ansible
+                and Fedora: it's really an ecosystem approach to infrastructure management.
             </p>
 
             <h3>Tool Ecosystem Synergy</h3>
@@ -10344,7 +8994,7 @@ download_file() {
                 <li><strong><a href="https://fedoraproject.org/" target="_blank" rel="noopener">Fedora Linux</a></strong>: Cutting-edge base platform</li>
                 <li><strong><a href="https://www.ansible.com/" target="_blank" rel="noopener">Ansible</a></strong>: Configuration management and automation</li>
                 <li><strong><a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a></strong>: Modern version control workflow</li>
-                <li><strong><a href="https://docs.fedoraproject.org/en-US/quick-docs/dnf/" target="_blank" rel="noopener">DNF</a></strong>: Robust package management</li>
+                <li><strong><a href="https://docs.fedoraproject.org/en-US/quick-docs/dnf/" target="_blank" rel="noopener">DNF</a></strong>: Reliable package management</li>
                 <li><strong><a href="https://flatpak.org/" target="_blank" rel="noopener">Flatpak</a></strong>: Sandboxed application distribution</li>
                 <li><strong><a href="https://podman.io/" target="_blank" rel="noopener">Podman</a></strong>: Daemonless container management</li>
                 <li><strong><a href="https://systemd.io/" target="_blank" rel="noopener">systemd</a></strong>: Service and system management</li>
@@ -10353,12 +9003,12 @@ download_file() {
             <h3>Enterprise Readiness</h3>
             
             <p>
-                The patterns demonstrated in personal workstation automation translate directly 
-                to enterprise environments. Organizations using 
-                <a href="https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux" target="_blank" rel="noopener">Red Hat Enterprise Linux</a>, 
-                <a href="https://access.redhat.com/products/red-hat-satellite" target="_blank" rel="noopener">Red Hat Satellite</a>, 
-                or <a href="https://www.ansible.com/products/automation-platform" target="_blank" rel="noopener">Ansible Automation Platform</a> 
-                can leverage similar approaches for standardized desktop deployments.
+                The patterns used in personal workstation automation translate directly
+                to enterprise environments. Organisations using
+                <a href="https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux" target="_blank" rel="noopener">Red Hat Enterprise Linux</a>,
+                <a href="https://access.redhat.com/products/red-hat-satellite" target="_blank" rel="noopener">Red Hat Satellite</a>,
+                or <a href="https://www.ansible.com/products/automation-platform" target="_blank" rel="noopener">Ansible Automation Platform</a>
+                can apply similar approaches for standardised desktop deployments.
             </p>
 
             <h3>Community Contribution</h3>
@@ -10377,7 +9027,7 @@ download_file() {
             <h2>Roadmap: Advancing Desktop Automation</h2>
             
             <p>
-                While the fedora-desktop repository provides an excellent foundation, there are 
+                Whilst the fedora-desktop repository provides an excellent foundation, there are
                 numerous areas for enhancement and expansion. The roadmap for advanced desktop 
                 automation includes both immediate practical improvements and exploratory investigations 
                 into emerging technologies.
@@ -10386,7 +9036,7 @@ download_file() {
             <h3>Browser Automation and Configuration</h3>
             
             <p>
-                Modern web development requires multiple browsers with comprehensive configuration. 
+                Modern web development means testing across multiple browsers, each with its own configuration.
                 A fully automated browser setup would install and configure:
             </p>
             
@@ -10396,7 +9046,7 @@ download_file() {
                 <li><strong><a href="https://www.google.com/chrome/" target="_blank" rel="noopener">Google Chrome</a></strong>: Full feature set with development extensions</li>
                 <li><strong>Security hardening</strong>: Disable internal password managers, configure secure defaults</li>
                 <li><strong>Developer extensions</strong>: React DevTools, Vue DevTools, lighthouse, accessibility tools</li>
-                <li><strong>Bookmark synchronization</strong>: Import bookmarks, configure sync services</li>
+                <li><strong>Bookmark synchronisation</strong>: Import bookmarks, configure sync services</li>
             </ul>
             
             <p>
@@ -10407,9 +9057,9 @@ download_file() {
             <h3>SELinux Integration: Security Without Compromise</h3>
             
             <p>
-                Currently, the repository disables <a href="https://selinuxproject.org/" target="_blank" rel="noopener">SELinux</a> 
-                to avoid configuration complexity, but this represents a significant security compromise. 
-                A more sophisticated approach would:
+                Currently, the repository sets <a href="https://selinuxproject.org/" target="_blank" rel="noopener">SELinux</a>
+                to permissive mode for LXC container support, which still represents a security compromise compared
+                to full enforcement. A more thorough approach would:
             </p>
             
             <ul>
@@ -10417,21 +9067,21 @@ download_file() {
                 <li><strong>Create custom policies</strong>: Handle development tools and containers properly</li>
                 <li><strong>Automated policy debugging</strong>: Tools to identify and resolve policy violations</li>
                 <li><strong>Container integration</strong>: Proper SELinux contexts for Docker/LXC environments</li>
-                <li><strong>Developer-friendly workflows</strong>: Seamless development without security compromises</li>
+                <li><strong>Developer-friendly workflows</strong>: Development that isn't slowed down by security controls</li>
             </ul>
 
-            <h3>System Optimization and Pruning</h3>
-            
+            <h3>System Optimisation and Pruning</h3>
+
             <p>
-                Beyond adding applications, sophisticated desktop automation should optimize 
-                system performance through intelligent pruning:
+                Beyond adding applications, desktop automation can also optimise
+                system performance through deliberate pruning:
             </p>
-            
+
             <ul>
                 <li><strong>Service analysis</strong>: Identify and disable unnecessary systemd services</li>
-                <li><strong>Boot optimization</strong>: Minimize startup time through selective service management</li>
+                <li><strong>Boot optimisation</strong>: Minimise startup time through selective service management</li>
                 <li><strong>Package removal</strong>: Remove unused applications and libraries</li>
-                <li><strong>Kernel tuning</strong>: Optimize kernel parameters for desktop workloads</li>
+                <li><strong>Kernel tuning</strong>: Optimise kernel parameters for desktop workloads</li>
                 <li><strong>Performance monitoring</strong>: Track boot times and resource usage over time</li>
             </ul>
 
@@ -10445,7 +9095,7 @@ download_file() {
             
             <ul>
                 <li><strong>Container-first development</strong>: All development work in Toolbox/Distrobox containers</li>
-                <li><strong>Layered customizations</strong>: rpm-ostree layering for system modifications</li>
+                <li><strong>Layered customisations</strong>: rpm-ostree layering for system modifications</li>
                 <li><strong>Atomic updates</strong>: Rollback capabilities for failed configurations</li>
                 <li><strong>Reproducible desktops</strong>: Exact system state reproduction across machines</li>
                 <li><strong>Security benefits</strong>: Read-only root filesystem with enhanced security</li>
@@ -10459,10 +9109,10 @@ download_file() {
             
             <ul>
                 <li><strong>Boot time analysis</strong>: systemd-analyze integration for performance profiling</li>
-                <li><strong>Memory optimization</strong>: Swap configuration, memory compression, caching strategies</li>
-                <li><strong>I/O scheduling</strong>: Storage optimization for development workloads</li>
-                <li><strong>Power management</strong>: Laptop optimization without compromising performance</li>
-                <li><strong>Hardware-specific tuning</strong>: GPU drivers, firmware optimization</li>
+                <li><strong>Memory optimisation</strong>: Swap configuration, memory compression, caching strategies</li>
+                <li><strong>I/O scheduling</strong>: Storage optimisation for development workloads</li>
+                <li><strong>Power management</strong>: Laptop optimisation without compromising performance</li>
+                <li><strong>Hardware-specific tuning</strong>: GPU drivers, firmware optimisation</li>
             </ul>
 
             <h3>AI-Assisted Configuration Evolution</h3>
@@ -10473,7 +9123,7 @@ download_file() {
             </p>
             
             <ul>
-                <li><strong>Usage pattern analysis</strong>: Automatically optimize configurations based on actual usage</li>
+                <li><strong>Usage pattern analysis</strong>: Automatically optimise configurations based on actual usage</li>
                 <li><strong>Performance regression detection</strong>: AI-powered monitoring of system performance changes</li>
                 <li><strong>Configuration drift prevention</strong>: Automated detection and correction of configuration changes</li>
                 <li><strong>Predictive maintenance</strong>: Proactive identification of potential issues</li>
@@ -10484,16 +9134,16 @@ download_file() {
             <h2>Getting Started: Your Own Desktop Automation Journey</h2>
             
             <p>
-                Ready to transform your own desktop setup process? Here's a practical roadmap 
+                Ready to rework your own desktop setup process? Here's a practical roadmap
                 for implementing infrastructure-as-code for your development environment.
             </p>
 
             <h3>Phase 1: Assessment and Planning</h3>
             
             <ol>
-                <li><strong>Audit your current setup</strong>: Document all installed packages, configurations, and customizations</li>
+                <li><strong>Audit your current setup</strong>: Document all installed packages, configurations, and customisations</li>
                 <li><strong>Identify pain points</strong>: What takes the most time during fresh installations?</li>
-                <li><strong>Prioritize automation</strong>: Start with high-impact, low-risk configurations</li>
+                <li><strong>Prioritise automation</strong>: Start with high-impact, low-risk configurations</li>
                 <li><strong>Choose your tools</strong>: Ansible for most use cases, but consider alternatives like <a href="https://puppet.com/" target="_blank" rel="noopener">Puppet</a> or <a href="https://www.chef.io/" target="_blank" rel="noopener">Chef</a></li>
             </ol>
 
@@ -10509,7 +9159,7 @@ download_file() {
             <h3>Phase 3: Advanced Features</h3>
             
             <ol>
-                <li><strong>Modularize your code</strong>: Break large playbooks into focused, reusable roles</li>
+                <li><strong>Modularise your code</strong>: Break large playbooks into focused, reusable roles</li>
                 <li><strong>Add conditional logic</strong>: Handle different operating systems or user preferences</li>
                 <li><strong>Implement security practices</strong>: SSH key management, encryption, secure defaults</li>
                 <li><strong>Create documentation</strong>: Help others (including future you) understand and extend the automation</li>
@@ -10521,25 +9171,25 @@ download_file() {
                 <li><strong>Share with your team</strong>: Adapt your automation for team-specific needs</li>
                 <li><strong>Contribute upstream</strong>: Submit improvements to community projects like fedora-desktop</li>
                 <li><strong>Maintain and evolve</strong>: Keep your automation current as tools and practices change</li>
-                <li><strong>Monitor and optimize</strong>: Track automation success rates and execution times</li>
+                <li><strong>Monitor and optimise</strong>: Track automation success rates and execution times</li>
             </ol>
         </section>
 
         <section>
-            <h2>Conclusion: The Infrastructure Revolution Comes Home</h2>
+            <h2>Conclusion: Treating the Desktop as Code</h2>
             
             <p>
                 The <a href="https://github.com/LongTermSupport/fedora-desktop" target="_blank" rel="noopener">LongTermSupport/fedora-desktop</a> 
-                repository represents more than just a collection of Ansible playbooks. It embodies
-                a fundamental shift in how we think about personal computing environments. By applying 
-                infrastructure-as-code principles to desktop automation, it demonstrates that the 
-                same engineering practices that revolutionized server management can transform 
+                repository is more than a collection of Ansible playbooks; it reflects
+                a fundamental shift in how we think about personal computing environments. By applying
+                infrastructure-as-code principles to desktop automation, it shows that the
+                same engineering practices that revolutionised server management can do the same for
                 personal productivity.
             </p>
 
             <p>
-                The true power lies not in any specific tool or technique, but in the mindset change 
-                from manual, artisanal configuration to systematic, reproducible automation. When 
+                What matters more than any specific tool or technique is the shift in mindset,
+                from manual, artisanal configuration to systematic, reproducible automation. When
                 your entire development environment becomes code, it becomes reliable, shareable, 
                 and maintainable in ways that manual setup never could be.
             </p>
@@ -10554,12 +9204,11 @@ download_file() {
             </p>
 
             <p>
-                Whether you're a solo developer tired of manual setup drudgery, a team lead 
-                seeking consistent development environments, or an organization looking to 
-                streamline onboarding, the patterns demonstrated in the fedora-desktop repository 
-                provide a proven foundation for success. The future of personal computing is 
-                declarative, version-controlled, and automated, and that future is available today
-                for anyone willing to treat their desktop as code.
+                Whether you're a solo developer tired of manual setup drudgery, a team lead
+                wanting consistent development environments, or someone trying to
+                streamline onboarding, the patterns used in the fedora-desktop repository
+                give you a solid foundation to build on. Declarative, version-controlled, automated
+                setup is available now, for anyone willing to treat their desktop as code.
             </p>
 
             <p>
@@ -10573,7 +9222,7 @@ download_file() {
             <h3>Additional Resources</h3>
             <ul>
                 <li><a href="https://github.com/LongTermSupport/fedora-desktop" target="_blank" rel="noopener">LongTermSupport/fedora-desktop Repository</a> - The main repository discussed in this article</li>
-                <li><a href="https://docs.ansible.com/ansible/latest/index.html" target="_blank" rel="noopener">Ansible Documentation</a> - Comprehensive Ansible learning resources</li>
+                <li><a href="https://docs.ansible.com/ansible/latest/index.html" target="_blank" rel="noopener">Ansible Documentation</a> - Official Ansible learning resources</li>
                 <li><a href="https://docs.fedoraproject.org/" target="_blank" rel="noopener">Fedora Documentation</a> - Official Fedora user and administrator guides</li>
                 <li><a href="https://cli.github.com/manual/" target="_blank" rel="noopener">GitHub CLI Manual</a> - Complete GitHub CLI command reference</li>
                 <li><a href="https://galaxy.ansible.com/" target="_blank" rel="noopener">Ansible Galaxy</a> - Community hub for Ansible roles and collections</li>
@@ -10586,9 +9235,9 @@ download_file() {
   // Migrating: high-performance-php.ejs
   {
     id: 'high-performance-php',
-    title: 'High-Performance PHP: Optimization Strategies',
+    title: 'High-Performance PHP: Optimisation Strategies',
     description:
-      'Advanced PHP optimization techniques for high-performance applications and systems',
+      'OPcache tuning, connection pooling, multi-level caching and async job queues for PHP applications under real load',
     date: '2024-12-28',
     category: CATEGORIES.php.id,
     heroImage: {
@@ -10605,317 +9254,110 @@ download_file() {
     subreddit: 'PHP',
     content: `
 <section class="intro">
-<p class="lead">Proven techniques for optimizing PHP applications to handle high-turnover, high-complexity scenarios.</p>
-<p><a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a> has a reputation for being slow, but that's largely outdated. Modern <a href="https://www.php.net/releases/8.2/en.php" target="_blank" rel="noopener">PHP 8.2+</a> with proper optimization can handle thousands of requests per second. The key is knowing where to optimize and how to measure the impact of your changes.</p>
-<p>Over the years, I've optimized PHP applications handling millions of requests daily. Here are the techniques that deliver real performance gains.</p>
+<p class="lead">Proven techniques for optimising PHP applications to handle high-turnover, high-complexity scenarios.</p>
+<p><a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a> has a reputation for being slow, but that's largely outdated. Modern <a href="https://www.php.net/releases/8.3/en.php" target="_blank" rel="noopener">PHP 8.3+</a> with proper optimisation can handle thousands of requests per second. The key is knowing where to optimise and how to measure the impact of your changes.</p>
+<p>These techniques come from optimising PHP applications under real production load. Here are the ones that deliver measurable performance gains.</p>
 </section>
 <section>
 <h2>Performance Measurement Foundation</h2>
 <h3>Profiling Tools</h3>
-<p>You can't optimize what you don't measure. Essential profiling tools:</p>
-<pre><code class="language-text"># Install <a href="https://xdebug.org/" target="_blank" rel="noopener">Xdebug</a> for profiling
-pecl install xdebug
-# php.ini configuration
-zend_extension=xdebug.so
-xdebug.mode=profile
-xdebug.start_with_request=trigger
-xdebug.output_dir=&quot;/tmp/xdebug&quot;
-xdebug.profiler_output_name=&quot;cachegrind.out.%p&quot;</code></pre>
-<p>Use with tools like <a href="https://github.com/KDE/kcachegrind" target="_blank" rel="noopener">KCacheGrind</a> or <a href="https://github.com/jokkedk/webgrind" target="_blank" rel="noopener">Webgrind</a> to visualize performance bottlenecks.</p>
+<p>You can't optimise what you don't measure. Install <a href="https://xdebug.org/" target="_blank" rel="noopener">Xdebug</a> for profiling:</p>
+<pre><code class="language-bash">{{SNIPPET:high-performance-php/xdebug-config.ini}}</code></pre>
+<p>Use with tools like <a href="https://github.com/KDE/kcachegrind" target="_blank" rel="noopener">KCacheGrind</a> or <a href="https://github.com/jokkedk/webgrind" target="_blank" rel="noopener">Webgrind</a> to visualise performance bottlenecks.</p>
 <h3>Application Performance Monitoring</h3>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppMonitoring;
-use AppValueObjects{MetricName, Duration};
-use AppExceptionsTimerNotFoundException;
-use PsrLogLoggerInterface;
-final class PerformanceMonitor
-{
-/** @var array&lt;string, float&gt; */
-private array $timers = [];
-public function __construct(
-private readonly LoggerInterface $logger,
-private readonly MetricsCollector $metricsCollector,
-) {}
-public function start(MetricName $name): void
-{
-$this-&gt;timers[$name-&gt;value] = hrtime(true);
-}
-public function end(MetricName $name): Duration
-{
-$timerKey = $name-&gt;value;
-if (!isset($this-&gt;timers[$timerKey])) {
-throw new TimerNotFoundException(&quot;Timer &#39;{$timerKey}&#39; not found&quot;);
-}
-$elapsed = Duration::fromNanoseconds(
-hrtime(true) - $this-&gt;timers[$timerKey]
-);
-unset($this-&gt;timers[$timerKey]);
-$this-&gt;metricsCollector-&gt;timing($name, $elapsed);
-$this-&gt;logger-&gt;debug(&#39;Performance metric recorded&#39;, [
-&#39;metric&#39; =&gt; $name-&gt;value,
-&#39;duration_ms&#39; =&gt; $elapsed-&gt;toMilliseconds(),
-]);
-return $elapsed;
-}
-}</code></pre>
+<p>A small timer registry, keyed by metric name, keeps instrumentation code out of the way of the logic it's measuring:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/performance-monitor.php}}</code></pre>
 </section>
 <section>
-<h2>OPcache Optimization</h2>
-<p>OPcache is the most important PHP optimization. It caches compiled bytecode, eliminating the need to parse and compile PHP files on every request.</p>
+<h2>OPcache Optimisation</h2>
+<p>OPcache is the most important PHP optimisation. It caches compiled bytecode, eliminating the need to parse and compile PHP files on every request.</p>
 <h3>Production OPcache Configuration</h3>
-<pre><code class="language-text"># php.ini
-opcache.enable=1
-opcache.enable_cli=1
-opcache.memory_consumption=512
-opcache.interned_strings_buffer=64
-opcache.max_accelerated_files=32531
-opcache.validate_timestamps=0
-opcache.revalidate_freq=0
-opcache.fast_shutdown=1
-opcache.enable_file_override=1
-opcache.optimization_level=0x7FFEBFFF
-opcache.preload=/var/www/html/preload.php
-opcache.preload_user=www-data</code></pre>
+<pre><code class="language-bash">{{SNIPPET:high-performance-php/opcache-config.ini}}</code></pre>
 <h3>OPcache Monitoring</h3>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppMonitoringOPcache;
-use AppValueObjects{HitRate, MemoryUsage};
-use AppExceptionsOPcacheNotAvailableException;
-final readonly class OPcacheMonitor
-{
-public function __construct(
-private OPcacheStatusReader $statusReader,
-private OPcacheConfigReader $configReader,
-) {}
-public function getStats(): OPcacheStats
-{
-if (!extension_loaded(&#39;opcache&#39;)) {
-throw new OPcacheNotAvailableException(&#39;OPcache extension not loaded&#39;);
-}
-$status = $this-&gt;statusReader-&gt;read();
-$config = $this-&gt;configReader-&gt;read();
-return new OPcacheStats(
-enabled: $status[&#39;opcache_enabled&#39;],
-hitRate: HitRate::fromFloat($status[&#39;opcache_statistics&#39;][&#39;opcache_hit_rate&#39;]),
-memoryUsage: MemoryUsage::fromArray($status[&#39;memory_usage&#39;]),
-cachedScripts: $status[&#39;opcache_statistics&#39;][&#39;num_cached_scripts&#39;],
-maxCachedKeys: $config[&#39;directives&#39;][&#39;opcache.max_accelerated_files&#39;],
-jitEnabled: $config[&#39;directives&#39;][&#39;opcache.jit_buffer_size&#39;] &gt; 0,
-jitBufferSize: $config[&#39;directives&#39;][&#39;opcache.jit_buffer_size&#39;],
-);
-}
-public function reset(): void
-{
-if (!opcache_reset()) {
-throw new OPcacheResetFailedException(&#39;Failed to reset OPcache&#39;);
-}
-}
-public function invalidateFile(string $filePath): void
-{
-if (!opcache_invalidate($filePath, true)) {
-throw new OPcacheInvalidationFailedException(
-&quot;Failed to invalidate file: {$filePath}&quot;
-);
-}
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/opcache-monitor.php}}</code></pre>
 </section>
 <section>
-<h2>Database Optimization</h2>
+<h2>Database Optimisation</h2>
 <h3>Connection Pooling</h3>
-<p>Database connections are expensive. Use persistent connections wisely:</p>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppDatabaseConnection;
-use AppValueObjects{ConnectionString, ConnectionId};
-use AppExceptions{ConnectionPoolExhaustedException, ConnectionCreationFailedException};
-use WeakMap;
-final class DatabaseConnectionPool
-{
-/** @var WeakMap&lt;ConnectionId, PDO&gt; */
-private WeakMap $connections;
-/** @var array&lt;string, ConnectionId&gt; */
-private array $connectionIds = [];
-public function __construct(
-private readonly ConnectionString $dsn,
-private readonly DatabaseCredentials $credentials,
-private readonly int $maxConnections = 20,
-private readonly ConnectionOptions $options = new ConnectionOptions(),
-) {
-$this-&gt;connections = new WeakMap();
-}
-public function getConnection(): PDO
-{
-$connectionId = $this-&gt;findAvailableConnection()
-?? $this-&gt;createNewConnection();
-return $this-&gt;connections[$connectionId];
-}
-private function findAvailableConnection(): ?ConnectionId
-{
-foreach ($this-&gt;connectionIds as $id) {
-if ($this-&gt;connections-&gt;offsetExists($id)) {
-return $id;
-}
-}
-return null;
-}
-private function createNewConnection(): ConnectionId
-{
-if (count($this-&gt;connectionIds) &gt;= $this-&gt;maxConnections) {
-throw new ConnectionPoolExhaustedException(
-&quot;Maximum connections ({$this-&gt;maxConnections}) reached&quot;
-);
-}
-$connectionId = ConnectionId::generate();
-try {
-$pdo = new PDO(
-$this-&gt;dsn-&gt;value,
-$this-&gt;credentials-&gt;username,
-$this-&gt;credentials-&gt;password,
-$this-&gt;options-&gt;toPdoOptions(),
-);
-$this-&gt;connections[$connectionId] = $pdo;
-$this-&gt;connectionIds[] = $connectionId;
-return $connectionId;
-} catch (PDOException $e) {
-throw new ConnectionCreationFailedException(
-&quot;Failed to create database connection: {$e-&gt;getMessage()}&quot;,
-previous: $e
-);
-}
-}
-}</code></pre>
-<h3>Query Optimization</h3>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppDatabasePerformance;
-use AppValueObjects{QueryDuration, QueryMetrics};
-use AppExceptionsSlowQueryThresholdExceededException;
-use PsrLogLoggerInterface;
-final readonly class QueryOptimizer
-{
-/** @var array&lt;int, QueryMetrics&gt; */
-private array $queryLog = [];
-public function __construct(
-private PDO $pdo,
-private LoggerInterface $logger,
-private float $slowQueryThreshold = 0.1,
-private int $maxSlowQueries = 10,
-) {}
-public function executeQuery(string $sql, array $params = []): array
-{
-$startTime = hrtime(true);
-$stmt = $this-&gt;pdo-&gt;prepare($sql);
-$stmt-&gt;execute($params);
-$result = $stmt-&gt;fetchAll();
-$duration = QueryDuration::fromNanoseconds(hrtime(true) - $startTime);
-if ($duration-&gt;exceeds($this-&gt;slowQueryThreshold)) {
-$this-&gt;logSlowQuery($sql, $params, $duration);
-}
-return $result;
-}
-private function logSlowQuery(string $sql, array $params, QueryDuration $duration): void
-{
-$metrics = new QueryMetrics(
-sql: $sql,
-parameters: $params,
-duration: $duration,
-executedAt: new DateTimeImmutable()
-);
-$this-&gt;queryLog[] = $metrics;
-$this-&gt;logger-&gt;warning(&#39;Slow query detected&#39;, [
-&#39;sql&#39; =&gt; $sql,
-&#39;duration_ms&#39; =&gt; $duration-&gt;toMilliseconds(),
-&#39;params&#39; =&gt; $params,
-]);
-if (count($this-&gt;queryLog) &gt;= $this-&gt;maxSlowQueries) {
-throw new SlowQueryThresholdExceededException(
-&quot;Too many slow queries detected: &quot; . count($this-&gt;queryLog)
-);
-}
-}
-public function getSlowQueries(): array
-{
-return $this-&gt;queryLog;
-}
-}</code></pre>
+<p>Database connections are expensive to establish, so reusing them matters. The acquire/release pattern below only helps within a single long-running PHP process - a queue worker, a CLI daemon, a Swoole/RoadRunner-style long-lived worker - because it holds state across calls in the same process. It is not how you pool connections for typical PHP-FPM web traffic, where each request gets a fresh process: there, the real answer is <code>PDO::ATTR_PERSISTENT</code> or an external pooler such as ProxySQL or PgBouncer.</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/database-connection-pool.php}}</code></pre>
+<h3>Query Optimisation</h3>
+<p>Logging slow queries as they happen gives you a rolling record of what to fix without adding overhead to the fast path:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/query-optimizer.php}}</code></pre>
 </section>
 <section>
 <h2>Caching Strategies</h2>
 <h3>Multi-Level Caching</h3>
-<pre><code>// Code snippet not found: multilevel-cache-manager.php</code></pre>
+<p>A two-tier cache checks an in-process store first (an array for the lifetime of the request, or APCu across requests on the same worker), and only falls back to a shared store like Redis on a miss. A hit at the second tier backfills the first tier, so the next lookup for the same key on that process is free:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/multilevel-cache-manager.php}}</code></pre>
 <h3>Smart Cache Invalidation</h3>
-<pre><code>// Code snippet not found: tagged-cache-invalidator.php</code></pre>
+<p>Tagging cache entries lets you invalidate a whole group of related keys at once, without tracking every individual key that needs clearing when the underlying data changes:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/tagged-cache-invalidator.php}}</code></pre>
 </section>
 <section>
 <h2>Memory Management</h2>
 <h3>Object Pooling</h3>
-<pre><code>// Code snippet not found: object-pool.php</code></pre>
-<pre><code>// Code snippet not found: http-client-factory.php</code></pre>
+<p>Some objects are expensive enough to construct that reusing them is worthwhile - a database result buffer, a compiled template, a large value object. An object pool hands out instances via <code>acquire()</code> and only accepts them back via an explicit <code>release()</code>, so it can enforce a maximum outstanding count instead of constructing without limit:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/object-pool.php}}</code></pre>
+<h3>HTTP Client Reuse</h3>
+<p>The same pooling idea applies to outbound HTTP clients: constructing a fresh client per request discards the underlying TCP connection along with it. A factory that reuses a client per target host keeps the connection alive between calls instead of paying a new TCP and TLS handshake every time:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/http-client-factory.php}}</code></pre>
 <h3>Memory Leak Detection</h3>
-<pre><code>// Code snippet not found: memory-profiler.php</code></pre>
+<p>In a long-running worker, a slow memory leak only shows up as a trend across many requests. Snapshotting <code>memory_get_usage()</code> at named checkpoints and diffing between them makes that trend visible:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/memory-profiler.php}}</code></pre>
 </section>
 <section>
 <h2>Asynchronous Processing</h2>
 <h3>Job Queue Implementation</h3>
-<pre><code>// Code snippet not found: redis-job-queue.php</code></pre>
-<pre><code>// Code snippet not found: abstract-job.php</code></pre>
+<p>Moving slow work off the request/response cycle means pushing a serialised job onto a queue and processing it separately. The queue below pushes and pops jobs from a Redis list, keyed by job name against a small class map so it knows how to reconstruct each one. Jobs implement a shared abstract <code>Job</code> base (<code>handle()</code>, <code>getName()</code>, <code>getPayload()</code>, and a retry limit) so the queue can serialise and reconstruct any job the same way:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/redis-job-queue.php}}</code></pre>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/abstract-job.php}}</code></pre>
 </section>
 <section>
-<h2>HTTP Performance Optimization</h2>
+<h2>HTTP Performance Optimisation</h2>
 <h3>Response Streaming</h3>
-<pre><code>// Code snippet not found: streaming-response.php</code></pre>
+<p>Large responses don't need to sit fully in memory before the first byte goes out. Fetching rows with an unbuffered query and flushing output as each one is encoded keeps memory use flat regardless of result size:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/streaming-response.php}}</code></pre>
 <h3>Response Compression</h3>
-<pre><code>// Code snippet not found: compression-middleware.php</code></pre>
+<p>Compressing the response body when the client supports it cuts transfer size at the cost of some CPU time. This middleware only compresses above a minimum size, since gzip has fixed overhead that makes it counterproductive on tiny payloads:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/compression-middleware.php}}</code></pre>
 </section>
 <section>
-<h2>Code-Level Optimizations</h2>
+<h2>Code-Level Optimisations</h2>
 <h3>Efficient Array Operations</h3>
-<pre><code>// Code snippet not found: array-optimizer.php</code></pre>
-<h3>String Optimization</h3>
-<pre><code>// Code snippet not found: string-optimizer.php</code></pre>
+<p>A handful of small habits add up across a codebase that runs the same code path millions of times: choosing the right existence check, preferring the built-in array functions where they read more clearly, and avoiding unnecessary array copies.</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/array-optimizer.php}}</code></pre>
+<h3>String Optimisation</h3>
+<p>The same applies to strings - using the function that says what it checks, and avoiding repeated concatenation in a loop in favour of building an array and joining it once.</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/string-optimizer.php}}</code></pre>
 </section>
 <section>
 <h2>Load Testing and Benchmarking</h2>
 <h3>Simple Benchmarking</h3>
-<pre><code>// Code snippet not found: benchmark.php</code></pre>
+<p>Before trusting an optimisation, measure it. A small harness that times a callable across many iterations and reports the spread is enough to tell whether a change actually helped:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/benchmark.php}}</code></pre>
 </section>
 <section>
 <h2>Production Monitoring</h2>
 <h3>Real-time Performance Dashboard</h3>
-<pre><code>// Code snippet not found: performance-dashboard.php</code></pre>
-</section>
-<section>
-<h2>Best Practices Summary</h2>
-<ul>
-<li><strong>Measure first:</strong> Use profiling tools to identify bottlenecks</li>
-<li><strong>Optimize OPcache:</strong> Enable and configure properly</li>
-<li><strong>Cache everything:</strong> Use multi-level caching strategies</li>
-<li><strong>Database optimization:</strong> Connection pooling, query optimization</li>
-<li><strong>Async processing:</strong> Move heavy operations to background jobs</li>
-<li><strong>Memory management:</strong> Monitor memory usage and prevent leaks</li>
-<li><strong>HTTP optimization:</strong> Compression, streaming, efficient headers</li>
-<li><strong>Code optimization:</strong> Efficient algorithms and data structures</li>
-</ul>
+<p>Pulling the metrics gathered by the monitors above into a single structured snapshot is what turns them into something a dashboard endpoint can actually return:</p>
+<pre><code class="language-php">{{SNIPPET:high-performance-php/performance-dashboard.php}}</code></pre>
 </section>
 <section>
 <h2>Common Pitfalls</h2>
 <ul>
-<li><strong>Premature optimization:</strong> Profile before optimizing</li>
+<li><strong>Premature optimisation:</strong> Profile before optimising</li>
 <li><strong>Over-caching:</strong> Cache invalidation complexity</li>
 <li><strong>Ignoring memory limits:</strong> Monitor memory usage</li>
-<li><strong>Database over-optimization:</strong> Sometimes simple queries are better</li>
-<li><strong>Micro-optimizations:</strong> Focus on significant bottlenecks</li>
+<li><strong>Database over-optimisation:</strong> Sometimes simple queries are better</li>
+<li><strong>Micro-optimisations:</strong> Focus on significant bottlenecks</li>
 </ul>
-<p>High-performance PHP is achievable with the right techniques and tools. Start with measuring your current performance, identify the biggest bottlenecks, and apply optimizations systematically. Remember: the best optimization is the one that makes a measurable difference in your specific use case.</p>
 </section>
 <footer class="article-footer">
 <div class="article-tags">
 <span class="tag">PHP</span>
 <span class="tag">Performance</span>
-<span class="tag">Optimization</span>
+<span class="tag">Optimisation</span>
 <span class="tag">OPcache</span>
 <span class="tag">Scalability</span>
 </div>
@@ -10930,7 +9372,7 @@ return $this-&gt;queryLog;
     id: 'legacy-php-modernization',
     title: 'Managing Legacy PHP: From Technical Debt to Modern Architecture',
     description:
-      'Strategies for modernizing legacy PHP codebases and managing technical debt effectively',
+      'Strategies for modernising legacy PHP codebases and managing technical debt effectively',
     date: '2025-01-15',
     category: CATEGORIES.php.id,
     heroImage: {
@@ -10945,11 +9387,12 @@ return $this-&gt;queryLog;
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    register: 'formal',
     content: `
 <section class="intro">
 <p class="lead">Practical strategies for transforming legacy PHP codebases into maintainable, modern systems without breaking production.</p>
 <p>Legacy PHP systems are everywhere. They're the backbone of countless businesses, running critical operations that can't afford downtime. But they're also riddled with technical debt, outdated patterns, and maintenance nightmares that slow down development and increase costs.</p>
-<p>After over a decade of wrestling with legacy PHP codebases, I've learned that modernization isn't about rewriting everything from scratch. It's about strategic, incremental improvements that deliver immediate value while building toward a sustainable future.</p>
+<p>Years of wrestling with legacy PHP codebases have taught me that modernisation works best as a series of strategic, incremental improvements rather than a full rewrite, each one delivering immediate value whilst building toward a sustainable future.</p>
 </section>
 <section>
 <h2>The Reality of Legacy PHP</h2>
@@ -10964,11 +9407,11 @@ return $this-&gt;queryLog;
 <p>The temptation is always to start fresh, but that's rarely the right answer. These systems work, they generate revenue, and they embody years of business logic that would be expensive to rebuild.</p>
 </section>
 <section>
-<h2>The Modernization Strategy</h2>
+<h2>The Modernisation Strategy</h2>
 <h3>1. Establish a Safety Net</h3>
 <p>Before making any changes, you need confidence that you won't break production. This means:</p>
 <ul>
-<li><strong>Comprehensive monitoring:</strong> Error logging, performance monitoring, user behavior tracking</li>
+<li><strong>Comprehensive monitoring:</strong> Error logging, performance monitoring, user behaviour tracking</li>
 <li><strong>Automated backups:</strong> Both database and file system, with tested restore procedures</li>
 <li><strong>Staging environments:</strong> Production-like environments for testing changes</li>
 <li><strong>Feature flags:</strong> Ability to roll back changes without deploying new code</li>
@@ -10983,160 +9426,28 @@ return $this-&gt;queryLog;
 </ul>
 <h3>3. Implement the Strangler Fig Pattern</h3>
 <p>This pattern allows you to gradually replace old code with new code by routing requests through a facade:</p>
-<pre><code class="language-php">&lt;?php
-<a href="https://www.php.net/manual/en/control-structures.declare.php" target="_blank">declare(strict_types=1)</a>;
-namespace AppServicesUser;
-use AppContractsUserServiceInterface;
-use AppValueObjectsUserId;
-use AppEntitiesUser;
-use AppExceptionsUserNotFoundException;
-<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank">final</a> <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank">readonly</a> class StranglerFigUserService implements UserServiceInterface
-{
-public function __construct(
-private UserServiceInterface $legacyService,
-private UserServiceInterface $modernService,
-private FeatureToggleService $featureToggle,
-) {}
-public function getUser(UserId $id): User
-{
-return <a href="https://www.php.net/manual/en/control-structures.match.php" target="_blank">match</a> ($this-&gt;featureToggle-&gt;isEnabled(&#39;modern_user_service&#39;, $id)) {
-true =&gt; $this-&gt;modernService-&gt;getUser($id),
-false =&gt; $this-&gt;legacyService-&gt;getUser($id),
-};
-}
-private function shouldUseModernImplementation(UserId $id): bool
-{
-// Canary release: 10% of users
-return $id-&gt;value % 10 === 0;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:legacy-php-modernization/strangler-fig-service.php}}</code></pre>
 </section>
 <section>
-<h2>Practical Modernization Techniques</h2>
+<h2>Practical Modernisation Techniques</h2>
 <h3>Dependency Injection</h3>
 <p>Replace global state with explicit dependencies:</p>
-<pre><code class="language-php">&lt;?php
-<a href="https://www.php.net/manual/en/control-structures.declare.php" target="_blank">declare(strict_types=1)</a>;
-// Before: Global database connection
-function getUser(int $id): array|false
-{
-global $db;
-return $db-&gt;query(&quot;SELECT * FROM users WHERE id = {$id}&quot;)-&gt;fetch();
-}
-// After: Modern dependency injection with proper typing
-<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank">final</a> <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank">readonly</a> class UserRepository implements UserRepositoryInterface
-{
-public function __construct(
-private PDO $connection,
-private UserHydrator $hydrator,
-) {}
-public function findById(UserId $id): ?User
-{
-$stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
-SELECT id, email, name, created_at, updated_at
-FROM users
-WHERE id = :id AND deleted_at IS NULL
-SQL);
-$stmt-&gt;execute([&#39;id&#39; =&gt; $id-&gt;value]);
-$userData = $stmt-&gt;fetch();
-return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:legacy-php-modernization/legacy-user-repository.php}}</code></pre>
 <h3>Extract Service Classes</h3>
 <p>Move business logic out of controllers and into dedicated service classes:</p>
-<pre><code class="language-php">&lt;?php
-<a href="https://www.php.net/manual/en/control-structures.declare.php" target="_blank">declare(strict_types=1)</a>;
-namespace AppServicesOrder;
-use AppValueObjects{OrderId, Money, CustomerId};
-use AppEntitiesOrder;
-use AppEventsOrderPlaced;
-use AppExceptions{OrderValidationException, PaymentFailedException};
-<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank">final</a> <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank">readonly</a> class OrderService
-{
-public function __construct(
-private OrderValidator $validator,
-private PriceCalculator $calculator,
-private PaymentGateway $paymentGateway,
-private OrderRepository $repository,
-private EventDispatcher $eventDispatcher,
-) {}
-public function processOrder(OrderData $orderData): Order
-{
-$this-&gt;validator-&gt;validate($orderData);
-$order = Order::create(
-OrderId::generate(),
-$orderData-&gt;customerId,
-$orderData-&gt;items,
-$this-&gt;calculator-&gt;calculate($orderData-&gt;items)
-);
-$paymentResult = $this-&gt;paymentGateway-&gt;charge(
-$order-&gt;total,
-$orderData-&gt;paymentMethod
-);
-if (!$paymentResult-&gt;isSuccessful()) {
-throw new PaymentFailedException($paymentResult-&gt;errorMessage);
-}
-$order-&gt;markAsPaid($paymentResult-&gt;transactionId);
-$this-&gt;repository-&gt;save($order);
-$this-&gt;eventDispatcher-&gt;dispatch(
-new OrderPlaced($order-&gt;id, $order-&gt;customerId)
-);
-return $order;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:legacy-php-modernization/order-service.php}}</code></pre>
 <h3>Implement Automated Testing</h3>
 <p>Start with integration tests for critical paths, then add unit tests as you refactor:</p>
-<pre><code class="language-php">&lt;?php
-<a href="https://www.php.net/manual/en/control-structures.declare.php" target="_blank">declare(strict_types=1)</a>;
-namespace TestsUnitServicesOrder;
-use AppServicesOrderOrderService;
-use AppTesting{OrderDataBuilder, PaymentResultBuilder};
-use AppExceptionsPaymentFailedException;
-use PHPUnitFrameworkTestCase;
-use PHPUnitFrameworkAttributes{Test, TestDox};
-<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank">final</a> class OrderServiceTest extends TestCase
-{
-<a href="https://www.php.net/manual/en/language.attributes.php" target="_blank">#[Test]</a>
-<a href="https://www.php.net/manual/en/language.attributes.php" target="_blank">#[TestDox(&#39;Successfully processes valid order with payment&#39;)]</a>
-public function processOrder_WithValidData_CreatesOrderAndProcessesPayment(): void
-{
-// Arrange
-$orderData = OrderDataBuilder::new()
--&gt;withCustomer(CustomerId::fromString(&#39;cust_123&#39;))
--&gt;withItems([
-OrderItemBuilder::new()-&gt;withProduct(&#39;prod_456&#39;)-&gt;build(),
-])
--&gt;build();
-$paymentResult = PaymentResultBuilder::successful()
--&gt;withTransactionId(&#39;txn_789&#39;)
--&gt;build();
-$this-&gt;paymentGateway-&gt;shouldReceive(&#39;charge&#39;)
--&gt;once()
--&gt;with(Money::fromCents(1000), $orderData-&gt;paymentMethod)
--&gt;andReturn($paymentResult);
-// Act
-$order = $this-&gt;orderService-&gt;processOrder($orderData);
-// Assert
-$this-&gt;assertInstanceOf(Order::class, $order);
-$this-&gt;assertTrue($order-&gt;isPaid());
-$this-&gt;assertEquals(&#39;txn_789&#39;, $order-&gt;transactionId-&gt;value);
-$this-&gt;repository-&gt;shouldHaveReceived(&#39;save&#39;)
--&gt;once()
--&gt;with($order);
-$this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
--&gt;once()
--&gt;with(Mockery::type(OrderPlaced::class));
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:legacy-php-modernization/order-service-test.php}}</code></pre>
 </section>
 <section>
 <h2>Managing the Transition</h2>
 <h3>Team Buy-in</h3>
-<p>Modernization efforts fail without team support. Make sure everyone understands:</p>
+<p>Modernisation efforts fail without team support. Make sure everyone understands:</p>
 <ul>
-<li>The business case for modernization</li>
+<li>The business case for modernisation</li>
 <li>How changes will improve their daily work</li>
-<li>The incremental approach that minimizes risk</li>
+<li>The incremental approach that minimises risk</li>
 <li>Success metrics and how progress will be measured</li>
 </ul>
 <h3>Documentation and Knowledge Transfer</h3>
@@ -11144,8 +9455,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 <ul>
 <li>Business rules embedded in code</li>
 <li>Integration points and data flows</li>
-<li>Deployment procedures and environment setup</li>
-<li>Common troubleshooting scenarios</li>
+<li>Deployment procedures, environment setup, and common troubleshooting scenarios</li>
 </ul>
 </section>
 <section>
@@ -11155,7 +9465,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 <li><strong>Perfectionism:</strong> Don't let perfect be the enemy of good</li>
 <li><strong>Ignoring performance:</strong> Modern doesn't always mean faster</li>
 <li><strong>Over-engineering:</strong> Solve today's problems, not imaginary future ones</li>
-<li><strong>Neglecting deployment:</strong> Modernize your deployment process alongside your code</li>
+<li><strong>Neglecting deployment:</strong> Modernise your deployment process alongside your code</li>
 </ul>
 </section>
 <section>
@@ -11169,16 +9479,9 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 </ul>
 </section>
 <section>
-<h2>The Long Game</h2>
-<p>Legacy PHP modernization is a marathon, not a sprint. Success comes from:</p>
-<ul>
-<li>Consistent, incremental improvements</li>
-<li>Clear communication with stakeholders</li>
-<li>Balancing technical debt with feature delivery</li>
-<li>Building team capabilities alongside system improvements</li>
-</ul>
-<p>Remember: the goal isn't to have the most modern technology stack. It's to have a system that serves your business needs reliably, can be maintained efficiently, and can evolve with your requirements.</p>
-<p>Every legacy system got that way by being successful. Respect that success while building for the future.</p>
+<h2>Playing the Long Game</h2>
+<p>Legacy PHP modernisation is a marathon, not a sprint. The goal is a system that serves the business reliably, stays maintainable, and can evolve with changing requirements, rather than chasing the newest technology stack for its own sake.</p>
+<p>Every legacy system got that way by being successful. Respect that success whilst building for the future.</p>
 </section>
 <footer class="article-footer">
 <div class="article-nav">
@@ -11192,7 +9495,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     id: 'llm-overfitting-trap',
     title: 'The Overfitting Trap: When LLM Agents Fix One Thing and Break Everything Else',
     description:
-      'Explore how LLM agents can over-specialize solutions to handle specific edge cases while destroying generic functionality. Learn to spot and prevent overfitting in AI-generated code.',
+      'A field guide to catching LLM agents when they hardcode a narrow fix instead of solving the actual bug, with prompt patterns and tests that force generic solutions.',
     date: '2025-08-26',
     category: CATEGORIES.ai.id,
     heroImage: {
@@ -11210,7 +9513,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     content: `
 <div class="intro">
             <p class="lead">
-                You report a bug to <a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a>: "The username validation fails for @john_doe." The AI agent quickly analyzes the problem, writes a fix, and confidently reports success. Your specific test case now passes. But when you deploy to production, everything breaks. What happened? You've fallen into the overfitting trap, where LLM agents create hyper-specific solutions that solve one problem while breaking the entire system.
+                You report a bug to <a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a>: "The username validation fails for @john_doe." The AI agent quickly analyses the problem, writes a fix, and confidently reports success. Your specific test case now passes, but when you deploy to production, everything breaks - what happened? You've fallen into the overfitting trap, where LLM agents create hyper-specific solutions that solve one problem whilst breaking the entire system.
             </p>
         </div>
 
@@ -11218,11 +9521,11 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
             <h2>Understanding Overfitting in LLM Code Generation</h2>
             
             <p>
-                In machine learning, <a href="https://en.wikipedia.org/wiki/Overfitting" target="_blank" rel="noopener">overfitting</a> occurs when a model learns training data too specifically, failing to generalize. In <a href="https://arxiv.org/html/2411.01414v1" target="_blank" rel="noopener">LLM code generation</a>, overfitting works differently. Agents create solutions that handle only the exact reported scenario. They abandon the generic logic that made the original function useful.
+                In machine learning, <a href="https://en.wikipedia.org/wiki/Overfitting" target="_blank" rel="noopener">overfitting</a> occurs when a model learns training data too specifically, failing to generalise. In <a href="https://arxiv.org/html/2411.01414v1" target="_blank" rel="noopener">LLM code generation</a>, overfitting works differently: agents create solutions that handle only the exact reported scenario, abandoning the generic logic that made the original function useful.
             </p>
             
             <p>
-                <a href="https://www.latent.space/p/2025-papers" target="_blank" rel="noopener">Recent research in 2025</a> reveals that LLMs suffer from "demonstration bias." They optimize for the most visible test cases rather than understanding the underlying problem space. When you report "@john_doe doesn't validate properly," the agent doesn't think "how should I handle usernames with special characters?" Instead, it thinks "how do I make @john_doe specifically work?"
+                LLM agents tend to optimise for the most visible test case rather than understanding the underlying problem space. When you report "@john_doe doesn't validate properly," the agent doesn't think "how should I handle usernames with special characters?" Instead, it thinks "how do I make @john_doe specifically work?"
             </p>
 
             <h3>The Anatomy of Overfitting</h3>
@@ -11233,7 +9536,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 </code></pre>
 
             <p>
-                This pattern appears across all programming contexts. The original function has broad utility with one edge case bug. The "overfitted fix" destroys that utility by hardcoding the specific case, while the proper fix maintains generality while addressing the root cause.
+                This pattern appears across all programming contexts. The original function has broad utility with one edge case bug. The "overfitted fix" destroys that utility by hardcoding the specific case, whilst the proper fix maintains generality by addressing the root cause.
             </p>
         </section>
 
@@ -11261,7 +9564,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 </code></pre>
             
             <p>
-                This "solution" creates the illusion of success. The specific reported bug appears fixed, but the function has gone from having one edge case to being fundamentally broken. It only works for one hardcoded input while failing every other similar case.
+                This "solution" creates the illusion of success. The specific reported bug appears fixed, but the function has gone from having one edge case to being fundamentally broken. It only works for one hardcoded input whilst failing every other similar case.
             </p>
 
             <h3>The Proper Solution</h3>
@@ -11274,7 +9577,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 </code></pre>
             
             <p>
-                This solution maintains the original function's broad utility while elegantly handling the category of problems that includes the specific reported case. It's a true fix, not a hardcoded workaround.
+                This solution maintains the original function's broad utility whilst elegantly handling the category of problems that includes the specific reported case. It's a true fix, not a hardcoded workaround.
             </p>
         </section>
 
@@ -11309,7 +9612,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 </code></pre>
             
             <p>
-                Even database queries suffer from overfitting. Instead of addressing <a href="https://dev.mysql.com/doc/refman/8.0/en/working-with-null.html" target="_blank" rel="noopener">NULL value handling</a> generically, overfitted fixes hardcode specific data values. This makes queries fragile and unmaintainable.
+                Even database queries suffer from overfitting: instead of addressing <a href="https://dev.mysql.com/doc/refman/8.0/en/working-with-null.html" target="_blank" rel="noopener">NULL value handling</a> generically, overfitted fixes hardcode specific data values, which makes queries fragile and unmaintainable.
             </p>
 
             <h3>Bash: Shell Script Overfitting</h3>
@@ -11318,7 +9621,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 </code></pre>
             
             <p>
-                <a href="https://www.gnu.org/software/bash/" target="_blank" rel="noopener">Bash scripting</a> overfitting is particularly dangerous because shell scripts often handle critical system operations. An overfitted fix might work for one specific directory structure. But it fails catastrophically in production environments.
+                <a href="https://www.gnu.org/software/bash/" target="_blank" rel="noopener">Bash scripting</a> overfitting is particularly dangerous because shell scripts often handle critical system operations. An overfitted fix might work for one specific directory structure, but it fails catastrophically in production environments.
             </p>
         </section>
 
@@ -11332,19 +9635,19 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
             <h3>Missing Contextual Understanding</h3>
             
             <p>
-                Humans approach debugging with implicit questions: "What category of problem is this? How many similar issues might exist? What would break if I change this?" <a href="https://arxiv.org/html/2508.00083v1" target="_blank" rel="noopener">LLM agents in 2025</a> lack this contextual reasoning framework. They optimize for the immediate problem without considering the broader implications.
+                Humans approach debugging with implicit questions: "What category of problem is this? How many similar issues might exist? What would break if I change this?" <a href="https://arxiv.org/html/2508.00083v1" target="_blank" rel="noopener">LLM agents in 2025</a> lack this contextual reasoning framework. They optimise for the immediate problem without considering the broader implications.
             </p>
 
-            <h3>The Demonstration Bias Problem</h3>
-            
+            <h3>Weighting the Visible Example Too Heavily</h3>
+
             <p>
-                <a href="https://arxiv.org/html/2407.06153v1" target="_blank" rel="noopener">Research shows</a> that LLMs exhibit "demonstration bias." They weight visible examples much more heavily than underlying patterns. When you provide a failing test case, the agent treats it as the primary specification rather than one example of a broader problem class.
+                LLMs tend to weight the visible example you show them much more heavily than the underlying pattern it represents. When you provide a failing test case, the agent treats it as the primary specification rather than one example of a broader problem class.
             </p>
 
             <h3>Lack of Architectural Intuition</h3>
             
             <p>
-                Experienced developers instinctively preserve architectural patterns. They understand that a generic validation function should remain generic. They know that hardcoding breaks maintainability. They recognize that edge cases usually represent categories of problems. LLMs lack this architectural intuition.
+                Experienced developers instinctively preserve architectural patterns; they understand that a generic validation function should remain generic, know that hardcoding breaks maintainability, and recognise that edge cases usually represent categories of problems. LLMs lack this architectural intuition.
             </p>
         </section>
 
@@ -11383,7 +9686,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
                 <strong>Example:</strong> <code>if (input === 'case1') ... else if (input === 'case2') ...</code>
             </p>
 
-            <h3>5. Inconsistent Behavior Patterns</h3>
+            <h3>5. Inconsistent Behaviour Patterns</h3>
             
             <p>
                 <strong>Red flag:</strong> The function behaves differently for similar inputs<br>
@@ -11445,7 +9748,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
             <h3>4. Use the "Think Hard" Keywords</h3>
             
             <p>
-                <a href="https://minusx.ai/blog/decoding-claude-code/" target="_blank" rel="noopener">Research on Claude Code</a> reveals that specific phrases trigger deeper reasoning. "Think," "think hard," "think harder," and "ultrathink" progressively allocate more computational budget for analysis.
+                Specific phrases are reported to trigger deeper reasoning in Claude Code: "think," "think hard," "think harder," and "ultrathink" progressively allocate more computational budget for analysis.
             </p>
 
             <h3>5. Demand Architectural Preservation</h3>
@@ -11548,7 +9851,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
             <h3>Complexity-Aware Feedback Systems</h3>
             
             <p>
-                New systems use <a href="https://openai.com/blog/gpt-4o/" target="_blank" rel="noopener">GPT-4o</a> to generate diverse test cases and identify when code fails. They analyze complexity metrics and iteratively improve solutions until they pass comprehensive test suites.
+                New systems use <a href="https://openai.com/blog/gpt-4o/" target="_blank" rel="noopener">GPT-4o</a> to generate diverse test cases and identify when code fails. They analyse complexity metrics and iteratively improve solutions until they pass comprehensive test suites.
             </p>
 
             <h3>Adversarial Testing Integration</h3>
@@ -11558,9 +9861,9 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
             </p>
 
             <h3>Self-Critique Mechanisms</h3>
-            
+
             <p>
-                <a href="https://simonwillison.net/2025/Mar/2/hallucinations-in-code/" target="_blank" rel="noopener">Training-free iterative methods</a> enable LLMs to critique and correct their own generated code based on bug types and compiler feedback. Experimental results show up to 29.2% improvement in passing rates.
+                <a href="https://arxiv.org/html/2407.06153v1" target="_blank" rel="noopener">Training-free iterative methods</a> enable LLMs to critique and correct their own generated code based on bug types and compiler feedback. Experimental results show up to 29.2% improvement in passing rates after two iterations.
             </p>
         </section>
 
@@ -11568,7 +9871,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
             <h2>Conclusion</h2>
             
             <p>
-                The overfitting trap represents one of the most insidious challenges in <a href="https://medium.com/google-cloud/building-software-in-2025-llms-agents-ai-and-a-real-world-workflow-85f809fe6b74" target="_blank" rel="noopener">LLM-assisted software development</a>. When an agent "fixes" your specific bug by hardcoding the exact case you reported, it creates a dangerous illusion of success. But it destroys the generic functionality that made your code valuable in the first place.
+                The overfitting trap is easy to miss because it looks like success. When an agent "fixes" your specific bug by hardcoding the exact case you reported, it creates a dangerous illusion of progress in <a href="https://medium.com/google-cloud/building-software-in-2025-llms-agents-ai-and-a-real-world-workflow-85f809fe6b74" target="_blank" rel="noopener">LLM-assisted software development</a>. But it destroys the generic functionality that made your code valuable in the first place.
             </p>
             
             <p>
@@ -11576,15 +9879,15 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
             </p>
             
             <p>
-                More importantly, adjust how you interact with LLM agents. Provide multiple examples. Frame problems as categories rather than specific instances. Explicitly request preservation of architectural patterns. Use prompt engineering techniques that force agents to consider the broader problem space rather than optimizing for your specific demonstration.
+                More importantly, adjust how you interact with LLM agents. Provide multiple examples. Frame problems as categories rather than specific instances. Explicitly request preservation of architectural patterns. Use prompt engineering techniques that force agents to consider the broader problem space rather than optimising for your specific demonstration.
             </p>
             
             <p>
-                As <a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a> and similar tools become more sophisticated, the industry is developing better approaches to prevent overfitting. These include complexity-aware feedback, adversarial testing, and self-critique mechanisms. But until these advances mature, the responsibility lies with us as developers to recognize overfitting patterns and guide our AI assistants toward truly generic solutions.
+                As <a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a> and similar tools become more sophisticated, the industry is developing better approaches to prevent overfitting. These include complexity-aware feedback, adversarial testing, and self-critique mechanisms. But until these advances mature, the responsibility lies with us as developers to recognise overfitting patterns and guide our AI assistants toward truly generic solutions.
             </p>
             
             <p>
-                The goal isn't to avoid LLM agents. They're incredibly powerful tools when used correctly. The goal is to collaborate with them in ways that leverage their strengths while compensating for their weaknesses. By understanding the overfitting trap and implementing the prevention strategies outlined here, you can harness the power of AI-assisted coding without sacrificing the architectural integrity that makes software maintainable and robust.
+                LLM agents stay useful once you account for this failure mode. Provide multiple test cases up front, frame bugs as categories rather than single instances, and ask the agent to justify its fix against cases you haven't shown it. That keeps the productivity gains without trading away the architectural integrity that makes the codebase maintainable.
             </p>
 
             <h3>Additional Resources</h3>
@@ -11620,7 +9923,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     content: `
 <div class="intro">
     <p class="lead">
-        Mocking in unit tests is like hot sauce - a little bit enhances the flavor, but too much ruins the meal.
+        Mocking in unit tests is like hot sauce - a little bit enhances the flavour, but too much ruins the meal.
         Yet many developers drown their tests in mocks, creating brittle, unreadable test suites that break with 
         every refactor. Let's explore when to mock, when not to mock, and how to write maintainable tests that 
         actually test what matters.
@@ -11631,7 +9934,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     <h2>The Hot Sauce Analogy</h2>
     <p>
         When you're cooking a great meal, you don't dump hot sauce on everything. A few drops on the right spots 
-        enhance the flavors you've carefully built. Use too much, and you can't taste anything else. The same 
+        enhance the flavours you've carefully built. Use too much, and you can't taste anything else. The same 
         principle applies to mocking in tests.
     </p>
     <p>
@@ -11648,9 +9951,8 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
         from external systems and side effects. It helps make tests fast, deterministic, and focused.
     </p>
     <p>
-        <strong>Mocking isn't:</strong> A way to avoid testing your actual business logic. It's not a substitute 
-        for proper dependency injection or good architecture. And it's definitely not something you should do 
-        to every single dependency.
+        <strong>Mocking isn't:</strong> a way to avoid testing your actual business logic, a substitute for proper
+        dependency injection or good architecture, or something you should do to every single dependency.
     </p>
     
     <h3>When to Mock</h3>
@@ -11675,19 +9977,19 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     
     <h3>1. Brittle Tests</h3>
     <p>
-        When you mock everything, your tests become coupled to implementation details rather than behavior. 
-        Change how a method is called internally, and tests break even though the external behavior is identical.
+        When you mock everything, your tests become coupled to implementation details rather than behaviour.
+        Change how a method is called internally, and tests break even though the external behaviour is identical.
     </p>
 
     <h3>2. Unclear Intent</h3>
     <p>
-        Tests should clearly communicate what the code does. When most of your test is mock setup, it's hard 
-        to understand what behavior is actually being verified.
+        Tests should clearly communicate what the code does. When most of your test is mock setup, it's hard
+        to understand what behaviour is actually being verified.
     </p>
 
     <h3>3. False Confidence</h3>
     <p>
-        Over-mocked tests can pass while the real system fails. You're testing your mocks, not your actual code.
+        Over-mocked tests can pass whilst the real system fails, because you're testing your mocks rather than your actual code.
     </p>
 
     <h3>4. Maintenance Nightmare</h3>
@@ -11701,14 +10003,14 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     <h2>Over-Mocking Example: The Horror Show</h2>
     <p>
         Here's an example of a test that's gone completely overboard with mocking. Notice how the test setup 
-        is longer than the actual test, and how it's testing implementation details rather than behavior:
+        is longer than the actual test, and how it's testing implementation details rather than behaviour:
     </p>
 
     <pre><code class="language-typescript">{{SNIPPET:mocking-best-practices/over-mocking-bad.ts}}
 </code></pre>
 
     <p>
-        This test is a maintenance nightmare. It's brittle, unclear, and provides false confidence. The mock 
+        This test is a maintenance nightmare - brittle, unclear, and full of false confidence - and the mock
         setup is so complex that it's hard to understand what the code actually does.
     </p>
 </section>
@@ -11717,7 +10019,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     <h2>Minimal Mocking: The Right Way</h2>
     <p>
         Here's the same test rewritten with minimal mocking. Notice how we only mock external dependencies 
-        and side effects, while using real implementations for business logic:
+        and side effects, whilst using real implementations for business logic:
     </p>
 
     <pre><code class="language-typescript">{{SNIPPET:mocking-best-practices/minimal-mocking-good.ts}}
@@ -11745,16 +10047,16 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
 </code></pre>
 
     <p>
-        In PHP 8.4 and modern development, you'll often encounter <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener"><code>final</code> classes</a> that can't be 
+        In modern PHP codebases, you'll often encounter <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener"><code>final</code> classes</a> that can't be
         mocked by default. Use the <a href="https://github.com/dg/bypass-finals" target="_blank" rel="noopener">dg/bypass-finals</a> 
         library when you genuinely need to mock final classes, but question whether you really need to.
     </p>
 </section>
 
 <section>
-    <h2>PHP 8.4 Intersection Types for Mock Objects</h2>
+    <h2>PHP 8.1 Intersection Types for Mock Objects</h2>
     <p>
-        PHP 8.4's <a href="https://www.php.net/manual/en/language.types.type-system.php#language.types.type-system.composite.intersection" target="_blank" rel="noopener">intersection types</a> provide powerful mock typing capabilities. However, creating custom <a href="https://www.php.net/manual/en/language.oop5.interfaces.php" target="_blank" rel="noopener">interfaces</a> 
+        PHP 8.1's <a href="https://www.php.net/manual/en/language.types.type-system.php#language.types.type-system.composite.intersection" target="_blank" rel="noopener">intersection types</a> provide flexible mock typing. However, creating custom <a href="https://www.php.net/manual/en/language.oop5.interfaces.php" target="_blank" rel="noopener">interfaces</a>
         that extend base functionality is often cleaner than complex intersection types:
     </p>
 
@@ -11766,20 +10068,9 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     </p>
     <ul>
         <li><strong>Type safety:</strong> Full IDE support and static analysis for both interface methods and PHPUnit mock methods</li>
-        <li><strong>Clean setup:</strong> Centralized mock creation in <code>setUp()</code> with typed class properties</li>
-        <li><strong>Better testing:</strong> Use <code>expects()</code>, <code>withConsecutive()</code>, and <code>never()</code> for comprehensive behavior verification</li>
+        <li><strong>Clean setup:</strong> Centralised mock creation in <code>setUp()</code> with typed class properties</li>
+        <li><strong>Better testing:</strong> Use <code>expects()</code> and <code>never()</code> for comprehensive behaviour verification</li>
         <li><strong>Interface-first design:</strong> Custom interfaces that extend base functionality are cleaner than complex intersections</li>
-    </ul>
-
-    <p>
-        <strong>Related documentation:</strong>
-    </p>
-    <ul>
-        <li><a href="https://docs.phpunit.de/en/11.0/test-doubles.html" target="_blank" rel="noopener">PHPUnit 11 Test Doubles Documentation</a> - Official guide to mocking and intersection types</li>
-        <li><a href="https://phpunit.de/announcements/phpunit-12.html" target="_blank" rel="noopener">PHPUnit 12 Release Notes</a> - Latest PHPUnit features and deprecations</li>
-        <li><a href="https://php.watch/versions/8.1/intersection-types" target="_blank" rel="noopener">PHP 8.1 Intersection Types</a> - Comprehensive guide to PHP intersection types</li>
-        <li><a href="https://phpstan.org/blog/union-types-vs-intersection-types" target="_blank" rel="noopener">PHPStan: Union vs Intersection Types</a> - Advanced typing patterns for PHP</li>
-        <li><a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.union" target="_blank" rel="noopener">PHP Union Types</a> - Official PHP documentation for union type declarations</li>
     </ul>
 </section>
 
@@ -11800,14 +10091,14 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
         <li>Use <code>vi.clearAllMocks()</code> in <code>beforeEach</code> to prevent test pollution</li>
         <li>Use <code>vi.mock()</code> for complete module replacement</li>
         <li>Use <code>vi.spyOn()</code> for temporary method overrides</li>
-        <li>Leverage TypeScript types with <code>vi.mocked()</code> for better IDE support</li>
+        <li>Use TypeScript types with <code>vi.mocked()</code> for better IDE support</li>
     </ul>
 </section>
 
 <section>
     <h2>TypeScript Intersection Types for Mocks</h2>
     <p>
-        TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types" target="_blank" rel="noopener">intersection types</a> are particularly powerful for mock objects, combining mock functionality 
+        TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types" target="_blank" rel="noopener">intersection types</a> work well for mock objects, combining mock functionality
         with <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#interfaces" target="_blank" rel="noopener">interface typing</a> for full type safety:
     </p>
 
@@ -11819,21 +10110,9 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     </p>
     <ul>
         <li><strong><code>Mock&lt;any&gt; &amp; IInterface</code>:</strong> Combines Vitest mock functionality with interface typing</li>
-        <li><strong><code>vi.Mocked&lt;IInterface&gt;</code>:</strong> Modern Vitest utility type with <a href="https://www.typescriptlang.org/docs/handbook/2/generics.html" target="_blank" rel="noopener">generics</a> (recommended)</li>
+        <li><strong><code>Mocked&lt;IInterface&gt;</code>:</strong> Modern Vitest utility type, imported as a type, with <a href="https://www.typescriptlang.org/docs/handbook/2/generics.html" target="_blank" rel="noopener">generics</a> (recommended)</li>
         <li><strong><code>satisfies IInterface</code>:</strong> TypeScript 4.9+ keyword for type validation without changing inference</li>
         <li><strong>Interface naming:</strong> TypeScript uses <code>I</code> prefix convention (Microsoft style)</li>
-    </ul>
-
-    <p>
-        <strong>Related documentation:</strong>
-    </p>
-    <ul>
-        <li><a href="https://vitest.dev/guide/mocking" target="_blank" rel="noopener">Vitest Mocking Guide</a> - Official documentation for mocking in Vitest</li>
-        <li><a href="https://vitest.dev/api/vi" target="_blank" rel="noopener">Vitest Vi API Reference</a> - Complete vi.mocked() and testing utilities</li>
-        <li><a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html" target="_blank" rel="noopener">TypeScript 4.9 Release Notes</a> - Official satisfies keyword documentation</li>
-        <li><a href="https://frontendmasters.com/blog/satisfies-in-typescript/" target="_blank" rel="noopener">Frontend Masters: Satisfies in TypeScript</a> - Practical guide to the satisfies operator</li>
-        <li><a href="https://www.totaltypescript.com/clarifying-the-satisfies-operator" target="_blank" rel="noopener">Total TypeScript: Satisfies Operator</a> - Advanced patterns and best practices</li>
-        <li><a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types" target="_blank" rel="noopener">TypeScript Union Types</a> - Official documentation for union type declarations</li>
     </ul>
 </section>
 
@@ -11896,7 +10175,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     <h3>The "Implementation Coupling" Pattern</h3>
     <p>
         Using <code>expect().toHaveBeenCalledWith()</code> for every mock interaction. This couples your 
-        tests to implementation details instead of behavior.
+        tests to implementation details instead of behaviour.
     </p>
 
     <h3>The "Mock Return Mock" Pattern</h3>
@@ -11915,13 +10194,14 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     
     <h3>The 80/20 Rule</h3>
     <p>
-        In a well-architected system, about 80% of your business logic should be testable without mocks. 
-        The remaining 20% involves external integrations that genuinely need mocking.
+        The general wisdom is that in a well-architected system, somewhere around 80% of your business logic
+        should be testable without mocks, with the remaining 20% or so covering external integrations that
+        genuinely need mocking.
     </p>
 
     <h3>Mock at the Boundaries</h3>
     <p>
-        Mock at the edges of your system - where your code talks to external services. Keep the internal 
+        Mock at the edges of your system, where your code talks to external services, and keep the internal
         domain logic mock-free.
     </p>
 
@@ -11973,20 +10253,20 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
         the test, or am I drowning my test in mocks until I can't taste the actual logic anymore?"
     </p>
 
-    <h3>Key Takeaways</h3>
+    <h3>The Hot Sauce Checklist</h3>
     <ul>
         <li><strong>Mock external dependencies and side effects</strong> - databases, APIs, logging, email</li>
         <li><strong>Don't mock business logic</strong> - test the real implementations</li>
         <li><strong>Use dependency injection</strong> - makes testing easier without complex mocks</li>
         <li><strong>Prefer test doubles over complex mocks</strong> - simpler and more maintainable</li>
-        <li><strong>Focus on behavior, not implementation</strong> - test what the code does, not how</li>
+        <li><strong>Focus on behaviour, not implementation</strong> - test what the code does, not how</li>
         <li><strong>If your test is mostly mocks, reconsider your architecture</strong> - the problem might be design, not testing</li>
     </ul>
 
     <p>
-        Remember: good tests should help you refactor with confidence. If your tests break every time you 
-        change internal implementation details, you're not testing behavior - you're testing implementation. 
-        Use mocks like hot sauce: sparingly, purposefully, and only where they truly add value.
+        Remember: good tests should help you refactor with confidence, and if your tests break every time you
+        change internal implementation details, you're testing implementation rather than behaviour. Use mocks
+        like hot sauce: sparingly, purposefully, and only where they truly add value.
     </p>
 </section>
 
@@ -12007,7 +10287,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     id: 'mysql-legacy-to-modern-upgrade',
     title: 'Upgrading Legacy MySQL: From MyISAM to Modern MySQL 8.4',
     description:
-      'Technical guide to upgrading legacy MySQL databases from MyISAM with implied foreign keys to modern MySQL 8.4 with InnoDB, proper constraints, and modern features for enhanced security, performance, and data integrity.',
+      'A practical walkthrough for engineers maintaining pre-2010 MySQL schemas: six concrete failure scenarios MyISAM allows, and the transactions, constraints, and locking MySQL 8.4 and InnoDB use to close them.',
     date: '2025-08-18',
     category: CATEGORIES.database.id,
     heroImage: {
@@ -12022,6 +10302,7 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'Database',
+    register: 'formal',
     content: `
 <div class="intro">
             <p class="lead">Legacy MySQL databases built on MyISAM with implied foreign key relationships lack fundamental capabilities you'd expect in modern database systems. This guide shows you how to upgrade to <a href="https://dev.mysql.com/doc/refman/8.4/en/" target="_blank" rel="noopener">MySQL 8.4 LTS</a> with <a href="https://dev.mysql.com/doc/refman/8.4/en/innodb-storage-engine.html" target="_blank" rel="noopener">InnoDB</a>, proper constraints, and modern features that didn't exist in the MySQL 4-5 era.</p>
@@ -12059,383 +10340,89 @@ $this-&gt;eventDispatcher-&gt;shouldHaveReceived(&#39;dispatch&#39;)
             <h3>Implied vs Explicit Foreign Keys</h3>
             <p>Legacy systems often use naming conventions to imply relationships rather than database constraints:</p>
 
-            <pre><code class="language-sql">-- Legacy: Implied relationship through column naming
-CREATE TABLE orders (
-    order_id INT PRIMARY KEY,
-    customer_id INT,  -- No actual constraint
-    INDEX idx_customer (customer_id)
-) ENGINE=MyISAM;
-
--- Modern: Explicit foreign key constraint
-CREATE TABLE orders (
-    order_id INT PRIMARY KEY,
-    customer_id INT,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
-        ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/implied-foreign-key.sql}}</code></pre>
         </section>
 
         <section>
             <h2>Real-World Data Corruption Scenarios and MySQL 8 Solutions</h2>
             
-            <p>When you understand how data corruption happens in legacy systems, you'll see why MySQL 8's modern features are so important. These scenarios show actual problems that happen in production systems and how modern MySQL prevents them.</p>
+            <p>When you understand how data corruption happens in legacy systems, you'll see why MySQL 8's modern features are so important. These scenarios illustrate common failure patterns in production systems and how modern MySQL prevents them.</p>
 
-            <h3>Scenario 1: The Double-Charge Problem - Why Transactions Matter</h3>
-            
+            <h3>Scenario 1: Partial Updates and the Double-Charge Problem</h3>
+
             <h4>The Problem: Partial Updates Without Transactions</h4>
             <p>In a MyISAM-based e-commerce system, a customer purchase needs multiple table updates. When the server crashes mid-operation, customers get charged but orders aren't created:</p>
-            
-            <pre><code class="language-sql">-- Legacy MyISAM: No transaction support
--- Step 1: Deduct from customer balance (SUCCEEDS)
-UPDATE customer_accounts 
-SET balance = balance - 500.00 
-WHERE customer_id = 1234;
 
--- Step 2: Create order record (SERVER CRASHES HERE)
-INSERT INTO orders (customer_id, amount, status) 
-VALUES (1234, 500.00, 'pending');
-
--- Step 3: Update inventory (NEVER EXECUTES)
-UPDATE inventory 
-SET quantity = quantity - 1 
-WHERE product_id = 5678;
-
--- RESULT: Customer charged $500, no order created, inventory not updated
--- Customer service nightmare: "Where's my order? You took my money!"</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/double-charge-legacy.sql}}</code></pre>
 
             <h4>The Solution: ACID Transactions in InnoDB</h4>
             <p>MySQL 8 with InnoDB ensures all operations succeed or all fail together:</p>
-            
-            <pre><code class="language-sql">-- Modern MySQL 8: Full transaction support
-START TRANSACTION;
 
--- All operations are atomic
-UPDATE customer_accounts 
-SET balance = balance - 500.00 
-WHERE customer_id = 1234;
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/double-charge-innodb.sql}}</code></pre>
 
-INSERT INTO orders (customer_id, amount, status) 
-VALUES (1234, 500.00, 'pending');
+            <h3>Scenario 2: Orphaned Orders When Foreign Keys Are Missing</h3>
 
-UPDATE inventory 
-SET quantity = quantity - 1 
-WHERE product_id = 5678;
-
--- If ANY step fails, ALL are rolled back
-COMMIT;
-
--- With automatic rollback on errors
-DELIMITER $$
-CREATE PROCEDURE safe_purchase(
-    IN p_customer_id INT,
-    IN p_product_id INT,
-    IN p_amount DECIMAL(10,2)
-)
-BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Purchase failed - no charges made';
-    END;
-    
-    START TRANSACTION;
-    
-    -- All succeed or all fail
-    UPDATE customer_accounts 
-    SET balance = balance - p_amount 
-    WHERE customer_id = p_customer_id;
-    
-    INSERT INTO orders (customer_id, amount, status) 
-    VALUES (p_customer_id, p_amount, 'pending');
-    
-    UPDATE inventory 
-    SET quantity = quantity - 1 
-    WHERE product_id = p_product_id;
-    
-    COMMIT;
-END$$
-DELIMITER ;</code></pre>
-
-            <h3>Scenario 2: The Orphaned Order Problem - Why Foreign Keys Matter</h3>
-            
             <h4>The Problem: Data Integrity Without Constraints</h4>
             <p>Without foreign keys, deleting customers leaves orphaned orders. This causes reporting errors and legal compliance issues:</p>
-            
-            <pre><code class="language-sql">-- Legacy MyISAM: No foreign key support
--- Admin deletes inactive customer
-DELETE FROM customers WHERE customer_id = 5000;
 
--- Orders still reference deleted customer
-SELECT COUNT(*) FROM orders WHERE customer_id = 5000;
--- Returns: 47 orphaned orders
-
--- Financial report crashes or shows incorrect totals
-SELECT c.company_name, SUM(o.amount) as total_revenue
-FROM orders o
-JOIN customers c ON o.customer_id = c.customer_id  -- NULL results!
-GROUP BY c.customer_id;
-
--- GDPR compliance request fails
--- "Delete all my data" - but orders remain, violating privacy laws</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/orphaned-order-legacy.sql}}</code></pre>
 
             <h4>The Solution: Foreign Key Constraints</h4>
             <p>MySQL 8 prevents orphaned records through enforced relationships:</p>
-            
-            <pre><code class="language-sql">-- Modern MySQL 8: Foreign keys prevent orphans
-ALTER TABLE orders
-ADD CONSTRAINT fk_orders_customer
-FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
-ON DELETE RESTRICT;  -- Prevents deletion if orders exist
 
--- Attempting to delete customer with orders
-DELETE FROM customers WHERE customer_id = 5000;
--- ERROR 1451: Cannot delete or update a parent row: foreign key constraint fails
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/orphaned-order-innodb.sql}}</code></pre>
 
--- For GDPR compliance: Cascade delete when appropriate
-ALTER TABLE customer_personal_data
-ADD CONSTRAINT fk_personal_customer
-FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
-ON DELETE CASCADE;  -- Personal data deleted with customer
+            <h3>Scenario 3: Invalid Data Without Check Constraints</h3>
 
--- For historical records: Set NULL for archived data
-ALTER TABLE orders
-ADD CONSTRAINT fk_orders_customer_archived
-FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
-ON DELETE SET NULL;  -- Preserves order history without customer</code></pre>
-
-            <h3>Scenario 3: The Invalid Price Problem - Why Check Constraints Matter</h3>
-            
             <h4>The Problem: Business Rules Not Enforced</h4>
             <p>Application bugs or direct database access can insert invalid data that breaks business logic:</p>
-            
-            <pre><code class="language-sql">-- Legacy MySQL: No check constraints
--- Bug in application sets negative prices
-UPDATE products SET price = -99.99 WHERE product_id = 100;
--- SUCCESS - Database accepts negative price!
 
--- Promotional code sets discount over 100%
-INSERT INTO promotions (code, discount_percent) 
-VALUES ('MEGA_SALE', 150);
--- SUCCESS - 150% discount means we pay customers!
-
--- Date logic error books appointment in the past
-INSERT INTO appointments (customer_id, appointment_date) 
-VALUES (123, '2020-01-01');
--- SUCCESS - Appointment scheduled 5 years ago!
-
--- Financial losses accumulate before detection
--- Customer gets paid $50 to take a $100 product!</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/invalid-price-legacy.sql}}</code></pre>
 
             <h4>The Solution: Check Constraints (MySQL 8.0.16+)</h4>
             <p>Database-level validation prevents invalid data no matter where it comes from:</p>
-            
-            <pre><code class="language-sql">-- Modern MySQL 8: Check constraints enforce business rules
-ALTER TABLE products
-ADD CONSTRAINT chk_positive_price 
-CHECK (price >= 0),
-ADD CONSTRAINT chk_price_range 
-CHECK (price <= 999999.99);
 
-ALTER TABLE promotions
-ADD CONSTRAINT chk_valid_discount 
-CHECK (discount_percent BETWEEN 0 AND 100);
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/invalid-price-check-constraints.sql}}</code></pre>
 
-ALTER TABLE appointments
-ADD CONSTRAINT chk_future_appointment 
-CHECK (appointment_date >= CURDATE());
+            <h3>Scenario 4: Row-Level Locking and Inventory Races</h3>
 
--- Invalid operations now fail immediately
-UPDATE products SET price = -99.99 WHERE product_id = 100;
--- ERROR 3819: Check constraint 'chk_positive_price' is violated
-
-INSERT INTO promotions (code, discount_percent) VALUES ('MEGA', 150);
--- ERROR 3819: Check constraint 'chk_valid_discount' is violated
-
--- Complex business rules
-ALTER TABLE orders
-ADD CONSTRAINT chk_order_logic CHECK (
-    (status = 'cancelled' AND cancelled_at IS NOT NULL) OR
-    (status != 'cancelled' AND cancelled_at IS NULL)
-);</code></pre>
-
-            <h3>Scenario 4: The Inventory Race Condition - Why Row-Level Locking Matters</h3>
-            
             <h4>The Problem: Table-Level Locks Cause Overselling</h4>
             <p>MyISAM's table-level locking creates race conditions where inventory goes negative:</p>
-            
-            <pre><code class="language-sql">-- Legacy MyISAM: Table-level locking
--- Two customers buying last item simultaneously
 
--- Customer A reads inventory (quantity = 1)
-SELECT quantity FROM inventory WHERE product_id = 999;
-
--- Customer B reads inventory (quantity = 1)  
-SELECT quantity FROM inventory WHERE product_id = 999;
-
--- Customer A updates (locks entire table)
-UPDATE inventory SET quantity = 0 WHERE product_id = 999;
-
--- Customer B waits for lock, then updates
-UPDATE inventory SET quantity = quantity - 1 WHERE product_id = 999;
-
--- RESULT: quantity = -1, oversold inventory!
--- Warehouse can't fulfill order, customer complaints</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/inventory-race-legacy.sql}}</code></pre>
 
             <h4>The Solution: Row-Level Locking with InnoDB</h4>
-            <p>MySQL 8's row-level locking prevents race conditions:</p>
-            
-            <pre><code class="language-sql">-- Modern MySQL 8: Row-level locking prevents overselling
--- Pessimistic locking approach
-START TRANSACTION;
+            <p>MySQL 8's row-level locking prevents race conditions. Pessimistic locking takes an explicit row lock and branches on the value whilst holding it, which needs a stored procedure rather than bare SQL:</p>
 
--- Lock specific row for update
-SELECT quantity FROM inventory 
-WHERE product_id = 999 
-FOR UPDATE;  -- Row locked until transaction completes
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/inventory-race-pessimistic.sql}}</code></pre>
 
--- Check availability with lock held
-IF quantity >= 1 THEN
-    UPDATE inventory 
-    SET quantity = quantity - 1 
-    WHERE product_id = 999;
-    
-    INSERT INTO order_items (order_id, product_id, quantity)
-    VALUES (@order_id, 999, 1);
-ELSE
-    -- Rollback and inform customer
-    ROLLBACK;
-    SIGNAL SQLSTATE '45000' 
-    SET MESSAGE_TEXT = 'Product out of stock';
-END IF;
+            <p>Optimistic locking skips the explicit lock and instead makes the availability check part of the <code>UPDATE</code>'s <code>WHERE</code> clause, then checks whether it actually changed a row:</p>
 
-COMMIT;
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/inventory-race-optimistic.sql}}</code></pre>
 
--- Optimistic locking with version numbers
-ALTER TABLE inventory ADD COLUMN version INT DEFAULT 0;
+            <h3>Scenario 5: Crash Recovery Without Manual Repair</h3>
 
-UPDATE inventory 
-SET quantity = quantity - 1,
-    version = version + 1
-WHERE product_id = 999 
-    AND quantity >= 1
-    AND version = @expected_version;
-
--- Check affected rows to detect concurrent modification
-IF ROW_COUNT() = 0 THEN
-    -- Another transaction modified the row
-    SIGNAL SQLSTATE '45000' 
-    SET MESSAGE_TEXT = 'Inventory was modified, please retry';
-END IF;</code></pre>
-
-            <h3>Scenario 5: The Crash Recovery Nightmare - Why InnoDB's Recovery Matters</h3>
-            
             <h4>The Problem: MyISAM Corruption After Crash</h4>
             <p>Server crashes leave MyISAM tables corrupted. You have to repair them manually and often lose data:</p>
-            
-            <pre><code class="language-sql">-- Legacy MyISAM: After unexpected shutdown
--- Tables marked as crashed
-SELECT table_name, table_comment 
-FROM information_schema.tables 
-WHERE engine = 'MyISAM' AND table_comment LIKE '%crashed%';
 
--- Manual repair required (may lose data)
-REPAIR TABLE orders;  -- May take hours for large tables
--- Query OK, 847232 rows affected
--- Warning: Number of rows changed from 850000 to 847232
--- DATA LOSS: 2,768 orders lost!
-
--- During repair, table is locked
--- Application down, customers can't access
--- Recovery time: 2-6 hours for large database
--- Business impact: $50,000/hour in lost sales</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/crash-recovery-legacy.sql}}</code></pre>
 
             <h4>The Solution: InnoDB Automatic Crash Recovery</h4>
             <p>MySQL 8 automatically recovers from crashes without data loss:</p>
-            
-            <pre><code class="language-sql">-- Modern MySQL 8: Automatic crash recovery
--- InnoDB uses write-ahead logging (redo logs)
 
--- After crash, automatic recovery on startup
--- MySQL error log shows:
--- InnoDB: Starting crash recovery
--- InnoDB: Reading redo log from checkpoint
--- InnoDB: Applying redo log records
--- InnoDB: Rollback of uncommitted transactions
--- InnoDB: Crash recovery completed in 12 seconds
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/crash-recovery-innodb.sql}}</code></pre>
 
--- No data loss for committed transactions
-SELECT COUNT(*) FROM orders;  -- All committed orders intact
+            <h3>Scenario 6: Referential Actions Replace Manual Cascade Updates</h3>
 
--- Configure for faster recovery
-SET GLOBAL innodb_fast_shutdown = 0;  -- Clean shutdown when possible
-SET GLOBAL innodb_flush_log_at_trx_commit = 1;  -- Maximum durability
-SET GLOBAL innodb_doublewrite = ON;  -- Prevent partial page writes
-
--- Point-in-time recovery with binary logs
--- Enable binary logging for full recovery capability
-SET GLOBAL log_bin = ON;
-SET GLOBAL binlog_format = 'ROW';
-
--- Recover to specific point before corruption
-mysqlbinlog --stop-datetime="2024-12-01 10:00:00" \
-    /var/log/mysql/binlog.000042 | mysql -u root -p</code></pre>
-
-            <h3>Scenario 6: The Cascading Update Problem - Why Referential Actions Matter</h3>
-            
             <h4>The Problem: Manual Cascade Updates Miss Records</h4>
             <p>Without referential actions, updating primary keys means you have to manually update all related tables. This is error-prone:</p>
-            
-            <pre><code class="language-sql">-- Legacy: Manual updates across tables
--- Company merger requires updating customer IDs
 
--- Update primary customer record
-UPDATE customers SET customer_id = 9000 WHERE customer_id = 1000;
-
--- Must manually update every related table (error-prone)
-UPDATE orders SET customer_id = 9000 WHERE customer_id = 1000;
-UPDATE invoices SET customer_id = 9000 WHERE customer_id = 1000;
-UPDATE support_tickets SET customer_id = 9000 WHERE customer_id = 1000;
--- Forgot customer_addresses table! Addresses now orphaned
-
--- Months later: Customer can't access their addresses
--- Support confused: "Your addresses disappeared after the merger"</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/cascading-update-legacy.sql}}</code></pre>
 
             <h4>The Solution: Automatic Referential Actions</h4>
             <p>MySQL 8's CASCADE actions keep everything consistent across all tables:</p>
-            
-            <pre><code class="language-sql">-- Modern MySQL 8: Automatic cascade updates
--- Define referential actions once
-ALTER TABLE orders
-ADD CONSTRAINT fk_orders_customer_cascade
-FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
-ON UPDATE CASCADE;
 
-ALTER TABLE invoices
-ADD CONSTRAINT fk_invoices_customer_cascade
-FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
-ON UPDATE CASCADE;
-
-ALTER TABLE customer_addresses
-ADD CONSTRAINT fk_addresses_customer_cascade
-FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
-ON UPDATE CASCADE
-ON DELETE CASCADE;  -- Addresses deleted with customer
-
--- Single update cascades everywhere
-UPDATE customers SET customer_id = 9000 WHERE customer_id = 1000;
--- All related records automatically updated!
-
--- Verify cascade worked
-SELECT 'orders' as table_name, COUNT(*) as updated_records
-FROM orders WHERE customer_id = 9000
-UNION ALL
-SELECT 'invoices', COUNT(*)
-FROM invoices WHERE customer_id = 9000
-UNION ALL
-SELECT 'addresses', COUNT(*)
-FROM customer_addresses WHERE customer_id = 9000;</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/cascading-update-innodb.sql}}</code></pre>
         </section>
 
         <section>
@@ -12444,36 +10431,15 @@ FROM customer_addresses WHERE customer_id = 9000;</code></pre>
             <p>Before you migrate, check your database structure and find potential issues.</p>
 
             <h3>Inventory Storage Engines</h3>
-            <pre><code class="language-sql">-- Check which tables use MyISAM
-SELECT 
-    table_name,
-    engine,
-    table_rows,
-    ROUND((data_length + index_length) / 1024 / 1024, 2) AS size_mb
-FROM information_schema.tables 
-WHERE table_schema = DATABASE()
-    AND engine = 'MyISAM'
-ORDER BY size_mb DESC;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/check-storage-engines.sql}}</code></pre>
 
             <h3>Find Orphaned Records</h3>
             <p>Identify records that would violate foreign key constraints:</p>
 
-            <pre><code class="language-sql">-- Find child records without valid parent
-SELECT child.id, child.parent_id
-FROM child_table child
-LEFT JOIN parent_table parent ON child.parent_id = parent.id
-WHERE parent.id IS NULL
-    AND child.parent_id IS NOT NULL;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/find-orphaned-records.sql}}</code></pre>
 
             <h3>Detect Duplicate Keys</h3>
-            <pre><code class="language-sql">-- Find duplicates that would violate unique constraints
-SELECT email, COUNT(*) as count
-FROM users
-GROUP BY email
-HAVING COUNT(*) > 1;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/find-duplicate-keys.sql}}</code></pre>
         </section>
 
         <section>
@@ -12482,39 +10448,13 @@ HAVING COUNT(*) > 1;
             <p>Clean data is essential for successful migration. Fix integrity issues before you convert storage engines.</p>
 
             <h3>Remove Orphaned Records</h3>
-            <pre><code class="language-sql">-- Delete orphaned child records
-DELETE child FROM child_table child
-LEFT JOIN parent_table parent ON child.parent_id = parent.id
-WHERE parent.id IS NULL 
-    AND child.parent_id IS NOT NULL;
-
--- Or set to NULL if relationship is optional
-UPDATE child_table child
-LEFT JOIN parent_table parent ON child.parent_id = parent.id
-SET child.parent_id = NULL
-WHERE parent.id IS NULL 
-    AND child.parent_id IS NOT NULL;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/remove-orphaned-records.sql}}</code></pre>
 
             <h3>Handle Duplicate Records</h3>
-            <pre><code class="language-sql">-- Keep oldest record, delete duplicates
-DELETE t1 FROM users t1
-INNER JOIN users t2 
-WHERE t1.email = t2.email 
-    AND t1.id > t2.id;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/remove-duplicate-records.sql}}</code></pre>
 
             <h3>Fix Invalid Data Types</h3>
-            <pre><code class="language-sql">-- Find invalid dates (common in MySQL 4-5 era)
-SELECT * FROM orders 
-WHERE order_date = '0000-00-00' 
-    OR order_date < '1970-01-01';
-
--- Update to NULL or valid default
-UPDATE orders 
-SET order_date = NULL 
-WHERE order_date = '0000-00-00';
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/fix-invalid-dates.sql}}</code></pre>
         </section>
 
         <section>
@@ -12523,64 +10463,28 @@ WHERE order_date = '0000-00-00';
             <p>You need to convert the storage engine carefully to avoid locking issues and keep data consistent.</p>
 
             <h3>Basic Conversion</h3>
-            <pre><code class="language-sql">-- Convert single table
-ALTER TABLE table_name ENGINE=InnoDB;
+            <p>Changing the storage engine is always a full table copy in InnoDB - there's no in-place way to do it. <code>ALGORITHM=INPLACE</code> isn't supported for an <code>ENGINE=</code> change; it fails with error 1846, "ALGORITHM=INPLACE is not supported... Try ALGORITHM=COPY." Expect the table to be locked for the duration:</p>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/convert-engine-basic.sql}}</code></pre>
 
--- Convert with progress monitoring (MySQL 5.6+)
-ALTER TABLE table_name ENGINE=InnoDB, ALGORITHM=INPLACE, LOCK=NONE;
-</code></pre>
+            <p>For tables too large to lock during business hours, don't run this directly against production. <a href="https://docs.percona.com/percona-toolkit/pt-online-schema-change.html" target="_blank" rel="noopener">pt-online-schema-change</a> and <a href="https://github.com/github/gh-ost" target="_blank" rel="noopener">gh-ost</a> both perform the copy against a shadow table in the background and swap it in with only a brief lock at the end.</p>
 
             <h3>Batch Conversion Script</h3>
-            <pre><code class="language-sql">-- Generate conversion statements for all MyISAM tables
-SELECT CONCAT('ALTER TABLE ', table_name, ' ENGINE=InnoDB;') AS conversion_sql
-FROM information_schema.tables
-WHERE table_schema = DATABASE()
-    AND engine = 'MyISAM'
-ORDER BY table_rows ASC;  -- Convert smallest tables first
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/convert-engine-batch-script.sql}}</code></pre>
 
             <h3>Configure InnoDB Settings</h3>
-            <pre><code class="language-sql">-- Key InnoDB settings for production
-SET GLOBAL innodb_buffer_pool_size = 2147483648;  -- 2GB, adjust based on RAM
-SET GLOBAL innodb_log_file_size = 536870912;      -- 512MB
-SET GLOBAL innodb_flush_log_at_trx_commit = 1;    -- Full ACID compliance
-SET GLOBAL innodb_file_per_table = ON;            -- Separate files per table
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/innodb-settings.sql}}</code></pre>
         </section>
 
         <section>
             <h2>Implementing Foreign Key Constraints</h2>
-            
+
             <p>After you convert to InnoDB, add explicit foreign key constraints to enforce referential integrity.</p>
 
             <h3>Add Foreign Keys with Cascading Rules</h3>
-            <pre><code class="language-sql">-- Add foreign key with appropriate cascading behavior
-ALTER TABLE orders
-ADD CONSTRAINT fk_orders_customer
-FOREIGN KEY (customer_id) REFERENCES customers(id)
-ON DELETE RESTRICT  -- Prevent deletion of customers with orders
-ON UPDATE CASCADE;  -- Update customer_id if customer.id changes
-
--- For optional relationships
-ALTER TABLE products
-ADD CONSTRAINT fk_products_category
-FOREIGN KEY (category_id) REFERENCES categories(id)
-ON DELETE SET NULL  -- Set to NULL if category deleted
-ON UPDATE CASCADE;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/add-foreign-keys-cascade.sql}}</code></pre>
 
             <h3>Verify Foreign Key Constraints</h3>
-            <pre><code class="language-sql">-- List all foreign keys in database
-SELECT 
-    constraint_name,
-    table_name,
-    column_name,
-    referenced_table_name,
-    referenced_column_name
-FROM information_schema.key_column_usage
-WHERE referenced_table_name IS NOT NULL
-    AND table_schema = DATABASE();
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/verify-foreign-keys.sql}}</code></pre>
         </section>
 
         <section>
@@ -12590,90 +10494,28 @@ WHERE referenced_table_name IS NOT NULL
 
             <h3>Common Table Expressions (CTEs)</h3>
             <p>You can replace complex nested subqueries with readable CTEs (MySQL 8.0+):</p>
-            
-            <pre><code class="language-sql">-- Legacy MySQL 4-5: Nested subqueries
-SELECT * FROM (
-    SELECT customer_id, SUM(amount) as total
-    FROM orders
-    GROUP BY customer_id
-) AS customer_totals
-WHERE total > 1000;
 
--- Modern MySQL 8.0+: CTE
-WITH customer_totals AS (
-    SELECT customer_id, SUM(amount) as total
-    FROM orders
-    GROUP BY customer_id
-)
-SELECT * FROM customer_totals
-WHERE total > 1000;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/cte-example.sql}}</code></pre>
 
             <h3>Window Functions</h3>
             <p>Analytics that were impossible or needed complex self-joins in MySQL 4-5:</p>
-            
-            <pre><code class="language-sql">-- Running total (impossible in MySQL 4-5 without variables)
-SELECT 
-    order_date,
-    amount,
-    SUM(amount) OVER (ORDER BY order_date) as running_total
-FROM orders;
 
--- Ranking within groups
-SELECT 
-    category_id,
-    product_name,
-    price,
-    RANK() OVER (PARTITION BY category_id ORDER BY price DESC) as price_rank
-FROM products;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/window-functions.sql}}</code></pre>
 
             <h3>JSON Data Type</h3>
             <p>You can store and query semi-structured data (MySQL 5.7+):</p>
-            
-            <pre><code class="language-sql">-- Create table with JSON column
-ALTER TABLE products ADD COLUMN attributes JSON;
 
--- Store structured data
-UPDATE products 
-SET attributes = JSON_OBJECT(
-    'color', 'red',
-    'size', 'large',
-    'features', JSON_ARRAY('waterproof', 'lightweight')
-);
-
--- Query JSON data
-SELECT product_name
-FROM products
-WHERE JSON_EXTRACT(attributes, '$.color') = 'red';
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/json-data-type.sql}}</code></pre>
 
             <h3>Check Constraints</h3>
             <p>Enforce business rules at the database level (MySQL 8.0.16+):</p>
-            
-            <pre><code class="language-sql">-- Add check constraints
-ALTER TABLE products
-ADD CONSTRAINT chk_positive_price CHECK (price > 0),
-ADD CONSTRAINT chk_valid_status CHECK (status IN ('active', 'inactive', 'discontinued'));
 
-ALTER TABLE orders
-ADD CONSTRAINT chk_valid_dates CHECK (ship_date >= order_date);
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/check-constraints-feature.sql}}</code></pre>
 
             <h3>Instant DDL Operations</h3>
             <p>Make schema changes without table locks (MySQL 8.0+):</p>
-            
-            <pre><code class="language-sql">-- Add column instantly (no table rebuild)
-ALTER TABLE large_table 
-ADD COLUMN new_field VARCHAR(100) DEFAULT NULL,
-ALGORITHM=INSTANT;
 
--- Operations that support INSTANT algorithm in MySQL 8.0+:
--- - Adding a column (with restrictions)
--- - Dropping a column
--- - Renaming a column
--- - Setting/dropping column default values
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/instant-ddl.sql}}</code></pre>
         </section>
 
         <section>
@@ -12681,81 +10523,37 @@ ALGORITHM=INSTANT;
             
             <h3>Invisible Indexes</h3>
             <p>Test how removing an index affects performance without actually dropping it (MySQL 8.0+):</p>
-            
-            <pre><code class="language-sql">-- Make index invisible to test performance impact
-ALTER TABLE orders ALTER INDEX idx_customer_id INVISIBLE;
 
--- Check if queries still perform well
--- If yes, drop the index; if no, make it visible again
-ALTER TABLE orders ALTER INDEX idx_customer_id VISIBLE;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/invisible-indexes.sql}}</code></pre>
 
             <h3>Descending Indexes</h3>
-            <p>Optimize queries with DESC order (MySQL 8.0+):</p>
-            
-            <pre><code class="language-sql">-- Create descending index for queries that sort DESC
-CREATE INDEX idx_created_desc ON posts(created_at DESC);
+            <p>Optimise queries with DESC order (MySQL 8.0+):</p>
 
--- This query now uses the index efficiently
-SELECT * FROM posts ORDER BY created_at DESC LIMIT 10;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/descending-indexes.sql}}</code></pre>
 
             <h3>Histogram Statistics</h3>
-            <p>Get better query optimization for skewed data (MySQL 8.0+):</p>
-            
-            <pre><code class="language-sql">-- Create histogram for better statistics
-ANALYZE TABLE orders UPDATE HISTOGRAM ON status;
+            <p>Get better query optimisation for skewed data (MySQL 8.0+):</p>
 
--- View histogram information
-SELECT * FROM information_schema.column_statistics
-WHERE table_name = 'orders' AND column_name = 'status';
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/histogram-statistics.sql}}</code></pre>
         </section>
 
         <section>
             <h2>Security Enhancements</h2>
-            
+
             <h3>Role-Based Access Control</h3>
             <p>Simplify permission management (MySQL 8.0+):</p>
-            
-            <pre><code class="language-sql">-- Create roles
-CREATE ROLE 'app_read', 'app_write', 'app_admin';
 
--- Grant permissions to roles
-GRANT SELECT ON mydb.* TO 'app_read';
-GRANT INSERT, UPDATE, DELETE ON mydb.* TO 'app_write';
-GRANT ALL ON mydb.* TO 'app_admin';
-
--- Assign roles to users
-GRANT 'app_read' TO 'reader_user'@'localhost';
-GRANT 'app_read', 'app_write' TO 'app_user'@'localhost';
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/role-based-access-control.sql}}</code></pre>
 
             <h3>Password Validation</h3>
             <p>Enforce strong passwords (MySQL 5.6+, better in 8.0):</p>
-            
-            <pre><code class="language-sql">-- Install and configure password validation
-INSTALL COMPONENT 'file://component_validate_password';
 
-SET GLOBAL validate_password.length = 12;
-SET GLOBAL validate_password.mixed_case_count = 1;
-SET GLOBAL validate_password.special_char_count = 1;
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/password-validation.sql}}</code></pre>
 
             <h3>Transparent Data Encryption</h3>
             <p>Encrypt data at rest (InnoDB, MySQL 5.7+):</p>
-            
-            <pre><code class="language-sql">-- Enable encryption for new tables
-SET GLOBAL default_table_encryption=ON;
 
--- Encrypt existing table
-ALTER TABLE sensitive_data ENCRYPTION='Y';
-
--- Verify encryption status
-SELECT table_name, create_options 
-FROM information_schema.tables 
-WHERE create_options LIKE '%ENCRYPTION%';
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/transparent-data-encryption.sql}}</code></pre>
         </section>
 
         <section>
@@ -12764,46 +10562,21 @@ WHERE create_options LIKE '%ENCRYPTION%';
             <p>After migration, make sure all changes worked.</p>
 
             <h3>Verify Storage Engines</h3>
-            <pre><code class="language-sql">-- Confirm all tables use InnoDB
-SELECT table_name, engine
-FROM information_schema.tables
-WHERE table_schema = DATABASE()
-    AND engine != 'InnoDB';
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/verify-storage-engines.sql}}</code></pre>
 
             <h3>Check Foreign Key Integrity</h3>
-            <pre><code class="language-sql">-- Test foreign key constraints are working
--- This should fail if constraint is active
-INSERT INTO orders (customer_id, amount) 
-VALUES (99999, 100.00);  -- Non-existent customer
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/check-foreign-key-integrity.sql}}</code></pre>
 
             <h3>Performance Comparison</h3>
-            <pre><code class="language-sql">-- Compare query performance
--- Before: Table lock wait
-SHOW STATUS LIKE 'Table_locks_waited';
-
--- After: Row lock wait (should be much lower)
-SHOW STATUS LIKE 'Innodb_row_lock_waits';
-</code></pre>
+            <pre><code class="language-sql">{{SNIPPET:mysql-legacy-to-modern-upgrade/performance-comparison.sql}}</code></pre>
         </section>
 
         <section>
-            <h2>Conclusion: Modernizing Your Database</h2>
-            
-            <p>Upgrading from MyISAM to InnoDB with modern MySQL 8.4 features transforms a fragile legacy database into a robust, secure system. The migration gets rid of data corruption risks through ACID compliance. It enables concurrent access through row-level locking. And it provides modern SQL capabilities that were impossible in MySQL 4-5.</p>
+            <h2>Conclusion: Modernising Your Database</h2>
 
-            <p>Key technical improvements include:</p>
-            <ul>
-                <li>Transaction support preventing partial updates</li>
-                <li>Foreign key constraints enforcing referential integrity</li>
-                <li>Crash recovery without manual intervention</li>
-                <li>Window functions and CTEs for complex analytics</li>
-                <li>JSON support for flexible data structures</li>
-                <li>Role-based access control and encryption</li>
-            </ul>
+            <p>Upgrading from MyISAM to InnoDB with modern MySQL 8.4 features turns a fragile legacy database into a secure, dependable one, removing data corruption risks through ACID compliance, enabling concurrent access through row-level locking, and providing modern SQL capabilities that were simply impossible in MySQL 4-5.</p>
 
-            <p>For executives, this migration reduces operational risk and ensures regulatory compliance through encryption and audit capabilities. It enables new business capabilities through modern SQL features. The investment in migration prevents future data loss incidents and helps your organization use data as a strategic asset.</p>
+            <p>The largest practical risk in any of this is the engine conversion itself. On a table of any real size, <code>ENGINE=InnoDB</code> is a blocking table copy rather than an in-place operation, so schedule it for a maintenance window or run it through <code>pt-online-schema-change</code> or <code>gh-ost</code> rather than firing it at a live production table.</p>
         </section>
     `,
   },
@@ -12812,7 +10585,7 @@ SHOW STATUS LIKE 'Innodb_row_lock_waits';
     id: 'mysql-performance-php',
     title: 'MySQL Performance Tuning for Complex PHP Applications',
     description:
-      'Database optimization strategies specifically tailored for bespoke PHP systems with complex queries',
+      'A practical guide to MySQL configuration tuning, indexing, query rewriting, partitioning, and caching for PHP systems running complex, high-volume queries',
     date: '2024-12-20',
     category: CATEGORIES.database.id,
     heroImage: {
@@ -12827,723 +10600,67 @@ SHOW STATUS LIKE 'Innodb_row_lock_waits';
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'Database',
+    register: 'formal',
     content: `
 <section class="intro">
-<p class="lead">Database optimization strategies specifically tailored for bespoke PHP systems with complex queries.</p>
-<p>Database performance is often the biggest bottleneck in complex PHP applications. While application-level optimizations are important, database tuning can deliver 10x performance improvements. This article covers proven strategies I've used to optimize MySQL for high-complexity PHP systems.</p>
-<p>From query optimization to server configuration, these techniques are essential for managing high-performance databases with complex business logic.</p>
+<p class="lead">Database optimisation strategies specifically tailored for bespoke PHP systems with complex queries.</p>
+<p>Database performance is often the biggest bottleneck in complex PHP applications. Whilst application-level optimisations are important, database tuning can deliver order-of-magnitude improvements in the right circumstances. This article covers proven strategies for optimising MySQL for high-complexity PHP systems.</p>
+<p>From query optimisation to server configuration, these techniques are essential for managing high-performance databases with complex business logic.</p>
 </section>
 <section class="content">
-<h2>MySQL Configuration Optimization</h2>
+<h2>MySQL Configuration Optimisation</h2>
 <h3>Memory Configuration</h3>
-<p>Proper memory allocation is crucial for MySQL performance:</p>
-<pre><code class="language-nginx"># /etc/mysql/mysql.conf.d/mysqld.cnf
-[mysqld]
-# InnoDB Buffer Pool (most important setting)
-innodb_buffer_pool_size = 16G  # 70-80% of available RAM
-innodb_buffer_pool_instances = 8
-innodb_buffer_pool_chunk_size = 128M
-# Query cache (disabled in MySQL 8.0+)
-query_cache_type = 0
-query_cache_size = 0
-# Table cache
-table_open_cache = 4000
-table_definition_cache = 2000
-# Connection settings
-max_connections = 200
-max_user_connections = 180
-thread_cache_size = 16
-# Sort and join buffers
-sort_buffer_size = 2M
-join_buffer_size = 2M
-read_buffer_size = 1M
-read_rnd_buffer_size = 1M
-# Temporary tables
-tmp_table_size = 64M
-max_heap_table_size = 64M</code></pre>
-<h3>InnoDB Optimization</h3>
-<pre><code class="language-nginx"># InnoDB specific settings
-innodb_flush_log_at_trx_commit = 2  # Better performance, slight durability trade-off
-innodb_log_file_size = 1G
-innodb_log_buffer_size = 64M
-innodb_file_per_table = 1
-innodb_flush_method = O_DIRECT
-innodb_io_capacity = 1000
-innodb_io_capacity_max = 2000
-# Deadlock detection
-innodb_deadlock_detect = 1
-innodb_print_all_deadlocks = 1
-# Parallel threads
-innodb_read_io_threads = 8
-innodb_write_io_threads = 8
-innodb_purge_threads = 4</code></pre>
-<h2>Query Optimization Strategies</h2>
+<p>Proper memory allocation matters most for MySQL performance:</p>
+<pre><code class="language-nginx">{{SNIPPET:mysql-performance-php/mysql-config.conf}}</code></pre>
+<h3>InnoDB Optimisation</h3>
+<pre><code class="language-nginx">{{SNIPPET:mysql-performance-php/innodb-config.conf}}</code></pre>
+<h2>Query Optimisation Strategies</h2>
 <h3>Index Design</h3>
 <p>Proper indexing is fundamental to query performance:</p>
-<pre><code class="language-sql">-- Compound indexes for complex WHERE clauses
-CREATE INDEX idx_user_orders ON orders (user_id, status, created_at);
--- Covering indexes to avoid table lookups
-CREATE INDEX idx_product_details ON products (category_id, status, price, name);
--- Partial indexes for filtered queries
-CREATE INDEX idx_active_users ON users (email) WHERE status = &#39;active&#39;;
--- Functional indexes for computed columns
-CREATE INDEX idx_user_full_name ON users ((CONCAT(first_name, &#39; &#39;, last_name)));
--- JSON indexes for JSON column queries
-CREATE INDEX idx_user_preferences ON users ((JSON_EXTRACT(preferences, &#39;$.language&#39;)));</code></pre>
+<pre><code class="language-sql">{{SNIPPET:mysql-performance-php/index-examples.sql}}</code></pre>
 <h3>Query Rewriting</h3>
 <p>Transform slow queries into efficient ones:</p>
-<pre><code class="language-sql">-- Slow: Using OR conditions
-SELECT * FROM products
-WHERE category_id = 1 OR category_id = 2 OR category_id = 3;
--- Fast: Using IN clause
-SELECT * FROM products
-WHERE category_id IN (1, 2, 3);
--- Slow: Using NOT IN with NULL values
-SELECT * FROM users
-WHERE id NOT IN (SELECT user_id FROM banned_users);
--- Fast: Using LEFT JOIN
-SELECT u.* FROM users u
-LEFT JOIN banned_users b ON u.id = b.user_id
-WHERE b.user_id IS NULL;
--- Slow: Using OFFSET for pagination
-SELECT * FROM products
-ORDER BY created_at DESC
-LIMIT 20 OFFSET 10000;
--- Fast: Using cursor-based pagination
-SELECT * FROM products
-WHERE created_at &lt; &#39;2024-01-01 12:00:00&#39;
-ORDER BY created_at DESC
-LIMIT 20;</code></pre>
-<h2>PHP Database Optimization</h2>
-<h3>Connection Optimization</h3>
-<pre><code class="language-php">&lt;?php
-<a href="https://www.php.net/manual/en/control-structures.declare.php#control-structures.declare.strict_types" target="_blank" rel="noopener">declare(strict_types=1)</a>;
-namespace AppDatabaseOptimization;
-use AppValueObjects{DatabaseConfig, QueryResult, CacheKey, CacheTTL};
-use AppExceptions{DatabaseConnectionException, QueryExecutionException};
-use AppContracts{CacheInterface, QueryMetricsInterface};
-use PDO;
-use PDOException;
-use PsrLogLoggerInterface;
-<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final</a> <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> class DatabaseOptimizer
-{
-private PDO $connection;
-public function __construct(
-DatabaseConfig $config,
-private CacheInterface $cache,
-private QueryMetricsInterface $metrics,
-private LoggerInterface $logger,
-) {
-$this-&gt;connection = $this-&gt;createOptimizedConnection($config);
-}
-private function createOptimizedConnection(DatabaseConfig $config): PDO
-{
-try {
-return new PDO(
-$config-&gt;dsn,
-$config-&gt;username,
-$config-&gt;password,
-[
-PDO::ATTR_PERSISTENT =&gt; true,
-PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
-PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
-PDO::ATTR_EMULATE_PREPARES =&gt; false,
-PDO::MYSQL_ATTR_INIT_COMMAND =&gt; implode(&#39;;&#39;, [
-&#39;SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci&#39;,
-&#39;SET SESSION sql_mode=&quot;STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION&quot;&#39;,
-&#39;SET SESSION time_zone=&quot;+00:00&quot;&#39;,
-&#39;SET SESSION group_concat_max_len=1000000&#39;,
-&#39;SET SESSION optimizer_switch=&quot;mrr=on,mrr_cost_based=on&quot;&#39;,
-])
-]
-);
-} catch (PDOException $e) {
-throw new DatabaseConnectionException(
-&quot;Failed to connect to database: {$e-&gt;getMessage()}&quot;,
-previous: $e
-);
-}
-}
-public function executeQuery(string $sql, array $params = []): QueryResult
-{
-$startTime = hrtime(true);
-try {
-$stmt = $this-&gt;connection-&gt;prepare($sql);
-$stmt-&gt;execute($params);
-$data = $stmt-&gt;fetchAll();
-$executionTime = hrtime(true) - $startTime;
-$this-&gt;metrics-&gt;recordQuery($sql, $params, $executionTime);
-return new QueryResult(
-data: $data,
-executionTime: $executionTime,
-rowCount: $stmt-&gt;rowCount()
-);
-} catch (PDOException $e) {
-$this-&gt;logger-&gt;error(&#39;Query execution failed&#39;, [
-&#39;sql&#39; =&gt; $sql,
-&#39;params&#39; =&gt; $params,
-&#39;error&#39; =&gt; $e-&gt;getMessage(),
-]);
-throw new QueryExecutionException(
-&quot;Query execution failed: {$e-&gt;getMessage()}&quot;,
-previous: $e
-);
-}
-}
-public function executeQueryWithCache(
-string $sql,
-array $params = [],
-<a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.nullable" target="_blank" rel="noopener">?</a>CacheTTL $ttl = null
-): QueryResult {
-$cacheKey = CacheKey::forQuery($sql, $params);
-// Check cache first
-$cached = $this-&gt;cache-&gt;get($cacheKey);
-if ($cached !== null) {
-return $cached;
-}
-$result = $this-&gt;executeQuery($sql, $params);
-$this-&gt;cache-&gt;set($cacheKey, $result, $ttl ?? new CacheTTL(300));
-return $result;
-}
-public function transaction(<a href="https://www.php.net/manual/en/language.types.callable.php" target="_blank" rel="noopener">callable</a> $callback): <a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.mixed" target="_blank" rel="noopener">mixed</a>
-{
-$this-&gt;connection-&gt;beginTransaction();
-try {
-$result = $callback($this-&gt;connection);
-$this-&gt;connection-&gt;commit();
-return $result;
-} catch (Throwable $e) {
-$this-&gt;connection-&gt;rollBack();
-throw $e;
-}
-}
-}</code></pre>
-<h3>Prepared Statement Optimization</h3>
-<pre><code class="language-php">&lt;?php
-<a href="https://www.php.net/manual/en/control-structures.declare.php#control-structures.declare.strict_types" target="_blank" rel="noopener">declare(strict_types=1)</a>;
-namespace AppDatabaseStatements;
-use AppValueObjects{SqlStatement, BatchResult};
-use AppExceptions{StatementExecutionException, BatchExecutionException};
-use PDO;
-use PDOStatement;
-use PDOException;
-use PsrLogLoggerInterface;
-use <a href="https://www.php.net/manual/en/class.weakmap.php" target="_blank" rel="noopener">WeakMap</a>;
-<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final</a> class PreparedStatementPool
-{
-/** @var array&lt;string, PDOStatement&gt; */
-private array $statements = [];
-private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> <a href="https://www.php.net/manual/en/class.weakmap.php" target="_blank" rel="noopener">WeakMap</a> $statementMetadata;
-public function __construct(
-private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> PDO $connection,
-private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> LoggerInterface $logger,
-private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> int $maxStatements = 1000,
-) {
-$this-&gt;statementMetadata = new <a href="https://www.php.net/manual/en/class.weakmap.php" target="_blank" rel="noopener">WeakMap</a>();
-}
-public function getStatement(SqlStatement $sql): PDOStatement
-{
-$key = $sql-&gt;getHash();
-if (!isset($this-&gt;statements[$key])) {
-if (count($this-&gt;statements) &gt;= $this-&gt;maxStatements) {
-$this-&gt;evictOldestStatement();
-}
-try {
-$this-&gt;statements[$key] = $this-&gt;connection-&gt;prepare($sql-&gt;value);
-$this-&gt;statementMetadata[$this-&gt;statements[$key]] = [
-&#39;created_at&#39; =&gt; time(),
-&#39;usage_count&#39; =&gt; 0,
-];
-} catch (PDOException $e) {
-throw new StatementExecutionException(
-&quot;Failed to prepare statement: {$e-&gt;getMessage()}&quot;,
-previous: $e
-);
-}
-}
-$stmt = $this-&gt;statements[$key];
-$metadata = $this-&gt;statementMetadata[$stmt];
-$metadata[&#39;usage_count&#39;]++;
-$this-&gt;statementMetadata[$stmt] = $metadata;
-return $stmt;
-}
-public function executeStatement(SqlStatement $sql, array $params = []): array
-{
-$stmt = $this-&gt;getStatement($sql);
-try {
-$stmt-&gt;execute($params);
-return $stmt-&gt;fetchAll();
-} catch (PDOException $e) {
-$this-&gt;logger-&gt;error(&#39;Statement execution failed&#39;, [
-&#39;sql&#39; =&gt; $sql-&gt;value,
-&#39;params&#39; =&gt; $params,
-&#39;error&#39; =&gt; $e-&gt;getMessage(),
-]);
-throw new StatementExecutionException(
-&quot;Statement execution failed: {$e-&gt;getMessage()}&quot;,
-previous: $e
-);
-}
-}
-public function executeBatch(SqlStatement $sql, array $batchParams): BatchResult
-{
-$stmt = $this-&gt;getStatement($sql);
-$affected = 0;
-$errors = [];
-$this-&gt;connection-&gt;beginTransaction();
-try {
-foreach ($batchParams as $index =&gt; $params) {
-try {
-$stmt-&gt;execute($params);
-$affected += $stmt-&gt;rowCount();
-} catch (PDOException $e) {
-$errors[$index] = $e-&gt;getMessage();
-if (count($errors) &gt; 10) { // Fail fast after too many errors
-throw new BatchExecutionException(
-&quot;Too many errors in batch execution&quot;,
-$errors
-);
-}
-}
-}
-if (!empty($errors)) {
-$this-&gt;connection-&gt;rollBack();
-throw new BatchExecutionException(
-&quot;Batch execution failed with errors&quot;,
-$errors
-);
-}
-$this-&gt;connection-&gt;commit();
-return new BatchResult(
-affectedRows: $affected,
-processedCount: count($batchParams),
-errors: $errors
-);
-} catch (Throwable $e) {
-$this-&gt;connection-&gt;rollBack();
-throw $e;
-}
-}
-private function evictOldestStatement(): void
-{
-$oldestKey = null;
-$oldestTime = PHP_INT_MAX;
-foreach ($this-&gt;statements as $key =&gt; $stmt) {
-$metadata = $this-&gt;statementMetadata[$stmt];
-if ($metadata[&#39;created_at&#39;] &lt; $oldestTime) {
-$oldestTime = $metadata[&#39;created_at&#39;];
-$oldestKey = $key;
-}
-}
-if ($oldestKey !== null) {
-unset($this-&gt;statements[$oldestKey]);
-}
-}
-public function getPoolStats(): array
-{
-$stats = [
-&#39;total_statements&#39; =&gt; count($this-&gt;statements),
-&#39;max_statements&#39; =&gt; $this-&gt;maxStatements,
-&#39;usage_stats&#39; =&gt; [],
-];
-foreach ($this-&gt;statements as $key =&gt; $stmt) {
-$metadata = $this-&gt;statementMetadata[$stmt];
-$stats[&#39;usage_stats&#39;][$key] = $metadata;
-}
-return $stats;
-}
-}</code></pre>
-<h2>Complex Query Optimization</h2>
-<h3>Subquery Optimization</h3>
-<pre><code class="language-sql">-- Slow: Correlated subquery
-SELECT u.*,
-(SELECT COUNT(*) FROM orders o WHERE o.user_id = u.id) as order_count
-FROM users u
-WHERE u.status = &#39;active&#39;;
--- Fast: LEFT JOIN with GROUP BY
-SELECT u.*, COALESCE(o.order_count, 0) as order_count
-FROM users u
-LEFT JOIN (
-SELECT user_id, COUNT(*) as order_count
-FROM orders
-GROUP BY user_id
-) o ON u.id = o.user_id
-WHERE u.status = &#39;active&#39;;
--- Slow: IN subquery with large result set
-SELECT * FROM products
-WHERE id IN (
-SELECT product_id FROM order_items
-WHERE order_id IN (SELECT id FROM orders WHERE status = &#39;completed&#39;)
-);
--- Fast: EXISTS with proper indexing
-SELECT p.* FROM products p
-WHERE EXISTS (
-SELECT 1 FROM order_items oi
-JOIN orders o ON oi.order_id = o.id
-WHERE oi.product_id = p.id AND o.status = &#39;completed&#39;
-);</code></pre>
-<h3>Aggregation Optimization</h3>
-<pre><code class="language-sql">-- Slow: Multiple aggregations in separate queries
-$totalOrders = $pdo-&gt;query(&quot;SELECT COUNT(*) FROM orders&quot;)-&gt;fetchColumn();
-$totalRevenue = $pdo-&gt;query(&quot;SELECT SUM(total) FROM orders&quot;)-&gt;fetchColumn();
-$avgOrderValue = $pdo-&gt;query(&quot;SELECT AVG(total) FROM orders&quot;)-&gt;fetchColumn();
--- Fast: Single query with multiple aggregations
-$sql = &quot;SELECT
-COUNT(*) as total_orders,
-SUM(total) as total_revenue,
-AVG(total) as avg_order_value
-FROM orders&quot;;
-$stats = $pdo-&gt;query($sql)-&gt;fetch();
--- Optimized aggregation with filtering
-SELECT
-DATE(created_at) as date,
-COUNT(*) as order_count,
-SUM(total) as revenue,
-AVG(total) as avg_value
-FROM orders
-WHERE created_at &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY)
-GROUP BY DATE(created_at)
-ORDER BY date DESC;</code></pre>
+<pre><code class="language-sql">{{SNIPPET:mysql-performance-php/query-examples.sql}}</code></pre>
+<h2>PHP Database Optimisation</h2>
+<h3>Connection Optimisation</h3>
+<pre><code class="language-php">{{SNIPPET:mysql-performance-php/database-optimizer.php}}</code></pre>
+<h3>Prepared Statement Optimisation</h3>
+<pre><code class="language-php">{{SNIPPET:mysql-performance-php/prepared-statements.php}}</code></pre>
+<h2>Complex Query Optimisation</h2>
+<h3>Subquery Optimisation</h3>
+<pre><code class="language-sql">{{SNIPPET:mysql-performance-php/subquery-optimization.sql}}</code></pre>
+<h3>Aggregation Optimisation</h3>
+<p>Combine multiple aggregate calculations into a single round trip instead of querying once per aggregate:</p>
+<pre><code class="language-php">{{SNIPPET:mysql-performance-php/aggregation-queries.php}}</code></pre>
+<p>The same principle applies to filtered, grouped aggregates: compute them in one query rather than iterating in PHP.</p>
+<pre><code class="language-sql">{{SNIPPET:mysql-performance-php/aggregation-optimization.sql}}</code></pre>
 <h2>Performance Monitoring</h2>
 <h3>Slow Query Log Analysis</h3>
-<pre><code class="language-php">&lt;?php
-<a href="https://www.php.net/manual/en/control-structures.declare.php#control-structures.declare.strict_types" target="_blank" rel="noopener">declare(strict_types=1)</a>;
-namespace AppDatabaseMonitoring;
-use PDO;
-<a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener">final</a> class SlowQueryAnalyzer
-{
-public function __construct(
-private <a href="https://www.php.net/manual/en/language.oop5.properties.php#language.oop5.properties.readonly-properties" target="_blank" rel="noopener">readonly</a> PDO $pdo
-) {}
-public function enableSlowQueryLog(): void
-{
-$this-&gt;pdo-&gt;exec(&quot;SET GLOBAL slow_query_log = &#39;ON&#39;&quot;);
-$this-&gt;pdo-&gt;exec(&quot;SET GLOBAL long_query_time = 1&quot;);
-$this-&gt;pdo-&gt;exec(&quot;SET GLOBAL log_queries_not_using_indexes = &#39;ON&#39;&quot;);
-}
-public function getSlowQueries(): array
-{
-$sql = &quot;SELECT
-sql_text,
-exec_count,
-total_latency,
-avg_latency,
-lock_latency,
-rows_sent,
-rows_examined
-FROM sys.statement_analysis
-WHERE avg_latency &gt; 1000000  -- 1 second
-ORDER BY total_latency DESC
-LIMIT 20&quot;;
-return $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
-}
-public function getTableScans(): array
-{
-$sql = &quot;SELECT
-object_name,
-count_read,
-avg_read_latency,
-count_write,
-avg_write_latency
-FROM sys.table_io_waits_summary_by_table
-ORDER BY count_read DESC
-LIMIT 20&quot;;
-return $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:mysql-performance-php/slow-query-analyzer.php}}</code></pre>
 <h3>Real-time Performance Monitoring</h3>
-<pre><code class="language-sql">class MySQLMonitor {
-private $pdo;
-public function __construct(PDO $pdo) {
-$this-&gt;pdo = $pdo;
-}
-public function getPerformanceMetrics(): array {
-$sql = "SHOW GLOBAL STATUS WHERE Variable_name IN (
-'Connections',
-'Threads_running',
-'Questions',
-'Slow_queries',
-'Opens',
-'Flush_commands',
-'Open_tables',
-'Queries_per_second_avg',
-'Innodb_buffer_pool_read_requests',
-'Innodb_buffer_pool_reads',
-'Innodb_buffer_pool_wait_free',
-'Innodb_log_waits',
-'Innodb_rows_read',
-'Innodb_rows_inserted',
-'Innodb_rows_updated',
-'Innodb_rows_deleted'
-)";
-$result = $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
-$metrics = [];
-foreach ($result as $row) {
-$metrics[$row['Variable_name']] = $row['Value'];
-}
-// Calculate buffer pool hit ratio
-$reads = $metrics['Innodb_buffer_pool_reads'];
-$requests = $metrics['Innodb_buffer_pool_read_requests'];
-$metrics['buffer_pool_hit_ratio'] = (($requests - $reads) / $requests) * 100;
-return $metrics;
-}
-public function getActiveConnections(): array {
-$sql = "SELECT
-id,
-user,
-host,
-db,
-command,
-time,
-state,
-info
-FROM information_schema.processlist
-WHERE command != 'Sleep'
-ORDER BY time DESC";
-return $this-&gt;pdo-&gt;query($sql)-&gt;fetchAll();
-}
-public function getInnoDBStatus(): array {
-$sql = "SHOW ENGINE INNODB STATUS";
-$result = $this-&gt;pdo-&gt;query($sql)-&gt;fetch();
-return $this-&gt;parseInnoDBStatus($result['Status']);
-}
-private function parseInnoDBStatus(string $status): array {
-$metrics = [];
-// Parse buffer pool info
-if (preg_match('/Buffer pool sizes+(d+)/', $status, $matches)) {
-$metrics['buffer_pool_size'] = $matches[1];
-}
-// Parse log sequence number
-if (preg_match('/Log sequence numbers+(d+)/', $status, $matches)) {
-$metrics['log_sequence_number'] = $matches[1];
-}
-// Parse pending reads/writes
-if (preg_match('/Pending normal aio reads:s+(d+)/', $status, $matches)) {
-$metrics['pending_reads'] = $matches[1];
-}
-return $metrics;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:mysql-performance-php/mysql-monitor.php}}</code></pre>
 <h2>Partitioning Strategies</h2>
 <h3>Range Partitioning</h3>
-<pre><code class="language-sql">-- Partition by date for time-series data
-CREATE TABLE order_history (
-id INT AUTO_INCREMENT,
-user_id INT,
-total DECIMAL(10,2),
-created_at TIMESTAMP,
-PRIMARY KEY (id, created_at)
-) PARTITION BY RANGE (YEAR(created_at)) (
-PARTITION p2020 VALUES LESS THAN (2021),
-PARTITION p2021 VALUES LESS THAN (2022),
-PARTITION p2022 VALUES LESS THAN (2023),
-PARTITION p2023 VALUES LESS THAN (2024),
-PARTITION p2024 VALUES LESS THAN (2025),
-PARTITION p_future VALUES LESS THAN MAXVALUE
-);
--- Hash partitioning for load distribution
-CREATE TABLE user_sessions (
-id INT AUTO_INCREMENT,
-user_id INT,
-session_data TEXT,
-created_at TIMESTAMP,
-PRIMARY KEY (id, user_id)
-) PARTITION BY HASH(user_id) PARTITIONS 8;</code></pre>
+<pre><code class="language-sql">{{SNIPPET:mysql-performance-php/partitioning-examples.sql}}</code></pre>
 <h3>Partition Pruning</h3>
-<pre><code class="language-sql">class PartitionManager {
-private $pdo;
-public function __construct(PDO $pdo) {
-$this-&gt;pdo = $pdo;
-}
-public function addPartition(string $table, string $partition, string $value): void {
-$sql = "ALTER TABLE {$table} ADD PARTITION (
-PARTITION {$partition} VALUES LESS THAN ({$value})
-)";
-$this-&gt;pdo-&gt;exec($sql);
-}
-public function dropOldPartitions(string $table, int $keepDays = 90): void {
-$cutoffDate = date('Y-m-d', strtotime("-{$keepDays} days"));
-$sql = "SELECT
-partition_name,
-partition_description
-FROM information_schema.partitions
-WHERE table_name = ? AND partition_name IS NOT NULL
-ORDER BY partition_ordinal_position";
-$stmt = $this-&gt;pdo-&gt;prepare($sql);
-$stmt-&gt;execute([$table]);
-$partitions = $stmt-&gt;fetchAll();
-foreach ($partitions as $partition) {
-$partitionDate = $partition['partition_description'];
-if ($partitionDate &lt; $cutoffDate) {
-$this-&gt;dropPartition($table, $partition['partition_name']);
-}
-}
-}
-private function dropPartition(string $table, string $partition): void {
-$sql = "ALTER TABLE {$table} DROP PARTITION {$partition}";
-$this-&gt;pdo-&gt;exec($sql);
-}
-}</code></pre>
-<h2>Advanced Optimization Techniques</h2>
+<pre><code class="language-php">{{SNIPPET:mysql-performance-php/partition-manager.php}}</code></pre>
+<h2>Advanced Optimisation Techniques</h2>
 <h3>Query Result Caching</h3>
-<pre><code class="language-php">class QueryResultCache {
-private $redis;
-private $defaultTTL = 300;
-public function __construct(Redis $redis) {
-$this-&gt;redis = $redis;
-}
-public function getCachedQuery(string $sql, array $params = [], int $ttl = null): <a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.nullable" target="_blank" rel="noopener">?</a>array {
-$cacheKey = $this-&gt;generateCacheKey($sql, $params);
-$cached = $this-&gt;redis-&gt;get($cacheKey);
-if ($cached !== false) {
-return json_decode($cached, true);
-}
-return null;
-}
-public function setCachedQuery(string $sql, array $params, array $result, int $ttl = null): void {
-$cacheKey = $this-&gt;generateCacheKey($sql, $params);
-$ttl = $ttl ?? $this-&gt;defaultTTL;
-$this-&gt;redis-&gt;setex($cacheKey, $ttl, json_encode($result));
-}
-public function invalidateQueryCache(string $table): void {
-$pattern = "query:*:{$table}:*";
-$keys = $this-&gt;redis-&gt;keys($pattern);
-if (!empty($keys)) {
-$this-&gt;redis-&gt;del($keys);
-}
-}
-private function generateCacheKey(string $sql, array $params): string {
-$normalized = $this-&gt;normalizeQuery($sql);
-$tables = $this-&gt;extractTables($normalized);
-return 'query:' . md5($sql . serialize($params)) . ':' . implode(',', $tables);
-}
-private function normalizeQuery(string $sql): string {
-// Remove extra whitespace and normalize case
-return preg_replace('/s+/', ' ', strtolower(trim($sql)));
-}
-private function extractTables(string $sql): array {
-preg_match_all('/(?:from|join|update|into)s+([a-zA-Z_]w*)/i', $sql, $matches);
-return array_unique($matches[1]);
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:mysql-performance-php/query-result-cache.php}}</code></pre>
 <h3>Database Sharding</h3>
-<pre><code class="language-php">class DatabaseShardManager {
-private $shards = [];
-private $shardCount;
-public function __construct(array $shardConfigs) {
-$this-&gt;shardCount = count($shardConfigs);
-foreach ($shardConfigs as $index =&gt; $config) {
-$this-&gt;shards[$index] = new PDO(
-$config['dsn'],
-$config['username'],
-$config['password'],
-[PDO::ATTR_PERSISTENT =&gt; true]
-);
-}
-}
-public function getShardForUser(int $userId): PDO {
-$shardIndex = $userId % $this-&gt;shardCount;
-return $this-&gt;shards[$shardIndex];
-}
-public function executeOnAllShards(string $sql, array $params = []): array {
-$results = [];
-foreach ($this-&gt;shards as $index =&gt; $pdo) {
-$stmt = $pdo-&gt;prepare($sql);
-$stmt-&gt;execute($params);
-$results[$index] = $stmt-&gt;fetchAll();
-}
-return $results;
-}
-public function executeOnShard(int $shardIndex, string $sql, array $params = []): array {
-$pdo = $this-&gt;shards[$shardIndex];
-$stmt = $pdo-&gt;prepare($sql);
-$stmt-&gt;execute($params);
-return $stmt-&gt;fetchAll();
-}
-}</code></pre>
-<h2>Backup and Recovery Optimization</h2>
+<pre><code class="language-php">{{SNIPPET:mysql-performance-php/database-shard-manager.php}}</code></pre>
+<h2>Backup and Recovery Optimisation</h2>
 <h3>Hot Backup Strategy</h3>
-<pre><code class="language-php">class HotBackupManager {
-private $pdo;
-private $backupPath;
-public function __construct(PDO $pdo, string $backupPath) {
-$this-&gt;pdo = $pdo;
-$this-&gt;backupPath = $backupPath;
-}
-public function createIncrementalBackup(): void {
-// Get current binary log position
-$sql = "SHOW MASTER STATUS";
-$status = $this-&gt;pdo-&gt;query($sql)-&gt;fetch();
-$backupInfo = [
-'timestamp' =&gt; date('Y-m-d H:i:s'),
-'log_file' =&gt; $status['File'],
-'log_position' =&gt; $status['Position'],
-'type' =&gt; 'incremental'
-];
-// Create backup using xtrabackup
-$command = sprintf(
-'xtrabackup --backup --target-dir=%s --incremental-basedir=%s',
-$this-&gt;backupPath . '/incremental_' . date('Y-m-d_H-i-s'),
-$this-&gt;getLastFullBackup()
-);
-exec($command, $output, $returnCode);
-if ($returnCode !== 0) {
-throw new Exception('Backup failed: ' . implode("
-", $output));
-}
-// Save backup metadata
-file_put_contents(
-$this-&gt;backupPath . '/backup_info.json',
-json_encode($backupInfo)
-);
-}
-public function createFullBackup(): void {
-$backupDir = $this-&gt;backupPath . '/full_' . date('Y-m-d_H-i-s');
-$command = sprintf(
-'xtrabackup --backup --target-dir=%s',
-$backupDir
-);
-exec($command, $output, $returnCode);
-if ($returnCode !== 0) {
-throw new Exception('Full backup failed: ' . implode("
-", $output));
-}
-// Prepare the backup
-$prepareCommand = sprintf('xtrabackup --prepare --target-dir=%s', $backupDir);
-exec($prepareCommand);
-}
-private function getLastFullBackup(): string {
-$backups = glob($this-&gt;backupPath . '/full_*');
-if (empty($backups)) {
-throw new Exception('No full backup found');
-}
-// Sort by modification time, get the latest
-usort($backups, function($a, $b) {
-return filemtime($b) - filemtime($a);
-});
-return $backups[0];
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:mysql-performance-php/hot-backup-manager.php}}</code></pre>
 <h2>Common Performance Pitfalls</h2>
 <ul>
-<li><strong>Over-normalization:</strong> Sometimes denormalization improves performance</li>
+<li><strong>Over-normalisation:</strong> Sometimes denormalisation improves performance</li>
 <li><strong>Missing indexes:</strong> Every WHERE, JOIN, and ORDER BY clause should be indexed</li>
 <li><strong>Too many indexes:</strong> Indexes slow down writes, find the right balance</li>
 <li><strong>N+1 queries:</strong> Use JOINs or batch queries instead</li>
 <li><strong>Large result sets:</strong> Use LIMIT and pagination</li>
 <li><strong>Inefficient GROUP BY:</strong> Use covering indexes for grouped queries</li>
 </ul>
-<h2>Best Practices Summary</h2>
-<ul>
-<li><strong>Monitor first:</strong> Use slow query log and performance schema</li>
-<li><strong>Index strategically:</strong> Focus on high-impact queries</li>
-<li><strong>Optimize configuration:</strong> Tune MySQL settings for your workload</li>
-<li><strong>Cache intelligently:</strong> Use query result caching for expensive queries</li>
-<li><strong>Partition large tables:</strong> Improve query performance and maintenance</li>
-<li><strong>Use prepared statements:</strong> Better performance and security</li>
-<li><strong>Regular maintenance:</strong> Optimize tables and update statistics</li>
-</ul>
-<p>Database optimization is an ongoing process. Start with the biggest bottlenecks, measure the impact of changes, and continuously monitor performance. Remember that the best optimization strategy depends on your specific workload and data patterns.</p>
 </section>
 <footer class="article-footer">
 <div class="article-nav">
@@ -13572,12 +10689,13 @@ return $backups[0];
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'typescript',
+    register: 'formal',
     content: `
 <div class="intro">
     <p class="lead">
-        Building command-line interfaces that scale from simple scripts to enterprise-grade applications 
-        requires a solid foundation. <a href="https://oclif.io/" target="_blank" rel="noopener">Oclif</a>, the Open CLI Framework from <a href="https://www.salesforce.com/" target="_blank" rel="noopener">Salesforce</a>, provides exactly that - 
-        a battle-tested architecture powering CLIs used by millions of developers daily.
+        Building command-line interfaces that scale from simple scripts to enterprise-grade applications
+        requires a solid foundation. <a href="https://oclif.io/" target="_blank" rel="noopener">Oclif</a>, the Open CLI Framework from <a href="https://www.salesforce.com/" target="_blank" rel="noopener">Salesforce</a>, provides exactly that -
+        a battle-tested architecture behind some of the most widely used CLIs in the Node.js ecosystem.
     </p>
 </div>
 
@@ -13602,7 +10720,7 @@ return $backups[0];
         Creating a new CLI with oclif takes just a few commands:
     </p>
     
-    <pre><code class="language-bash">{{SNIPPET:oclif/getting-started.sh}}
+    <pre><code class="language-bash">{{SNIPPET:oclif-cli-framework-guide/getting-started.sh}}
 </code></pre>
 
     <p>
@@ -13621,11 +10739,11 @@ return $backups[0];
     </p>
     
     <h4>CommonJS (Traditional)</h4>
-    <pre><code class="language-javascript">{{SNIPPET:oclif/hello-command.js}}
+    <pre><code class="language-javascript">{{SNIPPET:oclif-cli-framework-guide/hello-command.js}}
 </code></pre>
 
     <h4>ESM (Modern - v4+)</h4>
-    <pre><code class="language-javascript">{{SNIPPET:oclif/hello-command-esm.js}}
+    <pre><code class="language-javascript">{{SNIPPET:oclif-cli-framework-guide/hello-command-esm.js}}
 </code></pre>
 
     <h3>Plugin Architecture</h3>
@@ -13640,9 +10758,9 @@ return $backups[0];
         <li>Lazy-load commands for optimal performance</li>
     </ul>
 
-    <h3>Performance Optimizations</h3>
+    <h3>Performance Optimisations</h3>
     <p>
-        Oclif prioritizes speed with minimal dependencies (only 28 in a basic setup) and lazy command 
+        Oclif prioritises speed with a minimal dependency footprint and lazy command
         loading. Large CLIs with hundreds of commands load as quickly as simple ones with a single command.
     </p>
 </section>
@@ -13678,7 +10796,7 @@ return $backups[0];
 
     <h3>Migration to v4</h3>
     <p>
-        Migrating from v3 to v4 is generally straightforward. The oclif team has focused on maintaining backwards compatibility while adding new features. 
+        Migrating from v3 to v4 is generally straightforward. The oclif team has focused on maintaining backwards compatibility whilst adding new features.
         Key considerations:
     </p>
     <ul>
@@ -13693,7 +10811,7 @@ return $backups[0];
     <h2>Best Practices</h2>
     
     <h3>Project Structure</h3>
-    <pre><code class="language-bash">{{SNIPPET:oclif/project-structure.txt}}
+    <pre><code class="language-plaintext">{{SNIPPET:oclif-cli-framework-guide/project-structure.txt}}
 </code></pre>
 
     <h3>Design Principles</h3>
@@ -13703,7 +10821,7 @@ return $backups[0];
     
     <ol>
         <li><strong>Consistency</strong> - Maintain uniform command syntax and output formats</li>
-        <li><strong>Human-Readable Output</strong> - Design for clarity while supporting machine formats</li>
+        <li><strong>Human-Readable Output</strong> - Design for clarity whilst supporting machine formats</li>
         <li><strong>Progressive Disclosure</strong> - Show essential info by default, details on request</li>
         <li><strong>Error Handling</strong> - Provide helpful error messages with recovery suggestions</li>
         <li><strong>Testing</strong> - Use oclif's built-in <a href="https://oclif.io/docs/testing" target="_blank" rel="noopener">testing utilities</a> for comprehensive coverage</li>
@@ -13711,10 +10829,10 @@ return $backups[0];
 
     <h3>TypeScript Configuration</h3>
     <p>
-        While oclif supports JavaScript, TypeScript provides better developer experience:
+        Whilst oclif supports JavaScript, TypeScript provides better developer experience:
     </p>
-    
-    <pre><code class="language-javascript">{{SNIPPET:oclif/typescript-example.ts}}
+
+    <pre><code class="language-typescript">{{SNIPPET:oclif-cli-framework-guide/typescript-example.ts}}
 </code></pre>
 </section>
 
@@ -13730,7 +10848,7 @@ return $backups[0];
         <li><strong>Testing utilities</strong> - Built-in helpers for unit and integration tests</li>
         <li><strong>Cross-platform</strong> - Works on Windows, macOS, and Linux</li>
         <li><strong>Active maintenance</strong> - Regular updates and renewed community focus</li>
-        <li><strong>Improved documentation</strong> - Revitalized docs at <a href="https://oclif.io/" target="_blank" rel="noopener">oclif.io</a></li>
+        <li><strong>Improved documentation</strong> - Revitalised docs at <a href="https://oclif.io/" target="_blank" rel="noopener">oclif.io</a></li>
         <li><strong>Community engagement</strong> - Active <a href="https://github.com/oclif/core/discussions" target="_blank" rel="noopener">GitHub Discussions</a></li>
     </ul>
 
@@ -13765,7 +10883,7 @@ return $backups[0];
     <ul>
         <li>Extensive argument parsing</li>
         <li>Built-in i18n support</li>
-        <li>Larger bundle size (290KB)</li>
+        <li>Larger bundle size than oclif</li>
         <li>Good middle ground option</li>
     </ul>
 
@@ -13834,8 +10952,8 @@ return $backups[0];
     </ul>
 
     <p>
-        These production CLIs demonstrate oclif's ability to handle complex requirements, plugin 
-        ecosystems, and millions of daily interactions.
+        These are all production CLIs, so they give a fair indication of how oclif copes with complex
+        requirements and a mature plugin ecosystem outside a toy example.
     </p>
 </section>
 
@@ -13868,20 +10986,16 @@ return $backups[0];
 <section>
     <h2>Conclusion</h2>
     <p>
-        Oclif represents the evolution of CLI frameworks from simple argument parsers to comprehensive 
-        development platforms. Its enterprise-grade features, active maintenance, and proven track record 
-        make it an excellent choice for building professional command-line tools.
+        Oclif has grown from a simple argument parser into a genuinely capable platform for building
+        command-line tools, and its use in production by Salesforce and Heroku is a fair indicator that the
+        architecture holds up in practice. The plugin system and active maintenance make it worth considering
+        whenever a CLI is likely to grow past a handful of commands.
     </p>
-    
+
     <p>
-        While the learning curve may be steeper than simpler alternatives, the investment pays off through 
-        maintainable code, extensible architecture, and a development experience that scales with your 
-        project's complexity.
-    </p>
-    
-    <p>
-        Whether you're building internal tools, open-source utilities, or commercial CLIs, oclif provides 
-        the foundation to create command-line interfaces that developers will actually enjoy using.
+        Whilst the learning curve is steeper than picking up Commander or Yargs, that investment tends to
+        pay off as a project grows: a plugin architecture and a consistent command structure matter a lot
+        more once a CLI has outgrown what a single script would do.
     </p>
 </section>
     `,
@@ -13898,6 +11012,7 @@ return $backups[0];
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    register: 'formal',
     heroImage: {
       src: '/images/php-magic-constants-maintainable-logging/hero.webp',
       alt: 'A black-and-white photograph of a cast metal "ASHTON VIADUCT 275" identification plaque bolted to a weathered stone bridge pier, alongside a utility box',
@@ -13920,7 +11035,7 @@ return $backups[0];
 <section>
     <h2>Understanding PHP Magic Constants</h2>
     <p>
-        <a href="https://www.php.net/manual/en/language.constants.predefined.php" target="_blank" rel="noopener">PHP</a> provides eight magic constants that automatically resolve to contextual values at compile time. 
+        <a href="https://www.php.net/manual/en/language.constants.magic.php" target="_blank" rel="noopener">PHP</a> provides eight magic constants that automatically resolve to contextual values at compile time. 
         Unlike regular constants, these values change based on their location in the code, making them 
         invaluable for debugging and logging systems.
     </p>
@@ -13930,9 +11045,17 @@ return $backups[0];
         Each magic constant serves specific debugging and logging purposes:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/basic-magic-constants.php}}
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/basic-magic-constants.php}}
 </code></pre>
-    
+
+    <p>
+        <code>__NAMESPACE__</code> only makes sense once a file actually declares a namespace, so it's
+        worth showing separately:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/namespace-example.php}}
+</code></pre>
+
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -13966,7 +11089,7 @@ return $backups[0];
                 <tr>
                     <td><code>__CLASS__</code></td>
                     <td>Class name</td>
-                    <td>Class-based log categorization</td>
+                    <td>Class-based log categorisation</td>
                 </tr>
                 <tr>
                     <td><code>__METHOD__</code></td>
@@ -14002,14 +11125,14 @@ return $backups[0];
         Install <a href="https://github.com/Seldaek/monolog" target="_blank" rel="noopener">Monolog</a> 3.x with proper version constraints using <a href="https://getcomposer.org/" target="_blank" rel="noopener">Composer</a>:
     </p>
     
-    <pre><code class="language-json">{{SNIPPET:php-magic-constants-logging/composer.json}}
+    <pre><code class="language-json">{{SNIPPET:php-magic-constants-maintainable-logging/composer.json}}
 </code></pre>
     
     <p>
         The enhanced logger demonstrates magic constants integration with Monolog's processor system:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/enhanced-logger.php}}
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/enhanced-logger.php}}
 </code></pre>
 </section>
 
@@ -14017,11 +11140,11 @@ return $backups[0];
     <h2>Automatic Context with Logging Traits</h2>
     <p>
         <a href="https://www.php.net/manual/en/language.oop5.traits.php" target="_blank" rel="noopener">Traits</a> provide reusable logging functionality that automatically injects magic constants 
-        into log context. This approach eliminates manual context building while maintaining 
+        into log context. This approach eliminates manual context building whilst maintaining
         consistency across application components.
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/logging-trait.php}}
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/logging-trait.php}}
 </code></pre>
     
     <h3>Service Integration Pattern</h3>
@@ -14030,7 +11153,7 @@ return $backups[0];
         business logic:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/service-example.php}}
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/service-example.php}}
 </code></pre>
 </section>
 
@@ -14041,26 +11164,25 @@ return $backups[0];
         The <code>DebugContextProcessor</code> demonstrates sophisticated context enrichment:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/debug-context-processor.php}}
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/debug-context-processor.php}}
 </code></pre>
     
     <h3>Processor Benefits</h3>
     <ul>
         <li><strong>Automatic Context</strong>: Magic constants added without manual intervention</li>
         <li><strong><a href="https://www.php.net/manual/en/function.debug-backtrace.php" target="_blank" rel="noopener">Stack Trace Analysis</a></strong>: Intelligent frame selection ignoring logging infrastructure</li>
-        <li><strong>Runtime Metrics</strong>: <a href="https://www.php.net/manual/en/function.memory-get-usage.php" target="_blank" rel="noopener">Memory usage</a> and performance data included</li>
-        <li><strong>Environment Context</strong>: PHP version, <a href="https://www.php.net/manual/en/function.php-sapi-name.php" target="_blank" rel="noopener">SAPI</a>, and system information</li>
+        <li><strong>Runtime and Environment Data</strong>: <a href="https://www.php.net/manual/en/function.memory-get-usage.php" target="_blank" rel="noopener">Memory usage</a>, performance figures, PHP version, <a href="https://www.php.net/manual/en/function.php-sapi-name.php" target="_blank" rel="noopener">SAPI</a>, and system information in one place</li>
     </ul>
 </section>
 
 <section>
     <h2>Performance-Aware Logging</h2>
     <p>
-        Performance logging leverages magic constants for method timing and resource monitoring. 
-        The performance logger provides <a href="https://www.php.net/manual/en/function.hrtime.php" target="_blank" rel="noopener">millisecond-precision timing</a> with automatic context:
+        Performance logging uses magic constants for method timing and resource monitoring.
+        The performance logger provides <a href="https://www.php.net/manual/en/function.microtime.php" target="_blank" rel="noopener">microtime-based timing</a> with automatic context:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/performance-logger.php}}
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/performance-logger.php}}
 </code></pre>
     
     <h3>Performance Logging Patterns</h3>
@@ -14070,20 +11192,19 @@ return $backups[0];
     
     <ul>
         <li><strong>Method-Level Timing</strong>: Automatic timer identification using magic constants</li>
-        <li><strong>Memory Tracking</strong>: Memory usage deltas for memory leak detection</li>
-        <li><strong>Counter Integration</strong>: Operation counting with contextual information</li>
+        <li><strong>Memory and Counter Tracking</strong>: Memory usage deltas for leak detection, plus operation counters with contextual information</li>
         <li><strong>Threshold-Based Alerting</strong>: Log level adjustment based on execution time</li>
     </ul>
 </section>
 
 <section>
-    <h2>Centralized Logger Factory</h2>
+    <h2>Centralised Logger Factory</h2>
     <p>
-        A logger factory centralizes configuration while providing specialized loggers for different 
+        A logger factory centralises configuration whilst providing specialised loggers for different
         application components. The factory pattern ensures consistent logging setup across services:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/logger-factory.php}}
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/logger-factory.php}}
 </code></pre>
     
     <h3>Factory Architecture Benefits</h3>
@@ -14091,7 +11212,8 @@ return $backups[0];
         <li><strong>Channel Separation</strong>: Different log files for different concerns</li>
         <li><strong>Environment Adaptation</strong>: Debug vs production handler configuration</li>
         <li><strong>Processor Consistency</strong>: Uniform context enrichment across loggers</li>
-        <li><strong>Handler Specialization</strong>: Channel-specific output formatting and storage</li>
+        <li><strong>Handler Specialisation</strong>: Channel-specific output formatting and storage</li>
+        <li><strong>Testability</strong>: Services depend on the <code>LoggerInterface</code> the factory returns, not on the factory itself</li>
     </ul>
 </section>
 
@@ -14101,18 +11223,26 @@ return $backups[0];
         Practical examples demonstrate magic constants in production scenarios:
     </p>
     
-    <pre><code class="language-php">{{SNIPPET:php-magic-constants-logging/usage-examples.php}}
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/usage-examples.php}}
 </code></pre>
-    
+
+    <p>
+        Example 5 above refers to a <code>NamespaceExample</code> class living in its own namespaced
+        file, since a bracketed <code>namespace</code> block cannot share a file with un-namespaced
+        global code:
+    </p>
+
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/namespace-aware-logging.php}}
+</code></pre>
+
     <h3>Production Logging Strategies</h3>
     <p>
         Effective production logging balances information depth with performance impact:
     </p>
     
     <ul>
-        <li><strong>Structured <a href="https://www.json.org/" target="_blank" rel="noopener">JSON</a></strong>: Machine-readable logs for analysis tools</li>
-        <li><strong>Log Level Management</strong>: Environment-appropriate verbosity levels</li>
-        <li><strong>Context Minimization</strong>: Essential information without overwhelming detail</li>
+        <li><strong>Structured <a href="https://www.json.org/" target="_blank" rel="noopener">JSON</a></strong>: Machine-readable logs for analysis tools, with environment-appropriate verbosity levels</li>
+        <li><strong>Context Minimisation</strong>: Essential information without overwhelming detail</li>
         <li><strong>Performance Monitoring</strong>: Resource usage tracking without overhead</li>
     </ul>
 </section>
@@ -14127,23 +11257,17 @@ return $backups[0];
     <h3>Security Logging Best Practices</h3>
     <ul>
         <li><strong>Context Filtering</strong>: Remove passwords, tokens, and personal data from context</li>
-        <li><strong>File Path Sanitization</strong>: Avoid exposing internal directory structures in logs</li>
+        <li><strong>File Path Sanitisation</strong>: Avoid exposing internal directory structures in logs</li>
         <li><strong>Stack Trace Limits</strong>: Restrict stack trace depth to prevent information disclosure</li>
         <li><strong>Access Control</strong>: Secure log file permissions and access patterns</li>
     </ul>
     
     <h3>Sensitive Data Redaction</h3>
     <p>
-        Implement context processors that sanitize sensitive data while preserving debugging value:
+        Implement context processors that sanitise sensitive data whilst preserving debugging value:
     </p>
-    
-    <pre><code class="language-php">// Example context sanitization
-$sanitizedContext = array_map(function($value, $key) {
-    if (in_array($key, ['password', 'token', 'secret'])) {
-        return '[REDACTED]';
-    }
-    return $value;
-}, $context, array_keys($context));
+
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/context-sanitisation.php}}
 </code></pre>
 </section>
 
@@ -14156,36 +11280,34 @@ $sanitizedContext = array_map(function($value, $key) {
     
     <h3>Testing Approaches</h3>
     <ul>
-        <li><strong>Mock Logger Testing</strong>: Verify log messages and context without file operations using <a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a></li>
-        <li><strong>Context Validation</strong>: Assert magic constants provide expected values using <a href="https://phpunit.de/manual/current/en/appendixes.assertions.html" target="_blank" rel="noopener">PHPUnit assertions</a></li>
+        <li><strong>Mock Logger Testing</strong>: Verify log messages and context without file operations, and assert magic constants provide expected values, using <a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a> and its <a href="https://phpunit.de/manual/current/en/appendixes.assertions.html" target="_blank" rel="noopener">assertions</a></li>
         <li><strong>Performance Testing</strong>: Measure logging overhead in high-throughput scenarios using <a href="https://github.com/phpbench/phpbench" target="_blank" rel="noopener">PHPBench</a></li>
-        <li><strong>Integration Testing</strong>: Validate end-to-end logging pipeline functionality with <a href="https://phpunit.de/" target="_blank" rel="noopener">PHPUnit</a></li>
+        <li><strong>Integration Testing</strong>: Validate end-to-end logging pipeline functionality</li>
     </ul>
     
     <h3>Development Environment Configuration</h3>
     <p>
-        Development logging should maximize debugging information while maintaining performance:
+        Development logging should maximise debugging information whilst maintaining performance:
     </p>
-    
-    <pre><code class="language-php">// Development logger configuration
-$logger = $loggerFactory->createLogger('app', Logger::DEBUG);
-$logger->pushProcessor(new DebugContextProcessor(true, 0)); // Include full stack traces
+
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/development-logger-config.php}}
 </code></pre>
 </section>
 
 <section>
     <h2>Performance Considerations</h2>
     <p>
-        <a href="https://www.php.net/manual/en/language.constants.predefined.php" target="_blank" rel="noopener">Magic constants</a> are resolved at compile time, making them performant for logging. However, 
+        <a href="https://www.php.net/manual/en/language.constants.magic.php" target="_blank" rel="noopener">Magic constants</a> are resolved at compile time, making them performant for logging. However, 
         context building and log processing can impact performance in high-throughput applications:
     </p>
     
-    <h3>Optimization Strategies</h3>
+    <h3>Optimisation Strategies</h3>
     <ul>
         <li><strong>Log Level Filtering</strong>: Disable debug logging in production</li>
         <li><strong>Lazy Context Building</strong>: Build expensive context only when needed</li>
         <li><strong>Asynchronous Logging</strong>: Queue log entries for background processing using <a href="https://github.com/bernardphp/bernard" target="_blank" rel="noopener">message queues</a></li>
         <li><strong>Selective Processing</strong>: Apply expensive processors only to specific channels</li>
+        <li><strong>Batching</strong>: Group multiple log writes into a single handler flush rather than one write per record</li>
     </ul>
     
     <h3>Memory Management</h3>
@@ -14194,17 +11316,14 @@ $logger->pushProcessor(new DebugContextProcessor(true, 0)); // Include full stac
         context limits and cleanup strategies:
     </p>
     
-    <pre><code class="language-php">// Memory-conscious logging
-$context = array_slice($fullContext, 0, 50); // Limit context size
-$logger->info($message, $context);
-unset($context); // Explicit cleanup
+    <pre><code class="language-php">{{SNIPPET:php-magic-constants-maintainable-logging/memory-conscious-logging.php}}
 </code></pre>
 </section>
 
 <section>
     <h2>Integration with Modern PHP Ecosystems</h2>
     <p>
-        Magic constants logging integrates seamlessly with popular PHP frameworks and tools:
+        Magic constants logging integrates cleanly with popular PHP frameworks and tools:
     </p>
     
     <h3>Framework Integration</h3>
@@ -14222,7 +11341,7 @@ unset($context); // Explicit cleanup
     
     <ul>
         <li><strong><a href="https://www.elastic.co/elastic-stack" target="_blank" rel="noopener">ELK Stack</a></strong>: <a href="https://www.elastic.co/elasticsearch/" target="_blank" rel="noopener">Elasticsearch</a> indexing of structured JSON logs</li>
-        <li><strong><a href="https://grafana.com/" target="_blank" rel="noopener">Grafana</a></strong>: Visualization of performance metrics from logs</li>
+        <li><strong><a href="https://grafana.com/" target="_blank" rel="noopener">Grafana</a></strong>: Visualisation of performance metrics from logs</li>
         <li><strong><a href="https://sentry.io/" target="_blank" rel="noopener">Sentry</a></strong>: Error tracking with rich context from magic constants</li>
         <li><strong><a href="https://www.datadoghq.com/" target="_blank" rel="noopener">DataDog</a></strong>: Application performance monitoring with log correlation</li>
     </ul>
@@ -14231,59 +11350,26 @@ unset($context); // Explicit cleanup
 <section>
     <h2>Future-Proofing and Evolution</h2>
     <p>
-        As PHP evolves, magic constants remain stable while logging ecosystems advance. 
+        As PHP evolves, magic constants remain stable whilst logging ecosystems advance.
         Consider these trends for long-term maintainability:
     </p>
     
     <h3>Emerging Patterns</h3>
     <ul>
         <li><strong><a href="https://opentelemetry.io/" target="_blank" rel="noopener">OpenTelemetry</a></strong>: Distributed tracing with magic constants context</li>
-        <li><strong>Structured Logging Standards</strong>: Consistent JSON schemas across services</li>
+        <li><strong>Structured, Streamed Logging</strong>: Consistent JSON schemas across services, moving towards event-driven, real-time architectures</li>
         <li><strong>AI-Powered Log Analysis</strong>: <a href="https://www.elastic.co/guide/en/machine-learning/current/ml-overview.html" target="_blank" rel="noopener">Machine learning</a> on rich context data</li>
-        <li><strong>Real-Time Log Streaming</strong>: Event-driven logging architectures</li>
     </ul>
     
     <h3>Migration Strategies</h3>
     <p>
-        Plan for logging system evolution while maintaining backward compatibility:
+        Plan for logging system evolution whilst maintaining backward compatibility:
     </p>
     
     <ul>
         <li><strong>Version Compatibility</strong>: Maintain support for older Monolog versions</li>
         <li><strong>Context Schema Evolution</strong>: Additive changes to log context structure</li>
-        <li><strong>Handler Migration</strong>: Gradual transition to new log storage systems</li>
-        <li><strong>Performance Monitoring</strong>: Track logging system performance impact</li>
-    </ul>
-</section>
-
-<section>
-    <h2>Implementation Checklist</h2>
-    <p>
-        Successful magic constants logging implementation requires systematic approach:
-    </p>
-    
-    <h3>Setup Phase</h3>
-    <ul>
-        <li>Install <a href="https://packagist.org/packages/monolog/monolog" target="_blank" rel="noopener">Monolog 3.x</a> with proper version constraints</li>
-        <li>Configure logger factory with environment-specific handlers</li>
-        <li>Implement custom processors for magic constants integration</li>
-        <li>Set up log rotation and retention policies</li>
-    </ul>
-    
-    <h3>Development Phase</h3>
-    <ul>
-        <li>Create logging traits for consistent context injection</li>
-        <li>Implement performance logging for critical methods</li>
-        <li>Add security event logging with context sanitization</li>
-        <li>Configure development vs production logging levels</li>
-    </ul>
-    
-    <h3>Production Phase</h3>
-    <ul>
-        <li>Monitor logging performance and memory usage</li>
-        <li>Implement log analysis and alerting systems</li>
-        <li>Regular log cleanup and archival processes</li>
-        <li>Security audit of log access and permissions</li>
+        <li><strong>Handler Migration</strong>: Gradual transition to new log storage systems, tracking the performance impact as you go</li>
     </ul>
 </section>
 
@@ -14296,16 +11382,16 @@ unset($context); // Explicit cleanup
     </p>
     
     <p>
-        The key to successful implementation lies in balancing information richness with performance 
-        impact, leveraging structured logging for observability, and maintaining security awareness 
-        in context handling. Magic constants provide the foundation for logging systems that grow 
-        with your application while maintaining debugging effectiveness.
+        The key to successful implementation lies in balancing information richness with performance
+        impact, using structured logging for observability, and maintaining security awareness
+        in context handling. Magic constants provide the foundation for logging systems that grow
+        with your application whilst maintaining debugging effectiveness.
     </p>
-    
+
     <p>
-        As <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a> applications become more distributed and complex, automatic context generation through 
-        magic constants becomes essential for effective debugging and monitoring. The patterns and 
-        implementations shown here provide a solid foundation for production-ready logging systems 
+        As <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a> applications become more distributed and complex, automatic context generation through
+        magic constants gets more useful for debugging and monitoring, not less. The patterns and
+        implementations shown here should give you a reasonable foundation for production logging systems
         that support both development productivity and operational visibility.
     </p>
 </section>
@@ -14316,7 +11402,7 @@ unset($context); // Explicit cleanup
     id: 'php-per-coding-style-evolution',
     title: 'PHP PER: The Evolution Beyond PSR-12 Coding Standards',
     description:
-      'Understanding PHP Evolving Recommendations (PER), how to enforce them with QA tools, and why PER Coding Style is the future of PHP standards.',
+      'Understanding PHP Evolving Recommendations (PER), how to enforce them with QA tools, and why PER Coding Style looks like the direction PHP standards are heading.',
     date: '2025-07-24',
     category: CATEGORIES.php.id,
     readingTime: 12,
@@ -14336,9 +11422,9 @@ unset($context); // Explicit cleanup
 <div class="intro">
     <p class="lead">
         <a href="https://www.php-fig.org/per/" target="_blank" rel="noopener">PHP Evolving Recommendations (PER)</a>
-        represent a fundamental shift in how the PHP community approaches standards. Unlike the static 
-        <a href="https://www.php-fig.org/psr/" target="_blank" rel="noopener">PSRs</a>, PERs are designed to evolve 
-        with the language, ensuring standards stay relevant as PHP continues its rapid modernization.
+        represent a fundamental shift in how the PHP community approaches standards. Unlike the static
+        <a href="https://www.php-fig.org/psr/" target="_blank" rel="noopener">PSRs</a>, PERs are designed to evolve
+        with the language, ensuring standards stay relevant as PHP continues its rapid modernisation.
     </p>
 </div>
 
@@ -14368,7 +11454,7 @@ unset($context); // Explicit cleanup
         <li><strong>Enumerations</strong> (<a href="https://www.php.net/releases/8.1/" target="_blank" rel="noopener">PHP 8.1</a>)</li>
         <li><strong>Readonly Properties</strong> (<a href="https://www.php.net/releases/8.1/" target="_blank" rel="noopener">PHP 8.1</a>)</li>
         <li><strong>Intersection Types</strong> (<a href="https://www.php.net/releases/8.1/" target="_blank" rel="noopener">PHP 8.1</a>)</li>
-        <li><strong>Property Hooks</strong> (upcoming in <a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener">PHP 8.4</a>)</li>
+        <li><strong>Property Hooks</strong> (<a href="https://wiki.php.net/rfc/property-hooks" target="_blank" rel="noopener">PHP 8.4</a>)</li>
     </ul>
     
     <p>
@@ -14426,21 +11512,7 @@ unset($context); // Explicit cleanup
         PER addresses the explosion of type system features in modern PHP:
     </p>
     
-    <pre><code class="language-php">// Union types (PHP 8.0+)
-public function process(int|string $value): void {}
-
-// Intersection types (PHP 8.1+)
-public function handle(Countable&Traversable $items): void {}
-
-// Complex compound types with proper formatting
-function complex(
-    array
-    |(ArrayAccess&Traversable)
-    |(Traversable&Countable) $input
-): ArrayAccess&Traversable {
-    // Implementation
-}
-</code></pre>
+    <pre><code class="language-php">{{SNIPPET:php-per-coding-style-evolution/modern-type-declarations.php}}</code></pre>
 
     <h3>2. Attributes (Annotations)</h3>
     <p>
@@ -14448,76 +11520,28 @@ function complex(
         get comprehensive formatting rules:
     </p>
     
-    <pre><code class="language-php">// Single attribute
-#[Route('/api/users')]
-class UserController {}
-
-// Multiple attributes
-#[
-    Route('/api/users'),
-    Middleware('auth'),
-    Cache(ttl: 3600)
-]
-class UserController {}
-
-// Inline for simple cases
-class User {
-    #[Required] #[Email] 
-    public string $email;
-}
-</code></pre>
+    <pre><code class="language-php">{{SNIPPET:php-per-coding-style-evolution/attributes-formatting.php}}</code></pre>
 
     <h3>3. Enumerations</h3>
     <p>
         Clear guidelines for <a href="https://www.php.net/manual/en/language.enumerations.php" target="_blank" rel="noopener">PHP 8.1 enums</a>:
     </p>
     
-    <pre><code class="language-php">enum Status: string
-{
-    case Draft = 'draft';
-    case Published = 'published';
-    case Archived = 'archived';
-    
-    public function isActive(): bool
-    {
-        return $this === self::Published;
-    }
-}
-</code></pre>
+    <pre><code class="language-php">{{SNIPPET:php-per-coding-style-evolution/enum-status.php}}</code></pre>
 
-    <h3>4. Property Hooks (PHP 8.4+)</h3>
+    <h3>4. Property Hooks (PHP 8.4)</h3>
     <p>
-        Forward-looking support for upcoming features:
+        Formatting guidance for one of PHP 8.4's headline features:
     </p>
     
-    <pre><code class="language-php">class User
-{
-    public string $name {
-        get => $this->firstName . ' ' . $this->lastName;
-        set => [$this->firstName, $this->lastName] = explode(' ', $value, 2);
-    }
-}
-</code></pre>
+    <pre><code class="language-php">{{SNIPPET:php-per-coding-style-evolution/property-hooks.php}}</code></pre>
 
     <h3>5. Trailing Commas</h3>
     <p>
         Mandatory trailing commas in multi-line contexts:
     </p>
     
-    <pre><code class="language-php">// Required in multi-line arrays
-$config = [
-    'host' => 'localhost',
-    'port' => 3306,
-    'database' => 'app', // ← Required trailing comma
-];
-
-// Required in multi-line function calls
-$result = processSomething(
-    $firstArgument,
-    $secondArgument,
-    $thirdArgument, // ← Required trailing comma
-);
-</code></pre>
+    <pre><code class="language-php">{{SNIPPET:php-per-coding-style-evolution/trailing-commas.php}}</code></pre>
 </section>
 
 <section>
@@ -14531,96 +11555,34 @@ $result = processSomething(
         incorporates PER Coding Style by default:
     </p>
     
-    <pre><code class="language-php">// .php-cs-fixer.php
-&lt;?php
-
-$finder = PhpCsFixerFinder::create()
-    ->in(__DIR__)
-    ->exclude('vendor');
-
-return (new PhpCsFixerConfig())
-    ->setRules([
-        '@Symfony' => true,  // Includes @PER-CS2.0
-        '@PER-CS' => true,   // Explicit PER compliance
-        'declare_strict_types' => true,
-        'void_return' => true,
-    ])
-    ->setFinder($finder)
-    ->setRiskyAllowed(true);
-</code></pre>
+    <pre><code class="language-php">{{SNIPPET:php-per-coding-style-evolution/php-cs-fixer-config.php}}</code></pre>
 
     <p>
         Run with:
     </p>
-    <pre><code class="language-bash">vendor/bin/php-cs-fixer fix --dry-run --diff  # Check changes
-vendor/bin/php-cs-fixer fix                     # Apply fixes
-</code></pre>
+    <pre><code class="language-bash">{{SNIPPET:php-per-coding-style-evolution/php-cs-fixer-run.sh}}</code></pre>
 
     <h3>PHPStan Integration</h3>
     <p>
-        While <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> focuses on static analysis, 
+        Whilst <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> focuses on static analysis,
         you can enforce some PER conventions:
     </p>
-    
-    <pre><code class="language-yaml"># phpstan.neon
-parameters:
-    level: 9
-    strictRules:
-        strictCalls: true
-        strictProperties: true
-    
-    # Enforce modern PHP features
-    phpVersion: 80300  # Minimum PHP 8.3
-    
-includes:
-    - vendor/phpstan/phpstan-strict-rules/rules.neon
-</code></pre>
+
+    <pre><code class="language-yaml">{{SNIPPET:php-per-coding-style-evolution/phpstan-config.neon}}</code></pre>
 
     <h3>Composer Scripts</h3>
     <p>
         Integrate into your workflow:
     </p>
     
-    <pre><code class="language-json">{
-    "scripts": {
-        "check-style": "php-cs-fixer fix --dry-run --diff",
-        "fix-style": "php-cs-fixer fix",
-        "analyse": "phpstan analyse",
-        "qa": [
-            "@check-style",
-            "@analyse"
-        ]
-    }
-}
-</code></pre>
+    <pre><code class="language-json">{{SNIPPET:php-per-coding-style-evolution/composer-scripts.json}}</code></pre>
 
     <h3>CI/CD Integration</h3>
     <p>
         <a href="https://docs.github.com/en/actions" target="_blank" rel="noopener">GitHub Actions</a> example:
     </p>
     
-    <pre><code class="language-yaml">name: Code Quality
-
-on: [push, pull_request]
-
-jobs:
-  quality:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          tools: php-cs-fixer, phpstan
-      
-      - name: Check PER Compliance
-        run: php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php
-      
-      - name: Static Analysis
-        run: phpstan analyse
-</code></pre>
+    <pre><code class="language-yaml">{{SNIPPET:php-per-coding-style-evolution/github-actions-quality.yaml}}</code></pre>
 </section>
 
 <section>
@@ -14646,11 +11608,11 @@ jobs:
         <li>Inconsistent codebases</li>
     </ul>
 
-    <h3>Enter PER (2022-2023)</h3>
+    <h3>Enter PER (2022–2025)</h3>
     <p>
-        PHP-FIG introduced the <a href="https://www.php-fig.org/bylaws/per-workflow/" target="_blank" rel="noopener">PER Workflow Bylaw</a>, 
-        creating a new category of living standards. PER Coding Style 2.0 was released in April 2023, 
-        followed by 3.0 in July 2023. Key innovations:
+        PHP-FIG introduced the <a href="https://www.php-fig.org/bylaws/per-workflow/" target="_blank" rel="noopener">PER Workflow Bylaw</a>,
+        creating a new category of living standards. PER Coding Style 2.0 was released in April 2023,
+        followed by 3.0 in July 2025. Key innovations:
     </p>
     <ul>
         <li><strong>Active Maintainership</strong>: Each PER has an Editor and Sponsor</li>
@@ -14703,34 +11665,7 @@ jobs:
         Migrating is straightforward with proper tooling:
     </p>
     
-    <pre><code class="language-bash"># 1. Install/update PHP-CS-Fixer
-composer require --dev friendsofphp/php-cs-fixer
-
-# 2. Create configuration
-cat > .php-cs-fixer.php << 'EOF'
-&lt;?php
-return (new PhpCsFixer\\Config())
-    ->setRules([
-        '@PER-CS' => true,
-        // Your additional rules
-    ])
-    ->setFinder(
-        PhpCsFixer\\Finder::create()
-            ->in(__DIR__)
-            ->exclude('vendor')
-    );
-EOF
-
-# 3. Check what will change
-vendor/bin/php-cs-fixer fix --dry-run --diff
-
-# 4. Apply changes
-vendor/bin/php-cs-fixer fix
-
-# 5. Commit
-git add .
-git commit -m "Migrate from PSR-12 to PER Coding Style"
-</code></pre>
+    <pre><code class="language-bash">{{SNIPPET:php-per-coding-style-evolution/migration-guide.sh}}</code></pre>
 
     <h3>Common Migration Issues</h3>
     <ul>
@@ -14741,24 +11676,26 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
 </section>
 
 <section>
-    <h2>Conclusion</h2>
+    <h2>PER's Long-Term Payoff</h2>
     <p>
-        PHP Evolving Recommendations represent a maturation of the PHP community's approach to standards. 
+        PHP Evolving Recommendations represent a maturation of the PHP community's approach to standards.
         By acknowledging that languages evolve and standards must evolve with them, PER provides a 
         sustainable path forward.
     </p>
     
     <p>
         For teams already using <a href="https://github.com/PHP-CS-Fixer/PHP-CS-Fixer" target="_blank" rel="noopener">PHP-CS-Fixer</a> 
-        with <a href="https://symfony.com/" target="_blank" rel="noopener">Symfony</a> rules, you're likely 
-        already PER-compliant. For others, the migration is painless with modern tooling.
+        with <a href="https://symfony.com/" target="_blank" rel="noopener">Symfony</a> rules, you're likely
+        already PER-compliant. For others, the migration is straightforward with modern tooling, though
+        as the section above shows, it's not entirely without friction.
     </p>
-    
+
     <p>
-        The key insight: PER goes beyond coding style. It creates living standards that
-        grow with PHP. As PHP continues its renaissance with performance improvements, type safety, and 
-        modern features, PER ensures our standards keep pace. With PHP 8.5 on the horizon 
-        and new features constantly being added, PER's evolutionary approach is more important than ever.
+        The key insight is that PER goes beyond coding style: it creates living standards that grow
+        with PHP, and as PHP continues its renaissance with performance improvements, type safety, and
+        modern features, PER ensures our standards keep pace. With PHP 8.5 on the horizon and new
+        features constantly being added, that evolutionary approach matters more than it did under the
+        old, static PSR model.
     </p>
 </section>
 
@@ -14779,13 +11716,14 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
     id: 'php-qa-ci-comprehensive-quality-pipeline',
     title: 'PHP-QA-CI: A Comprehensive Quality Assurance Pipeline in a Single Dependency',
     description:
-      'Discover how LTS PHP-QA-CI provides a complete, production-ready QA pipeline with 12+ integrated tools through a single Composer dependency. Learn configuration, customization, and CI/CD integration strategies.',
+      'LTS PHP-QA-CI provides a complete, production-ready QA pipeline with a full suite of integrated tools through a single Composer dependency, covering configuration, customisation, and CI/CD integration strategies.',
     date: '2025-07-25',
     category: CATEGORIES.php.id,
     readingTime: 15,
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    register: 'formal',
     heroImage: {
       src: '/images/php-qa-ci-comprehensive-quality-pipeline/hero.webp',
       alt: 'Historic black-and-white photograph of gate valves controlling sequential stages of a water filtration plant, main flood valve and crossover valve mounted side by side on the pipe run',
@@ -14810,28 +11748,28 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
                 <li>Maintaining and updating configurations as tools evolve</li>
                 <li>Training team members on different tool interfaces</li>
             </ul>
-            <p>This fragmented approach creates problems. You get inconsistent setups across projects. Maintenance becomes a nightmare. Teams often skip important QA steps because it's just too complicated.</p>
+            <p>This fragmented approach creates problems: you get inconsistent setups across projects, maintenance becomes a nightmare, and teams often skip important QA steps because it's just too complicated.</p>
         </section>
 
         <section>
-            <h2>Enter PHP-QA-CI</h2>
+            <h2>PHP-QA-CI</h2>
             <p><a href="https://github.com/LongTermSupport/php-qa-ci" target="_blank">PHP-QA-CI</a> solves these problems. Built by <a href="https://github.com/LongTermSupport" target="_blank">Long Term Support LTD</a>, it gives you a complete QA pipeline through a single Composer dependency.</p>
             
-            <p>The key innovation is simple. Instead of manually orchestrating multiple tools, PHP-QA-CI provides:</p>
+            <p>The key innovation is simple: instead of manually orchestrating multiple tools, PHP-QA-CI provides:</p>
             <ul>
                 <li>Pre-configured, sensible defaults for all integrated tools</li>
                 <li>Logical execution order that fails fast on errors</li>
                 <li>Consistent interface across all projects</li>
-                <li>Easy customization when needed</li>
+                <li>Easy customisation when needed</li>
                 <li>Version-specific branches for different PHP versions</li>
             </ul>
         </section>
 
         <section>
             <h2>The Complete Tool Suite</h2>
-            <p>Installing PHP-QA-CI gives you immediate access to a complete suite of QA tools, organized into logical categories:</p>
+            <p>Installing PHP-QA-CI gives you immediate access to a complete suite of QA tools, organised into logical categories:</p>
 
-            <p>The tools run in order from fastest to slowest. This gives you quick feedback:</p>
+            <p>The tools run in order from fastest to slowest, giving you quick feedback:</p>
 
             <h3>1. Validation and Checks</h3>
             <ul>
@@ -14877,18 +11815,18 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
             <h2>Installation and Basic Usage</h2>
             <p>Getting started with PHP-QA-CI requires just a single Composer command:</p>
 
-            <pre><code class="language-json">{{SNIPPET:php-qa-ci-composer-json.json}}
+            <pre><code class="language-json">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/composer-json.json}}
 </code></pre>
 
             <p>Install the package (using the PHP 8.4 branch):</p>
-            <pre><code class="language-bash">composer require --dev lts/php-qa-ci:dev-php8.4</code></pre>
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/install.bash}}</code></pre>
 
-            <p>That's it! You now have access to the complete QA pipeline:</p>
+            <p>That gives you access to the complete QA pipeline:</p>
 
-            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-basic-usage.bash}}
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/basic-usage.bash}}
 </code></pre>
 
-            <p>The pipeline runs tools in an order designed to "fail fast." It catches basic issues first before running the more time-consuming analyses.</p>
+            <p>The pipeline runs tools in an order designed to "fail fast," catching basic issues first before running the more time-consuming analyses.</p>
         </section>
 
         <section>
@@ -14896,30 +11834,30 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
             <p>PHP-QA-CI maintains separate branches for different PHP versions. This ensures compatibility and lets you use version-specific features:</p>
 
             <ul>
-                <li><code>master</code> - Stable release branch</li>
                 <li><code>php8.3</code> - PHP 8.3 specific configurations</li>
                 <li><code>php8.4</code> - PHP 8.4 support (current recommended branch as of 2025)</li>
+                <li><code>php8.5</code> - Default branch, tracking the latest PHP release</li>
             </ul>
 
-            <p>This branching strategy gives you optimal configurations for each PHP version. It still maintains backward compatibility when needed.</p>
+            <p>This branching strategy gives you sensible configurations for each PHP version, whilst still maintaining backward compatibility when needed.</p>
         </section>
 
         <section>
-            <h2>Configuration and Customization</h2>
-            <p>PHP-QA-CI works out of the box with sensible defaults, but it's easy to customize. The tool looks for custom configurations in your project's <code>qaConfig</code> directory. If it doesn't find them, it uses the defaults.</p>
+            <h2>Configuration and Customisation</h2>
+            <p>PHP-QA-CI works out of the box with sensible defaults, but it's easy to customise. The tool looks for custom configurations in your project's <code>qaConfig</code> directory. If it doesn't find them, it uses the defaults.</p>
 
             <h3>Creating Custom Configurations</h3>
-            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-custom-config.bash}}
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/custom-config.bash}}
 </code></pre>
 
             <h3>PHPStan Custom Configuration Example</h3>
             <p>Here's how to extend the default PHPStan configuration for your project:</p>
-            <pre><code class="language-yaml">{{SNIPPET:php-qa-ci-phpstan-custom.neon}}
+            <pre><code class="language-yaml">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/phpstan-custom.neon}}
 </code></pre>
 
             <h3>PHP CS Fixer Custom Configuration</h3>
-            <p>Customize coding standards while maintaining the base configuration:</p>
-            <pre><code class="language-php">{{SNIPPET:php-qa-ci-php-cs-fixer-custom.php}}
+            <p>Customise coding standards whilst maintaining the base configuration:</p>
+            <pre><code class="language-php">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/php-cs-fixer-custom.php}}
 </code></pre>
         </section>
 
@@ -14927,10 +11865,10 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
             <h2>Symfony Project Integration</h2>
             <p>PHP-QA-CI includes special considerations for Symfony projects. When installing in a Symfony project, you have two options:</p>
 
-            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-symfony-setup.bash}}
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/symfony-setup.bash}}
 </code></pre>
 
-            <p>The PHP-QA-CI defaults are more comprehensive than Symfony's defaults. You get additional static analysis rules and stricter coding standards.</p>
+            <p>The PHP-QA-CI defaults are more comprehensive than Symfony's defaults, giving you additional static analysis rules and stricter coding standards.</p>
         </section>
 
         <section>
@@ -14938,16 +11876,16 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
             
             <h3>Hooks System</h3>
             <p>PHP-QA-CI supports pre and post execution hooks, allowing you to integrate custom logic into the pipeline:</p>
-            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-hooks.bash}}
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/hooks.bash}}
 </code></pre>
 
             <h3>Mutation Testing with Infection</h3>
-            <p>One of the most powerful features is mutation testing via Infection. It tests the quality of your test suite by introducing small changes to your code. Then it checks if your tests catch these mutations:</p>
-            <pre><code class="language-json">{{SNIPPET:php-qa-ci-infection-config.json}}
+            <p>One of the most powerful features is mutation testing via Infection, which tests the quality of your test suite by introducing small changes to your code and then checking whether your tests catch these mutations:</p>
+            <pre><code class="language-json">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/infection-config.json}}
 </code></pre>
 
-            <h3>Performance Optimization</h3>
-            <p>The pipeline is optimized for performance in several ways:</p>
+            <h3>Performance Optimisation</h3>
+            <p>The pipeline is optimised for performance in several ways:</p>
             <ul>
                 <li>Fail-fast approach - basic checks run first</li>
                 <li>Parallel execution where possible</li>
@@ -14958,9 +11896,9 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
 
         <section>
             <h2>CI/CD Integration</h2>
-            <p>PHP-QA-CI works seamlessly in CI environments. Here's an example GitHub Actions workflow:</p>
+            <p>PHP-QA-CI works well in CI environments. Here's an example GitHub Actions workflow:</p>
 
-            <pre><code class="language-yaml">{{SNIPPET:php-qa-ci-ci-pipeline.yaml}}
+            <pre><code class="language-yaml">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/ci-pipeline.yaml}}
 </code></pre>
 
             <p>The pipeline works just as well with GitLab CI, Jenkins, or Bitbucket Pipelines. The consistent interface means your local development experience matches your CI environment exactly.</p>
@@ -14996,28 +11934,13 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Initial Setup Time</td>
-                        <td>2-4 hours</td>
-                        <td>5 minutes</td>
-                    </tr>
-                    <tr>
-                        <td>Configuration Files</td>
-                        <td>10-15 files</td>
-                        <td>0 (uses defaults)</td>
-                    </tr>
-                    <tr>
-                        <td>Composer Dependencies</td>
-                        <td>12+ packages</td>
-                        <td>1 package</td>
-                    </tr>
-                    <tr>
                         <td>Execution Scripts</td>
                         <td>Custom required</td>
                         <td>Single qa command</td>
                     </tr>
                     <tr>
                         <td>Cross-project Consistency</td>
-                        <td>Manual synchronization</td>
+                        <td>Manual synchronisation</td>
                         <td>Automatic</td>
                     </tr>
                     <tr>
@@ -15034,22 +11957,15 @@ git commit -m "Migrate from PSR-12 to PER Coding Style"
             
             <h3>Permission Issues</h3>
             <p>If you encounter permission issues with the qa script:</p>
-            <pre><code class="language-bash">chmod +x vendor/lts/php-qa-ci/bin/qa
-# Or use composer's bin directory
-chmod +x bin/qa</code></pre>
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/permission-fix.bash}}</code></pre>
 
             <h3>Memory Limits</h3>
             <p>Some tools like PHPStan may require increased memory limits:</p>
-            <pre><code class="language-bash">export PHP_QA_CI_PHP_EXECUTABLE="php -d memory_limit=512M"
-./bin/qa</code></pre>
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/memory-limit.bash}}</code></pre>
 
             <h3>Tool-Specific Issues</h3>
             <p>Individual tools can be run in isolation for debugging:</p>
-            <pre><code class="language-bash"># Run only PHPStan
-./bin/qa phpstan
-
-# Run with verbose output
-./bin/qa --verbose</code></pre>
+            <pre><code class="language-bash">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/tool-specific.bash}}</code></pre>
         </section>
 
         <section>
@@ -15058,24 +11974,24 @@ chmod +x bin/qa</code></pre>
             <ul>
                 <li>Support for newer PHP versions as they're released</li>
                 <li>Integration of emerging QA tools</li>
-                <li>Performance optimizations for large codebases</li>
+                <li>Performance optimisations for large codebases</li>
                 <li>Enhanced reporting and metrics</li>
                 <li>Better IDE integration support</li>
             </ul>
         </section>
 
         <section>
-            <h2>Conclusion</h2>
-            <p>PHP-QA-CI changes how you set up quality assurance for PHP projects. It provides a complete, pre-configured pipeline through a single dependency. This removes the barriers to implementing comprehensive quality checks.</p>
+            <h2>Why This Matters for PHP Teams</h2>
+            <p>PHP-QA-CI changes how you set up quality assurance for PHP projects, providing a complete, pre-configured pipeline through a single dependency that removes the barriers to implementing comprehensive quality checks.</p>
 
-            <p>Whether you're starting a new project or improving QA in an existing codebase, PHP-QA-CI offers immediate value with minimal setup. The combination of sensible defaults, easy customization, and comprehensive tool coverage makes it essential for any serious PHP development workflow.</p>
+            <p>Whether you're starting a new project or improving QA in an existing codebase, PHP-QA-CI offers immediate value with minimal setup, thanks to the combination of sensible defaults, easy customisation, and comprehensive tool coverage.</p>
 
-            <p>The tool embodies the philosophy of the <a href="https://www.php.net/manual/en/intro-whatis.php" target="_blank">PHP language itself</a>: pragmatic, powerful, and focused on developer productivity. By abstracting away QA pipeline complexity, PHP-QA-CI lets developers focus on what matters most. Writing quality code.</p>
+            <p>I think it fits the philosophy of the <a href="https://www.php.net/manual/en/intro-whatis.php" target="_blank">PHP language itself</a>: pragmatic and focused on developer productivity rather than ceremony. By abstracting away QA pipeline complexity, PHP-QA-CI leaves developers more time to spend on the actual code.</p>
 
             <div class="cta-section">
                 <h3>Get Started Today</h3>
-                <p>Ready to streamline your PHP quality assurance workflow? Visit the <a href="https://github.com/LongTermSupport/php-qa-ci" target="_blank">PHP-QA-CI GitHub repository</a> or install it directly via Composer:</p>
-                <pre><code class="language-bash">composer require --dev lts/php-qa-ci:dev-master@dev</code></pre>
+                <p>Visit the <a href="https://github.com/LongTermSupport/php-qa-ci" target="_blank">PHP-QA-CI GitHub repository</a> or install it directly via Composer:</p>
+                <pre><code class="language-bash">{{SNIPPET:php-qa-ci-comprehensive-quality-pipeline/install.bash}}</code></pre>
             </div>
         </section>
     `,
@@ -15085,9 +12001,10 @@ chmod +x bin/qa</code></pre>
     id: 'php-stream-wrappers',
     title: 'PHP Stream Wrappers: Mastering I/O Abstraction and Custom Protocols',
     description:
-      'Comprehensive guide to PHP stream wrappers, from built-in protocols like file://, http://, and data:// to implementing custom stream handlers for advanced I/O operations',
+      'How PHP treats files, URLs, compressed data, and custom protocols through the same handful of functions, and when writing your own wrapper is worth the extra code',
     date: '2025-09-26',
     category: CATEGORIES.php.id,
+    register: 'formal',
     heroImage: {
       src: '/images/php-stream-wrappers/hero.webp',
       alt: 'A 1913 engineering drawing of a steel discharge manifold, showing a single intake pipe splitting at a T-junction into three separate branches, each ending in its own flanged connector',
@@ -15108,7 +12025,7 @@ chmod +x bin/qa</code></pre>
         <a href="https://www.php.net/manual/en/function.fopen.php" target="_blank" rel="noopener">fopen()</a> and
         <a href="https://www.php.net/manual/en/function.file-get-contents.php" target="_blank" rel="noopener">file_get_contents()</a>.
         This guide explores built-in wrappers, their practical applications, and how to implement custom stream handlers
-        for specialized data sources.
+        for specialised data sources.
     </p>
 </div>
 
@@ -15117,7 +12034,7 @@ chmod +x bin/qa</code></pre>
     <p>
         <a href="https://www.php.net/manual/en/intro.stream.php" target="_blank" rel="noopener">PHP streams</a> provide
         a unified interface for various I/O operations. Each stream is identified by a scheme and target:
-        <code>scheme://target</code>. The scheme determines which wrapper handles the stream, while the target
+        <code>scheme://target</code>. The scheme determines which wrapper handles the stream, whilst the target
         specifies what to access.
     </p>
 
@@ -15127,7 +12044,7 @@ chmod +x bin/qa</code></pre>
     <p>
         The <a href="https://www.php.net/manual/en/function.stream-get-wrappers.php" target="_blank" rel="noopener">stream_get_wrappers()</a>
         function reveals all available protocols, typically including: <code>file</code>, <code>http</code>,
-        <code>https</code>, <code>ftp</code>, <code>php</code>, <code>zlib</code>, <code>data</code>,
+        <code>https</code>, <code>ftp</code>, <code>php</code>, <code>compress.zlib</code>, <code>data</code>,
         <code>phar</code>, and <code>zip</code>.
     </p>
 </section>
@@ -15136,8 +12053,8 @@ chmod +x bin/qa</code></pre>
     <h2>File System Wrapper (file://)</h2>
     <p>
         The <a href="https://www.php.net/manual/en/wrappers.file.php" target="_blank" rel="noopener">file:// wrapper</a>
-        is the default handler for local filesystem access. When no scheme is specified, PHP assumes <code>file://</code>.
-        It supports all standard filesystem operations and metadata retrieval.
+        is the default handler for local filesystem access, and when no scheme is specified PHP simply assumes it,
+        supporting all standard filesystem operations and metadata retrieval.
     </p>
 
     <pre><code class="language-php">{{SNIPPET:php-stream-wrappers/file-wrapper-advanced.php}}
@@ -15153,7 +12070,7 @@ chmod +x bin/qa</code></pre>
     <h2>HTTP/HTTPS Wrappers</h2>
     <p>
         The <a href="https://www.php.net/manual/en/wrappers.http.php" target="_blank" rel="noopener">HTTP wrappers</a>
-        enable web resource access with full HTTP protocol support. They handle redirects, authentication,
+        enable web resource access with broad HTTP protocol support, handling redirects, authentication,
         custom headers, and different HTTP methods through
         <a href="https://www.php.net/manual/en/context.http.php" target="_blank" rel="noopener">stream contexts</a>.
     </p>
@@ -15163,8 +12080,9 @@ chmod +x bin/qa</code></pre>
 
     <p>
         The <code>$http_response_header</code> variable automatically contains response headers, enabling
-        status code checks and header parsing. Setting <code>ignore_errors</code> prevents exceptions
-        on HTTP error status codes.
+        status code checks and header parsing. Setting <code>ignore_errors</code> stops
+        <code>file_get_contents()</code> from returning <code>false</code> (and raising a warning) on HTTP
+        error status codes, so the response body is still returned for inspection.
     </p>
 </section>
 
@@ -15189,9 +12107,9 @@ chmod +x bin/qa</code></pre>
     <h2>Data URI Scheme (data://)</h2>
     <p>
         The <a href="https://www.php.net/manual/en/wrappers.data.php" target="_blank" rel="noopener">data:// wrapper</a>
-        implements <a href="https://tools.ietf.org/rfc/rfc2397.txt" target="_blank" rel="noopener">RFC 2397</a>
-        for embedding data directly in URLs. Note that <code>data://</code> and <code>data:</code> are
-        interchangeable - both refer to the same data URI scheme.
+        implements <a href="https://www.rfc-editor.org/rfc/rfc2397" target="_blank" rel="noopener">RFC 2397</a>
+        for embedding data directly in URLs. <code>data://</code> and <code>data:</code> are
+        interchangeable; both refer to the same data URI scheme.
     </p>
 
     <pre><code class="language-php">{{SNIPPET:php-stream-wrappers/data-uri-scheme.php}}
@@ -15218,7 +12136,7 @@ chmod +x bin/qa</code></pre>
 <section>
     <h2>Implementing Custom Stream Wrappers</h2>
     <p>
-        Custom stream wrappers enable access to specialized data sources through PHP's standard file functions.
+        Custom stream wrappers enable access to specialised data sources through PHP's standard file functions.
         Use <a href="https://www.php.net/manual/en/function.stream-wrapper-register.php" target="_blank" rel="noopener">stream_wrapper_register()</a>
         to register custom protocols.
     </p>
@@ -15247,9 +12165,9 @@ chmod +x bin/qa</code></pre>
     <h2>Stream Filters and Contexts</h2>
     <p>
         <a href="https://www.php.net/manual/en/function.stream-filter-append.php" target="_blank" rel="noopener">Stream filters</a>
-        provide data transformation during read/write operations, while
+        provide data transformation during read/write operations, whilst
         <a href="https://www.php.net/manual/en/function.stream-context-create.php" target="_blank" rel="noopener">stream contexts</a>
-        configure wrapper behavior.
+        configure wrapper behaviour.
     </p>
 
     <pre><code class="language-php">{{SNIPPET:php-stream-wrappers/stream-filters-contexts.php}}
@@ -15259,8 +12177,8 @@ chmod +x bin/qa</code></pre>
 <section>
     <h2>Performance Considerations</h2>
     <p>
-        Stream wrappers introduce abstraction overhead. Understanding performance characteristics helps
-        choose appropriate implementations for different use cases.
+        Stream wrappers introduce abstraction overhead, so understanding their performance characteristics helps
+        in choosing the right implementation for a given use case.
     </p>
 
     <pre><code class="language-php">{{SNIPPET:php-stream-wrappers/performance-benchmark.php}}
@@ -15270,7 +12188,7 @@ chmod +x bin/qa</code></pre>
 <section>
     <h2>Security Considerations</h2>
     <p>
-        Stream wrappers can introduce security vulnerabilities if not properly validated. Always sanitize
+        Stream wrappers can introduce security vulnerabilities if not properly validated, so always sanitise
         input and implement appropriate access controls.
     </p>
 
@@ -15304,17 +12222,11 @@ chmod +x bin/qa</code></pre>
 <section>
     <h2>Conclusion</h2>
     <p>
-        PHP stream wrappers provide a powerful abstraction for I/O operations, enabling consistent access
-        to diverse data sources through familiar file functions. Built-in wrappers handle common protocols
-        like HTTP and data URIs, while custom implementations enable specialized data handling for caching,
-        logging, and secure file access.
-    </p>
-
-    <p>
         The key to effective stream wrapper usage lies in understanding the abstraction's strengths:
-        protocol independence, transparent data transformation, and seamless integration with existing
-        code. Whether accessing remote APIs, handling compressed data, or implementing custom protocols,
-        stream wrappers offer a clean, standardized approach to I/O operations in PHP applications.
+        protocol independence, transparent data transformation, and clean integration with existing
+        code. The built-in wrappers cover most day-to-day needs (<code>file://</code>, <code>http://</code>,
+        <code>php://</code>), whilst custom implementations are worth reaching for when a project needs
+        specialised handling such as caching, logging, or secure file access.
     </p>
 </section>
     `,
@@ -15331,6 +12243,7 @@ chmod +x bin/qa</code></pre>
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    register: 'formal',
     heroImage: {
       src: '/images/phpstan-project-level-rules/hero.webp',
       alt: 'A black-and-white photograph of a machine shop tool room, with a mesh-fronted tool cabinet, a rack of hanging clamps and wrenches, and a run of individually labelled parts drawers under a workbench with a mounted vice',
@@ -15472,26 +12385,12 @@ chmod +x bin/qa</code></pre>
 
             <p>This rule catches code like this:</p>
 
-            <pre><code class="language-php">// ❌ VIOLATES RULE - Query created inside loop (N+1 problem)
-foreach ($users as $user) {
-    $query = new ProductQuery();  // PHPStan error!
-    $products = $query->where('user_id', $user->id)->execute();
-    // Process products...
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/query-in-loop-violation.php}}
 </code></pre>
 
             <p>Instead, write:</p>
 
-            <pre><code class="language-php">// ✅ PASSES RULE - Query created once, batched execution
-$userIds = array_map(fn($u) => $u->id, $users);
-$query = new ProductQuery();  // Create once before loop
-$allProducts = $query->whereIn('user_id', $userIds)->execute();
-
-// Map products back to users
-foreach ($users as $user) {
-    $userProducts = array_filter($allProducts, fn($p) => $p->user_id === $user->id);
-    // Process products...
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/query-in-loop-fixed.php}}
 </code></pre>
 
             <p>
@@ -15516,14 +12415,12 @@ foreach ($users as $user) {
 
             <p>This rule catches code like this:</p>
 
-            <pre><code class="language-php">// ❌ VIOLATES RULE
-$application->execute('sync:users');  // PHPStan error!
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/magic-string-violation.php}}
 </code></pre>
 
             <p>Instead, write:</p>
 
-            <pre><code class="language-php">// ✅ PASSES RULE - use command class constant
-$application->execute(SyncUsersCommand::COMMAND_NAME);
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/magic-string-fixed.php}}
 </code></pre>
 
             <p>
@@ -15550,42 +12447,19 @@ $application->execute(SyncUsersCommand::COMMAND_NAME);
 
             <p>This rule catches code like this:</p>
 
-            <pre><code class="language-php">// ❌ VIOLATES RULE - I/O work in destructor
-class Logger {
-    public function __destruct() {
-        $this->fileHandle->flush();  // PHPStan error!
-        fclose($this->fileHandle);   // Unpredictable timing
-    }
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/destructor-violation.php}}
 </code></pre>
 
             <p>Instead, write:</p>
 
-            <pre><code class="language-php">// ✅ PASSES RULE - destructor only verifies cleanup
-class FileLogger {
-    private bool $closed = false;
-
-    public function close(): void {
-        fflush($this->handle);
-        fclose($this->handle);
-        $this->closed = true;
-    }
-
-    public function __destruct() {
-        if (!$this->closed) {
-            throw new LogicException(
-                'FileLogger not closed. Call close() explicitly.'
-            );
-        }
-    }
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/destructor-fixed.php}}
 </code></pre>
 
             <p>
-                This architectural rule enforces a best practice: destructors should only verify that cleanup was done, not perform the
-                cleanup itself. The rule allows throwing <a href="https://www.php.net/manual/en/class.logicexception.php" target="_blank" rel="noopener"><code>LogicException</code></a>
-                to catch missing cleanup, but any actual I/O work should happen in explicit methods like <code>close()</code> or <code>dispose()</code>,
-                giving developers control over when resources are released.
+                This architectural rule enforces a best practice: destructors should not perform any cleanup work themselves.
+                The rule allows a destructor with no statements at all - any actual I/O work should happen in explicit methods
+                like <code>close()</code> or <code>dispose()</code>, giving developers control over when resources are released
+                rather than leaving it to unpredictable garbage collection timing.
             </p>
 
             <h3>Enforcing Dependency Injection</h3>
@@ -15600,27 +12474,12 @@ class FileLogger {
 
             <p>This rule catches code like this:</p>
 
-            <pre><code class="language-php">// ❌ VIOLATES RULE - Direct environment access
-class EmailService {
-    public function send(): void {
-        $apiKey = getenv('MAILGUN_API_KEY');  // PHPStan error!
-        // Send email using $apiKey...
-    }
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/env-access-violation.php}}
 </code></pre>
 
             <p>Instead, write:</p>
 
-            <pre><code class="language-php">// ✅ PASSES RULE - Constructor injection
-class EmailService {
-    public function __construct(
-        private readonly string $mailgunApiKey
-    ) {}
-
-    public function send(): void {
-        // Use $this->mailgunApiKey - testable, explicit
-    }
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/env-access-fixed.php}}
 </code></pre>
 
             <p>
@@ -15645,31 +12504,12 @@ class EmailService {
 
             <p>This rule catches code like this:</p>
 
-            <pre><code class="language-php">// ❌ VIOLATES RULE - Mocking critical database service
-class UserRepositoryTest extends TestCase {
-    public function testGetUser(): void {
-        $mockDb = $this->createMock(DatabaseServiceInterface::class);  // PHPStan error!
-        $mockDb->method('query')->willReturn(['id' => 1]);
-        // False confidence - not testing real database behaviour
-    }
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/mock-database-violation.php}}
 </code></pre>
 
             <p>Instead, write:</p>
 
-            <pre><code class="language-php">// ✅ PASSES RULE - Real database integration test
-class UserRepositoryTest extends TestCase {
-    private DatabaseServiceInterface $db;
-
-    protected function setUp(): void {
-        $this->db = new TestDatabaseService();  // Real test database
-        $this->db->beginTransaction();
-    }
-
-    public function testGetUser(): void {
-        // Test against real database - catches transaction issues, etc.
-    }
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/mock-database-fixed.php}}
 </code></pre>
 
             <p>
@@ -15691,24 +12531,12 @@ class UserRepositoryTest extends TestCase {
 
             <p>This rule catches code like this:</p>
 
-            <pre><code class="language-php">// ❌ VIOLATES RULE - Production table name in test
-class OrderTest extends TestCase {
-    public function testCreateOrder(): void {
-        $result = $this->db->query('SELECT * FROM orders WHERE id = ?', [1]);  // PHPStan error!
-        // Coupled to production schema
-    }
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/production-tables-violation.php}}
 </code></pre>
 
             <p>Instead, write:</p>
 
-            <pre><code class="language-php">// ✅ PASSES RULE - Test-specific table name
-class OrderTest extends TestCase {
-    public function testCreateOrder(): void {
-        $result = $this->db->query('SELECT * FROM test_orders WHERE id = ?', [1]);
-        // Isolated from production schema changes
-    }
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/production-tables-fixed.php}}
 </code></pre>
 
             <p>
@@ -15744,47 +12572,7 @@ class OrderTest extends TestCase {
                 for testing custom rules. Here's a simple test structure:
             </p>
 
-            <pre><code class="language-php"><?php
-
-declare(strict_types=1);
-
-namespace App\\Tests\\PHPStan\\Rules;
-
-use App\\PHPStan\\Rules\\Performance\\QueryInLoopRule;
-use PHPStan\\Rules\\Rule;
-use PHPStan\\Testing\\RuleTestCase;
-
-/**
- * @extends RuleTestCase<QueryInLoopRule>
- */
-final class QueryInLoopRuleTest extends RuleTestCase
-{
-    protected function getRule(): Rule
-    {
-        return new QueryInLoopRule();
-    }
-
-    public function testRule(): void
-    {
-        $this->analyse(
-            [__DIR__ . '/data/query-in-loop.php'],
-            [
-                [
-                    'Query instantiation detected inside a loop.',
-                    15, // Line number
-                ],
-            ]
-        );
-    }
-
-    public function testNoErrorsWhenQueryOutsideLoop(): void
-    {
-        $this->analyse(
-            [__DIR__ . '/data/query-outside-loop.php'],
-            [] // No errors expected
-        );
-    }
-}
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/rule-test-case-example.php}}
 </code></pre>
 
             <p>
@@ -15796,8 +12584,8 @@ final class QueryInLoopRuleTest extends RuleTestCase
         <section>
             <h2>Educational Error Messages</h2>
             <p>
-                The most powerful aspect of custom rules is their error messages. They're not just alerts - they're teachable moments.
-                Good error messages should:
+                The most powerful aspect of custom rules is their error messages, which can do more than flag a problem - a good one
+                teaches the developer something they'll remember next time. Good error messages should:
             </p>
 
             <ul>
@@ -15812,20 +12600,7 @@ final class QueryInLoopRuleTest extends RuleTestCase
                 you can create rich error messages with tips and identifiers:
             </p>
 
-            <pre><code class="language-php">RuleErrorBuilder::message(
-    'Query instantiation detected inside a loop. ' .
-    'This creates N+1 query problems and severe performance degradation.'
-)
-->identifier('app.queryInLoop')
-->line($node->getStartLine())
-->tip(
-    'Refactor to:' . PHP_EOL .
-    '1. Build a list of IDs in the loop' . PHP_EOL .
-    '2. Execute a single query with WHERE id IN (...)' . PHP_EOL .
-    '3. Map results back to the original data' . PHP_EOL .
-    'See: https://your-docs.example.com/performance/query-batching'
-)
-->build()
+            <pre><code class="language-php">{{SNIPPET:phpstan-project-level-rules/rule-error-builder-example.php}}
 </code></pre>
 
             <p>
@@ -15948,7 +12723,7 @@ final class QueryInLoopRuleTest extends RuleTestCase
             <p>
                 <a href="https://phpstan.org/user-guide/baseline" target="_blank" rel="noopener">PHPStan baselines</a> let you introduce
                 strict rules without requiring immediate fixes to existing violations. Generate a baseline with
-                <code>vendor/bin/phpstan analyse --generate-baseline</code>, then prevent new violations while gradually fixing old ones.
+                <code>vendor/bin/phpstan analyse --generate-baseline</code>, then prevent new violations whilst gradually fixing old ones.
             </p>
 
             <h3>Test Your Rules Thoroughly</h3>
@@ -16057,9 +12832,9 @@ final class QueryInLoopRuleTest extends RuleTestCase
             </ul>
 
             <p>
-                The ideal workflow combines both: use LLMs like <a href="https://www.anthropic.com/claude/sonnet" target="_blank" rel="noopener">Claude Sonnet 4.5</a>
-                or <a href="https://openai.com/index/gpt-4-1/" target="_blank" rel="noopener">GPT-4.1</a> to generate code and explore solutions,
-                then use PHPStan to verify that the generated code follows your project's standards. The LLM generates, the static analyser validates.
+                The workflow I'd recommend combines both: use LLMs like <a href="https://www.anthropic.com/claude/sonnet" target="_blank" rel="noopener">Claude Sonnet 4.5</a>
+                or <a href="https://openai.com/index/gpt-4-1/" target="_blank" rel="noopener">GPT-4.1</a> to generate code and explore solutions, then use PHPStan
+                to verify that the generated code actually follows your project's standards, since the LLM generates and the static analyser validates.
             </p>
 
             <p>
@@ -16082,8 +12857,8 @@ final class QueryInLoopRuleTest extends RuleTestCase
             </p>
 
             <p>
-                Start small: pick one high-value rule (like detecting queries in loops), implement it, measure the impact, and expand from there.
-                Your codebase will thank you.
+                Start small: pick one high-value rule (like detecting queries in loops), write the test cases first, then implement
+                the rule and register it in <code>phpstan.neon</code>. Once it's catching real violations in CI, expand to the next one.
             </p>
         </section>
 
@@ -16140,7 +12915,7 @@ final class QueryInLoopRuleTest extends RuleTestCase
     id: 'proxmox-vs-cloud',
     title: 'Proxmox vs Cloud: Why Private Infrastructure Wins',
     description:
-      'Comparative analysis of Proxmox private cloud vs public cloud solutions for enterprise infrastructure',
+      'Why Proxmox-based private infrastructure often beats public cloud for PHP workloads with predictable demand, covering cost, performance, control, and the cases where cloud still wins.',
     date: '2025-01-05',
     category: CATEGORIES.infrastructure.id,
     heroImage: {
@@ -16155,34 +12930,28 @@ final class QueryInLoopRuleTest extends RuleTestCase
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'selfhosted',
+    register: 'formal',
     content: `
 <section class="intro">
-<p class="lead">Real-world comparison of Proxmox private cloud infrastructure versus public cloud solutions for PHP applications.</p>
-<p>After years of managing both public cloud and private infrastructure, I've become a strong advocate for Proxmox-based private cloud solutions. While public cloud has its place, for many PHP applications, especially those with predictable workloads and specific performance requirements, private infrastructure offers superior cost-effectiveness, performance, and control.</p>
+<p class="lead">A practical comparison of Proxmox private cloud infrastructure versus public cloud solutions for PHP applications, based on cost, performance, and control rather than formal benchmarks.</p>
+<p>Years of running Proxmox-based private cloud infrastructure have made me a strong advocate for it over public cloud, for most workloads. Public cloud has its place, but for many PHP applications, especially those with predictable workloads and specific performance requirements, private infrastructure offers superior cost-effectiveness, performance, and control.</p>
 <p>Let me break down the comparison based on technical analysis and infrastructure considerations.</p>
 </section>
 <section>
 <h2>The Case for Proxmox Private Cloud</h2>
 <h3>Cost Predictability</h3>
-<p>Public cloud costs can spiral out of control. With Proxmox, you know exactly what you're paying:</p>
+<p>Public cloud costs can spiral out of control, whereas with Proxmox you know exactly what you're paying:</p>
 <ul>
 <li><strong>Hardware costs:</strong> One-time purchase, depreciated over 3-5 years</li>
 <li><strong>Electricity:</strong> Predictable monthly costs</li>
 <li><strong>Maintenance:</strong> Planned hardware refresh cycles</li>
 <li><strong>No surprise bills:</strong> No bandwidth charges, no storage tier surprises</li>
 </ul>
-<p>Organizations often find significant cost savings when migrating from public cloud to private infrastructure, particularly for predictable workloads with consistent resource requirements.</p>
+<p>Organisations often find significant cost savings when migrating from public cloud to private infrastructure, particularly for predictable workloads with consistent resource requirements.</p>
 <h3>Performance Control</h3>
 <p>With Proxmox, you control the entire stack:</p>
-<pre><code class="language-php"># Proxmox VM configuration for high-performance PHP
-cores: 8
-memory: 32768
-scsi0: local-lvm:vm-100-disk-0,size=100G,ssd=1
-net0: virtio,bridge=vmbr0,firewall=1
-# CPU affinity for predictable performance
-numa: 1
-cpu: host</code></pre>
-<p>This level of control is impossible with public cloud where you're sharing resources with noisy neighbors.</p>
+<pre><code class="language-bash">{{SNIPPET:proxmox-vs-cloud/vm-config.conf}}</code></pre>
+<p>This level of control is hard to get anywhere close to on public cloud, where you're sharing resources with noisy neighbours.</p>
 <h3>Data Sovereignty</h3>
 <p>Your data stays on your hardware, in your location. This is crucial for:</p>
 <ul>
@@ -16203,53 +12972,10 @@ cpu: host</code></pre>
 <li><strong>Network:</strong> 10GbE for inter-node communication</li>
 </ul>
 <h3>Proxmox Cluster Configuration</h3>
-<pre><code class="language-php"># /etc/pve/cluster.conf
-totem {
-version: 2
-secauth: on
-cluster_name: php-cluster
-transport: udpu
-}
-nodelist {
-node {
-ring0_addr: 192.168.1.10
-nodeid: 1
-}
-node {
-ring0_addr: 192.168.1.11
-nodeid: 2
-}
-node {
-ring0_addr: 192.168.1.12
-nodeid: 3
-}
-}
-quorum {
-provider: corosync_votequorum
-expected_votes: 3
-}
-logging {
-to_syslog: yes
-}</code></pre>
-<h3>PHP-Optimized VM Templates</h3>
-<p>Create standardized templates for your PHP applications:</p>
-<pre><code class="language-php"># VM template for PHP applications
-agent: 1
-boot: c
-bootdisk: scsi0
-cores: 4
-cpu: host
-memory: 8192
-name: php-template
-net0: virtio,bridge=vmbr0,firewall=1
-numa: 0
-onboot: 1
-ostype: l26
-scsi0: local-lvm:vm-template-disk-0,size=40G
-scsihw: virtio-scsi-pci
-smbios1: uuid=auto
-sockets: 1
-vmgenid: auto</code></pre>
+<pre><code class="language-bash">{{SNIPPET:proxmox-vs-cloud/corosync-cluster-config.conf}}</code></pre>
+<h3>PHP-Optimised VM Templates</h3>
+<p>Create standardised templates for your PHP applications:</p>
+<pre><code class="language-bash">{{SNIPPET:proxmox-vs-cloud/vm-template.conf}}</code></pre>
 </section>
 <section>
 <h2>When Public Cloud Makes Sense</h2>
@@ -16263,22 +12989,20 @@ vmgenid: auto</code></pre>
 </ul>
 </section>
 <section>
-<h2>Real-World Performance Comparison</h2>
+<h2>Why Private Infrastructure Tends to Win on Performance</h2>
 <h3>Database Performance</h3>
-<p>MySQL performance on Proxmox vs AWS RDS:</p>
-<p>Private infrastructure typically offers performance advantages due to:</p>
+<p>No formal benchmarks here, just the reasoning behind why MySQL on Proxmox tends to outperform AWS RDS for a given spec:</p>
 <ul>
-<li><strong>Dedicated resources:</strong> No noisy neighbor effects</li>
-<li><strong>Optimized storage:</strong> Direct NVMe access without virtualization overhead</li>
+<li><strong>Dedicated resources:</strong> No noisy neighbour effects</li>
+<li><strong>Optimised storage:</strong> Direct NVMe access without virtualisation overhead</li>
 <li><strong>Network latency:</strong> Local network communication</li>
-<li><strong>Custom tuning:</strong> Database and application optimization for specific workloads</li>
+<li><strong>Custom tuning:</strong> Database and application optimisation for specific workloads</li>
 </ul>
 <h3>PHP Application Performance</h3>
-<p>Same PHP application, different infrastructure:</p>
-<p>PHP applications often perform better on private infrastructure due to:</p>
+<p>The same reasoning applies to the PHP application tier. PHP applications often perform better on private infrastructure due to:</p>
 <ul>
 <li><strong>CPU affinity:</strong> Dedicated CPU cores for consistent performance</li>
-<li><strong>Memory optimization:</strong> Tuned opcache and buffer pool settings</li>
+<li><strong>Memory optimisation:</strong> Tuned opcache and buffer pool settings</li>
 <li><strong>Storage performance:</strong> Local NVMe storage for session data and file operations</li>
 <li><strong>Network latency:</strong> Reduced database connection overhead</li>
 </ul>
@@ -16286,7 +13010,7 @@ vmgenid: auto</code></pre>
 <section>
 <h2>Migration Strategy</h2>
 <h3>Gradual Migration</h3>
-<p>Don't migrate everything at once. Start with:</p>
+<p>Don't migrate everything at once - start with:</p>
 <ol>
 <li><strong>Development environments:</strong> Low risk, learning opportunity</li>
 <li><strong>Internal tools:</strong> Non-critical applications</li>
@@ -16305,31 +13029,14 @@ vmgenid: auto</code></pre>
 <section>
 <h2>Operational Considerations</h2>
 <h3>Monitoring and Alerting</h3>
-<p>Implement comprehensive monitoring:</p>
-<pre><code class="language-php"># Prometheus configuration for Proxmox
-global:
-scrape_interval: 15s
-scrape_configs:
-- job_name: 'proxmox'
-static_configs:
-- targets: ['proxmox1:8006', 'proxmox2:8006', 'proxmox3:8006']
-metrics_path: '/api2/json/cluster/resources'
-scheme: https
-tls_config:
-insecure_skip_verify: true</code></pre>
+<p>Monitoring is worth setting up properly, but there's a wrinkle: the Proxmox API returns JSON rather than Prometheus's text-exposition format, so scraping it directly doesn't work, and you need to route requests through <a href="https://github.com/prometheus-pve/prometheus-pve-exporter" target="_blank" rel="noopener">prometheus-pve-exporter</a> instead, which translates the API into real metrics:</p>
+<pre><code class="language-yaml">{{SNIPPET:proxmox-vs-cloud/prometheus-config.yml}}</code></pre>
 <h3>Backup Strategy</h3>
 <p>Automated backups are crucial:</p>
-<pre><code class="language-bash"># Proxmox backup script
-#!/bin/bash
-vzdump --mode snapshot --compress lzo --storage backup-storage --all --mailto admin@company.com
-# Offsite backup to cloud storage
-rclone sync /backup-storage/dump/ remote:backups/$(date +%Y-%m-%d)/</code></pre>
+<pre><code class="language-bash">{{SNIPPET:proxmox-vs-cloud/backup-script.sh}}</code></pre>
 <h3>High Availability</h3>
 <p>Configure HA for critical services:</p>
-<pre><code class="language-php"># HA group configuration
-ha-manager add group:web-servers --nodes "proxmox1:1,proxmox2:1,proxmox3:1" --restricted 0 --nofailback 0
-# HA resource configuration
-ha-manager add vm:101 --group web-servers --max_restart 3 --max_relocate 3</code></pre>
+<pre><code class="language-bash">{{SNIPPET:proxmox-vs-cloud/ha-manager-commands.sh}}</code></pre>
 </section>
 <section>
 <h2>Security Advantages</h2>
@@ -16342,7 +13049,7 @@ ha-manager add vm:101 --group web-servers --max_restart 3 --max_relocate 3</code
 <li>Custom routing and load balancing</li>
 </ul>
 <h3>Physical Security</h3>
-<p>Your hardware, your rules:</p>
+<p>It's your hardware, so you set the rules:</p>
 <ul>
 <li>Controlled access to servers</li>
 <li>Hardware-level encryption</li>
@@ -16372,30 +13079,17 @@ ha-manager add vm:101 --group web-servers --max_restart 3 --max_relocate 3</code
 <section>
 <h2>ROI Calculation</h2>
 <p>Consider these factors when calculating ROI:</p>
-<pre><code class="language-php"># TCO comparison framework
-# Private infrastructure costs
-hardware_cost = initial_investment
-electricity_per_year = power_consumption_cost
-maintenance_per_year = support_and_replacement_budget
-staff_time_per_year = operational_overhead
-total_private = hardware_cost + (electricity_per_year + maintenance_per_year + staff_time_per_year) * years
-# Public cloud costs
-monthly_cloud_cost = compute_storage_network_costs
-total_cloud = monthly_cloud_cost * months
-# Break-even analysis
-break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost)</code></pre>
+<pre><code class="language-php">{{SNIPPET:proxmox-vs-cloud/tco-comparison.php}}</code></pre>
 </section>
 <section>
-<h2>The Bottom Line</h2>
-<p>Proxmox private cloud infrastructure offers significant advantages for PHP applications with predictable workloads:</p>
+<h2>Choosing Between Proxmox and Public Cloud</h2>
+<p>The infrastructure choice comes down to workload shape, not fashion:</p>
 <ul>
-<li><strong>Cost predictability:</strong> Fixed infrastructure costs with known depreciation</li>
-<li><strong>Performance:</strong> Better and more predictable performance</li>
-<li><strong>Control:</strong> Complete control over the entire stack</li>
-<li><strong>Security:</strong> Enhanced security and compliance</li>
-<li><strong>Reliability:</strong> Reduced dependency on external providers</li>
+<li><strong>Choose Proxmox</strong> if your workload is predictable, you have (or can build) in-house ops capability, and data residency or compliance requirements favour keeping hardware under your own control.</li>
+<li><strong>Choose public cloud</strong> if your workload is genuinely spiky, you need global points of presence, or your team is too small to own hardware lifecycle and on-call.</li>
+<li><strong>Choose a hybrid split</strong> if you have a stable core, such as databases and application servers, alongside genuinely elastic edges like CDN, backup, and disaster recovery; the two aren't mutually exclusive.</li>
 </ul>
-<p>The key is matching the infrastructure to your specific needs. For many PHP applications, especially those with steady workloads and performance requirements, Proxmox private cloud is the clear winner.</p>
+<p>The key is matching the infrastructure to your specific needs. For many PHP applications, especially those with steady workloads and clear performance requirements, Proxmox private cloud is the more cost-effective, more controllable choice.</p>
 <p>Don't follow the crowd into public cloud just because it's trendy. Evaluate your specific needs, run the numbers, and choose the infrastructure that best serves your business requirements.</p>
 </section>
 <footer class="article-footer">
@@ -16413,10 +13107,11 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
       'Why optional regex patterns create exponential complexity and how strict validation reduces maintenance burden through fail-fast principles.',
     date: '2025-09-26',
     category: CATEGORIES.php.id,
-    readingTime: 7,
+    readingTime: 5,
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'programming',
+    register: 'formal',
     heroImage: {
       src: '/images/regex-strictness-code-paths/hero.webp',
       alt: 'A black-and-white 1905 photograph of the interior of a Railway Post Office car, showing two facing walls of individually labelled pigeonhole mail-sorting racks lining a narrow aisle',
@@ -16428,12 +13123,12 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     },
     content: `
 <div class="intro">
-            <p class="lead">A single optional group in a regex pattern can double your code paths. Multiple optional groups create exponential complexity. Learn why strict validation up front eliminates entire classes of bugs.</p>
+            <p class="lead">A single optional group in a regex pattern can double your code paths, and multiple optional groups create exponential complexity. Learn why strict validation up front eliminates entire classes of bugs.</p>
         </div>
 
         <section>
             <h2>What Are Code Paths?</h2>
-            <p>A <strong>code path</strong> is a unique route through your program based on conditional logic. Every <code>if</code> statement creates a branch. Every optional field creates a decision point.</p>
+            <p>A <strong>code path</strong> is a unique route through your program based on conditional logic. Every <code>if</code> statement creates a branch, and every optional field creates a decision point.</p>
 
             <p>Consider this simple function:</p>
 
@@ -16459,7 +13154,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
                 <li>Path D: <code>$value</code> present, <code>$mimeType</code> provided</li>
             </ol>
 
-            <p><strong>Each optional element doubles the paths.</strong> This is why lenient validation explodes complexity.</p>
+            <p><strong>Each optional element doubles the paths</strong>, which is why lenient validation explodes complexity.</p>
         </section>
 
         <section>
@@ -16477,7 +13172,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
                 <li><strong>Invalid Base64 payload?</strong> Not validated</li>
             </ul>
 
-            <p>Each ambiguity creates a decision point. Every decision point doubles the code paths downstream.</p>
+            <p>Each ambiguity creates a decision point, and every decision point doubles the code paths downstream.</p>
         </section>
 
         <section>
@@ -16501,24 +13196,24 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
                 <li><strong>4 optional items</strong>: 16 paths</li>
             </ul>
 
-            <p>Each path needs testing. Each path can harbor bugs. Each path increases maintenance burden.</p>
+            <p>Each path needs testing, each path can harbour bugs, and each path increases maintenance burden.</p>
 
             <h3>Visual Flow: Lenient Validation</h3>
             <pre><code class="language-text">{{SNIPPET:regex-strictness-code-paths/lenient-flow.txt}}
 </code></pre>
 
-            <p><strong>16 paths. 16 test cases. 16 opportunities for bugs.</strong></p>
+            <p><strong>16 paths, 16 test cases, 16 opportunities for bugs.</strong></p>
 
             <h3>Visual Flow: Strict Validation</h3>
             <pre><code class="language-text">{{SNIPPET:regex-strictness-code-paths/strict-flow.txt}}
 </code></pre>
 
-            <p><strong>2 paths. 2 test cases. Zero ambiguity.</strong></p>
+            <p><strong>2 paths, 2 test cases, zero ambiguity.</strong></p>
         </section>
 
         <section>
             <h2>The Solution: Strict Validation</h2>
-            <p>Enforce a canonical format up front. Reject anything that doesn't conform:</p>
+            <p>Enforce a canonical format up front, and reject anything that doesn't conform:</p>
 
             <pre><code class="language-php">{{SNIPPET:regex-strictness-code-paths/strict-regex.php}}
 </code></pre>
@@ -16549,7 +13244,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
                 <li><strong>Named capture groups</strong> - extract all data directly from matches</li>
             </ul>
 
-            <p>This is the ultimate fail-fast pattern: <strong>one regex, one validation, zero ambiguity, zero code paths to handle variations</strong>.</p>
+            <p>This is about as strict as fail-fast validation gets: <strong>one regex, one validation, zero ambiguity, and no code paths left to handle variations</strong>.</p>
         </section>
 
         <section>
@@ -16559,9 +13254,9 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
             <pre><code class="language-php">{{SNIPPET:regex-strictness-code-paths/stricter-consumer.php}}
 </code></pre>
 
-            <p><strong>No defensive checks. No edge case handling. No duplicated validation logic. No substring manipulation. Everything extracted in one pass.</strong></p>
+            <p><strong>No defensive checks, no edge case handling, no duplicated validation logic, no substring manipulation - everything extracted in one pass.</strong></p>
 
-            <p>Named capture groups (<code>(?&lt;name&gt;...)</code>) let you extract data directly from the <code>$matches</code> array using readable keys instead of numeric indices or additional parsing. By consolidating filename and data URI validation into a single pattern, we eliminate an entire validation step.</p>
+            <p>Named capture groups (<code>(?&lt;name&gt;...)</code>) let you extract data directly from the <code>$matches</code> array using readable keys instead of numeric indices or additional parsing. Consolidating filename and data URI validation into a single pattern eliminates an entire validation step.</p>
         </section>
 
         <section>
@@ -16587,7 +13282,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
                 <li><strong>Database imports</strong> - validate schema compliance</li>
             </ul>
 
-            <p>Leniency compounds. Strictness scales.</p>
+            <p>Leniency compounds, whilst strictness scales.</p>
         </section>
 
         <section>
@@ -16603,9 +13298,9 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
 
         <section>
             <h2>Conclusion</h2>
-            <p>A regex pattern is not just validation - it's a contract. Lenient contracts create ambiguity. Ambiguity creates bugs. Strict contracts eliminate entire classes of errors.</p>
+            <p>A regex pattern does more than validate, it forms a contract: a lenient contract creates ambiguity, ambiguity creates bugs, and a strict contract eliminates entire classes of errors.</p>
 
-            <p>Choose strictness. Your future self will thank you.</p>
+            <p>Choose strictness, and your future self will thank you.</p>
         </section>
     `,
   },
@@ -16614,13 +13309,14 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     id: 'reusable-openapi-classes-php-symfony',
     title: 'Reusable OpenAPI Classes: Eliminating Boilerplate in PHP API Documentation',
     description:
-      'Learn how to create custom PHP classes that encapsulate OpenAPI specifications, dramatically reducing repetitive attribute definitions while improving maintainability and consistency across your Symfony API.',
+      'A worked example of the DRY principle applied to Symfony API documentation: wrap swagger-php OpenAPI attributes in your own reusable response, parameter, and security classes so a single change updates every endpoint that uses it.',
     date: '2025-09-30',
     category: CATEGORIES.php.id,
     readingTime: 12,
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    register: 'formal',
     heroImage: {
       src: '/images/reusable-openapi-classes-php-symfony/hero.webp',
       alt: 'A black-and-white photograph of a WWII-era Quonset hut encampment, dozens of identical prefabricated arched-roof huts arranged across a snowy site',
@@ -16640,7 +13336,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
         This article demonstrates how to create reusable <a href="https://www.php.net/" target="_blank" rel="noopener">PHP</a>
         classes that encapsulate common OpenAPI patterns, transforming verbose attribute definitions into clean, maintainable code.
         By applying the <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" target="_blank" rel="noopener">DRY principle</a>
-        to API documentation, you'll reduce boilerplate by 60-80% while ensuring consistency across your entire API surface.
+        to API documentation, you'll reduce boilerplate substantially whilst ensuring consistency across your entire API surface.
     </p>
 </div>
 
@@ -16692,7 +13388,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     <p>
         This approach follows the same pattern as
         <a href="https://symfony.com/doc/current/routing.html#creating-custom-route-attributes" target="_blank" rel="noopener">Symfony's custom route attributes</a>,
-        where you create specialized versions of framework attributes with application-specific defaults.
+        where you create specialised versions of framework attributes with application-specific defaults.
     </p>
 
     <h3>Setting Up the Foundation</h3>
@@ -16743,12 +13439,12 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
             <code>TARGET_METHOD</code> allows use on controller actions, <code>IS_REPEATABLE</code> permits multiple status codes</li>
         <li><strong><a href="https://github.com/nelmio/NelmioApiDocBundle/blob/master/src/Annotation/Model.php" target="_blank" rel="noopener">Model reference</a></strong> -
             Links to a DTO class for automatic schema generation</li>
-        <li><strong>Consistent messaging</strong> - Provides sensible defaults while allowing customization</li>
+        <li><strong>Consistent messaging</strong> - Provides sensible defaults whilst allowing customisation</li>
     </ul>
 
     <h3>Error Responses</h3>
     <p>
-        Error responses should reference a standardized error DTO across all endpoints. Create specific response classes
+        Error responses should reference a standardised error DTO across all endpoints. Create specific response classes
         for each HTTP error status your API uses:
     </p>
 
@@ -16764,8 +13460,8 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     <ul>
         <li><strong>HTTP status constants</strong> - Use <a href="https://symfony.com/doc/current/components/http_foundation.html" target="_blank" rel="noopener">Symfony's HttpFoundation</a>
             constants instead of magic numbers</li>
-        <li><strong>Optional customization</strong> - Accept nullable parameters for context-specific descriptions</li>
-        <li><strong>Centralized error schema</strong> - All errors reference <code>ErrorDto</code>, ensuring consistent error structures</li>
+        <li><strong>Optional customisation</strong> - Accept nullable parameters for context-specific descriptions</li>
+        <li><strong>Centralised error schema</strong> - All errors reference <code>ErrorDto</code>, ensuring consistent error structures</li>
         <li><strong>Semantic naming</strong> - Resource-aware descriptions improve documentation clarity</li>
     </ul>
 
@@ -16779,7 +13475,9 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
 
     <p>
         This separates validation errors from general bad request errors (HTTP 400), providing clearer semantics about
-        whether the issue is syntactic (400) or semantic (422).
+        whether the issue is syntactic (400) or semantic (422). The referenced <code>ValidationErrorDto</code> follows
+        the same pattern as the <code>ErrorDto</code> shown later in this article, with an added field-level
+        <code>errors</code> property carrying per-field validation messages.
     </p>
 </section>
 
@@ -16787,7 +13485,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     <h2>Creating Reusable Parameter Attributes</h2>
     <p>
         Parameters suffer from similar duplication issues. Pagination, ID parameters, sorting, and filtering appear across
-        many endpoints with identical schemas. Standardize these with custom parameter classes.
+        many endpoints with identical schemas. Standardise these with custom parameter classes.
     </p>
 
     <h3>ID Path Parameter</h3>
@@ -16805,7 +13503,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
         <li><strong>Integer type</strong> - IDs are integers, not strings or UUIDs</li>
         <li><strong>Positive integers</strong> - Minimum value of 1 prevents negative or zero IDs</li>
         <li><strong>Maximum validation</strong> - Uses <code>PHP_INT_MAX</code> for platform-specific limits</li>
-        <li><strong>Customizable name</strong> - Supports endpoints with multiple IDs (<code>userId</code>, <code>orderId</code>)</li>
+        <li><strong>Customisable name</strong> - Supports endpoints with multiple IDs (<code>userId</code>, <code>orderId</code>)</li>
     </ul>
 
     <h3>Pagination Parameters</h3>
@@ -16859,7 +13557,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
         The improvements are dramatic:
     </p>
     <ul>
-        <li><strong>62% fewer lines of code</strong> - From 58 lines to 22 lines of attributes</li>
+        <li><strong>61% fewer lines of code</strong> - From 72 lines to 28 lines of attributes</li>
         <li><strong>No nested attribute definitions</strong> - Each attribute is a simple, flat declaration</li>
         <li><strong>Consistent terminology</strong> - All endpoints use the same description patterns</li>
         <li><strong>Easier to scan</strong> - The endpoint's purpose is immediately clear</li>
@@ -16887,17 +13585,17 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     </p>
     <ul>
         <li><strong>Route constants</strong> - Class constants eliminate duplicated route strings between <code>#[Route]</code>
-            and <code>#[OAGet]</code> attributes, ensuring the path definition remains synchronized</li>
+            and <code>#[OAGet]</code> attributes, ensuring the path definition remains synchronised</li>
         <li><strong>Consistent documentation</strong> - All five endpoints follow the same patterns</li>
         <li><strong>Minimal boilerplate</strong> - The attributes read almost like plain English</li>
-        <li><strong>Customizable defaults</strong> - The <code>listUsers</code> endpoint overrides pagination defaults</li>
+        <li><strong>Customisable defaults</strong> - The <code>listUsers</code> endpoint overrides pagination defaults</li>
         <li><strong>Semantic HTTP status codes</strong> - 201 for creation, 204 for deletion</li>
         <li><strong>Clear endpoint purpose</strong> - You can understand what each method does at a glance</li>
     </ul>
 </section>
 
 <section>
-    <h2>Organizing Reusable OpenAPI Classes</h2>
+    <h2>Organising Reusable OpenAPI Classes</h2>
     <p>
         Structure your reusable OpenAPI classes for discoverability and maintainability:
     </p>
@@ -16952,7 +13650,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
 
     <h3>Paginated Collection Responses</h3>
     <p>
-        Many APIs return paginated collections with metadata. Create a specialized response for this pattern:
+        Many APIs return paginated collections with metadata. Create a specialised response for this pattern:
     </p>
 
     <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/paginated-response.php}}
@@ -16967,14 +13665,17 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
 
     <h3>Security Scheme Attributes</h3>
     <p>
-        For endpoints requiring authentication, create reusable security attributes:
+        For endpoints requiring authentication, declare the security scheme once and reference it by name from
+        individual operations - a <code>SecurityScheme</code> only defines an authentication method, it doesn't
+        attach that method to any particular endpoint:
     </p>
 
     <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/bearer-security.php}}
 </code></pre>
 
     <p>
-        Usage in a protected endpoint:
+        Usage in a protected endpoint - the operation references the scheme by name
+        (<code>security: [['bearerAuth' => []]]</code>) rather than instantiating it directly:
     </p>
 
     <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/security-usage.php}}
@@ -17003,7 +13704,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
     <h3>Easier Refactoring</h3>
     <p>
         Need to change your pagination parameter from <code>page</code> to <code>pageNumber</code>? Update the <code>PageParameter</code>
-        class and every endpoint's documentation updates automatically. No search-and-replace across dozens of files.
+        class and every endpoint's documentation updates automatically, with no search-and-replace across dozens of files.
     </p>
 
     <h3>Consistent API Design</h3>
@@ -17017,34 +13718,7 @@ break_even_months = hardware_cost / (monthly_cloud_cost - monthly_operating_cost
         You can unit test your OpenAPI classes to ensure they generate the expected attribute structures:
     </p>
 
-    <pre><code class="language-php"><?php
-
-declare(strict_types=1);
-
-namespace AppTestsOpenApiResponse;
-
-use AppDtoUserDto;
-use AppOpenApiResponseSuccessResponse;
-use PHPUnitFrameworkTestCase;
-
-final class SuccessResponseTest extends TestCase
-{
-    public function testGeneratesCorrectStructure(): void
-    {
-        $response = new SuccessResponse(UserDto::class);
-
-        $this->assertSame(200, $response->response);
-        $this->assertSame('Successful operation', $response->description);
-        $this->assertInstanceOf(Model::class, $response->content);
-    }
-
-    public function testAcceptsCustomDescription(): void
-    {
-        $response = new SuccessResponse(UserDto::class, 'Custom message');
-
-        $this->assertSame('Custom message', $response->description);
-    }
-}
+    <pre><code class="language-php">{{SNIPPET:reusable-openapi-classes-php-symfony/success-response-test.php}}
 </code></pre>
 
     <h3>Runtime Validation</h3>
@@ -17065,18 +13739,19 @@ final class SuccessResponseTest extends TestCase
 
     <h3>Forgetting IS_REPEATABLE</h3>
     <p>
-        If you omit <code>Attribute::IS_REPEATABLE</code>, PHP allows only one instance of your attribute per method.
-        This breaks when documenting multiple response status codes. Always include <code>IS_REPEATABLE</code> for response attributes.
+        If you omit <code>Attribute::IS_REPEATABLE</code>, PHP allows only one instance of your attribute per method, which
+        breaks as soon as you try to document multiple response status codes, so always include <code>IS_REPEATABLE</code>
+        on response attributes.
     </p>
 
     <h3>Breaking OpenAPI Generation</h3>
     <p>
-        The <code>swagger-php</code> library uses reflection to analyze your attributes. If you add public properties
+        The <code>swagger-php</code> library uses reflection to analyse your attributes. If you add public properties
         that don't map to OpenAPI properties, generation might fail. Keep your custom classes minimal and delegate
         to parent constructors.
     </p>
 
-    <h3>Overusing Customization</h3>
+    <h3>Overusing Customisation</h3>
     <p>
         The point of reusable classes is consistency. If you find yourself adding many optional constructor parameters
         to support edge cases, you might be better off using the standard OpenAPI attributes directly for those specific endpoints.
@@ -17084,8 +13759,8 @@ final class SuccessResponseTest extends TestCase
 
     <h3>Namespace Collisions</h3>
     <p>
-        Be careful when naming your classes. <code>Response</code> collides with Symfony's <code>Response</code> class.
-        Either use fully qualified names or create unique names like <code>SuccessResponse</code> instead of <code>Response</code>.
+        Be careful when naming your classes, since <code>Response</code> collides with Symfony's own <code>Response</code> class,
+        so either use fully qualified names or create unique names like <code>SuccessResponse</code> instead of <code>Response</code>.
     </p>
 </section>
 
@@ -17095,14 +13770,7 @@ final class SuccessResponseTest extends TestCase
         After creating your reusable attributes and applying them to controllers, generate the OpenAPI documentation:
     </p>
 
-    <pre><code class="language-bash"># Generate JSON specification
-php bin/console nelmio:apidoc:dump --format=json > openapi.json
-
-# Generate YAML specification
-php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
-
-# View in browser (default Symfony route)
-# Visit http://localhost:8000/api/doc
+    <pre><code class="language-bash">{{SNIPPET:reusable-openapi-classes-php-symfony/generate-docs.sh}}
 </code></pre>
 
     <p>
@@ -17130,20 +13798,23 @@ php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
 <section>
     <h2>Real-World Impact</h2>
     <p>
-        In production APIs with 50-100 endpoints, implementing reusable OpenAPI classes typically results in:
+        As a rough guide, on a production API with 50-100 endpoints you can expect reusable OpenAPI classes to bring:
     </p>
     <ul>
-        <li><strong>60-80% reduction</strong> in OpenAPI-related code</li>
+        <li><strong>A substantial cut in OpenAPI-related code</strong> - the worked example earlier in this article
+            shows roughly 61% fewer attribute lines for two endpoints; the saving compounds as more endpoints adopt
+            the same classes</li>
         <li><strong>Faster onboarding</strong> - New developers understand patterns immediately</li>
-        <li><strong>Fewer documentation bugs</strong> - Centralized definitions prevent inconsistencies</li>
+        <li><strong>Fewer documentation bugs</strong> - Centralised definitions prevent inconsistencies</li>
         <li><strong>Easier API evolution</strong> - Changes propagate automatically across endpoints</li>
         <li><strong>Better IDE experience</strong> - Autocompletion and type checking catch errors early</li>
     </ul>
 
     <p>
-        The time investment is minimal. Creating the initial set of reusable classes takes 1-2 hours. Applying them to
-        an existing codebase is straightforward search-and-replace. The maintenance benefits compound over months and years
-        as your API grows.
+        The time investment is modest. Sketching out an initial set of reusable classes is typically a short, focused
+        task rather than a major undertaking, and applying them to an existing codebase is largely mechanical - find
+        the repeated attribute blocks and swap them for the reusable class. The maintenance benefits compound over
+        months and years as your API grows.
     </p>
 </section>
 
@@ -17164,7 +13835,7 @@ php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
     </ol>
 
     <p>
-        You don't need to convert everything at once. The reusable classes coexist perfectly with standard OpenAPI attributes,
+        You don't need to convert everything at once. The reusable classes coexist happily with standard OpenAPI attributes,
         allowing incremental migration.
     </p>
 </section>
@@ -17185,12 +13856,12 @@ php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
 
     <p>
         As your API evolves, these reusable classes become more valuable. Changing response formats, adding security requirements,
-        or updating error handling patterns becomes trivial when you have centralized, type-safe OpenAPI definitions. Your
-        documentation stays consistent, your code stays clean, and your team stays productive.
+        or updating error handling patterns becomes trivial when you have centralised, type-safe OpenAPI definitions, and your
+        documentation stays consistent with far less effort spent keeping it that way.
     </p>
 
     <p>
-        Start with a few response classes today. Once you experience the improvement, you'll wonder how you ever tolerated
+        Start with a few response classes, and once you feel the improvement, you'll probably wonder how you ever tolerated
         the old approach.
     </p>
 </section>
@@ -17235,6 +13906,7 @@ php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'PHP',
+    register: 'formal',
     content: `
 <section class="intro">
 <p class="lead">
@@ -17242,818 +13914,83 @@ Architectural patterns and best practices for creating robust, scalable backend 
 </p>
 </section>
 <section>
-<p>Building scalable APIs is about more than just handling high traffic. It is about creating systems that can grow with your business while maintaining performance, reliability, and maintainability. Modern PHP provides excellent tools for building enterprise-grade APIs that can handle millions of requests.</p>
-<p>This article covers architectural patterns, design principles, and implementation strategies I've used to build APIs that scale from thousands to millions of users.</p>
+<p>Building scalable APIs means creating systems that can grow alongside your business whilst holding onto performance, reliability, and maintainability, even under heavy traffic. Modern PHP gives you solid tools for building APIs that can cope with that kind of growth.</p>
+<p>This article covers architectural patterns, design principles, and implementation strategies for building APIs that scale from thousands to millions of users.</p>
 <h2>API Architecture Principles</h2>
 <h3>Layered Architecture</h3>
 <p>Separate concerns into distinct layers for better maintainability and testability:</p>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppHttpControllers;
-use AppServicesUserUserService;
-use AppHttp{Request, Response, JsonResponse};
-use AppExceptions{ValidationException, DuplicateEmailException};
-use AppValueObjectsUserId;
-use PsrLogLoggerInterface;
-// Controller Layer - HTTP concerns only
-final readonly class UserController
-{
-public function __construct(
-private UserService $userService,
-private LoggerInterface $logger,
-) {}
-public function createUser(Request $request): Response
-{
-$userData = $request-&gt;getValidatedData();
-try {
-$user = $this-&gt;userService-&gt;createUser($userData);
-return new JsonResponse([
-&#39;id&#39; =&gt; $user-&gt;getId()-&gt;value,
-&#39;email&#39; =&gt; $user-&gt;getEmail()-&gt;value,
-&#39;name&#39; =&gt; $user-&gt;getName()-&gt;value,
-&#39;created_at&#39; =&gt; $user-&gt;getCreatedAt()-&gt;format(&#39;c&#39;),
-], 201);
-} catch (ValidationException $e) {
-return new JsonResponse([
-&#39;error&#39; =&gt; &#39;Validation failed&#39;,
-&#39;violations&#39; =&gt; $e-&gt;getViolations(),
-], 400);
-} catch (DuplicateEmailException $e) {
-return new JsonResponse([
-&#39;error&#39; =&gt; &#39;Email already exists&#39;,
-&#39;code&#39; =&gt; &#39;DUPLICATE_EMAIL&#39;,
-], 409);
-}
-}
-}
-// Service Layer - Business logic
-final readonly class UserService
-{
-public function __construct(
-private UserRepository $userRepository,
-private EmailService $emailService,
-private EventDispatcher $eventDispatcher,
-private UserValidator $validator,
-private PasswordHasher $passwordHasher,
-) {}
-public function createUser(array $userData): User
-{
-$this-&gt;validator-&gt;validate($userData);
-$user = User::create(
-UserId::generate(),
-EmailAddress::fromString($userData[&#39;email&#39;]),
-UserName::fromString($userData[&#39;name&#39;]),
-$this-&gt;passwordHasher-&gt;hash($userData[&#39;password&#39;])
-);
-$this-&gt;userRepository-&gt;save($user);
-$this-&gt;emailService-&gt;sendWelcomeEmail($user);
-$this-&gt;eventDispatcher-&gt;dispatch(
-new UserCreatedEvent($user-&gt;getId(), $user-&gt;getEmail())
-);
-return $user;
-}
-}
-// Repository Layer - Data access
-final readonly class UserRepository
-{
-public function __construct(
-private PDO $connection,
-private UserHydrator $hydrator,
-) {}
-public function save(User $user): void
-{
-$stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
-INSERT INTO users (id, email, name, password_hash, created_at)
-VALUES (:id, :email, :name, :password_hash, :created_at)
-SQL);
-$stmt-&gt;execute([
-&#39;id&#39; =&gt; $user-&gt;getId()-&gt;value,
-&#39;email&#39; =&gt; $user-&gt;getEmail()-&gt;value,
-&#39;name&#39; =&gt; $user-&gt;getName()-&gt;value,
-&#39;password_hash&#39; =&gt; $user-&gt;getPasswordHash()-&gt;value,
-&#39;created_at&#39; =&gt; $user-&gt;getCreatedAt()-&gt;format(&#39;Y-m-d H:i:s&#39;)
-]);
-}
-public function findById(UserId $id): ?User
-{
-$stmt = $this-&gt;connection-&gt;prepare(&lt;&lt;&lt; &#39;SQL&#39;
-SELECT id, email, name, password_hash, created_at
-FROM users
-WHERE id = :id AND deleted_at IS NULL
-SQL);
-$stmt-&gt;execute([&#39;id&#39; =&gt; $id-&gt;value]);
-$userData = $stmt-&gt;fetch();
-return $userData ? $this-&gt;hydrator-&gt;hydrate($userData) : null;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/layered-architecture.php}}</code></pre>
 <h3>Domain-Driven Design</h3>
 <p>Model your business domain explicitly:</p>
-<pre><code class="language-php">&lt;?php
-declare(strict_types=1);
-namespace AppDomainUser;
-use AppValueObjects{UserId, EmailAddress, UserName, PasswordHash};
-use AppExceptions{UserAlreadyDeactivatedException, InvalidStateTransitionException};
-use AppDomain{AggregateRoot, DomainEvent};
-use DateTimeImmutable;
-// Domain Entity
-final class User extends AggregateRoot
-{
-private function __construct(
-private readonly UserId $id,
-private EmailAddress $email,
-private readonly UserName $name,
-private readonly PasswordHash $passwordHash,
-private UserStatus $status,
-private readonly DateTimeImmutable $createdAt,
-) {}
-public static function create(
-UserId $id,
-EmailAddress $email,
-UserName $name,
-PasswordHash $passwordHash
-): self {
-$user = new self(
-$id,
-$email,
-$name,
-$passwordHash,
-UserStatus::ACTIVE,
-new DateTimeImmutable()
-);
-$user-&gt;recordEvent(new UserCreatedEvent($id, $email));
-return $user;
-}
-public function changeEmail(EmailAddress $newEmail): void
-{
-if ($this-&gt;email-&gt;equals($newEmail)) {
-return;
-}
-$previousEmail = $this-&gt;email;
-$this-&gt;email = $newEmail;
-$this-&gt;recordEvent(new UserEmailChangedEvent(
-$this-&gt;id,
-$previousEmail,
-$newEmail
-));
-}
-public function deactivate(): void
-{
-if ($this-&gt;status === UserStatus::DEACTIVATED) {
-throw new UserAlreadyDeactivatedException(
-&quot;User {$this-&gt;id-&gt;value} is already deactivated&quot;
-);
-}
-$this-&gt;status = UserStatus::DEACTIVATED;
-$this-&gt;recordEvent(new UserDeactivatedEvent($this-&gt;id));
-}
-public function activate(): void
-{
-if ($this-&gt;status === UserStatus::SUSPENDED) {
-throw new InvalidStateTransitionException(
-&quot;Cannot activate suspended user {$this-&gt;id-&gt;value}&quot;
-);
-}
-$this-&gt;status = UserStatus::ACTIVE;
-$this-&gt;recordEvent(new UserActivatedEvent($this-&gt;id));
-}
-public function isActive(): bool
-{
-return $this-&gt;status === UserStatus::ACTIVE;
-}
-public function getId(): UserId { return $this-&gt;id; }
-public function getEmail(): EmailAddress { return $this-&gt;email; }
-public function getName(): UserName { return $this-&gt;name; }
-public function getPasswordHash(): PasswordHash { return $this-&gt;passwordHash; }
-public function getStatus(): UserStatus { return $this-&gt;status; }
-public function getCreatedAt(): DateTimeImmutable { return $this-&gt;createdAt; }
-}
-// Value Object
-enum UserStatus: string {
-case ACTIVE = &#39;active&#39;;
-case DEACTIVATED = &#39;deactivated&#39;;
-case SUSPENDED = &#39;suspended&#39;;
-public function canTransitionTo(self $newStatus): bool
-{
-return match ([$this, $newStatus]) {
-[self::ACTIVE, self::DEACTIVATED] =&gt; true,
-[self::ACTIVE, self::SUSPENDED] =&gt; true,
-[self::DEACTIVATED, self::ACTIVE] =&gt; true,
-[self::SUSPENDED, self::DEACTIVATED] =&gt; true,
-default =&gt; false,
-};
-}
-}
-// Domain Service
-final readonly class UserDomainService
-{
-public function canUserAccessResource(User $user, Resource $resource): bool
-{
-if (!$user-&gt;isActive()) {
-return false;
-}
-if ($resource-&gt;requiresPremium() &amp;&amp; !$user-&gt;isPremium()) {
-return false;
-}
-return $user-&gt;hasPermission($resource-&gt;getRequiredPermission());
-}
-public function canUserPerformAction(User $user, Action $action): bool
-{
-return match ($user-&gt;getStatus()) {
-UserStatus::ACTIVE =&gt; true,
-UserStatus::SUSPENDED =&gt; $action-&gt;isAllowedForSuspendedUsers(),
-UserStatus::DEACTIVATED =&gt; false,
-};
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/domain-driven-design.php}}</code></pre>
 </section>
 <section>
 <h2>API Design Patterns</h2>
 <h3>CQRS (Command Query Responsibility Segregation)</h3>
 <p>Separate read and write operations for better scalability:</p>
-<pre><code class="language-php">&lt;?php
-// Command Handler - Write operations
-class CreateUserCommandHandler {
-private UserRepository $userRepository;
-private EventStore $eventStore;
-public function handle(CreateUserCommand $command): void {
-$user = new User($command-&gt;email, $command-&gt;name);
-$user-&gt;setPassword(password_hash($command-&gt;password, PASSWORD_DEFAULT));
-// Save to write database
-$this-&gt;userRepository-&gt;save($user);
-// Store event for read model updates
-$event = new UserCreatedEvent($user-&gt;getId(), $user-&gt;getEmail(), $user-&gt;getName());
-$this-&gt;eventStore-&gt;store($event);
-}
-}
-// Query Handler - Read operations
-class GetUserQueryHandler {
-private UserReadModel $userReadModel;
-public function handle(GetUserQuery $query): UserView {
-// Read from optimized read model
-return $this-&gt;userReadModel-&gt;getUserById($query-&gt;userId);
-}
-}
-// Read Model - Optimized for queries
-class UserReadModel {
-private Redis $redis;
-private PDO $readDb;
-public function getUserById(int $userId): UserView {
-// Try cache first
-$cached = $this-&gt;redis-&gt;get(&quot;user:$userId&quot;);
-if ($cached) {
-return unserialize($cached);
-}
-// Read from database
-$sql = &quot;SELECT u.*, p.name as profile_name, p.avatar_url
-FROM users u
-LEFT JOIN profiles p ON u.id = p.user_id
-WHERE u.id = :id&quot;;
-$stmt = $this-&gt;readDb-&gt;prepare($sql);
-$stmt-&gt;execute([&#39;id&#39; =&gt; $userId]);
-$userData = $stmt-&gt;fetch();
-$userView = new UserView($userData);
-// Cache for future requests
-$this-&gt;redis-&gt;setex(&quot;user:$userId&quot;, 3600, serialize($userView));
-return $userView;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/cqrs-pattern.php}}</code></pre>
+<p><code>UserReadModel</code> caches the raw database row rather than the hydrated object, then rebuilds <code>UserView</code> on both the cache-hit and cache-miss paths. That's a deliberate choice: it means the cache round-trip goes through <code>json_encode()</code>/<code>json_decode()</code> rather than PHP's native <code>serialize()</code>/<code>unserialize()</code>, which is a well-known object-injection vector when applied to data an attacker could tamper with.</p>
 <h3>Event-Driven Architecture</h3>
 <p>Decouple components using events:</p>
-<pre><code class="language-php">&lt;?php
-// Event System
-class EventDispatcher {
-private array $listeners = [];
-public function subscribe(string $eventClass, callable $listener): void {
-$this-&gt;listeners[$eventClass][] = $listener;
-}
-public function dispatch(object $event): void {
-$eventClass = get_class($event);
-if (isset($this-&gt;listeners[$eventClass])) {
-foreach ($this-&gt;listeners[$eventClass] as $listener) {
-$listener($event);
-}
-}
-}
-}
-// Event
-class UserCreatedEvent {
-public function __construct(
-public readonly int $userId,
-public readonly string $email,
-public readonly string $name,
-public readonly DateTimeImmutable $occurredAt = new DateTimeImmutable()
-) {}
-}
-// Event Listeners
-class SendWelcomeEmailListener {
-private EmailService $emailService;
-public function __invoke(UserCreatedEvent $event): void {
-$this-&gt;emailService-&gt;sendWelcomeEmail($event-&gt;email, $event-&gt;name);
-}
-}
-class UpdateUserStatsListener {
-private UserStatsService $userStatsService;
-public function __invoke(UserCreatedEvent $event): void {
-$this-&gt;userStatsService-&gt;incrementUserCount();
-}
-}
-// Event Registration
-$eventDispatcher = new EventDispatcher();
-$eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new SendWelcomeEmailListener($emailService));
-$eventDispatcher-&gt;subscribe(UserCreatedEvent::class, new UpdateUserStatsListener($userStatsService));</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/event-driven-architecture.php}}</code></pre>
 </section>
 <section>
-<h2>Performance Optimization</h2>
+<h2>Performance Optimisation</h2>
 <h3>Database Connection Pooling</h3>
-<pre><code class="language-php">&lt;?php
-class DatabasePool {
-private array $connections = [];
-private array $config;
-private int $maxConnections;
-private int $currentConnections = 0;
-public function __construct(array $config, int $maxConnections = 20) {
-$this-&gt;config = $config;
-$this-&gt;maxConnections = $maxConnections;
-}
-public function getConnection(): PDO {
-// Return existing connection if available
-if (!empty($this-&gt;connections)) {
-return array_pop($this-&gt;connections);
-}
-// Create new connection if under limit
-if ($this-&gt;currentConnections &lt; $this-&gt;maxConnections) {
-$connection = new PDO(
-$this-&gt;config[&#39;dsn&#39;],
-$this-&gt;config[&#39;username&#39;],
-$this-&gt;config[&#39;password&#39;],
-[
-PDO::ATTR_PERSISTENT =&gt; false,
-PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
-PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
-]
-);
-$this-&gt;currentConnections++;
-return $connection;
-}
-// Wait for available connection
-usleep(10000); // 10ms
-return $this-&gt;getConnection();
-}
-public function releaseConnection(PDO $connection): void {
-// Reset connection state
-$connection-&gt;rollBack();
-$connection-&gt;exec(&#39;SET autocommit = 1&#39;);
-// Return to pool
-$this-&gt;connections[] = $connection;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/database-connection-pool.php}}</code></pre>
+<p>This pattern only pools connections within a single persistent process (Swoole, RoadRunner, or a long-running worker). A standard PHP-FPM deployment spins up or reuses a fresh process per request, so an instance property like <code>$connections</code> does not survive between requests and provides no real pooling benefit. On PHP-FPM, reach for <code>PDO::ATTR_PERSISTENT</code>, an external pooler such as PgBouncer or ProxySQL, or a supervisor-managed long-running process instead.</p>
 <h3>Response Caching</h3>
-<pre><code class="language-php">&lt;?php
-class ResponseCache {
-private Redis $redis;
-private int $defaultTtl = 3600;
-public function __construct(Redis $redis) {
-$this-&gt;redis = $redis;
-}
-public function get(Request $request): ?Response {
-$key = $this-&gt;generateCacheKey($request);
-$cached = $this-&gt;redis-&gt;get($key);
-if ($cached) {
-$data = json_decode($cached, true);
-return new Response($data[&#39;body&#39;], $data[&#39;status&#39;], $data[&#39;headers&#39;]);
-}
-return null;
-}
-public function set(Request $request, Response $response, int $ttl = null): void {
-$key = $this-&gt;generateCacheKey($request);
-$ttl = $ttl ?? $this-&gt;defaultTtl;
-$data = [
-&#39;body&#39; =&gt; $response-&gt;getBody(),
-&#39;status&#39; =&gt; $response-&gt;getStatusCode(),
-&#39;headers&#39; =&gt; $response-&gt;getHeaders(),
-&#39;cached_at&#39; =&gt; time()
-];
-$this-&gt;redis-&gt;setex($key, $ttl, json_encode($data));
-}
-private function generateCacheKey(Request $request): string {
-$components = [
-$request-&gt;getMethod(),
-$request-&gt;getUri(),
-$request-&gt;getQueryParams(),
-$request-&gt;getHeader(&#39;Accept&#39;),
-$request-&gt;getHeader(&#39;Authorization&#39;) ? &#39;auth&#39; : &#39;public&#39;
-];
-return &#39;response:&#39; . md5(serialize($components));
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/response-cache.php}}</code></pre>
 </section>
 <section>
 <h2>Rate Limiting and Throttling</h2>
 <h3>Token Bucket Algorithm</h3>
-<pre><code class="language-php">&lt;?php
-class TokenBucketRateLimiter {
-private Redis $redis;
-private int $capacity;
-private int $refillRate;
-private int $refillPeriod;
-public function __construct(Redis $redis, int $capacity = 100, int $refillRate = 10, int $refillPeriod = 60) {
-$this-&gt;redis = $redis;
-$this-&gt;capacity = $capacity;
-$this-&gt;refillRate = $refillRate;
-$this-&gt;refillPeriod = $refillPeriod;
-}
-public function isAllowed(string $identifier): bool {
-$key = &quot;rate_limit:$identifier&quot;;
-$now = time();
-// Get current bucket state
-$bucketData = $this-&gt;redis-&gt;hmget($key, [&#39;tokens&#39;, &#39;last_refill&#39;]);
-$tokens = $bucketData[&#39;tokens&#39;] ?? $this-&gt;capacity;
-$lastRefill = $bucketData[&#39;last_refill&#39;] ?? $now;
-// Calculate tokens to add
-$timePassed = $now - $lastRefill;
-$tokensToAdd = floor($timePassed / $this-&gt;refillPeriod) * $this-&gt;refillRate;
-$tokens = min($this-&gt;capacity, $tokens + $tokensToAdd);
-// Check if request is allowed
-if ($tokens &gt;= 1) {
-$tokens--;
-// Update bucket state
-$this-&gt;redis-&gt;hmset($key, [
-&#39;tokens&#39; =&gt; $tokens,
-&#39;last_refill&#39; =&gt; $now
-]);
-$this-&gt;redis-&gt;expire($key, $this-&gt;refillPeriod * 2);
-return true;
-}
-return false;
-}
-public function getRemainingTokens(string $identifier): int {
-$key = &quot;rate_limit:$identifier&quot;;
-$bucketData = $this-&gt;redis-&gt;hmget($key, [&#39;tokens&#39;]);
-return $bucketData[&#39;tokens&#39;] ?? $this-&gt;capacity;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/token-bucket-rate-limiter.php}}</code></pre>
 <h3>Sliding Window Rate Limiter</h3>
-<pre><code class="language-php">&lt;?php
-class SlidingWindowRateLimiter {
-private Redis $redis;
-private int $limit;
-private int $windowSize;
-public function __construct(Redis $redis, int $limit = 1000, int $windowSize = 3600) {
-$this-&gt;redis = $redis;
-$this-&gt;limit = $limit;
-$this-&gt;windowSize = $windowSize;
-}
-public function isAllowed(string $identifier): bool {
-$key = &quot;sliding_window:$identifier&quot;;
-$now = time();
-$windowStart = $now - $this-&gt;windowSize;
-// Remove old entries
-$this-&gt;redis-&gt;zremrangebyscore($key, 0, $windowStart);
-// Count current requests
-$currentCount = $this-&gt;redis-&gt;zcard($key);
-if ($currentCount &lt; $this-&gt;limit) {
-// Add current request
-$this-&gt;redis-&gt;zadd($key, $now, uniqid());
-$this-&gt;redis-&gt;expire($key, $this-&gt;windowSize);
-return true;
-}
-return false;
-}
-public function getRemainingRequests(string $identifier): int {
-$key = &quot;sliding_window:$identifier&quot;;
-$now = time();
-$windowStart = $now - $this-&gt;windowSize;
-$this-&gt;redis-&gt;zremrangebyscore($key, 0, $windowStart);
-$currentCount = $this-&gt;redis-&gt;zcard($key);
-return max(0, $this-&gt;limit - $currentCount);
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/sliding-window-rate-limiter.php}}</code></pre>
 </section>
 <section>
 <h2>Error Handling and Resilience</h2>
 <h3>Circuit Breaker Pattern</h3>
-<pre><code class="language-php">&lt;?php
-class CircuitBreaker {
-private Redis $redis;
-private int $failureThreshold;
-private int $recoveryTimeout;
-private int $monitoringPeriod;
-public function __construct(Redis $redis, int $failureThreshold = 5, int $recoveryTimeout = 300, int $monitoringPeriod = 60) {
-$this-&gt;redis = $redis;
-$this-&gt;failureThreshold = $failureThreshold;
-$this-&gt;recoveryTimeout = $recoveryTimeout;
-$this-&gt;monitoringPeriod = $monitoringPeriod;
-}
-public function call(string $service, callable $operation) {
-$state = $this-&gt;getState($service);
-switch ($state) {
-case &#39;open&#39;:
-if ($this-&gt;shouldAttemptReset($service)) {
-$this-&gt;setState($service, &#39;half-open&#39;);
-return $this-&gt;executeOperation($service, $operation);
-}
-throw new CircuitBreakerOpenException(&quot;Circuit breaker is open for $service&quot;);
-case &#39;half-open&#39;:
-return $this-&gt;executeOperation($service, $operation);
-case &#39;closed&#39;:
-default:
-return $this-&gt;executeOperation($service, $operation);
-}
-}
-private function executeOperation(string $service, callable $operation) {
-try {
-$result = $operation();
-$this-&gt;recordSuccess($service);
-return $result;
-} catch (Exception $e) {
-$this-&gt;recordFailure($service);
-throw $e;
-}
-}
-private function recordSuccess(string $service): void {
-$key = &quot;circuit_breaker:$service&quot;;
-$this-&gt;redis-&gt;hdel($key, &#39;failures&#39;);
-$this-&gt;setState($service, &#39;closed&#39;);
-}
-private function recordFailure(string $service): void {
-$key = &quot;circuit_breaker:$service&quot;;
-$failures = $this-&gt;redis-&gt;hincrby($key, &#39;failures&#39;, 1);
-$this-&gt;redis-&gt;expire($key, $this-&gt;monitoringPeriod);
-if ($failures &gt;= $this-&gt;failureThreshold) {
-$this-&gt;setState($service, &#39;open&#39;);
-}
-}
-private function getState(string $service): string {
-$key = &quot;circuit_breaker:$service&quot;;
-return $this-&gt;redis-&gt;hget($key, &#39;state&#39;) ?: &#39;closed&#39;;
-}
-private function setState(string $service, string $state): void {
-$key = &quot;circuit_breaker:$service&quot;;
-$this-&gt;redis-&gt;hset($key, &#39;state&#39;, $state);
-if ($state === &#39;open&#39;) {
-$this-&gt;redis-&gt;hset($key, &#39;opened_at&#39;, time());
-}
-}
-private function shouldAttemptReset(string $service): bool {
-$key = &quot;circuit_breaker:$service&quot;;
-$openedAt = $this-&gt;redis-&gt;hget($key, &#39;opened_at&#39;);
-return $openedAt &amp;&amp; (time() - $openedAt) &gt; $this-&gt;recoveryTimeout;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/circuit-breaker.php}}</code></pre>
 </section>
 <section>
 <h2>API Security</h2>
 <h3>JWT Authentication</h3>
-<pre><code class="language-php">&lt;?php
-class JWTManager {
-private string $secretKey;
-private string $algorithm = &#39;HS256&#39;;
-private int $defaultTtl = 3600;
-public function __construct(string $secretKey) {
-$this-&gt;secretKey = $secretKey;
-}
-public function generateToken(array $payload, int $ttl = null): string {
-$ttl = $ttl ?? $this-&gt;defaultTtl;
-$now = time();
-$header = json_encode([&#39;typ&#39; =&gt; &#39;JWT&#39;, &#39;alg&#39; =&gt; $this-&gt;algorithm]);
-$payload = json_encode(array_merge($payload, [
-&#39;iat&#39; =&gt; $now,
-&#39;exp&#39; =&gt; $now + $ttl
-]));
-$headerPayload = $this-&gt;base64UrlEncode($header) . &#39;.&#39; . $this-&gt;base64UrlEncode($payload);
-$signature = $this-&gt;sign($headerPayload);
-return $headerPayload . &#39;.&#39; . $signature;
-}
-public function validateToken(string $token): array {
-$parts = explode(&#39;.&#39;, $token);
-if (count($parts) !== 3) {
-throw new InvalidTokenException(&#39;Invalid token format&#39;);
-}
-[$header, $payload, $signature] = $parts;
-// Verify signature
-$expectedSignature = $this-&gt;sign($header . &#39;.&#39; . $payload);
-if (!hash_equals($signature, $expectedSignature)) {
-throw new InvalidTokenException(&#39;Invalid signature&#39;);
-}
-// Decode payload
-$decodedPayload = json_decode($this-&gt;base64UrlDecode($payload), true);
-// Check expiration
-if (isset($decodedPayload[&#39;exp&#39;]) &amp;&amp; $decodedPayload[&#39;exp&#39;] &lt; time()) {
-throw new ExpiredTokenException(&#39;Token has expired&#39;);
-}
-return $decodedPayload;
-}
-private function sign(string $data): string {
-return $this-&gt;base64UrlEncode(hash_hmac(&#39;sha256&#39;, $data, $this-&gt;secretKey, true));
-}
-private function base64UrlEncode(string $data): string {
-return rtrim(strtr(base64_encode($data), &#39;+/&#39;, &#39;-_&#39;), &#39;=&#39;);
-}
-private function base64UrlDecode(string $data): string {
-return base64_decode(strtr($data, &#39;-_&#39;, &#39;+/&#39;));
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/jwt-authentication.php}}</code></pre>
 </section>
 <section>
 <h2>API Documentation and Versioning</h2>
 <h3>OpenAPI Documentation</h3>
-<pre><code class="language-php">&lt;?php
-class OpenAPIGenerator {
-private array $paths = [];
-private array $components = [];
-public function addEndpoint(string $path, string $method, array $definition): void {
-$this-&gt;paths[$path][$method] = $definition;
-}
-public function addComponent(string $name, array $schema): void {
-$this-&gt;components[&#39;schemas&#39;][$name] = $schema;
-}
-public function generate(): array {
-return [
-&#39;openapi&#39; =&gt; &#39;3.0.0&#39;,
-&#39;info&#39; =&gt; [
-&#39;title&#39; =&gt; &#39;API Documentation&#39;,
-&#39;version&#39; =&gt; &#39;1.0.0&#39;,
-&#39;description&#39; =&gt; &#39;Scalable PHP API&#39;
-],
-&#39;servers&#39; =&gt; [
-[&#39;url&#39; =&gt; &#39;https://api.example.com/v1&#39;]
-],
-&#39;paths&#39; =&gt; $this-&gt;paths,
-&#39;components&#39; =&gt; $this-&gt;components
-];
-}
-public function generateFromAnnotations(): array {
-$reflection = new ReflectionClass(UserController::class);
-$methods = $reflection-&gt;getMethods(ReflectionMethod::IS_PUBLIC);
-foreach ($methods as $method) {
-$docComment = $method-&gt;getDocComment();
-if ($docComment) {
-$this-&gt;parseDocComment($docComment, $method);
-}
-}
-return $this-&gt;generate();
-}
-private function parseDocComment(string $docComment, ReflectionMethod $method): void {
-// Parse PHPDoc annotations for OpenAPI spec
-if (preg_match(&#39;/@Route(&quot;([^&quot;]+)&quot;.*method=&quot;([^&quot;]+)&quot;)/&#39;, $docComment, $matches)) {
-$path = $matches[1];
-$httpMethod = strtolower($matches[2]);
-// Extract other annotations
-$summary = $this-&gt;extractAnnotation($docComment, &#39;summary&#39;);
-$description = $this-&gt;extractAnnotation($docComment, &#39;description&#39;);
-$this-&gt;addEndpoint($path, $httpMethod, [
-&#39;summary&#39; =&gt; $summary,
-&#39;description&#39; =&gt; $description,
-&#39;operationId&#39; =&gt; $method-&gt;getName()
-]);
-}
-}
-private function extractAnnotation(string $docComment, string $annotation): ?string {
-if (preg_match(&quot;/@{$annotation}s+(.+)/&quot;, $docComment, $matches)) {
-return trim($matches[1]);
-}
-return null;
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/openapi-documentation.php}}</code></pre>
 </section>
 <section>
 <h2>Monitoring and Observability</h2>
 <h3>Metrics Collection</h3>
-<pre><code class="language-php">&lt;?php
-class MetricsCollector {
-private Redis $redis;
-private array $metrics = [];
-public function __construct(Redis $redis) {
-$this-&gt;redis = $redis;
-}
-public function increment(string $metric, int $value = 1, array $tags = []): void {
-$key = $this-&gt;buildKey($metric, $tags);
-$this-&gt;redis-&gt;incrby($key, $value);
-$this-&gt;redis-&gt;expire($key, 3600);
-}
-public function gauge(string $metric, float $value, array $tags = []): void {
-$key = $this-&gt;buildKey($metric, $tags);
-$this-&gt;redis-&gt;set($key, $value);
-$this-&gt;redis-&gt;expire($key, 3600);
-}
-public function timing(string $metric, float $duration, array $tags = []): void {
-$key = $this-&gt;buildKey($metric . &#39;.timing&#39;, $tags);
-$this-&gt;redis-&gt;lpush($key, $duration);
-$this-&gt;redis-&gt;ltrim($key, 0, 999); // Keep last 1000 measurements
-$this-&gt;redis-&gt;expire($key, 3600);
-}
-public function histogram(string $metric, float $value, array $tags = []): void {
-$buckets = [0.1, 0.5, 1, 2.5, 5, 10];
-foreach ($buckets as $bucket) {
-if ($value &lt;= $bucket) {
-$key = $this-&gt;buildKey($metric . &#39;.bucket&#39;, array_merge($tags, [&#39;le&#39; =&gt; $bucket]));
-$this-&gt;redis-&gt;incr($key);
-$this-&gt;redis-&gt;expire($key, 3600);
-}
-}
-}
-private function buildKey(string $metric, array $tags): string {
-$tagString = &#39;&#39;;
-if (!empty($tags)) {
-ksort($tags);
-$tagString = &#39;:&#39; . implode(&#39;:&#39;, array_map(
-fn($k, $v) =&gt; &quot;$k=$v&quot;,
-array_keys($tags),
-array_values($tags)
-));
-}
-return &quot;metrics:$metric$tagString&quot;;
-}
-public function flush(): void {
-// Send metrics to monitoring system
-$keys = $this-&gt;redis-&gt;keys(&#39;metrics:*&#39;);
-foreach ($keys as $key) {
-$value = $this-&gt;redis-&gt;get($key);
-// Send to StatsD, Prometheus, etc.
-$this-&gt;sendMetric($key, $value);
-}
-}
-private function sendMetric(string $key, $value): void {
-// Implementation depends on monitoring system
-// Example: StatsD
-$socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-$metric = str_replace(&#39;metrics:&#39;, &#39;&#39;, $key);
-$packet = &quot;$metric:$value|c&quot;;
-socket_sendto($socket, $packet, strlen($packet), 0, &#39;127.0.0.1&#39;, 8125);
-socket_close($socket);
-}
-}</code></pre>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/metrics-collector.php}}</code></pre>
 </section>
 <section>
 <h2>Testing Strategies</h2>
 <h3>API Testing</h3>
-<pre><code class="language-php">&lt;?php
-class APITestCase extends TestCase {
-protected ApiClient $client;
-protected DatabaseSeeder $seeder;
-protected function setUp(): void {
-parent::setUp();
-$this-&gt;client = new ApiClient(&#39;http://localhost:8000&#39;);
-$this-&gt;seeder = new DatabaseSeeder();
-}
-public function testCreateUser(): void {
-$userData = [
-&#39;name&#39; =&gt; &#39;John Doe&#39;,
-&#39;email&#39; =&gt; &#39;john@example.com&#39;,
-&#39;password&#39; =&gt; &#39;password123&#39;
-];
-$response = $this-&gt;client-&gt;post(&#39;/api/users&#39;, $userData);
-$this-&gt;assertEquals(201, $response-&gt;getStatusCode());
-$this-&gt;assertJsonStructure($response-&gt;getBody(), [
-&#39;id&#39;, &#39;name&#39;, &#39;email&#39;, &#39;created_at&#39;
-]);
-// Verify user was created in database
-$this-&gt;assertDatabaseHas(&#39;users&#39;, [
-&#39;email&#39; =&gt; &#39;john@example.com&#39;
-]);
-}
-public function testRateLimiting(): void {
-$this-&gt;seeder-&gt;createUser([&#39;email&#39; =&gt; &#39;test@example.com&#39;]);
-// Make requests up to limit
-for ($i = 0; $i &lt; 100; $i++) {
-$response = $this-&gt;client-&gt;get(&#39;/api/users/1&#39;);
-$this-&gt;assertEquals(200, $response-&gt;getStatusCode());
-}
-// Next request should be rate limited
-$response = $this-&gt;client-&gt;get(&#39;/api/users/1&#39;);
-$this-&gt;assertEquals(429, $response-&gt;getStatusCode());
-}
-public function testConcurrentRequests(): void {
-$responses = [];
-$promises = [];
-// Create 10 concurrent requests
-for ($i = 0; $i &lt; 10; $i++) {
-$promises[] = $this-&gt;client-&gt;getAsync(&#39;/api/users&#39;);
-}
-$responses = Promise::all($promises)-&gt;wait();
-// All requests should succeed
-foreach ($responses as $response) {
-$this-&gt;assertEquals(200, $response-&gt;getStatusCode());
-}
-}
-}</code></pre>
+<p>The example below is a Laravel <code>TestCase</code> (it relies on Laravel's <code>assertJsonStructure</code> and <code>assertDatabaseHas</code> helpers). Swap those for the equivalent assertions if you're on a framework-agnostic PHPUnit setup.</p>
+<pre><code class="language-php">{{SNIPPET:scalable-php-apis/api-testing.php}}</code></pre>
 </section>
 <section>
-<h2>Best Practices Summary</h2>
+<h2>Scalable API Checklist</h2>
 <ul>
 <li><strong>Layered architecture:</strong> Separate concerns into distinct layers</li>
-<li><strong>Domain modeling:</strong> Use domain-driven design principles</li>
+<li><strong>Domain modelling:</strong> Use domain-driven design principles</li>
 <li><strong>CQRS:</strong> Separate read and write operations</li>
 <li><strong>Event-driven:</strong> Use events for loose coupling</li>
 <li><strong>Caching:</strong> Cache at multiple levels</li>
 <li><strong>Rate limiting:</strong> Protect against abuse</li>
 <li><strong>Circuit breakers:</strong> Handle external service failures</li>
-<li><strong>Security:</strong> Implement proper authentication and authorization</li>
+<li><strong>Security:</strong> Implement proper authentication and authorisation</li>
 <li><strong>Documentation:</strong> Maintain up-to-date API documentation</li>
 <li><strong>Monitoring:</strong> Collect metrics and logs</li>
 <li><strong>Testing:</strong> Comprehensive testing strategy</li>
 </ul>
-<p>Building scalable APIs requires careful planning and implementation of proven patterns. Start with a solid architectural foundation, implement proper caching and rate limiting, and continuously monitor and optimize performance. Remember that scalability is not just about handling more requests. It is about building systems that can evolve and grow with your business needs.</p>
+<p>Building scalable APIs requires careful planning and implementation of proven patterns. Start with a solid architectural foundation, implement proper caching and rate limiting, and continuously monitor and optimise performance, remembering that scalability is about building systems that can evolve and grow with your business needs, not just about handling more requests.</p>
 </section>
     `,
   },
@@ -18062,13 +13999,14 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
     id: 'typescript-di-for-php-developers',
     title: "TypeScript Dependency Injection: A PHP Developer's Perspective",
     description:
-      'Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardization.',
+      'Understanding the fundamental differences between dependency injection in TypeScript and PHP, from structural typing to the lack of standardisation.',
     date: '2025-07-23',
     category: CATEGORIES.typescript.id,
     readingTime: 15,
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'typescript',
+    register: 'formal',
     heroImage: {
       src: '/images/typescript-di-for-php-developers/hero.webp',
       alt: 'An 1846 engraving of porters transferring luggage between broad-gauge and narrow-gauge trains at Gloucester station, where incompatible railway gauges forced everything to be handed across the platform',
@@ -18082,7 +14020,7 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
         As a PHP developer, you're likely accustomed to mature DI containers like
         <a href="https://symfony.com/doc/current/service_container.html" target="_blank" rel="noopener">Symfony's Service Container</a> or 
         <a href="https://php-di.org/" target="_blank" rel="noopener">PHP-DI</a>. TypeScript's approach to dependency injection 
-        is fundamentally different. It's not just the implementation that changes, but the entire philosophy. Let's explore why.
+        is fundamentally different, and the difference runs deeper than implementation detail, right into the philosophy behind it. Let's explore why.
     </p>
 </div>
 
@@ -18094,7 +14032,7 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
     
     <h3>PHP: Nominal Typing</h3>
     <p>
-        PHP uses <strong><a href="https://www.php.net/manual/en/language.types.type-system.php" target="_blank" rel="noopener">nominal typing</a></strong>. Types are based on explicit declarations. A class must explicitly 
+        PHP uses <strong><a href="https://www.php.net/manual/en/language.types.type-system.php" target="_blank" rel="noopener">nominal typing</a></strong>, where types are based on explicit declarations, and a class must explicitly
         <a href="https://www.php.net/manual/en/language.oop5.interfaces.php#language.oop5.interfaces.implements" target="_blank" rel="noopener">implement</a> an interface or extend a class to be considered compatible:
     </p>
     
@@ -18116,7 +14054,7 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
 </section>
 
 <section>
-    <h2>No Final Classes = Everything is Mockable</h2>
+    <h2>No Final Classes: Everything Is Mockable</h2>
     <p>
         In PHP, you might use <a href="https://www.php.net/manual/en/language.oop5.final.php" target="_blank" rel="noopener"><code>final</code></a> to prevent inheritance:
     </p>
@@ -18141,8 +14079,8 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
 <section>
     <h2>The Fragmented Landscape: No Standard DI</h2>
     <p>
-        PHP has converged around <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11 Container Interface</a>. Most frameworks implement compatible containers. 
-        TypeScript? It's the Wild West.
+        PHP has converged around the <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11 Container Interface</a>, and most frameworks implement compatible containers, whereas TypeScript
+        is still very much the Wild West.
     </p>
 
     <h3>Popular TypeScript DI Libraries (as of July 2025)</h3>
@@ -18189,7 +14127,7 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
 </code></pre>
 
     <p>
-        TypeScript interfaces <strong>don't exist at runtime</strong>. They're compile-time only. This creates 
+        TypeScript interfaces <strong>don't exist at runtime</strong>, they're compile-time only, which creates
         challenges for DI containers:
     </p>
     
@@ -18221,9 +14159,7 @@ $this-&gt;assertEquals(200, $response-&gt;getStatusCode());
         First, install the required packages using <a href="https://www.npmjs.com/" target="_blank" rel="noopener">npm</a> or 
         <a href="https://yarnpkg.com/" target="_blank" rel="noopener">yarn</a>:
     </p>
-    <pre><code class="language-bash">npm install reflect-metadata inversify
-# or
-yarn add reflect-metadata inversify</code></pre>
+    <pre><code class="language-bash">{{SNIPPET:typescript-di/install-commands.sh}}</code></pre>
     
     <p>Then configure your entry point:</p>
     <pre><code class="language-typescript">{{SNIPPET:typescript-di/polyfill-setup.ts}}
@@ -18351,7 +14287,7 @@ yarn add reflect-metadata inversify</code></pre>
                 <td><a href="https://www.typescriptlang.org/docs/handbook/2/understanding-errors.html" target="_blank" rel="noopener">Compile-time type checking</a></td>
             </tr>
             <tr>
-                <td>Standardization (<a href="https://www.php-fig.org/" target="_blank" rel="noopener">PSR</a>)</td>
+                <td>Standardisation (<a href="https://www.php-fig.org/" target="_blank" rel="noopener">PSR</a>)</td>
                 <td>Innovation through competition</td>
             </tr>
         </tbody>
@@ -18361,20 +14297,20 @@ yarn add reflect-metadata inversify</code></pre>
 <section>
     <h2>Conclusion</h2>
     <p>
-        Coming from PHP, TypeScript's approach to dependency injection can feel chaotic and underdeveloped. 
-        There's no <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11</a> equivalent. No standard container interface. And the whole concept of "final" doesn't exist.
+        Coming from PHP, TypeScript's approach to dependency injection can feel chaotic and underdeveloped: there's no
+        <a href="https://www.php-fig.org/psr/psr-11/" target="_blank" rel="noopener">PSR-11</a> equivalent, no standard container interface, and the whole concept of "final" doesn't exist.
     </p>
-    
+
     <p>
-        But this isn't necessarily worse. It's just different. TypeScript's structural typing and flexibility enable 
-        patterns that would be impossible in PHP. The lack of standardization has led to innovation. Each 
-        library explores different approaches.
+        That isn't necessarily worse, just different. TypeScript's structural typing and flexibility enable
+        patterns that would be impossible in PHP, and the lack of standardisation has, if anything, driven
+        innovation, with each library exploring its own approach.
     </p>
-    
+
     <p>
-        The key is to embrace these differences rather than fight them. Start simple. Leverage structural typing. 
-        And only add DI complexity when you genuinely need it. Remember: in TypeScript, the best dependency 
-        injection might be no dependency injection framework at all.
+        The key is to embrace these differences rather than fight them: start simple, make use of structural
+        typing, and only add DI complexity when you genuinely need it. In TypeScript, the best dependency
+        injection might well be no dependency injection framework at all.
     </p>
 </section>
 
@@ -18395,7 +14331,7 @@ yarn add reflect-metadata inversify</code></pre>
     id: 'typescript-honesty-system',
     title: "TypeScript's Honesty System: Why Type Safety is Optional and How to Enforce It",
     description:
-      'TypeScript provides zero runtime safety and can be bypassed 25+ different ways. The definitive guide to every bypass mechanism - from any to eval to recursive type limits - and how to defend against them with ESLint.',
+      "A working ESLint and tsconfig setup that actually enforces the type safety TypeScript only suggests by default, built against a taxonomy of the 25+ ways developers (and LLMs) routinely bypass it.",
     date: '2025-11-18',
     category: CATEGORIES.typescript.id,
     heroImage: {
@@ -18410,6 +14346,7 @@ yarn add reflect-metadata inversify</code></pre>
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'typescript',
+    register: 'formal',
     content: `
 <div class="intro">
             <p class="lead">
@@ -18426,14 +14363,14 @@ yarn add reflect-metadata inversify</code></pre>
                 TypeScript provides powerful static analysis to catch type errors at compile time, but it's built on JavaScript, a dynamically typed language. <strong>Every TypeScript file is transpiled to JavaScript, losing all type information in the process.</strong> The types exist only during development, and the compiler trusts you to be honest about them.
             </p>
             <p>
-                This isn't a flaw. It's by design. But it means TypeScript is better understood as advanced static analysis (like <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> for PHP or <a href="https://eslint.org/" target="_blank" rel="noopener">ESLint</a> for JavaScript) rather than a true type system like you'd find in <a href="https://www.rust-lang.org/" target="_blank" rel="noopener">Rust</a> or <a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a>.
+                This is by design rather than a flaw, but it means TypeScript is better understood as advanced static analysis (like <a href="https://phpstan.org/" target="_blank" rel="noopener">PHPStan</a> for PHP or <a href="https://eslint.org/" target="_blank" rel="noopener">ESLint</a> for JavaScript) rather than a true type system like you'd find in <a href="https://www.rust-lang.org/" target="_blank" rel="noopener">Rust</a> or <a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a>.
             </p>
         </section>
 
         <section>
             <h2>The Complete Bypass Taxonomy: 25+ Ways to Lie to TypeScript</h2>
             <p>
-                TypeScript's type system can be bypassed in over 25 distinct ways. This comprehensive taxonomy documents every known mechanism, from obvious to obscure. Understanding these escape hatches is essential for recognising when codebases are being "dishonest" with the type system, and for defending against them.
+                TypeScript's type system can be bypassed in over 25 distinct ways. This taxonomy documents the mechanisms I'm aware of, from obvious to obscure, though I wouldn't be surprised if there are more lurking in corners of the type system I haven't hit yet. Understanding these escape hatches is essential for recognising when codebases are being "dishonest" with the type system, and for defending against them.
             </p>
 
             <h3>Quick Reference: All Bypass Mechanisms</h3>
@@ -18491,7 +14428,7 @@ yarn add reflect-metadata inversify</code></pre>
                     <li>Bracket notation on <code>private</code> - Bypasses TypeScript private (not JavaScript <code>#</code>)</li>
                     <li><code>Object.setPrototypeOf()</code> - Runtime type mutation</li>
                     <li><code>delete</code> operator - Remove required properties</li>
-                    <li>Recursive type limits - TypeScript gives up after ~50 iterations</li>
+                    <li>Recursive type limits - TypeScript throws a hard compile error (TS2589) rather than silently bypassing anything</li>
                 </ul>
             </div>
 
@@ -18533,19 +14470,19 @@ yarn add reflect-metadata inversify</code></pre>
 </code></pre>
 
             <p>
-                The danger is that <code>@ts-expect-error</code> <strong>becomes outdated when code changes</strong>. If the error is fixed, TypeScript won't warn that the suppression is unnecessary. It's a time bomb in your codebase.
+                <code>@ts-expect-error</code> is safer than <code>@ts-ignore</code> precisely because TypeScript re-flags the suppression once the underlying error disappears (error TS2578, "Unused '@ts-expect-error' directive"). The real danger is narrower: if someone widens the surrounding code so that <em>some</em> error still exists on that line, even an unrelated one, the suppression stays silently "valid" for the wrong reason.
             </p>
 
             <h4>The satisfies Operator (TypeScript 4.9+)</h4>
             <p>
-                The <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator" target="_blank" rel="noopener"><code>satisfies</code> operator</a> introduced in TypeScript 4.9 (August 2022) is actually <strong>safer than type assertions</strong> when used correctly. Unlike <code>as</code>, it validates types without overriding inference. However, it can be misused in combination with other bypasses:
+                The <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator" target="_blank" rel="noopener"><code>satisfies</code> operator</a> introduced in TypeScript 4.9 (November 2022) is actually <strong>safer than type assertions</strong> when used correctly. Unlike <code>as</code>, it validates types without overriding inference. However, it can be misused in combination with other bypasses:
             </p>
 
             <pre><code class="language-typescript">{{SNIPPET:typescript-honesty-system/bypass-satisfies.ts}}
 </code></pre>
 
             <p>
-                While <code>satisfies</code> itself strengthens type safety, developers can abuse it by combining it with <code>as any</code> or type assertions, creating a false sense of security.
+                Whilst <code>satisfies</code> itself strengthens type safety, developers can abuse it by combining it with <code>as any</code> or type assertions, creating a false sense of security.
             </p>
 
             <h3>Level 3: Subtle Bypasses</h3>
@@ -18569,7 +14506,7 @@ yarn add reflect-metadata inversify</code></pre>
 </code></pre>
 
             <p>
-                <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#optional-properties" target="_blank" rel="noopener">Optional properties</a> (<code>?</code>) mean a property can be missing entirely. <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures" target="_blank" rel="noopener">Index signatures</a> (<code>[key: string]: any</code>) allow arbitrary properties. TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#excess-property-checks" target="_blank" rel="noopener">excess property checking</a> can be bypassed by assigning through an intermediate variable. These aren't bugs. They're features of a flexible structural type system. But they weaken safety guarantees.
+                <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#optional-properties" target="_blank" rel="noopener">Optional properties</a> (<code>?</code>) mean a property can be missing entirely. <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures" target="_blank" rel="noopener">Index signatures</a> (<code>[key: string]: any</code>) allow arbitrary properties. TypeScript's <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#excess-property-checks" target="_blank" rel="noopener">excess property checking</a> can be bypassed by assigning through an intermediate variable. None of this is a bug, exactly. It's what a flexible structural type system looks like, and the cost of that flexibility is weaker safety guarantees.
             </p>
 
             <h3>Level 5: Advanced Bypasses</h3>
@@ -18589,7 +14526,7 @@ yarn add reflect-metadata inversify</code></pre>
                 These bypasses exploit TypeScript's type system features to create unsafe code that looks type-safe:
             </p>
 
-            <h4>Type Predicates - Lying Type Guards</h4>
+            <h4>Type Predicates: Lying Type Guards</h4>
             <p>
                 <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates" target="_blank" rel="noopener">Type predicates</a> (<code>is</code> keyword) allow custom type guards. TypeScript trusts your logic without verification, creating a massive trust hole:
             </p>
@@ -18694,14 +14631,14 @@ yarn add reflect-metadata inversify</code></pre>
 
             <h4>Recursive Type Limits</h4>
             <p>
-                TypeScript has a hard recursion limit of approximately 50 type instantiations. When hit, <strong>TypeScript gives up and allows anything</strong>:
+                TypeScript has a hard recursion limit on type instantiation depth. Unlike the other mechanisms in this section, hitting it isn't a silent bypass: <strong>TypeScript throws a hard compile error (TS2589, "Type instantiation is excessively deep and possibly infinite") and refuses to build</strong>:
             </p>
 
             <pre><code class="language-typescript">{{SNIPPET:typescript-honesty-system/bypass-recursive-limits.ts}}
 </code></pre>
 
             <p>
-                Complex recursive types like <code>DeepPartial</code> or deeply nested JSON structures can hit this limit. There's <a href="https://github.com/microsoft/TypeScript/issues/46180" target="_blank" rel="noopener">no compiler flag</a> to increase or disable the limit. It's a hard-coded safeguard against infinite recursion.
+                Complex recursive types like <code>DeepPartial</code> or deeply nested JSON structures can hit this limit surprisingly quickly - nesting them a handful of levels deep is often enough. There's <a href="https://github.com/microsoft/TypeScript/issues/46180" target="_blank" rel="noopener">no compiler flag</a> to increase or disable the limit, so the only way past it is to restructure the type. It's included here because it's still a place where the type checker's guarantees run out, even though - unlike the other bypasses in this section - it fails loudly rather than quietly returning <code>any</code>.
             </p>
         </section>
 
@@ -18738,7 +14675,7 @@ yarn add reflect-metadata inversify</code></pre>
             </ul>
 
             <p>
-                TypeScript isn't in this category. It's <strong>compile-time only static analysis</strong>. It has more in common with linters and static analysers than true type systems.
+                TypeScript doesn't belong in this category. It's <strong>compile-time only static analysis</strong>, and it has more in common with linters and static analysers than with true type systems.
             </p>
         </section>
 
@@ -18764,7 +14701,7 @@ yarn add reflect-metadata inversify</code></pre>
             </ul>
 
             <p>
-                The result? A codebase that <em>looks</em> type-safe but is riddled with holes. The type system becomes theatre, providing false confidence without actual safety.
+                The result is a codebase that <em>looks</em> type-safe but is riddled with holes, where the type system becomes theatre, providing false confidence without actual safety.
             </p>
         </section>
 
@@ -18790,16 +14727,9 @@ yarn add reflect-metadata inversify</code></pre>
 
             <h5><a href="https://typescript-eslint.io/rules/ban-ts-comment/" target="_blank" rel="noopener">@typescript-eslint/ban-ts-comment</a></h5>
             <p>
-                Bans <code>@ts-ignore</code> and <code>@ts-nocheck</code> comments. Configure to require descriptions for <code>@ts-expect-error</code>:
+                Bans <code>@ts-ignore</code> and <code>@ts-nocheck</code> comments. Configure to require descriptions for <code>@ts-expect-error</code>. This baseline config sets a minimum description length of 10 characters; the stricter ESLint configuration shown later in this article raises that to 20, deliberately requiring a fuller justification for each suppression:
             </p>
-            <pre><code class="language-json">{
-  "@typescript-eslint/ban-ts-comment": ["error", {
-    "ts-expect-error": "allow-with-description",
-    "ts-ignore": true,
-    "ts-nocheck": true,
-    "minimumDescriptionLength": 10
-  }]
-}
+            <pre><code class="language-json">{{SNIPPET:typescript-honesty-system/ban-ts-comment-config.json}}
 </code></pre>
 
             <h4>Level 2 Defences: Control Type Assertions</h4>
@@ -18811,7 +14741,7 @@ yarn add reflect-metadata inversify</code></pre>
 
             <h5><a href="https://typescript-eslint.io/rules/no-unsafe-type-assertion/" target="_blank" rel="noopener">@typescript-eslint/no-unsafe-type-assertion</a></h5>
             <p>
-                Introduced in typescript-eslint v8 (2025), this rule prevents unsafe type assertions including the <code>as unknown as T</code> pattern. Blocks assertions that aren't provably safe.
+                Introduced in typescript-eslint v8, this rule prevents unsafe type assertions including the <code>as unknown as T</code> pattern. Blocks assertions that aren't provably safe.
             </p>
 
             <h4>Level 3 Defences: Prevent any Contamination</h4>
@@ -18869,11 +14799,7 @@ yarn add reflect-metadata inversify</code></pre>
             <p>
                 With <code>checkTypePredicates: true</code>, validates type predicate logic to catch lying type guards:
             </p>
-            <pre><code class="language-json">{
-  "@typescript-eslint/no-unnecessary-condition": ["error", {
-    "checkTypePredicates": true
-  }]
-}
+            <pre><code class="language-json">{{SNIPPET:typescript-honesty-system/no-unnecessary-condition-config.json}}
 </code></pre>
 
             <h5><a href="https://typescript-eslint.io/rules/prefer-enum-initializers/" target="_blank" rel="noopener">@typescript-eslint/prefer-enum-initializers</a></h5>
@@ -18892,10 +14818,10 @@ yarn add reflect-metadata inversify</code></pre>
 
             <h3>Strict ESLint Configuration</h3>
             <p>
-                For maximum type safety, extend the <a href="https://typescript-eslint.io/linting/configs/#strict" target="_blank" rel="noopener">strict configuration</a> and enable all safety rules:
+                For maximum type safety, extend the <a href="https://typescript-eslint.io/linting/configs/#strict" target="_blank" rel="noopener">strict configuration</a> and enable all safety rules. ESLint v9 requires <a href="https://eslint.org/docs/latest/use/configure/configuration-files" target="_blank" rel="noopener">flat config</a> by default, so this example uses <code>eslint.config.js</code> rather than the legacy <code>.eslintrc.json</code> format:
             </p>
 
-            <pre><code class="language-json">{{SNIPPET:typescript-honesty-system/eslint-config-strict.json}}
+            <pre><code class="language-javascript">{{SNIPPET:typescript-honesty-system/eslint-config-strict.js}}
 </code></pre>
         </section>
 
@@ -19004,60 +14930,21 @@ yarn add reflect-metadata inversify</code></pre>
         </section>
 
         <section>
-            <h2>The Philosophy: Assume Nothing, Verify Everything</h2>
-            <p>
-                <strong>TypeScript types are compile-time suggestions, not runtime guarantees</strong>. True type safety requires a defence-in-depth strategy:
-            </p>
-
-            <ol>
-                <li><strong>Strict TypeScript configuration</strong> - Enable every safety option.</li>
-                <li><strong>ESLint enforcement</strong> - Ban escape hatches programmatically.</li>
-                <li><strong>Runtime validation</strong> - Verify types at system boundaries (API responses, user input, external data).</li>
-                <li><strong>CI/CD gates</strong> - Block merging unsafe code.</li>
-                <li><strong>Cultural discipline</strong> - Treat type safety violations as bugs, not shortcuts.</li>
-            </ol>
-
-            <p>
-                This is exactly how you'd approach PHPStan in a PHP project:
-            </p>
-
-            <ul>
-                <li>Start with <a href="https://phpstan.org/user-guide/rule-levels" target="_blank" rel="noopener">level 9 (maximum)</a> strictness.</li>
-                <li>Disable <code>@phpstan-ignore</code> comments in code reviews.</li>
-                <li>Use <a href="https://phpstan.org/config-reference#baseline" target="_blank" rel="noopener">baseline files</a> for legacy code, never for new code.</li>
-                <li>Run PHPStan in CI and fail builds on violations.</li>
-            </ul>
-
-            <p>
-                The same principles apply to TypeScript. It's a powerful tool when wielded with discipline, but it's not magic. It won't save you from yourself.
-            </p>
-        </section>
-
-        <section>
             <h2>Conclusion: TypeScript is Powerful, But Requires Discipline</h2>
             <p>
                 This article has documented <strong>over 25 distinct ways to bypass TypeScript's type system</strong>, from the obvious (<code>any</code>, <code>@ts-ignore</code>) to the obscure (recursive type limits, constructor casting). TypeScript's "honesty system" is both a strength and a weakness. The flexibility that makes it easy to adopt gradually is the same flexibility that makes it easy to bypass completely.
             </p>
 
             <p>
-                The key takeaways:
-            </p>
-
-            <ul>
-                <li><strong>TypeScript is static analysis, not runtime type safety</strong> - Treat it like PHPStan or ESLint, not Rust or Haskell.</li>
-                <li><strong>Bypass mechanisms are everywhere</strong> - There are 7 distinct categories of bypasses, from blatant to runtime escapes. Developers and LLMs can trivially defeat type safety in dozens of ways.</li>
-                <li><strong>Enforcement requires multi-layered defence</strong> - ESLint rules (15+ essential rules), strict tsconfig options, runtime validation with Zod/io-ts, and CI/CD gates are all necessary.</li>
-                <li><strong>CI/CD is your safety net</strong> - Don't rely on developer discipline alone. Automate enforcement in your pipeline to catch bypasses before they reach production.</li>
-                <li><strong>Cultural discipline matters</strong> - Type safety is a practice, not a feature. It requires team buy-in, code review vigilance, and rejection of "just add <code>as any</code>" shortcuts.</li>
-                <li><strong>Runtime escapes exist</strong> - <code>eval()</code>, <code>Function</code> constructor, and prototype manipulation completely bypass static analysis. ESLint rules can ban them, but awareness is critical.</li>
-            </ul>
-
-            <p>
-                Without enforcement, TypeScript is just suggestions. With proper hardening (strict configuration, 15+ ESLint rules covering all 7 bypass categories, runtime validation at boundaries, and CI enforcement), it becomes a powerful tool for building maintainable, type-safe applications. But it's never foolproof, and it's never automatic.
+                A useful way to sort the 25+ bypasses isn't by how obvious they are, but by who can catch them. Most of the list, <code>any</code>, <code>@ts-ignore</code>, unsafe assertions, dynamic code execution, is mechanical: an ESLint rule flags it every time, regardless of who wrote the line. A smaller set, an ambiguous <code>as unknown as T</code> in genuinely tricky generic code, or a type predicate that's subtly wrong, needs a human reading the diff and asking whether the claim being made is actually true, so automate the first set completely and budget code review time for the second.
             </p>
 
             <p>
-                The honesty bucket only works if everyone pays. Make sure your team - and your tooling - holds everyone accountable. Now that you've seen all 25+ ways to bypass TypeScript, you can defend against them comprehensively. Ignorance is no longer an excuse.
+                That distinction matters more now than it did a few years ago, because a growing share of the code reaching for these bypasses isn't written by a rushed developer under deadline pressure. It's generated by an LLM told to "fix the type error," which will happily insert <code>as any</code> without understanding, or caring, what it just switched off. The ESLint configuration in this article doesn't know or care who wrote the line it's rejecting. That's exactly why it's the part of the defence worth getting right first.
+            </p>
+
+            <p>
+                The honesty bucket only works if everyone pays, so make sure your team, and your tooling, holds everyone accountable. You now know most of the ways TypeScript gets bypassed, which at least means you're no longer defending against them blind.
             </p>
         </section>
 
@@ -19096,9 +14983,9 @@ yarn add reflect-metadata inversify</code></pre>
                 <li><a href="https://www.learningtypescript.com/" target="_blank" rel="noopener">Learning TypeScript</a> - Comprehensive TypeScript learning platform</li>
             </ul>
 
-            <h4>Related Articles on Type Safety</h4>
+            <h4>TypeScript Internals and Design Discussions</h4>
             <ul>
-                <li><a href="https://github.com/microsoft/TypeScript/wiki/Performance" target="_blank" rel="noopener">TypeScript Performance Wiki</a> - Optimizing TypeScript compiler performance</li>
+                <li><a href="https://github.com/microsoft/TypeScript/wiki/Performance" target="_blank" rel="noopener">TypeScript Performance Wiki</a> - Optimising TypeScript compiler performance</li>
                 <li><a href="https://github.com/microsoft/TypeScript/issues/47920" target="_blank" rel="noopener">satisfies Operator Proposal</a> - Original discussion and motivation</li>
                 <li><a href="https://github.com/microsoft/TypeScript/issues/46180" target="_blank" rel="noopener">Type Instantiation Depth Limits</a> - Discussion on recursive type limits</li>
             </ul>
@@ -19110,13 +14997,14 @@ yarn add reflect-metadata inversify</code></pre>
     id: 'understanding-llm-context-management',
     title: 'Understanding LLM Context: The Hidden Challenge of AI Development',
     description:
-      'A comprehensive guide to understanding and managing context when working with Large Language Models, especially in tools like Claude Code. Learn how context works, why it matters, and strategies to optimize your AI interactions.',
+      'How context actually works when you are talking to a Large Language Model like Claude Code, why it degrades over a long conversation, and practical strategies for keeping it under control.',
     date: '2025-08-20',
     category: CATEGORIES.ai.id,
     readingTime: 12,
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'LLMDevs',
+    register: 'formal',
     heroImage: {
       src: '/images/understanding-llm-context-management/hero.webp',
       alt: 'A sailor using navigational dividers to plot a precise fix on a paper nautical chart',
@@ -19131,69 +15019,35 @@ yarn add reflect-metadata inversify</code></pre>
         </div>
         
         <section>
-            <h2>The Restaurant Conversation Analogy</h2>
+            <h2>Context as a Shared Conversation</h2>
             <p>Imagine you're having dinner with a friend at a restaurant. When you say "pass the salt," your friend doesn't need you to specify which salt, from which table, in which restaurant. The <strong>context</strong> is clear from your shared environment and conversation history.</p>
-            
+
             <p>Now imagine if every time you spoke, your friend forgot everything: the restaurant, your previous conversations, even why you're there. You'd have to explain everything from scratch each time. This is what working with an <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> would be like without context.</p>
-            
+
             <p>Context in <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> works like your friend's memory of the entire dinner conversation. Every message you send isn't processed in isolation. It includes everything that came before it, creating a continuous narrative thread.</p>
         </section>
 
         <section>
             <h2>What Happens Behind the Scenes</h2>
             <p>When you type a message into <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> or any <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> interface, here's what actually happens:</p>
-            
+
             <h3>The Context Assembly Process</h3>
             <p>Think of context like a rolling transcript of a meeting. Every time you speak (send a message), the AI doesn't just hear your latest words. It reviews the entire meeting transcript first:</p>
-            
-            <pre><code class="language-javascript">// What gets assembled for EVERY single request
-const contextSentToLLM = {
-  // Fixed instructions (stays constant ~2,000 tokens)
-  systemPrompt: "You are Claude Code, an AI assistant...",
-  
-  // THIS BECOMES MASSIVE! (grows with every message)
-  conversationHistory: [
-    { role: "user", content: "Help me debug this function" },
-    { role: "assistant", content: "I'll analyze your function..." },
-    { role: "user", content: "It's still not working" },
-    { role: "assistant", content: "Let me check the error..." },
-    // ... 50 more messages later ...
-    { role: "user", content: "npm test\n[500 lines of output]" },
-    { role: "assistant", content: "[2000 token response]" },
-    { role: "user", content: "git diff\n[300 lines of changes]" },
-    // ... another 30 messages ...
-    { role: "user", content: "Can you read these 5 files?" },
-    { role: "assistant", content: "[10,000 tokens of file content]" },
-    // 🚨 By now: 50,000+ tokens of conversation history!
-  ],
-  
-  // Your innocent new message (but processed with ALL the above)
-  currentMessage: { role: "user", content: "What about line 42?" }
-}</code></pre>
-            
+
+            <pre><code class="language-javascript">{{SNIPPET:understanding-llm-context-management/context-assembly-example.js}}</code></pre>
+
             <p>This entire package, meaning system instructions, <strong>the ENTIRE conversation history from message #1</strong>, and your new message, gets sent to the <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM's</a> servers as one massive input. After 100 messages, you might be sending 100,000+ tokens with every single request! The model then generates a response based on <em>everything</em> in this increasingly bloated context.</p>
-            
-            <div class="callout">
-                <h4>The Exponential Growth Problem</h4>
-                <p><strong>Message #1:</strong> ~100 tokens sent<br>
-                <strong>Message #10:</strong> ~5,000 tokens sent<br>
-                <strong>Message #50:</strong> ~30,000 tokens sent<br>
-                <strong>Message #100:</strong> ~80,000 tokens sent<br>
-                <strong>Message #150:</strong> ~150,000 tokens sent (approaching limits!)</p>
-                
-                <p>Every. Single. Message. Includes. Everything. That. Came. Before.</p>
-            </div>
-            
-            <h3>The Library Research Analogy</h3>
-            <p>Imagine you're a researcher in a library. Each time you need to answer a question, you must:</p>
-            <ol>
-                <li>Carry every book you've previously referenced</li>
-                <li>Re-read all your previous notes</li>
-                <li>Add the new question to your stack</li>
-                <li>Process everything together to formulate an answer</li>
-            </ol>
-            
-            <p>As your stack of books grows larger, it becomes harder to carry, takes longer to review, and increases the chance you'll miss or confuse important details. This is exactly what happens with <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> context.</p>
+
+            <h3>How Fast Context Grows</h3>
+            <p>The token count sent with every request grows with the conversation, not just with the latest message:</p>
+            <ul>
+                <li><strong>Message #1:</strong> ~100 tokens sent</li>
+                <li><strong>Message #10:</strong> ~5,000 tokens sent</li>
+                <li><strong>Message #50:</strong> ~30,000 tokens sent</li>
+                <li><strong>Message #100:</strong> ~80,000 tokens sent</li>
+                <li><strong>Message #150:</strong> ~150,000 tokens sent (approaching limits)</li>
+            </ul>
+            <p>Every message includes everything that came before it, all the way back to the first one.</p>
         </section>
 
         <section>
@@ -19202,8 +15056,8 @@ const contextSentToLLM = {
             <p>Every <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> has a "context window", the maximum amount of information it can process at once. Think of it like <a href="https://en.wikipedia.org/wiki/Random-access_memory" target="_blank" rel="noopener">RAM</a> in a computer or the number of items you can juggle simultaneously.</p>
             
             <h3>Current Context Window Sizes (2025)</h3>
-            <p>The context window arms race has led to impressive numbers:</p>
-            
+            <p>The context window arms race has led to impressive numbers. The figures below are a snapshot from around August 2025, when this article was first written; token limits move quickly, so treat them as illustrative rather than current by the time you're reading this:</p>
+
             <ul>
                 <li><strong><a href="https://deepmind.google/technologies/gemini/" target="_blank" rel="noopener">Google Gemini 2.5 Pro</a>:</strong> 1 million tokens (expanding to 2 million in Q3 2025)</li>
                 <li><strong><a href="https://www.anthropic.com/claude" target="_blank" rel="noopener">Claude Sonnet 4</a>:</strong> 1 million tokens (public beta) / 200,000 tokens (standard)</li>
@@ -19216,12 +15070,12 @@ const contextSentToLLM = {
 
         <section>
             <h2>When Context Becomes Contamination</h2>
-            
-            <p>Imagine trying to find a specific recipe in a cookbook, but someone has randomly inserted pages from repair manuals, poetry collections, and tax forms throughout it. This is what happens when your <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a> context becomes bloated with irrelevant information.</p>
-            
-            <h3>The Noisy Room Problem</h3>
+
+            <p>Irrelevant information mixed into your context has a real cost: it makes it harder for the model to find what's actually relevant to your current task, in the same way clutter buried among your working files slows you down even when the file you need is technically still there.</p>
+
+            <h3>Too Many Conversations at Once</h3>
             <p>Context bloat is like trying to have a focused conversation in an increasingly noisy room. At first, with just a few people talking, you can easily focus. But as more conversations start around you, some relevant, some not, it becomes harder to maintain clarity.</p>
-            
+
             <h3>Common Context Polluters</h3>
             <ul>
                 <li><strong>Debug Output Dumps:</strong> Pasting entire log files when only specific errors matter</li>
@@ -19230,46 +15084,27 @@ const contextSentToLLM = {
                 <li><strong>Contradictory Instructions:</strong> Conflicting requirements from different phases of work</li>
                 <li><strong>Verbose Explorations:</strong> Extensive file searching and reading that's no longer relevant</li>
             </ul>
-            
-            <pre><code class="language-bash"># Example of context pollution
-$ npm test
-... 500 lines of test output ...
-$ npm test  # Running again
-... another 500 lines ...
-$ npm test --verbose  # Even more detail
-... 2000 lines of verbose output ...
-# Now the context has 3000+ lines of similar test results!
 
-# Impact: Next request gets confused response
-"Fix the failing test"
-# AI struggles to identify which of the 3000 lines matters</code></pre>
+            <pre><code class="language-bash">{{SNIPPET:understanding-llm-context-management/context-pollution-example.sh}}</code></pre>
         </section>
 
         <section>
             <h2>The Hidden Costs of Bloated Context</h2>
-            
+
             <h3>Performance Degradation</h3>
-            <p>Studies suggest that model accuracy can significantly degrade with extremely large contexts, dropping by as much as 40% when approaching maximum context limits. It's like asking someone to remember a phone number after reading an entire encyclopedia: the important information gets lost in the noise.</p>
-            
+            <p>Model accuracy measurably degrades as context approaches its limit, even when the context window technically has room left. It's like asking someone to remember a phone number after reading an entire encyclopedia: the important information gets lost in the noise.</p>
+
             <h3>Attention Dilution</h3>
-            <p>LLMs use <a href="https://en.wikipedia.org/wiki/Attention_(machine_learning)" target="_blank" rel="noopener">attention mechanisms</a> to focus on relevant parts of the context. Think of attention like a spotlight in a theater. It can illuminate the important actors, but if the stage becomes too crowded, the spotlight can't cover everything effectively, and crucial details fall into shadow.</p>
-            
+            <p>LLMs use <a href="https://en.wikipedia.org/wiki/Attention_(machine_learning)" target="_blank" rel="noopener">attention mechanisms</a> to focus on relevant parts of the context. When the context is small, this works well. As it grows, the model has to spread that same attention capacity across more content, and less of it lands on what's actually relevant to your current message.</p>
+
             <h3>Confusion and Hallucination</h3>
             <p>When context contains contradictory information, <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> may blend incompatible instructions or fabricate responses to reconcile conflicts:</p>
-            
-            <pre><code class="language-javascript">// Early in conversation: Setting up a React project
-"Use React hooks and functional components"
 
-// After debugging session: Working on build issues  
-"This is a vanilla HTML/CSS project, no frameworks"
-
-// LLM confusion result:
-"Let's use React hooks in your HTML file with useEffect()"
-// ↑ Nonsensical mixture of contradictory contexts</code></pre>
+            <pre><code class="language-javascript">{{SNIPPET:understanding-llm-context-management/contradictory-instructions-example.js}}</code></pre>
         </section>
 
         <section>
-            <h2>Recognizing Context Problems</h2>
+            <h2>Recognising Context Problems</h2>
             
             <h3>Context Red Flags</h3>
             <p>Watch for these warning signs that your context has become problematic:</p>
@@ -19291,194 +15126,51 @@ $ npm test --verbose  # Even more detail
             
             <h3>1. Manual Context Hygiene</h3>
             <p>Unlike browser tabs that persist, AI conversations require explicit clearing. Here's how to actually reset your context:</p>
-            
-            <div class="callout">
-                <h4>How to Clear Context in Different Tools</h4>
-                
-                <div class="terminal-window">
-                    <div class="terminal-header">
-                        <div class="terminal-dot"></div>
-                        <div class="terminal-dot"></div>
-                        <div class="terminal-dot"></div>
-                        <div class="terminal-title">Claude Code</div>
-                    </div>
-                    <div class="terminal-content">
-                        <div><span class="terminal-prompt">❯</span> <span class="terminal-command">/clear</span></div>
-                        <div class="terminal-output">✓ Conversation history cleared</div>
-                        <br>
-                        <div><span class="terminal-prompt">❯</span> <span class="terminal-command">/compact</span></div>
-                        <div class="terminal-output">✓ Conversation compressed to key points</div>
-                        <br>
-                        <div><span class="terminal-prompt">❯</span> <span class="terminal-command">exit</span></div>
-                        <div class="terminal-output"># Close and reopen to fully reset</div>
-                    </div>
-                </div>
-                
-                <p><strong>Other Tools:</strong></p>
-                <ul>
-                    <li><strong>ChatGPT/Claude Web:</strong> Start a new chat/conversation</li>
-                    <li><strong>VS Code Copilot:</strong> Close and reopen the chat panel</li>
-                </ul>
-                
-                <p><em>Learn more about <a href="https://docs.anthropic.com/en/docs/claude-code/slash-commands" target="_blank" rel="noopener">Claude Code slash commands</a></em></p>
-            </div>
-            
-            <h4>The Phase Transition Clear - Step by Step</h4>
-            
-            <div class="workflow-diagram">
-                <pre><code class="language-markdown">📍 STEP 1: Complete Current Task
-└─ "We've fixed the authentication bug successfully"
 
-📍 STEP 2: Save Important Info (if needed)
-└─ Copy any critical findings or solutions
+            <h4>How to Clear Context in Different Tools</h4>
 
-📍 STEP 3: Clear Context
-└─ Type: /clear
-└─ Or: Close Claude Code window
+            <pre><code class="language-bash">{{SNIPPET:understanding-llm-context-management/clear-context-commands.sh}}</code></pre>
 
-════════ CONTEXT BOUNDARY ════════
+            <p><strong>Other tools:</strong></p>
+            <ul>
+                <li><strong>ChatGPT/Claude web:</strong> start a new chat/conversation</li>
+                <li><strong>VS Code Copilot:</strong> close and reopen the chat panel</li>
+            </ul>
 
-📍 STEP 4: Start Fresh
-└─ Open new Claude Code session
-└─ "I need to add user profile features to my Express app"
+            <p><em>Learn more about <a href="https://docs.anthropic.com/en/docs/claude-code/slash-commands" target="_blank" rel="noopener">Claude Code slash commands</a></em></p>
 
-📍 STEP 5: New Clean Context
-└─ No debugging history polluting the conversation
-└─ AI focuses entirely on the new task</code></pre>
-            </div>
-            
-            <h4>The Summary Bridge - Complete Workflow</h4>
-            
-            <div class="terminal-window">
-                <div class="terminal-header">
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-title">Claude Code - Summary Bridge Example</div>
-                </div>
-                <div class="terminal-content">
-                    <div class="terminal-comment"># OLD CONTEXT (before clearing)</div>
-                    <div class="terminal-user">
-                        <span class="terminal-prompt">❯</span> Please summarize what we discovered and fixed, and save it to DEBUG_SUMMARY.md
-                    </div>
-                    <div class="terminal-assistant">
-                        I'll create a summary of our debugging session...
-                        <br><br>
-                        <span class="terminal-success">✓ Created DEBUG_SUMMARY.md</span>
-                    </div>
-                    <br>
-                    <div class="terminal-user">
-                        <span class="terminal-prompt">❯</span> <span class="terminal-command">/clear</span>
-                    </div>
-                    <div class="terminal-output">✓ Conversation history cleared</div>
-                    
-                    <div class="terminal-divider">════════ CONTEXT BOUNDARY ════════</div>
-                    
-                    <div class="terminal-comment"># NEW CONTEXT (completely fresh)</div>
-                    <div class="terminal-user">
-                        <span class="terminal-prompt">❯</span> Read DEBUG_SUMMARY.md to understand previous work
-                    </div>
-                    <div class="terminal-assistant">
-                        I'll read the summary from the previous session...
-                        <br><br>
-                        I can see you fixed an async race condition in the auth module by...
-                    </div>
-                    <br>
-                    <div class="terminal-user">
-                        <span class="terminal-prompt">❯</span> Now let's implement the user profile features building on the auth system we fixed
-                    </div>
-                    <div class="terminal-assistant">
-                        Perfect! Based on the summary, I understand the auth system is now working. Let's build the profile features...
-                    </div>
-                </div>
-            </div>
-            
+            <h4>The Phase Transition Clear, Step by Step</h4>
+
+            <pre><code>{{SNIPPET:understanding-llm-context-management/clear-context-workflow.txt}}</code></pre>
+
+            <h4>Bridging Old and New Context With a Summary</h4>
+
+            <pre><code class="language-bash">{{SNIPPET:understanding-llm-context-management/summary-bridge-workflow.sh}}</code></pre>
+
             <p><strong>Important:</strong> The summary is NOT automatically included after clearing. You must either:</p>
             <ul>
                 <li>Save it to a file and read it in the new session</li>
                 <li>Manually copy and paste relevant parts</li>
                 <li>Reference it as a document in your project</li>
             </ul>
-            
+
             <h3>2. Plan Documents as Context Anchors</h3>
-            
-            <p>Plan documents act as persistent memory across context resets, like a GPS route that survives even when you restart your phone:</p>
-            
-            <div class="workflow-diagram">
-                <pre><code class="language-markdown">📍 PHASE 1: Planning Session
-│
-├─ STEP 1: Discuss Feature
-│  └─ "I need to add user authentication to my app"
-│
-├─ STEP 2: Iterate on Requirements
-│  └─ Back-and-forth refining the approach
-│
-├─ STEP 3: Create Plan Document
-│  └─ "Write a detailed plan to IMPLEMENTATION_PLAN.md"
-│
-├─ STEP 4: Review and Refine
-│  └─ "Update the plan to include rate limiting"
-│
-════════ CLEAR CONTEXT ════════
-│
-📍 PHASE 2: Execution Session (Fresh Context)
-│
-├─ STEP 5: Start New Session
-│  └─ Open fresh Claude Code
-│
-├─ STEP 6: Load the Plan
-│  └─ "Read IMPLEMENTATION_PLAN.md"
-│
-├─ STEP 7: Confirm Understanding
-│  └─ AI: "I understand we're implementing JWT auth with..."
-│
-├─ STEP 8: Execute Step 1
-│  └─ "Let's implement step 1 from the plan"
-│
-════════ CLEAR CONTEXT ════════
-│
-📍 PHASE 3: Continue Next Day (Fresh Context)
-│
-├─ STEP 9: Load Plan + Progress
-│  └─ "Read IMPLEMENTATION_PLAN.md - we completed step 1"
-│
-└─ STEP 10: Execute Step 2
-   └─ "Now implement step 2 from the plan"</code></pre>
-            </div>
-            
+
+            <p>Plan documents act as persistent memory across context resets: they survive even when the conversation itself is wiped.</p>
+
+            <pre><code>{{SNIPPET:understanding-llm-context-management/plan-document-workflow.txt}}</code></pre>
+
             <h4>Example Plan Document</h4>
-            <pre><code class="language-markdown"># IMPLEMENTATION_PLAN.md
-## Objective
-Implement user authentication system
+            <pre><code>{{SNIPPET:understanding-llm-context-management/implementation-plan-example.md}}</code></pre>
 
-## Requirements
-- <a href="https://jwt.io/" target="_blank" rel="noopener">JWT</a>-based authentication
-- <a href="https://www.postgresql.org/" target="_blank" rel="noopener">PostgreSQL</a> user storage
-- Rate limiting on login attempts
-
-## Steps
-1. ✅ Create user database schema
-2. ⬜ Implement registration endpoint with <a href="https://expressjs.com/" target="_blank" rel="noopener">Express.js</a>
-3. ⬜ Add login with <a href="https://jwt.io/" target="_blank" rel="noopener">JWT</a> generation
-4. ⬜ Setup <a href="https://expressjs.com/en/guide/using-middleware.html" target="_blank" rel="noopener">middleware</a> for protected routes
-
-## Technical Decisions
-- <a href="https://www.npmjs.com/package/bcrypt" target="_blank" rel="noopener">bcrypt</a> for password hashing (rounds: 10)
-- 15-minute <a href="https://jwt.io/" target="_blank" rel="noopener">JWT</a> expiry with refresh tokens
-- <a href="https://redis.io/" target="_blank" rel="noopener">Redis</a> for rate limiting state
-
-## Progress Log
-- 2025-08-20: Completed database schema (step 1)
-- 2025-08-21: Starting registration endpoint (step 2)</code></pre>
-            
-            <p><strong>Key Benefits:</strong></p>
+            <p><strong>Key benefits:</strong></p>
             <ul>
                 <li>Plan survives all context resets</li>
                 <li>Each execution starts clean but informed</li>
                 <li>Progress tracking across sessions</li>
                 <li>No confusion from old debugging attempts</li>
             </ul>
-            
+
         </section>
         
         <section>
@@ -19486,46 +15178,10 @@ Implement user authentication system
             
             <h3>Sub-Agent Delegation in Claude Code</h3>
             
-            <p><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code's sub-agents</a> are like sending a research assistant to the library. They do the messy work and return only the essential findings:</p>
-            
-            <div class="terminal-window">
-                <div class="terminal-header">
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-dot"></div>
-                    <div class="terminal-title">Claude Code - Sub-Agent Delegation</div>
-                </div>
-                <div class="terminal-content">
-                    <div class="terminal-comment"># WITHOUT Sub-Agent (pollutes main context)</div>
-                    <div class="terminal-user">
-                        <span class="terminal-prompt">❯</span> Search the entire codebase for all uses of the deprecated API
-                    </div>
-                    <div class="terminal-assistant">
-                        Searching for deprecated API usage...<br>
-                        <span class="terminal-output">Found in: src/auth/login.js:42</span><br>
-                        <span class="terminal-output">Found in: src/users/profile.js:156</span><br>
-                        <span class="terminal-output">[... 500 more lines of search results ...]</span><br>
-                        <span class="terminal-warning">⚠️ Main context now contains 500+ lines of search output</span>
-                    </div>
-                    
-                    <div class="terminal-divider">─────────────────────────</div>
-                    
-                    <div class="terminal-comment"># WITH Sub-Agent (keeps main context clean)</div>
-                    <div class="terminal-user">
-                        <span class="terminal-prompt">❯</span> Use a sub-agent to audit deprecated API usage and report back a summary
-                    </div>
-                    <div class="terminal-assistant">
-                        Delegating to sub-agent for comprehensive search...<br><br>
-                        <span class="terminal-success">✓ Sub-agent completed analysis</span><br><br>
-                        <strong>Summary:</strong> Found 23 instances of deprecated API across 8 files<br>
-                        • Authentication: 5 instances (needs urgent update)<br>
-                        • User profiles: 8 instances (low priority)<br>
-                        • Data processing: 10 instances (can be batch updated)<br><br>
-                        <span class="terminal-comment"># Main context stays clean - only 5 lines instead of 500!</span>
-                    </div>
-                </div>
-            </div>
-            
+            <p><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code's sub-agents</a> do the messy exploratory work in an isolated context and return only the essential findings to your main conversation:</p>
+
+            <pre><code class="language-bash">{{SNIPPET:understanding-llm-context-management/subagent-delegation-example.sh}}</code></pre>
+
             <p>Sub-agents are perfect for:</p>
             <ul>
                 <li><strong>QA Operations:</strong> Running comprehensive tests and returning just the failures</li>
@@ -19538,14 +15194,9 @@ Implement user authentication system
             
             <h3>Context-Aware Communication</h3>
             
-            <p>Structure your messages to minimize context pollution:</p>
-            
-            <pre><code class="language-markdown"># Inefficient: Adds noise
-"Let me check something... run this... okay try this... 
-hmm not that... what about... oh wait I found it!"
+            <p>Structure your messages to minimise context pollution:</p>
 
-# Efficient: Direct and focused
-"Check if the auth middleware is applied to the /api/users route"</code></pre>
+            <pre><code>{{SNIPPET:understanding-llm-context-management/message-efficiency-example.txt}}</code></pre>
         </section>
 
         <section>
@@ -19553,44 +15204,31 @@ hmm not that... what about... oh wait I found it!"
             
             <h3>Bigger Isn't Always Better</h3>
             <p>Having a 1-million-token context window is like having a 10,000-page notebook. Yes, you can write everything down, but finding specific information becomes increasingly difficult. The cognitive load on the model increases, potentially leading to:</p>
-            
+
             <ul>
                 <li><strong>Lost Instructions:</strong> Early directives buried under thousands of tokens</li>
                 <li><strong>Conflicting Context:</strong> Contradictions between different parts of the conversation</li>
                 <li><strong>Attention Scatter:</strong> Model struggles to identify what's currently relevant</li>
                 <li><strong>Slower Processing:</strong> More context means more computation time</li>
             </ul>
-            
-            <h3>The Goldilocks Zone</h3>
-            <p>The ideal context size is "just right": enough to maintain continuity and necessary information, but not so much that it becomes unwieldy. For most development tasks, 10,000-50,000 tokens of well-curated context outperforms 200,000 tokens of chaotic conversation history.</p>
+
+            <p>The ideal context size is one that's enough to maintain continuity and necessary information, but not so much that it becomes unwieldy. For most development tasks, 10,000-50,000 tokens of well-curated context will probably outperform 200,000 tokens of chaotic conversation history.</p>
         </section>
 
         <section>
             <h2>Advanced Context Strategies</h2>
-            
-            <h3>The Checkpoint Pattern</h3>
-            <p>Like saving your game progress, create context checkpoints at major milestones:</p>
-            
-            <pre><code class="language-markdown">## Checkpoint: Authentication System Complete
-- Implemented: JWT auth, user registration, login endpoints
-- Database: Users table with bcrypt passwords
-- Middleware: requireAuth() for protected routes
-- Tests: 24 passing, 100% coverage
-- Next: Build user profile management</code></pre>
-            
-            <h3>The Context Budget</h3>
-            <p>Treat context like a budget and allocate tokens to different purposes:</p>
-            
-            <pre><code class="language-markdown">## Context Budget Allocation
 
-• System instructions: 2,000 tokens (fixed overhead)
-• Active code files: 5,000 tokens (current work)
-• Recent conversation: 10,000 tokens (working memory)
-• Reference documents: 3,000 tokens (plans, requirements)
-• Safety buffer: 5,000 tokens (unexpected expansion)
-• **Total target: 25,000 tokens** (well below limits)</code></pre>
-            
-            <h3>The Semantic Layering Approach</h3>
+            <h3>Checkpointing Your Progress</h3>
+            <p>Like saving your game progress, create context checkpoints at major milestones:</p>
+
+            <pre><code>{{SNIPPET:understanding-llm-context-management/checkpoint-example.md}}</code></pre>
+
+            <h3>Budgeting Your Context Tokens</h3>
+            <p>Treat context like a budget and allocate tokens to different purposes:</p>
+
+            <pre><code>{{SNIPPET:understanding-llm-context-management/context-budget-example.md}}</code></pre>
+
+            <h3>Layering Context by Relevance</h3>
             <p>Structure context in semantic layers, from most to least relevant:</p>
             
             <ol>
@@ -19609,7 +15247,7 @@ hmm not that... what about... oh wait I found it!"
                 <li>✅ Start fresh contexts for distinctly different tasks</li>
                 <li>✅ Create plan documents before complex implementations</li>
                 <li>✅ Use sub-agents for exploratory or research tasks</li>
-                <li>✅ Summarize before context resets</li>
+                <li>✅ Summarise before context resets</li>
                 <li>✅ Be explicit about what information is currently relevant</li>
                 <li>✅ Prune verbose output before continuing</li>
             </ul>
@@ -19628,71 +15266,53 @@ hmm not that... what about... oh wait I found it!"
             <h2>Quick Context Health Check</h2>
             
             <p>Before your next message, ask yourself:</p>
-            
-            <div class="checklist">
-                <p>☐ Is this conversation focused on one clear objective?</p>
-                <p>☐ Have I included conflicting information?</p>
-                <p>☐ Could I explain the current state in 2-3 sentences?</p>
-                <p>☐ Am I about to paste more than 50 lines of output?</p>
-                <p>☐ Would starting fresh be more efficient?</p>
-            </div>
-            
+
+            <ul>
+                <li>Is this conversation focused on one clear objective?</li>
+                <li>Have I included conflicting information?</li>
+                <li>Could I explain the current state in 2-3 sentences?</li>
+                <li>Am I about to paste more than 50 lines of output?</li>
+                <li>Would starting fresh be more efficient?</li>
+            </ul>
+
             <p>If you answered "no" to the first question or "yes" to any others, it's time to manage your context.</p>
         </section>
         
         <section>
             <h2>The Future of Context Management</h2>
             
-            <p>As we move toward even larger context windows, the challenge shifts from capacity to curation. The winners in AI development won't be those with the largest contexts, but those who manage context most intelligently.</p>
-            
-            <div class="callout">
-                <h3>Emerging Patterns</h3>
-                <ul>
-                    <li><strong>Hierarchical Context:</strong> Multi-level context systems with different retention policies</li>
-                    <li><strong>Semantic Compression:</strong> Automatic summarization of older context</li>
-                    <li><strong>Context Routing:</strong> Different sub-contexts for different aspects of work</li>
-                    <li><strong>Persistent Memory:</strong> Long-term storage separate from working context</li>
-                </ul>
-            </div>
+            <p>As we move toward even larger context windows, the challenge shifts from capacity to curation. The winners in AI development probably won't be those with the largest contexts, but those who manage context most intelligently.</p>
+
+            <h3>Emerging Patterns</h3>
+            <ul>
+                <li><strong>Hierarchical Context:</strong> Multi-level context systems with different retention policies</li>
+                <li><strong>Semantic Compression:</strong> Automatic summarisation of older context</li>
+                <li><strong>Context Routing:</strong> Different sub-contexts for different aspects of work</li>
+                <li><strong>Persistent Memory:</strong> Long-term storage separate from working context</li>
+            </ul>
         </section>
 
         <section>
-            <h2>Practical Takeaways</h2>
-            
-            <p>Working effectively with <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> like <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> isn't about using all available context. It's about using context wisely. Remember:</p>
-            
-            <ol>
-                <li><strong>Quality over quantity:</strong> 10,000 tokens of focused context beats 100,000 tokens of noise</li>
-                <li><strong>Regular maintenance:</strong> Clean context like you'd refactor code, frequently and purposefully</li>
-                <li><strong>Strategic delegation:</strong> Use sub-agents to keep your main context clean</li>
-                <li><strong>Plan-driven development:</strong> Let documents guide your work across context boundaries</li>
-                <li><strong>Conscious boundaries:</strong> Know when to reset and start fresh</li>
-            </ol>
-            
-            <p>Understanding context goes beyond technical knowledge. It means developing an intuition for information flow and cognitive load. Master this, and you'll unlock the true potential of AI-assisted development.</p>
-        </section>
+            <h2>Building Context Management Into Your Workflow</h2>
 
-        <section>
-            <h2>Conclusion</h2>
-            
-            <p>Context in <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> is like the stage upon which your entire conversation performs. Too cluttered, and the actors stumble over props. Too sparse, and they forget their lines. But when managed thoughtfully, context becomes the invisible foundation that enables AI to truly understand and assist with complex development tasks.</p>
-            
-            <p>The next time you interact with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> or any <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLM</a>, remember: you're not just sending messages, you're conducting an orchestra of information. The quality of the performance depends not on the size of the orchestra, but on how well you conduct it.</p>
+            <p>Working effectively with <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">LLMs</a> like <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> means curating context deliberately rather than just accumulating it. Two habits do most of the work: clearing context at natural task boundaries, backed by a plan document that survives the clear, and delegating exploratory work to sub-agents so it never pollutes your main conversation in the first place. Everything else in this article is detail layered on top of those two moves.</p>
+
+            <p>Treat context the way you'd treat any other resource with a cost attached to it: prune it, budget it, and reset it deliberately rather than letting it accumulate by default.</p>
         </section>
     `,
   },
-  // Migrating: unix-philosophy-strategic-guide.ejs
   {
     id: 'unix-philosophy-strategic-guide',
     title: 'The Unix Philosophy: A Strategic Guide for Technology Leadership',
     description:
-      'How the 50-year-old Unix philosophy drives modern infrastructure success, reduces vendor lock-in, and delivers superior business outcomes through modular, composable systems.',
+      'How the 50-year-old Unix philosophy still shapes resilient infrastructure, reduces vendor lock-in, and gives technology leaders more room to manoeuvre through modular, composable systems.',
     date: '2025-08-13',
     category: CATEGORIES.infrastructure.id,
     readingTime: 12,
     author: 'Joseph Edmonds',
     tags: [],
     subreddit: 'programming',
+    register: 'formal',
     heroImage: {
       src: '/images/unix-philosophy-strategic-guide/hero.webp',
       alt: 'A black-and-white photograph of a machine shop interior, showing a wall of tool racks and chucks, an electrical panel, and several lathes',
@@ -19703,363 +15323,377 @@ hmm not that... what about... oh wait I found it!"
     },
     content: `
 <div class="intro">
-            <p class="lead">In 1969, a small team at Bell Labs created Unix with a radical design philosophy: build simple tools that do one thing well and compose together seamlessly. Today, this philosophy underpins the world's most successful technology companies. Netflix uses microservices to handle 238 million subscribers. Amazon deploys code every 11.7 seconds. For technology leaders, understanding and applying Unix principles isn't just about technical architecture. It's about building resilient, cost-effective, and strategically flexible technology platforms that create competitive advantage through speed, agility, and vendor independence.</p>
+            <p class="lead">In 1969, a small team at Bell Labs created Unix with a deliberate design philosophy: build simple tools that do one thing well and compose together cleanly. That philosophy still shapes how resilient technology platforms get built today, from Netflix's move away from a single monolithic codebase to the infrastructure-as-code tooling most cloud teams now take for granted. For technology leaders, applying Unix principles means building resilient, cost-effective, and strategically flexible platforms that create competitive advantage through speed, agility, and vendor independence.</p>
         </div>
-        
+
         <section>
             <h2>The Business Case for Modular Architecture</h2>
-            
-            <p>The Unix philosophy centers on three core principles that translate directly to measurable business value:</p>
-            
+
+            <p>The Unix philosophy centres on three core principles that translate directly to business value:</p>
+
             <ul>
                 <li><strong>Single Responsibility</strong>: Each component does one thing exceptionally well, reducing complexity and maintenance costs</li>
                 <li><strong>Composability</strong>: Components work together through standard interfaces, enabling rapid innovation</li>
                 <li><strong>Universal Communication</strong>: Vendor-neutral data exchange prevents lock-in and enables best-of-breed selection</li>
             </ul>
-            
-            <p>These principles solve fundamental business problems that constrain growth and increase operational risk. <a href="https://fullscale.io/blog/microservices-roi-cost-benefit-analysis/" target="_blank" rel="noopener">2025 microservices adoption research</a> shows that companies implementing modular architectures strategically are <strong>3.2 times more likely to achieve positive ROI within 18 months</strong>. They also see operational cost reductions of <strong>30-40% in high-volume process areas</strong>.</p>
+
+            <p>These principles solve problems that otherwise constrain growth and increase operational risk. Companies that adopt modular architecture deliberately, rather than backing into it through years of ad hoc integration, tend to see fewer of the coordination bottlenecks that slow monolithic systems down: teams can ship independently instead of queuing behind a single release train.</p>
 
             <h3>The Strategic Architecture Framework</h3>
-            
-            <p>Think of modular architecture as a business capability framework rather than a technical decision. Instead of monolithic systems that require coordinated changes across multiple business functions, modular approaches enable:</p>
-            
+
+            <p>Think of modular architecture as a business capability framework rather than a purely technical decision. Instead of monolithic systems that require coordinated changes across multiple business functions, modular approaches enable:</p>
+
             <ul>
-                <li><strong>Independent Innovation</strong>: Teams can enhance customer experience, payment processing, or inventory management without impacting other systems</li>
-                <li><strong>Risk Isolation</strong>: Problems in one business area don't cascade across the entire operation</li>
-                <li><strong>Vendor Flexibility</strong>: Replace individual capabilities with best-of-breed solutions without system-wide migration</li>
-                <li><strong>Competitive Response Speed</strong>: Deploy new features or respond to market changes in weeks, not months</li>
+                <li><strong>Independent innovation</strong>: teams can improve customer experience, payment processing, or inventory management without touching unrelated systems</li>
+                <li>Risk isolation, so a problem in one business area doesn't cascade across the whole operation</li>
+                <li>The freedom to swap in a best-of-breed vendor for a single capability without a system-wide migration</li>
+                <li><strong>Faster competitive response</strong>: deploying a new feature or reacting to a market shift in weeks rather than months</li>
             </ul>
         </section>
 
         <section>
+            <h2>Unix Philosophy in Practice: Composable Code</h2>
+
+            <p>The principle behind all of this is easiest to see in code rather than in a slide deck. A Unix pipeline chains small, single-purpose tools together, and each tool knows nothing about the others beyond the shape of the data passing through:</p>
+
+            <pre><code class="language-bash">{{SNIPPET:unix-philosophy-strategic-guide/log-pipeline.sh}}</code></pre>
+
+            <p>Nothing here is unique to the shell. The same idea of small, composable units with a shared interface works just as well inside an application. A pipeline of single-purpose PHP classes, each implementing the same simple contract, composes in exactly the same way that shell commands do:</p>
+
+            <pre><code class="language-php">{{SNIPPET:unix-philosophy-strategic-guide/composable-pipeline.php}}</code></pre>
+
+            <p>Neither example is complicated, and that's the point. The value isn't in any individual step; it's in being able to reorder, replace, or test each step in isolation, because none of them depend on the internals of their neighbours.</p>
+        </section>
+
+        <section>
             <h2>Modern Implementation: From Monoliths to Microservices</h2>
-            
-            <p>The transition from monolithic to modular architectures isn't just a technical decision. It's a strategic transformation that impacts development velocity, operational costs, and business agility. <a href="https://fullscale.io/blog/microservices-roi-cost-benefit-analysis/" target="_blank" rel="noopener">Current research shows</a> that 87% of organizations now implement some form of microservices. But 62% report initial ROI challenges during the first 12 months without proper strategic planning.</p>
+
+            <p>The transition from monolithic to modular architectures changes development velocity, operational cost structure, and business agility all at once. Plenty of organisations now run at least part of their estate as microservices, though the transition is rarely as smooth in the first year as the sales pitch suggests: teams that skip the organisational planning tend to feel that pain earliest.</p>
 
             <h3>Development Velocity and Team Productivity</h3>
-            
-            <p>Organizations that restructure teams around business capabilities rather than technical layers achieve measurable competitive advantages:</p>
-            
+
+            <p>Organisations that restructure teams around business capabilities rather than technical layers tend to see real gains:</p>
+
             <ul>
-                <li><strong>30-50% increase in development velocity</strong> through autonomous team structures</li>
-                <li><strong>Parallel development capabilities</strong> enabling concurrent feature delivery</li>
-                <li><strong>Reduced coordination overhead</strong> between business units and technology teams</li>
-                <li><strong>Faster time-to-market</strong> for new products and services through pre-built components</li>
+                <li>Autonomous team structures that raise development velocity without necessarily adding headcount</li>
+                <li>Parallel development across teams working on genuinely independent services</li>
+                <li>Less coordination overhead between business units and technology teams</li>
+                <li>Faster time-to-market for new products, because more of the underlying plumbing already exists as a reusable component</li>
             </ul>
-            
-            <p>Here's the key insight for executives: modular architectures align technology structure with business strategy. They eliminate the technical constraints that traditionally slow business innovation.</p>
+
+            <p>Here's the key insight for executives: modular architectures align technology structure with business strategy, removing the technical constraints that traditionally slow business innovation.</p>
 
             <h3>Operational Excellence Through Platform Thinking</h3>
-            
+
             <p>Leading companies implement <em>platform strategies</em> based on Unix principles, where shared infrastructure capabilities enable rapid application development. This approach delivers:</p>
-            
+
             <ul>
-                <li><strong>Standardized deployment patterns</strong> reducing operational complexity</li>
-                <li><strong>Centralized monitoring and observability</strong> improving system reliability</li>
-                <li><strong>Automated scaling and resource management</strong> optimizing infrastructure costs</li>
+                <li><strong>Standardised deployment patterns</strong> reducing operational complexity</li>
+                <li><strong>Centralised monitoring and observability</strong> improving system reliability</li>
+                <li>Automated scaling and resource management, matching infrastructure spend to actual demand rather than fixed provisioning</li>
                 <li><strong>Security by design</strong> through consistent policy enforcement</li>
             </ul>
         </section>
 
         <section>
             <h2>Infrastructure as Code: Strategic Operations Excellence</h2>
-            
-            <p>Modern infrastructure management exemplifies Unix philosophy through declarative, composable approaches. Infrastructure-as-Code (IaC) transforms operations from manual, error-prone processes to automated, reproducible business capabilities. This directly impacts competitive positioning.</p>
+
+            <p>Modern infrastructure management exemplifies Unix philosophy through declarative, composable approaches. Infrastructure-as-Code (IaC) transforms operations from manual, error-prone processes into automated, reproducible business capabilities, which directly affects competitive positioning.</p>
 
             <h3>The Strategic Value of Declarative Infrastructure</h3>
-            
-            <p>Organizations implementing Infrastructure-as-Code report significant business benefits:</p>
-            
+
+            <p>Organisations implementing Infrastructure-as-Code report meaningful business benefits:</p>
+
             <ul>
-                <li><strong>Deployment Consistency</strong>: Eliminates environment-specific issues that delay product launches</li>
-                <li><strong>Disaster Recovery</strong>: Complete infrastructure can be rebuilt in minutes, not days</li>
-                <li><strong>Compliance Automation</strong>: Security and regulatory requirements become automated policy enforcement</li>
-                <li><strong>Cost Transparency</strong>: Infrastructure costs become trackable and attributable to specific business initiatives</li>
+                <li>Deployment consistency that eliminates the environment-specific bugs that delay launches</li>
+                <li><strong>Disaster recovery</strong>: a complete environment can be rebuilt in minutes rather than days</li>
+                <li>Compliance automation, turning security and regulatory requirements into enforced policy rather than a manual checklist</li>
+                <li><strong>Cost transparency</strong>: infrastructure spend becomes traceable to specific business initiatives</li>
             </ul>
 
-            <h3>Cloud Cost Optimization Through Modular Design</h3>
-            
-            <p><a href="https://www.pwc.com/us/en/industries/tmt/library/tech-cio-priorities.html" target="_blank" rel="noopener">2025 CTO priorities research</a> identifies cloud cost optimization as a critical concern. <strong>48% of CFOs lack confidence in measuring cloud ROI</strong>. Unix-inspired modular infrastructure addresses this through:</p>
-            
+            <h3>Cloud Cost Optimisation Through Modular Design</h3>
+
+            <p>Cloud cost visibility is a persistent pain point for technology leaders: infrastructure spend is easy to approve and hard to attribute to a specific initiative once it's live. Public cloud spending keeps climbing regardless of how well any individual organisation manages it, and Gartner put worldwide spend at <a href="https://fullscale.io/blog/microservices-roi-cost-benefit-analysis/" target="_blank" rel="noopener">$723 billion for 2025</a>. Unix-inspired modular infrastructure addresses the attribution problem directly:</p>
+
             <ul>
-                <li><strong>Granular Resource Management</strong>: Each business capability has dedicated, measurable infrastructure costs</li>
-                <li><strong>Automated Scaling</strong>: Resources scale based on actual business demand, not over-provisioned estimates</li>
-                <li><strong>Multi-Cloud Strategy</strong>: Modular design enables vendor negotiation leverage and prevents lock-in</li>
-                <li><strong>FinOps Integration</strong>: AI-based financial operations platforms can optimize spending at the component level</li>
+                <li><strong>Granular resource management</strong>: each business capability carries its own measurable infrastructure cost</li>
+                <li>Automated scaling tied to actual demand rather than over-provisioned estimates</li>
+                <li>A multi-cloud strategy that creates vendor negotiation leverage and reduces lock-in</li>
+                <li>FinOps tooling that can attribute and optimise spend at the level of an individual component</li>
             </ul>
         </section>
 
         <section>
-            <h2>Real-World Case Studies: Measurable Business Impact</h2>
-            
+            <h2>Real-World Examples: Architecture Shaping Strategy</h2>
+
             <h3>Netflix: From Constraint to Competitive Advantage</h3>
-            
-            <p>Netflix's transformation from a DVD-by-mail service to a global streaming platform shows how Unix philosophy creates sustainable competitive advantages. Their strategic migration to microservices eliminated the technical constraints that limited business growth:</p>
-            
+
+            <p>Netflix's shift from a DVD-by-mail service to a global streaming platform is one of the most cited examples of Unix philosophy applied at scale. Its move away from a single monolithic codebase, starting around 2009, removed constraints that had been limiting how fast the business could grow:</p>
+
             <ul>
-                <li><strong>Market Responsiveness</strong>: Deploy new features and content recommendations in real-time based on viewing patterns</li>
-                <li><strong>Global Resilience</strong>: Business continuity through distributed architecture, evacuating an entire AWS region in under 40 minutes</li>
-                <li><strong>Innovation Velocity</strong>: Engineers deploy code thousands of times per day without business disruption</li>
-                <li><strong>Scale Economics</strong>: Support 238 million subscribers while achieving <a href="https://www.cloudzero.com/blog/netflix-aws/" target="_blank" rel="noopener">10% reduction in data warehouse costs</a> through architectural efficiency</li>
+                <li>New features and recommendation-engine changes ship independently, without a single coordinated release across the whole platform</li>
+                <li><strong>Isolated failure domains</strong>: a fault in one service doesn't need to take the whole platform down with it</li>
+                <li>Deployment frequency far higher than a monolithic release train allows, because a change to one service doesn't require re-testing everything else</li>
+                <li>A <a href="https://www.cloudzero.com/blog/netflix-aws/" target="_blank" rel="noopener">10% reduction in data-warehouse storage footprint</a>, which the FinOps vendor CloudZero attributes to better cost attribution once Netflix's infrastructure spend was broken down by service</li>
             </ul>
 
             <h3>Amazon: From E-commerce to Platform Economy</h3>
-            
-            <p>Amazon's evolution from a monolithic e-commerce platform to the world's largest cloud provider shows the strategic value of modular thinking. Their service-oriented architecture became the foundation for new business models:</p>
-            
+
+            <p>Amazon's evolution from a monolithic e-commerce platform into the world's largest cloud provider shows the strategic value of modular thinking. Its service-oriented architecture became the foundation for entirely new business models:</p>
+
             <ul>
-                <li><strong>Business Agility</strong>: Launch new services (AWS) by exposing internal capabilities as market products</li>
-                <li><strong>Operational Excellence</strong>: Code deployments every 11.7 seconds with <a href="https://www.hys-enterprise.com/blog/why-and-how-netflix-amazon-and-uber-migrated-to-microservices-learn-from-their-experience/" target="_blank" rel="noopener">60-80% reduction in deployment failures</a></li>
-                <li><strong>Resource Optimization</strong>: Eliminate wasted capacity through granular service scaling</li>
-                <li><strong>Market Expansion</strong>: Transform internal technology investments into revenue-generating platform services</li>
+                <li><strong>Business agility</strong>: launching new services (AWS itself) by exposing internal infrastructure capabilities as external products</li>
+                <li>Operational discipline built on small, independently deployable services rather than one large deployment coordinated across every team</li>
+                <li>Resource efficiency, scaling each service to its own demand instead of over-provisioning the whole platform</li>
+                <li>Turning what had been purely internal technology investment into a revenue-generating platform business</li>
             </ul>
 
             <h3>The Executive Insight: Architecture as Strategy</h3>
-            
-            <p>Both companies prove a crucial strategic insight: <em>technology architecture becomes business strategy</em>. Modular systems don't just support existing business models. They enable entirely new ones. Netflix's recommendation engine became a competitive differentiator. Amazon's infrastructure became AWS.</p>
+
+            <p>Both companies illustrate the same point: technology architecture can become business strategy in its own right. Modular systems don't just support an existing business model; they can enable an entirely new one. Netflix's recommendation engine became a competitive differentiator in its own right, and Amazon's internal infrastructure became AWS itself.</p>
         </section>
 
         <section>
             <h2>Strategic Business Benefits: The Executive Value Proposition</h2>
-            
+
             <h3>Vendor Independence and Negotiating Power</h3>
-            
-            <p>Modular architectures provide strategic protection against vendor lock-in. This is a critical concern for 2025 CTOs. <a href="https://digitaldefynd.com/IQ/cto-navigating-cloud-vendor-lock-in/" target="_blank" rel="noopener">Current research shows</a> that vendor lock-in remains a major barrier to cloud adoption. But Unix-inspired modular approaches create negotiating leverage:</p>
-            
+
+            <p>Vendor lock-in is a standing concern for technology leaders managing cloud contracts. Most organisations are already operating multi-cloud in practice: <a href="https://digitaldefynd.com/IQ/cto-navigating-cloud-vendor-lock-in/" target="_blank" rel="noopener">Flexera's 2024 State of the Cloud report</a> put the figure at 89% of enterprises, often as a side effect of years of individual purchasing decisions rather than a deliberate strategy. Unix-inspired modular design turns that reality into leverage instead of a liability:</p>
+
             <ul>
-                <li><strong>Component-Level Vendor Selection</strong>: Choose best-of-breed solutions for each business capability</li>
-                <li><strong>Migration Risk Reduction</strong>: Replace individual services without system-wide disruption</li>
-                <li><strong>Cost Optimization Through Competition</strong>: Multiple vendor options for each system component</li>
-                <li><strong>Strategic Technology Adoption</strong>: Integrate new technologies incrementally, not through costly rewrites</li>
+                <li><strong>Component-level vendor selection</strong>: choosing the best available tool for each capability, rather than being tied to one vendor's whole stack</li>
+                <li>Lower migration risk, because replacing one service doesn't require a system-wide rewrite</li>
+                <li>Genuine competitive tension between vendors at the level of individual components rather than the whole platform</li>
+                <li>The ability to adopt new technology incrementally, rather than through a costly full rewrite</li>
             </ul>
-            
-            <p>Organizations implementing multi-cloud modular strategies report reduced vendor dependency while maintaining operational flexibility.</p>
+
+            <p>Organisations running multi-cloud modular strategies generally report more room to negotiate, and less exposure if a single vendor changes its pricing or roadmap.</p>
 
             <h3>Operational Excellence and Competitive Positioning</h3>
-            
-            <p>Unix principles create measurable operational advantages that translate to competitive positioning:</p>
-            
+
+            <p>Unix principles create operational advantages that translate into competitive positioning:</p>
+
             <ul>
-                <li><strong>Business Continuity</strong>: Service failures are isolated, so customer experience remains intact during incidents</li>
-                <li><strong>Innovation Velocity</strong>: Independent team deployment eliminates coordination bottlenecks</li>
-                <li><strong>Market Response Speed</strong>: Deploy competitive responses in weeks, not quarters</li>
-                <li><strong>Talent Optimization</strong>: Teams focus on specific business domains, improving expertise and productivity</li>
+                <li><strong>Business continuity</strong>: service failures stay isolated, so most customers never notice an incident affecting one component</li>
+                <li>Independent deployment removes a lot of the coordination bottleneck between teams</li>
+                <li>Faster market response, because a competitive feature can ship in weeks rather than waiting for a full quarterly release cycle</li>
+                <li><strong>Talent optimisation</strong>: teams build deep expertise in a specific business domain instead of spreading thin across an entire monolith</li>
             </ul>
 
-            <p>Organizations implementing strategic microservices approaches achieve <a href="https://fullscale.io/blog/microservices-roi-cost-benefit-analysis/" target="_blank" rel="noopener">25-35% reduction in operational overhead</a>. They also improve business agility at the same time.</p>
+            <p>Organisations that adopt microservices strategically tend to report a lighter operational load per service, even though the total number of moving parts increases; the isolation and standard tooling more than make up for the added count.</p>
 
             <h3>Financial Impact and ROI Measurement</h3>
-            
-            <p>The financial case for modular architecture becomes clear through improved business metrics:</p>
-            
+
+            <p>The financial case for modular architecture becomes clear through improved business metrics rather than a single headline number:</p>
+
             <ul>
-                <li><strong>Revenue Impact</strong>: Faster feature delivery directly correlates to market share gains</li>
-                <li><strong>Cost Structure</strong>: Variable infrastructure costs aligned with business demand</li>
-                <li><strong>Risk Mitigation</strong>: Reduced business impact from technology failures or vendor changes</li>
-                <li><strong>Capital Efficiency</strong>: Lower total cost of ownership through strategic vendor diversification</li>
+                <li><strong>Revenue impact</strong>: faster feature delivery correlates with market share gains</li>
+                <li>A cost structure that flexes with business demand instead of sitting fixed</li>
+                <li>Reduced business impact from technology failures or vendor changes</li>
+                <li><strong>Capital efficiency</strong>: lower total cost of ownership through strategic vendor diversification</li>
             </ul>
         </section>
 
         <section>
-            <h2>Implementation Strategy for Leadership: A 2025 Roadmap</h2>
-            
+            <h2>Implementation Strategy for Leadership</h2>
+
             <h3>Strategic Assessment Framework</h3>
-            
-            <p><a href="https://www.mckinsey.com/industries/retail/our-insights/eight-tech-forward-imperatives-for-consumer-ctos-in-2025" target="_blank" rel="noopener">2025 research shows</a> that successful CTOs prioritize strategic assessment over technical metrics before implementing modular architecture:</p>
-            
+
+            <p>Successful technology leaders tend to prioritise a strategic assessment before touching architecture, rather than jumping straight to a technical migration plan:</p>
+
             <ul>
-                <li><strong>Business Constraint Analysis</strong>: Identify where current architecture limits business growth or competitive response</li>
-                <li><strong>Vendor Risk Assessment</strong>: Quantify financial and strategic risks from vendor dependencies</li>
-                <li><strong>Organizational Readiness</strong>: Align team structures with intended business capabilities</li>
-                <li><strong>Investment vs. Opportunity Cost</strong>: Compare modernization investment against competitive disadvantages of status quo</li>
+                <li><strong>Business constraint analysis</strong>: identify where the current architecture is actually limiting growth or competitive response</li>
+                <li>Vendor risk assessment, quantifying the financial and strategic exposure created by current vendor dependencies</li>
+                <li>Organisational readiness: whether team structures already match the business capabilities the new architecture is meant to serve</li>
+                <li>Weighing the cost of modernisation against the cost of standing still whilst competitors move faster</li>
             </ul>
 
             <h3>Executive-Driven Migration Strategy</h3>
-            
-            <p>Successful transformations require executive leadership, not just technical execution. The proven approach:</p>
-            
+
+            <p>Successful transformations need executive leadership, not just technical execution. A workable approach:</p>
+
             <ol>
-                <li><strong>Business Capability Mapping</strong>: Define services around business value, not technical convenience</li>
-                <li><strong>Strategic Pilot Selection</strong>: Choose initial projects that demonstrate clear business value</li>
-                <li><strong>Platform Investment</strong>: Allocate 20-30% of development budget to shared infrastructure capabilities</li>
-                <li><strong>Organizational Design</strong>: Restructure teams around business outcomes, not technical functions</li>
-                <li><strong>Success Measurement</strong>: Track business agility metrics, not just technical performance</li>
+                <li><strong>Business capability mapping</strong>: define services around business value, not technical convenience</li>
+                <li>Choose an initial pilot project that can demonstrate clear business value on its own</li>
+                <li>Set aside a meaningful share of the development budget for shared platform capabilities, rather than funding every team's infrastructure separately</li>
+                <li>Restructure teams around business outcomes rather than technical functions</li>
+                <li>Track business agility metrics as well as technical performance, not instead of it</li>
             </ol>
 
             <h3>ROI Measurement and Success Metrics</h3>
-            
+
             <p>Focus on business metrics that demonstrate competitive advantage:</p>
-            
+
             <ul>
-                <li><strong>Time-to-Market</strong>: How quickly new business capabilities reach customers</li>
-                <li><strong>Innovation Velocity</strong>: Number of business experiments and iterations per quarter</li>
-                <li><strong>Market Response Time</strong>: Speed of competitive feature matching or market opportunity capture</li>
-                <li><strong>Customer Experience Impact</strong>: Reduction in service disruptions and improvement in feature velocity</li>
-                <li><strong>Total Economic Impact</strong>: Include cost savings, revenue acceleration, and risk mitigation</li>
+                <li><strong>Time-to-market</strong>: how quickly new business capabilities reach customers</li>
+                <li>The number of business experiments and iterations a team can run per quarter</li>
+                <li><strong>Market response time</strong>: speed of competitive feature matching or market opportunity capture</li>
+                <li>Fewer service disruptions alongside faster feature delivery</li>
+                <li>Total economic impact, including cost savings, revenue acceleration, and risk mitigation together</li>
             </ul>
         </section>
 
         <section>
             <h2>Executive Risk Management: Avoiding Common Transformation Pitfalls</h2>
-            
-            <h3>Organizational Transformation Challenges</h3>
-            
-            <p>Technical transformation requires organizational evolution. <a href="https://fullscale.io/blog/microservices-roi-cost-benefit-analysis/" target="_blank" rel="noopener">Research shows</a> that 62% of organizations report initial ROI challenges. This is primarily due to organizational misalignment:</p>
-            
+
+            <h3>Organisational Transformation Challenges</h3>
+
+            <p>Technical transformation doesn't succeed on its own; it needs organisational change alongside it. Most of the friction that shows up in the first year traces back to organisational misalignment rather than the technology itself:</p>
+
             <ul>
-                <li><strong>Conway's Law Impact</strong>: System architecture will mirror organizational communication patterns. Design both intentionally</li>
-                <li><strong>Leadership Commitment</strong>: Modular architecture requires sustained executive support through implementation challenges</li>
-                <li><strong>Cultural Evolution</strong>: Move from project-based to product-based thinking. Teams should own business outcomes</li>
-                <li><strong>Investment Patience</strong>: Initial 6-12 months show increased complexity before realizing benefits</li>
+                <li><strong>Conway's Law</strong>: system architecture tends to mirror organisational communication patterns, so it's worth designing both together deliberately</li>
+                <li>Sustained leadership commitment matters more here than in most technical projects, because the difficult period comes before the benefits do</li>
+                <li>A shift from project-based to product-based thinking, where teams own outcomes rather than handing off a finished project</li>
+                <li>Expect complexity to increase before it decreases; teams that abandon the effort during that window rarely see the eventual payoff</li>
             </ul>
 
             <h3>Strategic Risk Mitigation</h3>
-            
+
             <p>Address risks through executive-level governance and strategic planning:</p>
-            
+
             <ul>
-                <li><strong>Incremental Value Delivery</strong>: Ensure each phase delivers measurable business value</li>
-                <li><strong>Vendor Diversification Strategy</strong>: Prevent new forms of lock-in through technology standardization</li>
-                <li><strong>Talent Development Investment</strong>: Build internal capabilities rather than relying entirely on external expertise</li>
-                <li><strong>Business Continuity Planning</strong>: Maintain parallel systems during transition to minimize business risk</li>
+                <li><strong>Incremental value delivery</strong>: ensure each phase delivers measurable business value on its own</li>
+                <li>A vendor diversification strategy that prevents new forms of lock-in through technology standardisation</li>
+                <li>Investment in internal capability, rather than relying entirely on external expertise</li>
+                <li><strong>Business continuity planning</strong>: maintain parallel systems during transition to limit business risk</li>
             </ul>
 
             <h3>Success Probability Factors</h3>
-            
-            <p>Organizations achieving successful modular transformations share common characteristics:</p>
-            
+
+            <p>Organisations that pull off a modular transformation tend to share a few characteristics:</p>
+
             <ul>
-                <li><strong>Executive Championship</strong>: CTO and business leadership actively drive organizational change</li>
-                <li><strong>Business-First Design</strong>: Architecture decisions driven by business strategy, not technical preferences</li>
-                <li><strong>Iterative Approach</strong>: Prove value incrementally rather than attempting comprehensive transformation</li>
-                <li><strong>Cultural Investment</strong>: Equal focus on people, process, and technology changes</li>
+                <li>Executive championship, with CTO and business leadership actively driving the organisational change</li>
+                <li><strong>Business-first design</strong>: architecture decisions driven by business strategy, not technical preference</li>
+                <li>An iterative approach that proves value incrementally rather than attempting one comprehensive transformation</li>
+                <li>Equal investment in people and process, not just technology</li>
             </ul>
         </section>
 
         <section>
             <h2>The Strategic Advantage: Composable Business Architecture</h2>
-            
-            <p>The Unix philosophy's greatest business value lies in creating <em>composable business architecture</em>. This is where technology infrastructure becomes a strategic asset that accelerates business evolution rather than constraining it.</p>
+
+            <p>The Unix philosophy's greatest business value lies in creating <em>composable business architecture</em>, where technology infrastructure becomes a strategic asset that accelerates business evolution rather than constraining it.</p>
 
             <h3>Competitive Intelligence and Market Response</h3>
-            
-            <p>Companies with modular architectures gain decisive competitive advantages through speed and agility. When competitors launch new features or market conditions shift, modular organizations can respond at business speed:</p>
-            
+
+            <p>Companies with modular architectures gain real competitive advantages through speed and agility. When competitors launch new features or market conditions shift, modular organisations can respond at business speed:</p>
+
             <ul>
-                <li><strong>Feature Parity</strong>: Match competitive features in weeks through component recombination</li>
-                <li><strong>Market Opportunity Capture</strong>: Deploy new business models without infrastructure constraints</li>
-                <li><strong>Customer Experience Innovation</strong>: A/B test new approaches without system-wide risk</li>
-                <li><strong>Geographic Expansion</strong>: Adapt services for new markets through localized components</li>
+                <li><strong>Feature parity</strong>: matching competitive features in weeks through component recombination rather than a rewrite</li>
+                <li>Deploying new business models without infrastructure holding them back</li>
+                <li>A/B testing new approaches without system-wide risk</li>
+                <li>Adapting services for new markets through localised components rather than a parallel codebase</li>
             </ul>
 
-            <h3>Merger & Acquisition Strategic Value</h3>
-            
-            <p>Modular architectures transform M&A integration from a cost center to a competitive capability:</p>
-            
+            <h3>Merger and Acquisition Value</h3>
+
+            <p>Modular architectures can turn M&A integration from a cost centre into a competitive capability:</p>
+
             <ul>
-                <li><strong>Integration Velocity</strong>: Reduce integration timelines from years to months using API-first approaches</li>
-                <li><strong>Value Preservation</strong>: Maintain acquired companies' unique capabilities while achieving synergies</li>
-                <li><strong>Due Diligence Efficiency</strong>: Assess integration complexity and value potential more accurately</li>
-                <li><strong>Portfolio Optimization</strong>: Divest or restructure business units without technology constraints</li>
+                <li><strong>Integration velocity</strong>: reducing integration timelines from years to months using API-first approaches</li>
+                <li>Preserving an acquired company's unique capabilities whilst still capturing synergies</li>
+                <li>More accurate due diligence, because integration complexity is easier to assess when systems are already modular</li>
+                <li>Divesting or restructuring business units without being blocked by technology dependencies</li>
             </ul>
 
-            <h3>Regulatory Agility and Compliance Excellence</h3>
-            
-            <p>Regulatory requirements are becoming increasingly complex and varied. Modular architectures provide strategic compliance advantages:</p>
-            
+            <h3>Regulatory Agility and Compliance</h3>
+
+            <p>Regulatory requirements keep growing more complex and more varied by jurisdiction. Modular architectures offer real compliance advantages:</p>
+
             <ul>
-                <li><strong>Granular Policy Enforcement</strong>: Implement different data handling requirements per jurisdiction</li>
-                <li><strong>Audit Efficiency</strong>: Isolate compliance scope to specific business capabilities</li>
-                <li><strong>Regulatory Innovation</strong>: Experiment with new compliance approaches without system-wide impact</li>
-                <li><strong>Risk Isolation</strong>: Contain regulatory violations to specific services rather than entire systems</li>
+                <li><strong>Granular policy enforcement</strong>: different data handling rules per jurisdiction, applied at the component level</li>
+                <li>Audit scope isolated to the specific business capability under review</li>
+                <li>Room to experiment with new compliance approaches without system-wide impact</li>
+                <li>Regulatory issues contained to a specific service rather than spreading across the whole system</li>
             </ul>
         </section>
 
         <section>
-            <h2>Future-Proofing Your Technology Strategy: 2025 and Beyond</h2>
-            
-            <h3>Cloud-Native Cost Optimization</h3>
-            
-            <p>The economic pressures of 2025 make cloud cost optimization a strategic imperative. <a href="https://www.pwc.com/us/en/industries/tmt/library/tech-cio-priorities.html" target="_blank" rel="noopener">Current research shows</a> that cost discipline must coexist with innovation. Unix principles provide the framework:</p>
-            
+            <h2>Future-Proofing Your Technology Strategy</h2>
+
+            <h3>Cloud-Native Cost Optimisation</h3>
+
+            <p>Economic pressure keeps cloud cost optimisation on the agenda, but cutting costs at the expense of the ability to ship features isn't a stable trade either. Unix principles offer a way to hold both at once:</p>
+
             <ul>
-                <li><strong>Serverless Economics</strong>: Functions-as-a-Service achieve cost break-even at 15-20% resource utilization. This is ideal for variable business workloads</li>
-                <li><strong>FinOps Integration</strong>: AI-based financial operations platforms optimize spending at the component level</li>
-                <li><strong>Resource Right-Sizing</strong>: Match infrastructure consumption to actual business demand</li>
-                <li><strong>Multi-Cloud Arbitrage</strong>: Optimize costs across cloud providers based on workload characteristics</li>
+                <li>Serverless functions that only cost money whilst they're actually doing work, which suits genuinely variable workloads better than a fixed server footprint</li>
+                <li>FinOps tooling that optimises spending at the level of an individual component</li>
+                <li><strong>Resource right-sizing</strong>: matching infrastructure consumption to actual business demand</li>
+                <li>Multi-cloud arbitrage, moving workloads to wherever they're cheapest to run without a rewrite</li>
             </ul>
 
-            <h3>AI and Machine Learning Strategic Integration</h3>
-            
-            <p>Modular architectures provide the optimal foundation for AI adoption. Rather than building monolithic AI platforms that create new vendor dependencies, successful organizations build AI capabilities as composable services:</p>
-            
+            <h3>AI and Machine Learning Integration</h3>
+
+            <p>Modular architectures provide a solid foundation for AI adoption. Rather than building a monolithic AI platform that creates a new vendor dependency, organisations building AI capabilities as composable services keep more of their options open:</p>
+
             <ul>
-                <li><strong>Experimental Agility</strong>: Deploy and test ML models without disrupting core business systems</li>
-                <li><strong>Data Pipeline Flexibility</strong>: Connect AI services to existing business data through standard interfaces</li>
-                <li><strong>Vendor Independence</strong>: Avoid AI platform lock-in through API abstraction layers</li>
-                <li><strong>Incremental Intelligence</strong>: Add AI capabilities to existing business processes rather than replacing them</li>
+                <li><strong>Experimental agility</strong>: deploying and testing ML models without disrupting core business systems</li>
+                <li>Connecting AI services to existing business data through standard interfaces</li>
+                <li>Avoiding AI platform lock-in through an API abstraction layer</li>
+                <li>Adding AI capabilities to existing business processes incrementally, rather than replacing them outright</li>
             </ul>
 
             <h3>Edge Computing and Distributed Business Models</h3>
-            
-            <p>Computing is moving to the edge and business models are becoming increasingly distributed. Unix principles become essential for strategic flexibility:</p>
-            
+
+            <p>Computing keeps moving towards the edge, and business models are becoming more distributed along with it. Unix principles stay relevant there too:</p>
+
             <ul>
-                <li><strong>Resource Efficiency</strong>: Lightweight services optimized for minimal resource consumption</li>
-                <li><strong>Autonomous Operation</strong>: Services that function independently when disconnected from central systems</li>
-                <li><strong>Local Compliance</strong>: Edge services that adapt to local regulatory and business requirements</li>
-                <li><strong>Scalable Distribution</strong>: Consistent service behavior across diverse deployment environments</li>
+                <li>Lightweight services optimised for minimal resource consumption</li>
+                <li><strong>Autonomous operation</strong>: services that keep functioning when disconnected from central systems</li>
+                <li>Edge services that adapt to local regulatory and business requirements</li>
+                <li>Consistent service behaviour across otherwise very different deployment environments</li>
             </ul>
         </section>
 
         <section>
             <h2>Executive Action Plan: Building Your Modular Technology Strategy</h2>
-            
+
             <h3>Strategic Implementation Roadmap</h3>
-            
+
             <p>For technology leaders ready to implement Unix principles as competitive advantage:</p>
-            
+
             <ol>
-                <li><strong>Business Case Development</strong>: Quantify how current architectural constraints impact business growth and competitive positioning</li>
-                <li><strong>Organizational Design</strong>: Restructure teams around business outcomes. Ensure Conway's Law works for you</li>
-                <li><strong>Platform Strategy</strong>: Establish shared capabilities that accelerate business innovation rather than constrain it</li>
-                <li><strong>Strategic Pilot Program</strong>: Demonstrate value with business-critical but manageable scope</li>
-                <li><strong>Success Amplification</strong>: Scale proven patterns across the organization with measured business impact</li>
+                <li><strong>Business case development</strong>: quantify how current architectural constraints affect business growth and competitive positioning</li>
+                <li>Restructure teams around business outcomes, so Conway's Law works in your favour rather than against it</li>
+                <li>Establish shared platform capabilities that accelerate business innovation rather than constrain it</li>
+                <li>Run a strategic pilot: business-critical, but manageable in scope</li>
+                <li>Scale proven patterns across the organisation once the pilot's business impact is measured</li>
             </ol>
 
             <h3>Investment Framework and Budget Allocation</h3>
-            
-            <p>Here's how to allocate your budget based on <a href="https://fullscale.io/blog/microservices-roi-cost-benefit-analysis/" target="_blank" rel="noopener">successful transformation patterns</a>:</p>
-            
+
+            <p>Budget allocation should follow a similar logic to the architecture itself: fund shared capability once, rather than paying for it separately inside every team.</p>
+
             <ul>
-                <li><strong>Platform Engineering Investment</strong>: Allocate 20-30% of technology budget to shared infrastructure that enables business agility</li>
-                <li><strong>Organizational Transformation</strong>: Budget for leadership development, team restructuring, and cultural evolution</li>
-                <li><strong>Strategic Vendor Relationships</strong>: Invest in multi-vendor strategies that prevent lock-in while maintaining operational excellence</li>
-                <li><strong>Business-Technology Alignment</strong>: Fund ongoing collaboration between business and technology leaders</li>
+                <li><strong>Platform engineering investment</strong>: fund the shared infrastructure that makes every other team faster, instead of leaving each team to solve the same problems independently</li>
+                <li>Budget for leadership development, team restructuring, and the cultural change that goes with both</li>
+                <li>Invest in multi-vendor relationships that prevent lock-in whilst maintaining operational excellence</li>
+                <li>Fund ongoing collaboration between business and technology leaders, not just a one-off kick-off meeting</li>
             </ul>
 
             <h3>Success Measurement and Governance</h3>
-            
+
             <p>Establish executive-level metrics that track business impact:</p>
-            
+
             <ul>
-                <li><strong>Competitive Response Time</strong>: How quickly your organization can match or exceed competitive features</li>
-                <li><strong>Innovation Velocity</strong>: Time from business opportunity identification to customer value delivery</li>
-                <li><strong>Strategic Flexibility</strong>: Ability to enter new markets, integrate acquisitions, or adapt to regulatory changes</li>
-                <li><strong>Total Economic Impact</strong>: Combined cost savings, revenue acceleration, and risk mitigation value</li>
+                <li><strong>Competitive response time</strong>: how quickly the organisation can match or exceed a competitor's new feature</li>
+                <li>Time from identifying a business opportunity to delivering customer value</li>
+                <li>Strategic flexibility: the ability to enter new markets, integrate acquisitions, or adapt to regulatory change</li>
+                <li>Total economic impact, combining cost savings, revenue acceleration, and risk mitigation</li>
             </ul>
         </section>
 
         <section>
             <h2>Conclusion: Architecture as Competitive Strategy</h2>
-            
-            <p>The Unix philosophy's 50-year track record proves fundamental truths about building technology platforms that create sustainable competitive advantage. In 2025's economic environment, <a href="https://www.pwc.com/us/en/industries/tmt/library/tech-cio-priorities.html" target="_blank" rel="noopener">cost discipline must coexist with innovation</a>. The principles of simplicity, modularity, and composability provide a strategic framework for technology investments that deliver measurable business value.</p>
-            
-            <p>Companies that embrace these principles don't just optimize technology. From Netflix's customer experience differentiation to Amazon's platform economy transformation, they create new sources of competitive advantage. The organizations thriving in 2025 share a common characteristic: technology architecture that accelerates business strategy rather than constraining it.</p>
-            
-            <p>The strategic choice facing technology leaders isn't between traditional and modern approaches. It's between architectures that limit business potential and those that amplify it. Modular, composable systems enable the business agility, vendor independence, and innovation velocity that define market leaders.</p>
-            
-            <p>The future belongs to organizations that can adapt to market changes faster than competitors, integrate new capabilities seamlessly, and scale efficiently while maintaining cost discipline. These capabilities emerge from strategic technology decisions based on principles that have created business value for half a century. These principles are more relevant in 2025 than ever before.</p>
+
+            <p>The Unix philosophy's fifty-year track record demonstrates something durable about building technology platforms: simplicity, modularity, and composability hold up as a strategic framework for technology investment long after the specific tools that first embodied them have moved on.</p>
+
+            <p>Companies that embrace these principles get more than efficient technology out of it. From Netflix's customer experience differentiation to Amazon's platform economy transformation, modular architecture becomes a source of competitive advantage in its own right. Organisations that thrive tend to share one characteristic: technology architecture that accelerates business strategy rather than constraining it.</p>
+
+            <p>What matters is whether the architecture limits the business's options or expands them. Modular, composable systems tend to expand them: more room for agility, vendor independence, and faster innovation.</p>
+
+            <p>The organisations that adapt to market changes fastest, integrate new capabilities most smoothly, and scale most efficiently tend to be the ones whose technology decisions were made with these principles in mind. They're not new ideas. They have simply kept proving themselves for fifty years, and computing's continued fragmentation across cloud, edge, and AI workloads has only made them more relevant.</p>
         </section>
     `,
   },

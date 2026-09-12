@@ -1,0 +1,17 @@
+# inventories/staging/group_vars/all.yml
+---
+app_name: myapp
+app_domain: staging.myapp.com
+app_env: staging
+php_version: 8.2
+keep_releases: 3
+run_migrations: true
+deploy_serial: 0
+# Different database
+app_db_host: staging-db.example.com
+app_db_name: myapp_staging
+app_db_user: myapp_staging_user
+# Debug settings
+php_display_errors: "On"
+php_log_errors: "On"
+app_debug: true

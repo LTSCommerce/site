@@ -111,16 +111,19 @@ enum CustomerType: string
  */
 class Order
 {
+    private bool $idIsSet = false;
+
     // Asymmetric visibility: public read, private write
     public private(set) OrderId $id {
         set {
-            if ($this->id !== null) {
+            if ($this->idIsSet) {
                 throw new LogicException('Order ID cannot be changed once set');
             }
             $this->id = $value;
+            $this->idIsSet = true;
         }
     }
-    
+
     public private(set) OrderStatus $status = OrderStatus::PENDING;
     
     public function __construct(

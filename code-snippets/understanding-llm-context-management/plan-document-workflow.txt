@@ -1,0 +1,39 @@
+PHASE 1: Planning session
+
+  STEP 1: Discuss feature
+    "I need to add user authentication to my app"
+
+  STEP 2: Iterate on requirements
+    Back-and-forth refining the approach
+
+  STEP 3: Create plan document
+    "Write a detailed plan to IMPLEMENTATION_PLAN.md"
+
+  STEP 4: Review and refine
+    "Update the plan to include rate limiting"
+
+---- CLEAR CONTEXT ----
+
+PHASE 2: Execution session (fresh context)
+
+  STEP 5: Start new session
+    Open a fresh Claude Code session
+
+  STEP 6: Load the plan
+    "Read IMPLEMENTATION_PLAN.md"
+
+  STEP 7: Confirm understanding
+    AI: "I understand we're implementing JWT auth with..."
+
+  STEP 8: Execute step 1
+    "Let's implement step 1 from the plan"
+
+---- CLEAR CONTEXT ----
+
+PHASE 3: Continue next day (fresh context)
+
+  STEP 9: Load plan and progress
+    "Read IMPLEMENTATION_PLAN.md - we completed step 1"
+
+  STEP 10: Execute step 2
+    "Now implement step 2 from the plan"

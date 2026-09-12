@@ -12,11 +12,11 @@ function isUser(value: unknown): value is User {
     typeof value === 'object' &&
     value !== null &&
     'id' in value &&
-    typeof (value as any).id === 'number' &&
+    typeof (value as Record<string, unknown>).id === 'number' &&
     'name' in value &&
-    typeof (value as any).name === 'string' &&
+    typeof (value as Record<string, unknown>).name === 'string' &&
     'email' in value &&
-    typeof (value as any).email === 'string'
+    typeof (value as Record<string, unknown>).email === 'string'
   );
 }
 

@@ -15,7 +15,7 @@ class JWTManager
         $this->secretKey = $secretKey;
     }
 
-    public function generateToken(array $payload, int $ttl = null): string
+    public function generateToken(array $payload, ?int $ttl = null): string
     {
         $ttl ??= $this->defaultTtl;
         $now = time();

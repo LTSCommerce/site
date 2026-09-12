@@ -97,12 +97,12 @@ END TEST_CLASS
 # - Easy to instantiate and configure
 # - No external dependencies (database, network)
 # - Fast execution
-# - Deterministic behavior
+# - Deterministic behaviour
 
 # Use MOCKS when:
 # - External resources (database, HTTP APIs)
 # - Slow operations
-# - Non-deterministic behavior (random, time-based)
+# - Non-deterministic behaviour (random, time-based)
 # - Testing error conditions
 # - Interaction verification is important
 

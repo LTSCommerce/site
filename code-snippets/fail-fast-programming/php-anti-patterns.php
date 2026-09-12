@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-// ANTI-PATTERN: Error hiding with null coalescence and silent failures
+// ANTI-PATTERN: Error hiding with null coalescing and silent failures
 class OrderProcessor 
 {
     public function processOrder(?array $orderData): array
     {
-        // Anti-pattern: Hide missing data with null coalescence
+        // Anti-pattern: Hide missing data with null coalescing
         $orderId = $orderData['id'] ?? null;
         $userId = $orderData['user_id'] ?? 0;  // 0 as fallback hides the problem
         $itemId = $orderData['item_id'] ?? '';  // Empty string as fallback

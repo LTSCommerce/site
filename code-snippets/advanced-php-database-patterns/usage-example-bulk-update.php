@@ -43,10 +43,8 @@ final readonly class UpdateProductPricesService
             $bulkUpdate->addIdAndValue($productId, $newPrice);
         }
 
-        // Flush remaining updates
+        // The destructor would flush this on scope exit anyway, but calling
+        // it explicitly here makes the flush point clear to the reader.
         $bulkUpdate->runBulkUpdate();
-
-        // No need to call runBulkUpdate() explicitly - destructor handles it
-        // But it's good practice to call it explicitly for clarity
     }
 }

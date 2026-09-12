@@ -1,22 +1,29 @@
 <?php
 
-class CustomerMatcher
+declare(strict_types=1);
+
+namespace App\Database;
+
+final class CustomerMatcher
 {
     private function normalizeCustomerName(string $name): string
     {
-        // Complex normalization that's cleaner in PHP than SQL
+        // Complex normalisation that's cleaner in PHP than SQL
         $name = trim($name);
-        $name = preg_replace('/\s+/', ' ', $name); // Collapse whitespace
-        $name = preg_replace('/[^\w\s]/', '', $name); // Remove special chars
+        $name = preg_replace('/\s+/', ' ', $name) ?? $name; // Collapse whitespace
+        $name = preg_replace('/[^\w\s]/', '', $name) ?? $name; // Remove special chars
         $name = strtolower($name);
 
         // Remove common business suffixes
-        $name = preg_replace('/\b(inc|llc|ltd|corp|corporation)\b/', '', $name);
+        $name = preg_replace('/\b(inc|llc|ltd|corp|corporation)\b/', '', $name) ?? $name;
         $name = trim($name);
 
         return $name;
     }
 
+    /**
+     * @return array{matches: list<array{system1_id: mixed, system2_id: mixed, matched_name: string}>, unmatched: list<mixed>, match_rate: float}
+     */
     public function matchCustomers(DatabaseServiceInterface $db): array
     {
         // Load both systems into memory

@@ -5,32 +5,18 @@ PreToolUse hook to prevent subagents from running tests.
 Subagents can run allCS and allStatic, but NOT unit tests, PHPUnit, or Infection.
 Tests cannot run in parallel due to database lock conflicts.
 
-Detection: Subagents have the main 'claude' process as their parent (PPID).
+Detection: Claude Code includes an `agent_id` field in the hook payload when
+the tool call originates from a subagent; it is absent for main-session calls.
 """
 
 import json
-import os
 import re
-import subprocess
 import sys
 
 
-def is_subagent() -> bool:
-    """Check if running in subagent context by examining PPID."""
-    try:
-        ppid = os.getppid()
-        # Get parent process command name
-        result = subprocess.run(
-            ['ps', '-o', 'comm=', '-p', str(ppid)],
-            capture_output=True,
-            text=True,
-            timeout=2
-        )
-        parent_cmd = result.stdout.strip()
-        return parent_cmd == 'claude'
-    except Exception:
-        # If we can't determine, assume not subagent (fail open)
-        return False
+def is_subagent(payload: dict) -> bool:
+    """Check if this tool call originated from a subagent."""
+    return bool(payload.get('agent_id'))
 
 
 def is_test_command(command: str) -> bool:
@@ -69,15 +55,15 @@ def main() -> int:
         payload = json.loads(sys.stdin.read())
 
         # Only check Bash tool invocations
-        if payload.get('tool') != 'Bash':
+        if payload.get('tool_name') != 'Bash':
             return 0
 
         # Check if we're in a subagent
-        if not is_subagent():
+        if not is_subagent(payload):
             return 0  # Not a subagent, allow all commands
 
         # Get the command being executed
-        command = payload.get('parameters', {}).get('command', '')
+        command = payload.get('tool_input', {}).get('command', '')
 
         # Allow QA commands that are explicitly allowed
         if is_allowed_qa_command(command):
@@ -93,7 +79,7 @@ def main() -> int:
                 'blocked': 'Blocked commands: phpunit, bin/qa -t unit, infection'
             }
             print(json.dumps(error_msg), file=sys.stderr)
-            return 1  # Block the command
+            return 2  # Exit code 2 is what actually blocks a PreToolUse call
 
         return 0  # Allow all other commands
 

@@ -1,0 +1,11 @@
+{
+    "scripts": {
+        "check-style": "php-cs-fixer fix --dry-run --diff",
+        "fix-style": "php-cs-fixer fix",
+        "analyse": "phpstan analyse",
+        "qa": [
+            "@check-style",
+            "@analyse"
+        ]
+    }
+}

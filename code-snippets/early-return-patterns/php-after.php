@@ -1,5 +1,5 @@
 <?php
-// AFTER: Guard clauses with early returns - PHP 8.4 style
+// AFTER: Guard clauses with early returns
 
 class OrderProcessor 
 {

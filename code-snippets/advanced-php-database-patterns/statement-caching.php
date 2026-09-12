@@ -64,18 +64,18 @@ trait StatementCachingTrait
 
     /**
      * Generate a unique, readable ID for a SQL statement for caching purposes.
-     * Normalizes whitespace and appends an MD5 hash for uniqueness.
+     * Normalises whitespace and appends an MD5 hash for uniqueness.
      *
      * @param string $sql The SQL statement to generate an ID for
      * @return string The generated statement ID
      */
     private function generateStatementId(string $sql): string
     {
-        // Normalize whitespace (replace multiple spaces, tabs, newlines with single space)
+        // Normalise whitespace (replace multiple spaces, tabs, newlines with single space)
         $normalized = preg_replace('/\s+/', ' ', trim($sql));
 
         if (null === $normalized) {
-            throw new RuntimeException('Failed to normalize SQL statement');
+            throw new RuntimeException('Failed to normalise SQL statement');
         }
 
         // Take first 30 chars for readability + md5 for uniqueness

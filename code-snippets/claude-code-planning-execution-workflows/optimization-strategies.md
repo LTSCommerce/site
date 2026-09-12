@@ -1,4 +1,4 @@
-### Optimization Strategies
+### Optimisation Strategies
 
 1. **Front-load Interfaces**: Define all contracts/types in Phase 1
 2. **Mock Dependencies**: Allow parallel work using interface mocks

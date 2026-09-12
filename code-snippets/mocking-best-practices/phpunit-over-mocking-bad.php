@@ -47,7 +47,7 @@ class OrderServiceOverMockedTest extends TestCase
             'items' => [['id' => 'item1', 'quantity' => 2]]
         ];
 
-        // Mocking every single method call - testing implementation, not behavior
+        // Mocking every single method call - testing implementation, not behaviour
         $this->inventoryService
             ->expects($this->once())
             ->method('checkStock')
@@ -130,7 +130,7 @@ class OrderServiceOverMockedTest extends TestCase
     public function testProcessOrderWithInvalidDiscount(): void
     {
         // This test breaks when we change internal discount calculation logic
-        // even though the external behavior is the same!
+        // even though the external behaviour is the same!
         
         $orderData = ['id' => '456', 'items' => [['id' => 'item1', 'quantity' => 1]]];
 

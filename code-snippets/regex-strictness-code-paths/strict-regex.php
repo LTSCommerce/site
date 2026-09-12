@@ -6,7 +6,7 @@ public const string DATA_URI_REGEX = '%^
         (                           # Parameter value can be:
             ([a-z0-9.+-]+)          #   - Unquoted value
             |                       #   OR
-            "(([^"\\]|\\.)*)"       #   - Quoted value with escape support
+            "(([^"\\\\]|\\\\.)*)"   #   - Quoted value with escape support
         )
     )*                              # Zero or more parameters
     ;base64,                        # Required ";base64," marker

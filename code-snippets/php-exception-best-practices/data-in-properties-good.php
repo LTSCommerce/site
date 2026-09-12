@@ -14,7 +14,7 @@ use Throwable;
  *           The *message* is synthesised from them via a sprintf const.
  *
  * PHP 8.4 asymmetric visibility (`public private(set)`) lets callers read
- * the fields freely while only the class (and its factories) can set them.
+ * the fields freely whilst only the class (and its factories) can set them.
  * No getters, no readonly footguns with inheritance, no magic string parsing.
  */
 final class InsufficientStockException extends AppException implements UserFacingExceptionInterface

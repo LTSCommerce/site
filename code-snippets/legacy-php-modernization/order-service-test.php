@@ -10,6 +10,9 @@ use PHPUnit\Framework\TestCase;
 
 final class OrderServiceTest extends TestCase
 {
+    // setUp() omitted for brevity: assume $paymentGateway, $repository, $eventDispatcher
+    // and $orderService are Mockery mocks wired up via the MockeryPHPUnitIntegration trait.
+
     #[Test]
     #[TestDox('Successfully processes valid order with payment')]
     public function processOrder_WithValidData_CreatesOrderAndProcessesPayment(): void

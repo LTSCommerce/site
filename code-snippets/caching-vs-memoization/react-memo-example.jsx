@@ -13,7 +13,7 @@ const ExpensiveComponent = memo(({ data, onProcess }) => {
 });
 
 function ParentComponent() {
-  const [count, count] = useState(0);
+  const [count, setCount] = useState(0);
   const [items, setItems] = useState([1, 2, 3, 4, 5]);
 
   // useMemo - cache computation result

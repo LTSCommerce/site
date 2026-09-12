@@ -1,0 +1,21 @@
+# Prometheus configuration for Proxmox. The Proxmox API returns JSON, not
+# Prometheus's text-exposition format, so scraping it directly won't work -
+# route through prometheus-pve-exporter, which translates the API into
+# real metrics.
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'proxmox'
+    static_configs:
+      - targets: ['proxmox1:8006', 'proxmox2:8006', 'proxmox3:8006']
+    metrics_path: '/pve'
+    params:
+      module: [default]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: pve-exporter:9221

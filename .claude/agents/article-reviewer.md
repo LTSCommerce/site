@@ -47,6 +47,26 @@ A summary section is fine if it adds genuine value (e.g. a scannable checklist d
 - It just restates the section headings
 - It adds no new structure or value over reading the article
 
+### 4b. Formulaic Structure Tells (flag, do not silently fix)
+
+Structural laziness reads as AI-generated even when the prose itself is clean. Check for:
+
+- **Exactly N bullets per section, every section** — a suspiciously uniform bullet count (e.g.
+  every list is exactly 5 items) across the whole article. Real writing has lists of varying
+  length because the content dictates it.
+- **`description` field duplicating the lead sentence** — the article's SEO/social `description`
+  in `src/data/articles.ts` should not simply repeat the opening sentence of the `content` lead
+  paragraph verbatim or near-verbatim; it should be independently written.
+- **Templated headings that would repeat verbatim across unrelated articles** — generic
+  section titles like "The Bottom Line", "Key Takeaways", "Wrapping Up", "What You Need to Know"
+  that carry no article-specific information. You are only reviewing one article at a time and
+  cannot directly diff against the rest of `src/data/articles.ts`, but a heading this generic is
+  worth flagging on its own merits — it would work unchanged as the closing heading of any
+  article on any topic.
+
+See `.claude/skills/voice-check/references/claudisms.md` for the prose/vocabulary-level tells
+(that file's scope, not this section's).
+
 ### 5. Factual Red Flags (flag, do not silently fix)
 
 - Code examples that are syntactically wrong

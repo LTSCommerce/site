@@ -1,5 +1,5 @@
 # GitHub CLI multi-account aliases (from play-github-cli-multi.yml)
-# Account-specific aliases for seamless switching
+# Account-specific aliases for quick switching
 function gh-work() {
     # Get the default account to restore later
     local default_account=$(gh-get-default)

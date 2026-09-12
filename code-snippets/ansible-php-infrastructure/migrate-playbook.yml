@@ -1,0 +1,30 @@
+# roles/application/tasks/migrate.yml
+---
+- name: Check if migrations are needed
+  shell: |
+    cd {{ app_path }}/current
+    php artisan migrate:status | grep -c "N"
+  register: pending_migrations
+  failed_when: false
+  changed_when: false
+
+- name: Create database backup before migration
+  mysql_db:
+    name: "{{ app_db_name }}"
+    state: dump
+    target: "/tmp/{{ app_db_name }}_{{ ansible_date_time.epoch }}.sql"
+  when: pending_migrations.stdout | int > 0
+
+- name: Run database migrations
+  shell: |
+    cd {{ app_path }}/current
+    php artisan migrate --force
+  when: pending_migrations.stdout | int > 0
+
+- name: Seed database if needed
+  shell: |
+    cd {{ app_path }}/current
+    php artisan db:seed --force
+  when:
+    - pending_migrations.stdout | int > 0
+    - app_env != 'production'

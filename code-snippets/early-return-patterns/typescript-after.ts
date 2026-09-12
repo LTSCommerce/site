@@ -1,4 +1,4 @@
-// AFTER: Guard clauses with modern TypeScript patterns (2025)
+// AFTER: Guard clauses with modern TypeScript patterns
 
 interface User {
   id: string;
@@ -55,7 +55,6 @@ class UserService {
       };
     }
 
-    // Using nullish coalescing and optional chaining (ES2025 patterns)
     const hasValidData = profileData && Object.keys(profileData).length > 0;
     if (!hasValidData) {
       return {

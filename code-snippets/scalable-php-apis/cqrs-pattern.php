@@ -30,12 +30,12 @@ class GetUserQueryHandler
 
     public function handle(GetUserQuery $query): UserView
     {
-        // Read from optimized read model
+        // Read from optimised read model
         return $this->userReadModel->getUserById($query->userId);
     }
 }
 
-// Read Model - Optimized for queries
+// Read Model - Optimised for queries
 class UserReadModel
 {
     private Redis $redis;
@@ -47,24 +47,23 @@ class UserReadModel
         // Try cache first
         $cached = $this->redis->get("user:$userId");
         if ($cached) {
-            return unserialize($cached);
+            return new UserView(json_decode($cached, true));
         }
 
         // Read from database
-        $sql = 'SELECT u.*, p.name as profile_name, p.avatar_url 
-                FROM users u 
-                LEFT JOIN profiles p ON u.id = p.user_id 
+        $sql = 'SELECT u.*, p.name as profile_name, p.avatar_url
+                FROM users u
+                LEFT JOIN profiles p ON u.id = p.user_id
                 WHERE u.id = :id';
 
         $stmt = $this->readDb->prepare($sql);
         $stmt->execute(['id' => $userId]);
         $userData = $stmt->fetch();
 
-        $userView = new UserView($userData);
+        // Cache the raw row, not the hydrated object - that avoids running deserialisation
+        // helpers over cache data, which is a known object-injection vector.
+        $this->redis->setex("user:$userId", 3600, json_encode($userData));
 
-        // Cache for future requests
-        $this->redis->setex("user:$userId", 3600, serialize($userView));
-
-        return $userView;
+        return new UserView($userData);
     }
 }

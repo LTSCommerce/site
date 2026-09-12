@@ -1,0 +1,12 @@
+# Fix common permission problems
+- name: Fix application permissions
+  file:
+    path: "{{ item }}"
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+  loop:
+    - "{{ app_path }}/current/storage"
+    - "{{ app_path }}/current/bootstrap/cache"
+    - "{{ shared_path }}/logs"

@@ -15,7 +15,7 @@ final class QueryResultCache
     ) {
     }
 
-    public function getCachedQuery(string $sql, array $params = [], int $ttl = null): ?array
+    public function getCachedQuery(string $sql, array $params = [], ?int $ttl = null): ?array
     {
         $cacheKey = $this->generateCacheKey($sql, $params);
         $cached   = $this->redis->get($cacheKey);
@@ -27,7 +27,7 @@ final class QueryResultCache
         return null;
     }
 
-    public function setCachedQuery(string $sql, array $params, array $result, int $ttl = null): void
+    public function setCachedQuery(string $sql, array $params, array $result, ?int $ttl = null): void
     {
         $cacheKey = $this->generateCacheKey($sql, $params);
         $ttl ??= $this->defaultTTL;
@@ -55,7 +55,7 @@ final class QueryResultCache
 
     private function normalizeQuery(string $sql): string
     {
-        // Remove extra whitespace and normalize case
+        // Remove extra whitespace and normalise case
         return preg_replace('/\s+/', ' ', strtolower(trim($sql)));
     }
 

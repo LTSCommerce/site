@@ -1,65 +1,97 @@
+# playbooks/deploy.yml
 ---
 - name: Deploy PHP application
   hosts: webservers
   become: yes
+  serial: "{{ deploy_serial | default(1) }}"
   vars:
-    app_name: 'my-php-app'
-    app_version: '{{ ansible_date_time.epoch }}'
-    app_user: 'www-data'
-    app_directory: '/var/www/html'
-    backup_directory: '/var/backups/{{ app_name }}'
-
+    app_path: /var/www/{{ app_name }}
+    release_path: "{{ app_path }}/releases/{{ ansible_date_time.epoch }}"
+    current_path: "{{ app_path }}/current"
+    shared_path: "{{ app_path }}/shared"
   tasks:
-    - name: Create backup directory
+    - name: Create application directories
       file:
-        path: '{{ backup_directory }}'
+        path: "{{ item }}"
         state: directory
-        owner: '{{ app_user }}'
-        group: '{{ app_user }}'
+        owner: www-data
+        group: www-data
+        mode: '0755'
+      loop:
+        - "{{ app_path }}"
+        - "{{ app_path }}/releases"
+        - "{{ shared_path }}"
+        - "{{ shared_path }}/logs"
+        - "{{ shared_path }}/uploads"
 
-    - name: Backup current application
-      archive:
-        path: '{{ app_directory }}'
-        dest: '{{ backup_directory }}/backup-{{ ansible_date_time.iso8601 }}.tar.gz'
-        owner: '{{ app_user }}'
-        group: '{{ app_user }}'
-      when: app_directory is directory
-
-    - name: Download application archive
-      get_url:
-        url: '{{ app_download_url }}'
-        dest: '/tmp/{{ app_name }}-{{ app_version }}.tar.gz'
-        mode: '0644'
-
-    - name: Extract application
-      unarchive:
-        src: '/tmp/{{ app_name }}-{{ app_version }}.tar.gz'
-        dest: '{{ app_directory }}'
-        remote_src: yes
-        owner: '{{ app_user }}'
-        group: '{{ app_user }}'
+    - name: Clone application repository
+      git:
+        repo: "{{ app_repo }}"
+        dest: "{{ release_path }}"
+        version: "{{ app_version | default('main') }}"
+        force: yes
+      become_user: www-data
 
     - name: Install Composer dependencies
       composer:
         command: install
-        working_dir: '{{ app_directory }}'
-        no_dev: yes
+        working_dir: "{{ release_path }}"
         optimize_autoloader: yes
-      become_user: '{{ app_user }}'
+        no_dev: "{{ 'yes' if app_env == 'production' else 'no' }}"
+      become_user: www-data
+
+    - name: Create shared symlinks
+      file:
+        src: "{{ shared_path }}/{{ item }}"
+        dest: "{{ release_path }}/{{ item }}"
+        state: link
+        force: yes
+      loop:
+        - logs
+        - uploads
+      become_user: www-data
+
+    - name: Copy environment configuration
+      template:
+        src: .env.j2
+        dest: "{{ release_path }}/.env"
+        owner: www-data
+        group: www-data
+        mode: '0640'
 
     - name: Run database migrations
-      command: php artisan migrate --force
-      args:
-        chdir: '{{ app_directory }}'
-      become_user: '{{ app_user }}'
-      when: run_migrations | default(false) | bool
+      shell: |
+        cd {{ release_path }}
+        php artisan migrate --force
+      become_user: www-data
+      when: run_migrations | default(false)
 
     - name: Clear application cache
-      command: '{{ item }}'
-      args:
-        chdir: '{{ app_directory }}'
-      become_user: '{{ app_user }}'
-      loop:
-        - 'php artisan config:cache'
-        - 'php artisan route:cache'
-        - 'php artisan view:cache'
+      shell: |
+        cd {{ release_path }}
+        php artisan cache:clear
+        php artisan config:clear
+        php artisan route:clear
+        php artisan view:clear
+      become_user: www-data
+
+    - name: Update current symlink
+      file:
+        src: "{{ release_path }}"
+        dest: "{{ current_path }}"
+        state: link
+        force: yes
+      notify: restart php-fpm
+
+    - name: Set proper permissions
+      file:
+        path: "{{ current_path }}"
+        owner: www-data
+        group: www-data
+        recurse: yes
+
+    - name: Remove old releases
+      shell: |
+        cd {{ app_path }}/releases
+        ls -1dt */ | tail -n +{{ keep_releases | default(5) }} | xargs rm -rf
+      become_user: www-data

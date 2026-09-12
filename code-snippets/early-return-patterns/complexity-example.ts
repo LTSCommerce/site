@@ -56,5 +56,5 @@ function validateUserAccess_EarlyReturn(user: User, resource: Resource): boolean
 // Cyclomatic Complexity: 7 (6 decision points + 1) - SAME as nested version
 // Cognitive Load: LOW - linear flow, easy to understand
 
-// The key insight: Early returns don't reduce cyclomatic complexity,
-// but they dramatically improve code readability and maintainability
+// Early returns don't reduce cyclomatic complexity - they improve readability and
+// maintainability instead

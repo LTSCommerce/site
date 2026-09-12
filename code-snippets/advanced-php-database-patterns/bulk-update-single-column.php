@@ -6,12 +6,11 @@ namespace App\Database;
 
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Throwable;
 
 /**
  * Efficiently updates a single column for multiple rows using CASE WHEN.
- * Accumulates changes and executes them in optimized bulk operations.
+ * Accumulates changes and executes them in optimised bulk operations.
  */
 final class BulkUpdateSingleColumn
 {
@@ -56,10 +55,14 @@ final class BulkUpdateSingleColumn
 
         try {
             $this->runBulkUpdate();
-        } catch (Throwable) {
-            throw new RuntimeException(
-                "BulkUpdateSingleColumn('{$this->table}.{$this->updateColumnName}') was destroyed with pending updates. " .
-                'You must call runBulkUpdate() before destroying.'
+        } catch (Throwable $exception) {
+            // Never throw from a destructor: if this fires during shutdown
+            // garbage collection, the exception is uncatchable and becomes
+            // a fatal error with no stack frame. Log loudly instead, and
+            // rely on an explicit runBulkUpdate() call in normal flow.
+            $this->logger?->critical(
+                "BulkUpdateSingleColumn('{$this->table}.{$this->updateColumnName}') was destroyed with pending updates that failed to flush.",
+                ['exception' => $exception]
             );
         }
     }

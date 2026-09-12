@@ -6,6 +6,7 @@ namespace App\Database\Backup;
 
 use Exception;
 use PDO;
+use Symfony\Component\Process\Process;
 
 final class HotBackupManager
 {
@@ -28,17 +29,18 @@ final class HotBackupManager
             'type'         => 'incremental',
         ];
 
-        // Create backup using xtrabackup
-        $command = sprintf(
-            'xtrabackup --backup --target-dir=%s --incremental-basedir=%s',
-            $this->backupPath . '/incremental_' . date('Y-m-d_H-i-s'),
-            $this->getLastFullBackup()
-        );
+        // Symfony Process takes an argument array, so there is no shell
+        // string to construct and nothing to escape.
+        $process = new Process([
+            'xtrabackup',
+            '--backup',
+            '--target-dir=' . $this->backupPath . '/incremental_' . date('Y-m-d_H-i-s'),
+            '--incremental-basedir=' . $this->getLastFullBackup(),
+        ]);
+        $process->run();
 
-        exec($command, $output, $returnCode);
-
-        if ($returnCode !== 0) {
-            throw new Exception('Backup failed: ' . implode("\n", $output));
+        if (!$process->isSuccessful()) {
+            throw new Exception('Backup failed: ' . $process->getErrorOutput());
         }
 
         // Save backup metadata
@@ -52,20 +54,16 @@ final class HotBackupManager
     {
         $backupDir = $this->backupPath . '/full_' . date('Y-m-d_H-i-s');
 
-        $command = sprintf(
-            'xtrabackup --backup --target-dir=%s',
-            $backupDir
-        );
+        $process = new Process(['xtrabackup', '--backup', '--target-dir=' . $backupDir]);
+        $process->run();
 
-        exec($command, $output, $returnCode);
-
-        if ($returnCode !== 0) {
-            throw new Exception('Full backup failed: ' . implode("\n", $output));
+        if (!$process->isSuccessful()) {
+            throw new Exception('Full backup failed: ' . $process->getErrorOutput());
         }
 
         // Prepare the backup
-        $prepareCommand = sprintf('xtrabackup --prepare --target-dir=%s', $backupDir);
-        exec($prepareCommand);
+        $prepareProcess = new Process(['xtrabackup', '--prepare', '--target-dir=' . $backupDir]);
+        $prepareProcess->run();
     }
 
     private function getLastFullBackup(): string

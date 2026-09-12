@@ -1,5 +1,7 @@
 // Advanced bypasses - declare and module augmentation
 
+export {}; // Makes this a module, which `declare global` requires
+
 // Declare tells TypeScript "trust me, this exists at runtime"
 declare const magicValue: string;
 console.log(magicValue); // No error, but will crash if not defined!

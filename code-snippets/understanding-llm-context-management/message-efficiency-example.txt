@@ -1,0 +1,6 @@
+Inefficient - adds noise:
+"Let me check something... run this... okay try this...
+hmm not that... what about... oh wait I found it!"
+
+Efficient - direct and focused:
+"Check if the auth middleware is applied to the /api/users route"

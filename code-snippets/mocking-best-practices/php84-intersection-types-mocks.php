@@ -1,5 +1,5 @@
 <?php
-// PHP 8.4 Intersection Types for Mock Objects - GOOD Examples
+// PHP 8.1 Intersection Types for Mock Objects - GOOD Examples
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -94,7 +94,7 @@ class PaymentServiceTest extends TestCase
 
     public function testProcessSecurePaymentSuccess(): void
     {
-        // Configure the mock behaviors
+        // Configure the mock behaviours
         $this->validator->method('validate')->willReturn([]); // No validation errors
         $this->validator->expects($this->once())
             ->method('log')
@@ -108,13 +108,23 @@ class PaymentServiceTest extends TestCase
 
         $this->paymentGateway->method('processPayment')->willReturn($expectedResult);
         
-        // Expect proper logging calls
+        // Expect proper logging calls, verified in order via a call-count-aware callback
+        // (withConsecutive() was removed in PHPUnit 10; this is the current replacement pattern)
+        $callCount = 0;
         $this->paymentGateway->expects($this->exactly(2))
             ->method('log')
-            ->withConsecutive(
-                ['info', 'Processing payment', ['amount' => 100.00]],
-                ['info', 'Payment processed successfully', $expectedResult]
-            );
+            ->willReturnCallback(function (string $level, string $message, array $context) use (&$callCount, $expectedResult) {
+                $callCount++;
+                if ($callCount === 1) {
+                    $this->assertSame('info', $level);
+                    $this->assertSame('Processing payment', $message);
+                    $this->assertSame(['amount' => 100.00], $context);
+                } else {
+                    $this->assertSame('info', $level);
+                    $this->assertSame('Payment processed successfully', $message);
+                    $this->assertSame($expectedResult, $context);
+                }
+            });
 
         // Test the actual business logic
         $result = $this->paymentService->processSecurePayment([
@@ -173,13 +183,22 @@ class PaymentServiceTest extends TestCase
         
         $this->paymentGateway->method('processPayment')->willReturn($failureResult);
         
-        // Expect proper logging sequence
+        // Expect proper logging sequence, verified in order via a call-count-aware callback
+        $callCount = 0;
         $this->paymentGateway->expects($this->exactly(2))
             ->method('log')
-            ->withConsecutive(
-                ['info', 'Processing payment', ['amount' => 50.00]],
-                ['error', 'Payment processing failed', $failureResult]
-            );
+            ->willReturnCallback(function (string $level, string $message, array $context) use (&$callCount, $failureResult) {
+                $callCount++;
+                if ($callCount === 1) {
+                    $this->assertSame('info', $level);
+                    $this->assertSame('Processing payment', $message);
+                    $this->assertSame(['amount' => 50.00], $context);
+                } else {
+                    $this->assertSame('error', $level);
+                    $this->assertSame('Payment processing failed', $message);
+                    $this->assertSame($failureResult, $context);
+                }
+            });
 
         // Test payment processing
         $result = $this->paymentService->processSecurePayment([
@@ -206,7 +225,7 @@ class PaymentServiceWithIntersectionTypesTest extends TestCase
     {
         parent::setUp();
         
-        // Intersection type mocs - more complex but sometimes necessary
+        // Intersection type mocks - more complex but sometimes necessary
         $this->paymentGateway = $this->createStubForIntersectionOfInterfaces([
             PaymentProcessorInterface::class,
             LoggableInterface::class
@@ -245,7 +264,7 @@ class PaymentServiceWithIntersectionTypesTest extends TestCase
     }
 }
 
-// Alternative approach: Single interface with intersection-like behavior
+// Alternative approach: Single interface with intersection-like behaviour
 interface SecurePaymentGatewayInterface extends PaymentProcessorInterface, LoggableInterface 
 {
     // This interface inherits from both PaymentProcessorInterface and LoggableInterface

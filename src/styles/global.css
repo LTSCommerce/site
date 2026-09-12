@@ -197,12 +197,11 @@
     margin-top: 1rem;
   }
 
-  /* Body text: Perfect line length and rhythm */
+  /* Body text */
   p {
     font-size: 1rem;
     line-height: 1.618;
     margin-bottom: 1.618rem;
-    max-width: 65ch; /* Optimal line length */
     color: #525252;
   }
 }

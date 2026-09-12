@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
 /**
  * Reusable pagination page number parameter.
  *
- * Provides consistent pagination behavior across all paginated endpoints
+ * Provides consistent pagination behaviour across all paginated endpoints
  * with configurable defaults and validation rules.
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]

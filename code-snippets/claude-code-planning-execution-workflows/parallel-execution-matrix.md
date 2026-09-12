@@ -21,5 +21,5 @@ Include a visual matrix showing agent execution flow:
 
 ### Soft Dependencies (Can Overlap)
 
-- Agent X can start scaffolding while Y completes
+- Agent X can start scaffolding whilst Y completes
 - Agent Z can prepare test data during integration

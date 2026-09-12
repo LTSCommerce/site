@@ -27,7 +27,7 @@ class ResponseCache
         return null;
     }
 
-    public function set(Request $request, Response $response, int $ttl = null): void
+    public function set(Request $request, Response $response, ?int $ttl = null): void
     {
         $key = $this->generateCacheKey($request);
         $ttl ??= $this->defaultTtl;
@@ -52,6 +52,6 @@ class ResponseCache
             $request->getHeader('Authorization') ? 'auth' : 'public',
         ];
 
-        return 'response:' . md5(serialize($components));
+        return 'response:' . md5(json_encode($components));
     }
 }

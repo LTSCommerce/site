@@ -1,1 +1,1 @@
-public const string ATTACHMENT_REGEX = '%data://.+?/.+?;base64,%';
+public const string ATTACHMENT_REGEX = '%data:.+?/.+?;base64,%';

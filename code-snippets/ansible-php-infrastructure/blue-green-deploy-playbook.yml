@@ -1,0 +1,40 @@
+# playbooks/blue-green-deploy.yml
+---
+- name: Blue-Green deployment
+  hosts: webservers
+  become: yes
+  vars:
+    current_env: "{{ 'blue' if active_env == 'green' else 'green' }}"
+  tasks:
+    - name: Determine current active environment
+      slurp:
+        src: /etc/nginx/sites-enabled/{{ app_name }}
+      register: current_config
+
+    - name: Set active environment
+      set_fact:
+        active_env: "{{ 'blue' if 'blue' in current_config.content | b64decode else 'green' }}"
+
+    - name: Deploy to inactive environment
+      include_tasks: deploy-to-env.yml
+      vars:
+        deploy_env: "{{ current_env }}"
+
+    - name: Health check new deployment
+      uri:
+        url: "http://{{ inventory_hostname }}:{{ '8080' if deploy_env == 'blue' else '8081' }}/health"
+        method: GET
+        status_code: 200
+      retries: 10
+      delay: 5
+
+    - name: Switch traffic to new environment
+      template:
+        src: nginx-{{ current_env }}.conf.j2
+        dest: /etc/nginx/sites-enabled/{{ app_name }}
+      notify: restart nginx
+
+    - name: Stop old environment
+      systemd:
+        name: "{{ app_name }}-{{ active_env }}"
+        state: stopped

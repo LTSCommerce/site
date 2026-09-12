@@ -1,0 +1,8 @@
+{
+  "@typescript-eslint/no-unnecessary-condition": [
+    "error",
+    {
+      "checkTypePredicates": true
+    }
+  ]
+}

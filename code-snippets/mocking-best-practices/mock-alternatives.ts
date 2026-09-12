@@ -38,7 +38,7 @@ class FakePaymentProcessor implements PaymentProcessor {
   private shouldSucceed: boolean = true;
 
   async process(amount: number): Promise<PaymentResult> {
-    // Deterministic behavior for testing
+    // Deterministic behaviour for testing
     if (amount <= 0) {
       return { success: false, error: 'Invalid amount' };
     }
@@ -64,7 +64,7 @@ class FakeNotificationService implements NotificationService {
   public sentMessages: string[] = [];
 
   async send(message: string): Promise<void> {
-    // Capture behavior for verification without mocking
+    // Capture behaviour for verification without mocking
     this.sentMessages.push(message);
   }
 

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Database\Performance;
 
-use App\Exceptions\SlowQueryThresholdExceededException;
 use App\ValueObjects\{QueryDuration, QueryMetrics};
+use DateTimeImmutable;
+use PDO;
 use Psr\Log\LoggerInterface;
 
-final readonly class QueryOptimizer
+final class QueryOptimizer
 {
     /** @var array<int, QueryMetrics> */
     private array $queryLog = [];
@@ -56,9 +57,10 @@ final readonly class QueryOptimizer
         ]);
 
         if (count($this->queryLog) >= $this->maxSlowQueries) {
-            throw new SlowQueryThresholdExceededException(
-                'Too many slow queries detected: ' . count($this->queryLog)
-            );
+            $this->logger->alert('Slow query threshold exceeded', [
+                'count'     => count($this->queryLog),
+                'threshold' => $this->maxSlowQueries,
+            ]);
         }
     }
 

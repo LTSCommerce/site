@@ -2,7 +2,7 @@
 
 This project uses structured planning for complex features. See [@CLAUDE/PlanWorkflow.md](CLAUDE/PlanWorkflow.md) for detailed workflow instructions.
 
-All plans are stored in `CLAUDE/plan/` and must follow the standardized format.
+All plans are stored in `CLAUDE/plan/` and must follow the standardised format.
 
 ### Quick Start
 

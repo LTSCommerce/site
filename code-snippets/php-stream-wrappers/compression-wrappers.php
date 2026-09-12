@@ -7,9 +7,13 @@ $logLines = explode("\n", $compressedLog);
 $data = str_repeat("Log entry " . date('c') . "\n", 1000);
 file_put_contents('compress.zlib:///tmp/output.gz', $data);
 
-// Compressing streaming data
+// Compressing streaming data: compress.zlib:// expects a real filesystem
+// path (it works like gzopen()), so wrapping another stream URL like
+// php://output doesn't work. Use a stream filter on the destination stream
+// instead.
 $input = fopen('php://input', 'r');
-$output = fopen('compress.zlib://php://output', 'w');
+$output = fopen('php://output', 'w');
+stream_filter_append($output, 'zlib.deflate', STREAM_FILTER_WRITE);
 
 while (!feof($input)) {
     $chunk = fread($input, 8192);

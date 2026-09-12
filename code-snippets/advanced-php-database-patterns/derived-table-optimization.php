@@ -7,7 +7,7 @@ namespace App\Database\Query;
 use App\Database\DatabaseServiceInterface;
 
 /**
- * Example using derived tables for performance optimization.
+ * Example using derived tables for performance optimisation.
  * Derived tables allow complex filtering before joining, reducing result set size.
  */
 final readonly class TopCustomersByRevenueQuery

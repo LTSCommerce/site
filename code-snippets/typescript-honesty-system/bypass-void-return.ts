@@ -10,18 +10,10 @@ const callback: VoidCallback = () => {
 // The return value exists but is ignored by TypeScript
 const result = callback(); // result type is 'void', but runtime value is 42
 
-// DANGEROUS with async functions
-type AsyncVoid = () => Promise<void>;
-
-const asyncCallback: AsyncVoid = async () => {
-  return { data: 'surprise' }; // Allowed! Returns object despite Promise<void>
-};
-
-// Array methods demonstrate the "feature"
-const numbers = [1, 2, 3];
-const results: void[] = numbers.map(() => {
-  return 'string'; // Returns strings, typed as void[]
-});
+// The exception is narrow: it only applies when a function VALUE is assigned
+// directly to a variable/parameter typed as `() => void`. It does not extend
+// through Promise<void> or through array element types - both of those still
+// error normally if the returned value doesn't match.
 
 // EXPLICIT void annotation prevents returns
 function explicitVoid(): void {

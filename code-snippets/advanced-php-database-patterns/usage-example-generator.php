@@ -20,7 +20,7 @@ final readonly class ExportProductsService
     /**
      * Export millions of products to CSV without exhausting memory.
      *
-     * Using generators, this can process millions of rows while using
+     * Using generators, this can process millions of rows whilst using
      * only a few megabytes of memory, regardless of result set size.
      */
     public function exportToCsv(string $filename): void

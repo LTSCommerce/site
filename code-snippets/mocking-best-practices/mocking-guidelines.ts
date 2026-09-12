@@ -60,7 +60,7 @@ export class BadMockingExamples {
     expect(realCalculator.add(2, 3)).toBe(5);
   }
 
-  // DON'T mock value objects - they're data, not behavior
+  // DON'T mock value objects - they're data, not behaviour
   static dontMockValueObjects() {
     // BAD - mocking a simple data structure
     const mockUser = {
@@ -199,7 +199,7 @@ export const HotSaucePrinciple = {
   // Too much mocking makes tests inedible (unmaintainable)
 
   tooLittleMocking: 'Tests are slow, flaky, or coupled to external systems',
-  justRightMocking: 'Tests are fast, reliable, and focus on behavior',
+  justRightMocking: 'Tests are fast, reliable, and focus on behaviour',
   tooMuchMocking: 'Tests are brittle, unclear, and test implementation details',
 
   advice: [

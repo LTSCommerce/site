@@ -64,15 +64,15 @@ class SecureFileWrapper
 
 stream_wrapper_register('secure', SecureFileWrapper::class);
 
-// Safe usage
-try {
-    $handle = fopen('secure:///var/www/uploads/user-data.txt', 'w');
-    if ($handle) {
-        fwrite($handle, "Safe content");
-        fclose($handle);
-    }
-} catch (Exception $e) {
-    echo "Access denied: " . $e->getMessage();
+// Safe usage. stream_open() returning false makes fopen() return false
+// and emit an E_WARNING; it never throws, so check the return value
+// directly rather than wrapping this in try/catch.
+$handle = fopen('secure:///var/www/uploads/user-data.txt', 'w');
+if ($handle) {
+    fwrite($handle, "Safe content");
+    fclose($handle);
+} else {
+    echo "Access denied";
 }
 
 // This will fail due to path traversal attempt

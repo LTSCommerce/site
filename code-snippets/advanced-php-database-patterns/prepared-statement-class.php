@@ -9,7 +9,7 @@ use App\Database\DatabaseServiceInterface;
 /**
  * @phpstan-type OrderArray array{id: int, customer_id: int, total: float, status: string}
  *
- * Encapsulates a prepared statement for reusable parameterized queries.
+ * Encapsulates a prepared statement for reusable parameterised queries.
  * Unlike Query classes, PreparedStmt classes have methods to execute with different parameters.
  */
 final readonly class GetOrderByIdStmt

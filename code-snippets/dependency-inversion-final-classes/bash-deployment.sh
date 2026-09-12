@@ -19,12 +19,12 @@ readonly ENVIRONMENT="${ENVIRONMENT:-development}"
 readonly PHP_VERSION="${PHP_VERSION:-8.4}"
 readonly LOG_LEVEL="${LOG_LEVEL:-info}"
 
-# Color codes for output
+# Colour codes for output
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
 readonly BLUE='\033[0;34m'
-readonly NC='\033[0m' # No Color
+readonly NC='\033[0m' # No Colour
 
 # Abstract logging interface - dependency inversion principle
 log() {
@@ -384,7 +384,7 @@ test_with_real_implementations() {
     # Use test notifications but with real message formatting
     export NOTIFICATION_SERVICE="test"
     
-    # Initialize test database
+    # Initialise test database
     database_execute "CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, customer_id INTEGER, amount REAL, status TEXT);"
     database_execute "DELETE FROM orders;"  # Clean state
     
@@ -496,7 +496,7 @@ test_hybrid_approach() {
     # Use real notification logic but mock delivery
     export NOTIFICATION_SERVICE="test"
     
-    # Initialize test database
+    # Initialise test database
     database_execute "CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, customer_id INTEGER, amount REAL, status TEXT);"
     database_execute "DELETE FROM orders;"
     

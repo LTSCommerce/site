@@ -74,7 +74,7 @@ describe('OrderService - Over-Mocked (BAD)', () => {
     // Act
     const result = await orderService.processOrder(orderData);
 
-    // Assert - Testing implementation details, not behavior!
+    // Assert - Testing implementation details, not behaviour!
     expect(mockInventoryService.checkStock).toHaveBeenCalledWith(['item1']);
     expect(mockInventoryService.calculatePrice).toHaveBeenCalledWith(orderData.items);
     expect(mockInventoryService.applyDiscount).toHaveBeenCalledWith(100, orderData);

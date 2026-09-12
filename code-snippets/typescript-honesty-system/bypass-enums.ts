@@ -1,4 +1,5 @@
 // Enum bypasses - numeric enums accept ANY number value
+// Lines below reflect pre-TypeScript-5.0 behaviour; this file will not compile as-is under TS 5.0+.
 
 enum Status {
   Active = 1,

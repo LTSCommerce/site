@@ -1,0 +1,6 @@
+# This should work but doesn't
+---
+- name: Set environment-specific cache
+  set_fact:
+    fact_caching_connection: "/tmp/facts-{{ ansible_environment }}"
+    cacheable: yes

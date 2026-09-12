@@ -3,7 +3,7 @@
 
 class OrderProcessor 
 {
-    public function processOrder(Order $order): OrderResult
+    public function processOrder(?Order $order): OrderResult
     {
         if ($order !== null) {
             if ($order->isValid()) {

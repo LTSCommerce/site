@@ -2,7 +2,7 @@ parameters:
   # Analysis level (0-10, where 10 is strictest with mixed type enforcement)
   level: 10
 
-  # Paths to analyze
+  # Paths to analyse
   paths:
     - src
     - tests
@@ -21,27 +21,27 @@ parameters:
   # Check for missing type hints
   checkMissingIterableValueType: true
 
-  # Register custom rules
-  rules:
-    # Performance rules
-    - App\PHPStan\Rules\Performance\QueryInLoopRule
-
-    # Code quality rules
-    - App\PHPStan\Rules\CodeQuality\NoMagicStringCommandsRule
-
-    # Architectural rules
-    - App\PHPStan\Rules\Architecture\NoWorkInDestructorsRule
-    - App\PHPStan\Rules\Architecture\NoDirectEnvAccessRule
-
-    # Testing rules
-    - App\PHPStan\Rules\Testing\NoMockDatabaseServiceRule
-    - App\PHPStan\Rules\Testing\NoProductionTablesInTestsRule
-
   # Include extension config files
   includes:
     - phpstan-baseline.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+# Register custom rules (must be top-level, not nested under parameters)
+rules:
+  # Performance rules
+  - App\PHPStan\Rules\Performance\QueryInLoopRule
+
+  # Code quality rules
+  - App\PHPStan\Rules\CodeQuality\NoMagicStringCommandsRule
+
+  # Architectural rules
+  - App\PHPStan\Rules\Architecture\NoWorkInDestructorsRule
+  - App\PHPStan\Rules\Architecture\NoDirectEnvAccessRule
+
+  # Testing rules
+  - App\PHPStan\Rules\Testing\NoMockDatabaseServiceRule
+  - App\PHPStan\Rules\Testing\NoProductionTablesInTestsRule
 
 services:
   # Register rules with constructor dependencies

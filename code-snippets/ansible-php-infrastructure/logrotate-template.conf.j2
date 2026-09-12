@@ -1,0 +1,11 @@
+# templates/logrotate.conf.j2
+{{ app_path }}/shared/logs/*.log {
+    daily
+    rotate 30
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    su www-data www-data
+}

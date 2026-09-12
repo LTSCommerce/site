@@ -22,16 +22,19 @@ final class SlowQueryAnalyzer
 
     public function getSlowQueries(): array
     {
-        $sql = 'SELECT 
-            sql_text,
+        // x$statement_analysis exposes raw picosecond timings; the plain
+        // statement_analysis view formats them as strings ("153.13 ms"),
+        // which can't be compared numerically.
+        $sql = 'SELECT
+            query,
             exec_count,
             total_latency,
             avg_latency,
             lock_latency,
             rows_sent,
             rows_examined
-        FROM sys.statement_analysis
-        WHERE avg_latency > 1000000  -- 1 second
+        FROM sys.x$statement_analysis
+        WHERE avg_latency > 1000000000000  -- 1 second, in picoseconds
         ORDER BY total_latency DESC
         LIMIT 20';
 
@@ -40,13 +43,13 @@ final class SlowQueryAnalyzer
 
     public function getTableScans(): array
     {
-        $sql = 'SELECT 
+        $sql = 'SELECT
             object_name,
             count_read,
-            avg_read_latency,
+            avg_timer_read AS avg_read_latency,
             count_write,
-            avg_write_latency
-        FROM sys.table_io_waits_summary_by_table
+            avg_timer_write AS avg_write_latency
+        FROM performance_schema.table_io_waits_summary_by_table
         ORDER BY count_read DESC
         LIMIT 20';
 

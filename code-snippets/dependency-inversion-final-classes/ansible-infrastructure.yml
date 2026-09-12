@@ -4,7 +4,7 @@
 # This playbook demonstrates dependency inversion principles in infrastructure:
 # - Abstract roles define interfaces (what should be done)
 # - Concrete implementations handle specifics (how it's done)
-# - Environment-specific variables control behavior
+# - Environment-specific variables control behaviour
 # - Composition over inheritance through role dependencies
 
 # Main playbook that orchestrates the deployment
@@ -120,7 +120,7 @@
     backup: yes
   notify: restart mysql
   vars:
-    # PHP 8.4 optimized MySQL configuration
+    # PHP 8.4 optimised MySQL configuration
     mysql_config:
       innodb_buffer_pool_size: '{{ (ansible_memtotal_mb * 0.7) | int }}M'
       innodb_log_file_size: '256M'
@@ -159,7 +159,7 @@
     group: www-data
     mode: '0750'
 
-- name: Initialize SQLite database
+- name: Initialise SQLite database
   command: sqlite3 /var/lib/{{ app_name }}/database/{{ database_config.name }}.db "SELECT 1;"
   args:
     creates: /var/lib/{{ app_name }}/database/{{ database_config.name }}.db

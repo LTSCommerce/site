@@ -7,7 +7,6 @@ namespace App\Controller\Api;
 use App\Dto\UserDto;
 use App\OpenApi\Response\BadRequestResponse;
 use App\OpenApi\Response\SuccessResponse;
-use App\OpenApi\Security\BearerAuth;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,7 +16,7 @@ final class ProfileController
     #[OA\Get(
         path: '/api/profile',
         summary: 'Get current user profile',
-        security: [new BearerAuth()],
+        security: [['bearerAuth' => []]],
         tags: ['Profile'],
         responses: [
             new SuccessResponse(UserDto::class, 'User profile retrieved'),

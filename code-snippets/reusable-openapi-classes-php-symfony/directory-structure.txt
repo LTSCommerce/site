@@ -14,11 +14,11 @@ src/
     ├── Parameter/
     │   ├── IdParameter.php
     │   ├── PageParameter.php
-    │   ├── LimitParameter.php
-    │   └── SortParameter.php
-    └── Response/
-        ├── SuccessResponse.php
-        ├── BadRequestResponse.php
-        ├── NotFoundResponse.php
-        ├── ValidationErrorResponse.php
-        └── UnauthorizedResponse.php
+    │   └── LimitParameter.php
+    ├── Response/
+    │   ├── SuccessResponse.php
+    │   ├── BadRequestResponse.php
+    │   ├── NotFoundResponse.php
+    │   └── ValidationErrorResponse.php
+    └── Security/
+        └── BearerAuth.php

@@ -37,10 +37,10 @@ const obj: Fixed = { value: 42 };
 Object.setPrototypeOf(obj, { value: 'not a number anymore' });
 
 // DELETE operator - removes required properties at runtime
-interface Required {
+interface StrictRecord {
   id: number;
   name: string;
 }
 
-const required: Required = { id: 1, name: 'Test' };
+const required: StrictRecord = { id: 1, name: 'Test' };
 delete (required as any).id; // Now missing 'id' despite type

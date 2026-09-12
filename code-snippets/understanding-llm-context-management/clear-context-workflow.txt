@@ -1,0 +1,19 @@
+STEP 1: Complete the current task
+  "We've fixed the authentication bug successfully"
+
+STEP 2: Save important info, if needed
+  Copy any critical findings or solutions
+
+STEP 3: Clear context
+  Type: /clear
+  Or: close the Claude Code window
+
+---- CONTEXT BOUNDARY ----
+
+STEP 4: Start fresh
+  Open a new Claude Code session
+  "I need to add user profile features to my Express app"
+
+STEP 5: New, clean context
+  No debugging history polluting the conversation
+  AI focuses entirely on the new task
