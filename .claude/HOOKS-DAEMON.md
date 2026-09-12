@@ -1,6 +1,6 @@
 # Hooks Daemon - Active Configuration
 
-> Generated on 2026-09-08 (v3.62.1) by `generate-docs`. Regenerate: `.claude/hooks-daemon/bin/hooks-daemon generate-docs`
+> Generated on 2026-09-12 (v3.63.0) by `generate-docs`. Regenerate: `.claude/hooks-daemon/bin/hooks-daemon generate-docs`
 
 ## Plan Mode
 
@@ -13,7 +13,7 @@ The redirect handler intercepts `~/.claude/plans/` writes as a safety net only.
 
 ## Active Handlers
 
-### PreToolUse (49 handlers)
+### PreToolUse (50 handlers)
 
 | Priority | Handler | Behaviour | Description |
 |----------|---------|----------|-------------|
@@ -36,6 +36,7 @@ The redirect handler intercepts `~/.claude/plans/` writes as a safety net only.
 | 16 | worktree_file_copy | BLOCKING | Prevent copying files between worktrees and main repo |
 | 16 | write_clobber_guard | BLOCKING | Deny ``Write`` to an existing file that was not read this session |
 | 17 | git_stash | BLOCKING | Block or warn about git stash based on mode configuration |
+| 17 | self_matching_process_probe | BLOCKING | Block a liveness probe whose pattern matches the shell running it |
 | 18 | dangerous_permissions | TERMINAL | Block chmod 777 and dangerous permission commands |
 | 18 | github_auto_close_keywords | BLOCKING | Deny git messages carrying GitHub auto-closing keyword references |
 | 19 | ancestry_preserving_merge | BLOCKING | Block (or, in warn mode, advise against) ancestry-severing merges |
@@ -67,7 +68,7 @@ The redirect handler intercepts `~/.claude/plans/` writes as a safety net only.
 | 57 | daemon_docs_guard | ADVISORY | Warn when reading from the hooks-daemon internal CLAUDE/ docs directory |
 | 58 | flaggable_work_advisor | ADVISORY | Advise delegating safeguard-flaggable work BEFORE opening the content |
 
-### PostToolUse (7 handlers)
+### PostToolUse (8 handlers)
 
 | Priority | Handler | Behaviour | Description |
 |----------|---------|----------|-------------|
@@ -78,6 +79,7 @@ The redirect handler intercepts `~/.claude/plans/` writes as a safety net only.
 | 30 | recovery_cron_advisor | ADVISORY | Advisory handler that manages failsafe recovery cron across plan lifecycle |
 | 31 | goal_injection | ADVISORY | Write a goal-intent signal when a plan flips to In Progress |
 | 32 | budget_exhaustion_detector | ADVISORY | Advisory PostToolUse handler that flags budget/quota-exhaustion messaging |
+| 33 | model_downgrade_recorder | ADVISORY | Publish Claude Code's own automatic model-downgrade record, silently |
 
 ### SessionStart (21 handlers)
 
