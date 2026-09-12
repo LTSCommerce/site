@@ -272,10 +272,6 @@ handlers:
       enabled: true
       priority: 10
 
-    hedging_language_detector: # Detects guessing language (should probably, IIRC, I believe, etc)
-      enabled: true
-      priority: 30
-
     task_completion_checker: # Checks for task completion
       enabled: false # Enable if using task management system
       priority: 20
@@ -347,3 +343,14 @@ documentation:
 agents:
   docs_qa:
     enabled: true # deploys the read-only hooks-daemon-docs-qa audit agent
+
+# v3.63.0 migration: hedging_language_detector moved here from handlers.stop
+# (was silently inert at the old key path after the rename)
+pseudo_events:
+  nitpick:
+    enabled: true
+    triggers:
+      - "stop:1/1" # Fire on every Stop event
+    handlers:
+      hedging_language: # The guessing is the defect, not the wording
+        enabled: true
