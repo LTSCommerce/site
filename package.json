@@ -34,7 +34,7 @@
     "type-safe",
     "eslint"
   ],
-  "author": "Joseph Edmonds <joseph@lts.ltd>",
+  "author": "Joseph Edmonds <joseph@ltscommerce.dev>",
   "license": "MIT",
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
