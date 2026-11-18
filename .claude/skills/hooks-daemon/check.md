@@ -22,11 +22,18 @@ full picture on demand:
   and for anything sub-optimal: why it matters, how to fix it, where to set it,
   and a docs link. Covers:
   - Agent Teams (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`)
-  - Effort Level (`effortLevel` / `CLAUDE_CODE_EFFORT_LEVEL`)
+  - Effort Source — `[WARN]` when `CLAUDE_CODE_EFFORT_LEVEL`, or a top-level
+    `effortLevel` in the project or local settings file, pins one level on
+    every model and overrides the per-model `modelSettings` levels. It never
+    recommends a level: effort is settings.json's call.
   - Extended Thinking (`alwaysThinkingEnabled`)
   - Max Output Tokens (`CLAUDE_CODE_MAX_OUTPUT_TOKENS`)
   - Auto Memory (`CLAUDE_CODE_DISABLE_AUTO_MEMORY`)
   - Bash Working Directory (`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR`)
+  - Idle Compaction (`idleCompaction`; fails on `idleCompaction: false`,
+    `autoCompactEnabled: false`, or `DISABLE_AUTO_COMPACT`, `DISABLE_COMPACT`,
+    `FORCE_PROMPT_CACHING_5M`; interactive sessions on the one-hour cache,
+    Claude Code 2.1.290 or later)
 - **Container runtime** — docker / podman / lxc / generic, or desktop/host.
   (Also shown continuously by the status-line environment icon.)
 - **Git `core.fileMode`** — warns when `false` (hooks can lose their exec bit).
@@ -40,7 +47,7 @@ Hooks Daemon — Environment Check
 
 Claude Code configuration: 4/6 optimal
   [OK  ] Agent Teams: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS='1'
-  [OK  ] Effort Level: effortLevel='high'
+  [OK  ] Effort Source: no model has an explicit effort level, so each runs at its own default
   [OK  ] Extended Thinking: alwaysThinkingEnabled=True
   [MISS] Max Output Tokens: Not set (default: 32000)
          Why:   ...

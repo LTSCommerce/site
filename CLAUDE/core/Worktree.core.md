@@ -64,6 +64,24 @@ conventions — neither is project-configurable — and the file-copy rule
 guards both roots identically. Everything below about isolation, cleanup, and
 never cross-copying applies no matter which mechanism created the worktree.
 
+### Branch Practice
+
+This is the one home for these three habits; other documents point here.
+
+- **Recovery copies are not branches.** The branch pools count only branches,
+  so a rescue or backup kept as a branch is counted as open work. Keep a
+  recovery copy as a ref under `refs/archive/<name>`
+  (`git update-ref refs/archive/<name> <sha>`) or as a `git bundle`. A branch
+  created with a `rescue/*`, `recovery/*`, `backup/*`, `*-rescue` or
+  `*-backup` name draws a daemon advisory saying so; it never blocks.
+- **Create worktrees from the main checkout, never nested.** A worktree
+  inside another worktree is lost when the outer one is removed. The
+  advisory above also fires on `git worktree add` into a linked worktree and
+  names the main checkout to run it from.
+- **Reap an agent's worktree after the agent.** Once the agent's branch is
+  pushed and its report is in, remove the worktree
+  (`git worktree remove <path>`); the daemon's housekeeping lists stale ones.
+
 ### Hierarchical Structure
 
 Worktrees support **parent-child relationships** for complex plans:
@@ -73,8 +91,10 @@ Worktrees support **parent-child relationships** for complex plans:
 
 **Merge Rules:**
 
-- ✅ **ALLOWED**: Child → Parent worktree (automatic, no approval needed)
-- ❌ **NOT ALLOWED**: Parent → Main project (requires human approval)
+- ✅ **ALLOWED**: Child → Parent worktree (automatic, no verification gate)
+- ✅ **ALLOWED**: Parent → Main project (once verified; a project that sets
+  `worktree.merge_to_main_requires_human_approval: true` gets a daemon-enforced
+  human gate on this merge instead — see Critical Rule 7 below)
 
 ## Critical Rules
 
@@ -352,24 +372,30 @@ git merge worktree-child-plan-handler-1
 - Part of plan execution workflow
 - Easy to rollback if needed
 
-#### Parent → Main Project (REQUIRES APPROVAL)
+#### Parent → Main Project (verify, then merge)
 
-❌ **MUST ask human approval first**
+✅ **Merge once verification passes** — this is the default; no daemon gate
+stops it
 
 Before merging parent to main:
 
-1. ✋ **STOP** - Ask human for approval
-2. Verify no other agents working in the main checkout
-3. Verify no conflicts with the main branch
-4. Get explicit "yes" from human
-5. Only then proceed with merge
+1. Verify no other agents are working in the main checkout
+2. Verify no conflicts with the main branch
+3. Proceed with the merge
 
-**Why requires approval:**
+**A project that wants a human in this loop** sets
+`worktree.merge_to_main_requires_human_approval: true`. With the key on, the
+`merge_to_main_approval` handler denies the `git merge`/`gh pr merge` in the
+main checkout until a human runs `hooks-daemon approve-merge <branch>`; the
+agent's job is to report the branch as verified and ready to merge, then
+stop — not to wait in a loop for the approval.
+
+**Why verification matters (with or without the human gate):**
 
 - Multiple agents may be working simultaneously
 - The main checkout might have uncommitted changes
-- Conflicts need human resolution
-- Risk of losing work
+- Conflicts need resolving before the merge
+- Risk of losing work if skipped
 
 ### 8. Cleanup Protocol
 
@@ -508,7 +534,7 @@ cd untracked/worktrees/worktree-plan
 git fetch origin
 git merge main --no-edit
 # ⚠️ If there are conflicts, resolve them HERE in the worktree
-# ⚠️ Test thoroughly after merge - the worktree must pass all QA
+# ⚠️ Test thoroughly after merge - the worktree must pass this project's QA gate for the change
 # ... run this project's test/QA suite ...
 .claude/hooks-daemon/bin/hooks-daemon restart
 .claude/hooks-daemon/bin/hooks-daemon status
@@ -523,16 +549,17 @@ git status  # MUST show "nothing to commit, working tree clean"
 #   - Set them aside some other way
 #   - DO NOT proceed until main is clean
 
-# STEP 3: ✋ STOP - Ask human for final approval!
-# Confirm with human:
+# STEP 3: Confirm it is safe to merge now:
 #   - Is main branch clean? (no uncommitted changes)
 #   - Are all other agents/processes stopped?
-#   - Is it safe to merge now?
+# A project with `worktree.merge_to_main_requires_human_approval: true` has
+# the daemon deny STEP 5 below until a human runs
+# `hooks-daemon approve-merge <branch>` — report readiness and stop there.
 
 # STEP 4: Review parent worktree changes
 git log worktree-plan --oneline
 
-# STEP 5: Merge parent to main (only after ALL approvals above!)
+# STEP 5: Merge parent to main (only after ALL verification above!)
 git merge worktree-plan --no-edit
 
 # STEP 6: Verify merge succeeded
@@ -566,7 +593,8 @@ git status  # Confirm everything clean
    - Ensures your changes work with the current state of main
    - **If you skip this, the merge WILL conflict and you WILL lose work**
 2. **Clean main checkout**: Uncommitted changes in main cause merge failures
-3. **Human verification**: Ensures no other work is in progress
+3. **Verification**: Ensures no other work is in progress (by the agent, or by
+   a human where `worktree.merge_to_main_requires_human_approval` is on)
 4. **Keep worktree until success**: Don't delete until merge is confirmed working
 5. **Cleanup last**: Only remove the worktree after everything pushed successfully
 
@@ -652,10 +680,11 @@ cd untracked/worktrees/worktree-plan
 # Expected: Status: RUNNING
 ```
 
-**Step 5: Merge Parent into Main (REQUIRES APPROVAL)**
+**Step 5: Merge Parent into Main (verify, then merge)**
 
 ```bash
-# ✋ STOP - Ask human for approval!
+# With `worktree.merge_to_main_requires_human_approval: true`, the merge
+# below is denied until a human runs `hooks-daemon approve-merge <branch>`.
 cd untracked/worktrees/worktree-plan
 git merge main --no-edit
 # ... run this project's test/QA suite ...
@@ -673,7 +702,7 @@ git branch -d worktree-plan
 ### Benefits of the Hierarchical Approach
 
 1. **All plan work isolated**: Parent worktree contains the entire plan
-2. **Clean main checkout**: Main repo unaffected until final approval
+2. **Clean main checkout**: Main repo unaffected until the parent is merged
 3. **Easy rollback**: Can abandon the entire plan without affecting main
 4. **Parallel within a plan**: Multiple agents work on tasks simultaneously
 5. **Sequential integration**: Tasks merge to parent, then parent merges to main
@@ -712,8 +741,11 @@ worktree creation, merging, and cleanup.
 4. As each teammate completes: stop its daemon, merge child → parent, remove
    the child worktree and branch, then shut the teammate down.
 5. Once all children are merged: run full verification in the parent, sync
-   with main, ask the human for merge approval, merge parent → main, stop the
-   parent's daemon, remove the parent worktree.
+   with main, merge parent → main (if
+   `worktree.merge_to_main_requires_human_approval` is on, report the branch
+   as verified and ready, then wait for a human to run
+   `hooks-daemon approve-merge <branch>`), stop the parent's daemon, remove
+   the parent worktree.
 
 ### Teammate Responsibilities
 
@@ -741,7 +773,8 @@ The shutdown order matters to avoid orphaned processes:
    ↓
 4. Remove child worktrees and branches
    ↓
-5. Run verification in parent, sync with main, merge (with approval)
+5. Run verification in parent, sync with main, merge (human gate if the
+   project's key is on)
    ↓
 6. Stop the parent worktree's daemon
    ↓
@@ -841,14 +874,18 @@ git worktree add untracked/worktrees/my-plan -b my-plan  # WRONG
 
 ✅ **Solution**: Always use the `worktree-` prefix
 
-### ❌ Merging Without Approval
+### ❌ Merging Without Verification
 
 ```bash
-# Agent automatically merges after completing a task
-git merge worktree-plan  # WRONG - no human approval
+# Agent merges without checking the main checkout is clean or that no
+# other agent is working there
+git merge worktree-plan  # WRONG - skipped verification
 ```
 
-✅ **Solution**: Always ask a human before merging parent to main
+✅ **Solution**: Always verify the main checkout is clean and no other agent
+is working there before merging parent to main. A project that sets
+`worktree.merge_to_main_requires_human_approval: true` has the daemon deny
+the merge outright until a human runs `hooks-daemon approve-merge <branch>`.
 
 ### ❌ Skipping Daemon Restart Verification
 
@@ -950,7 +987,8 @@ $ git worktree list
 
 **Hierarchy:**
 
-- Main project (project root) ← Parent worktrees merge here (with approval)
+- Main project (project root) ← Parent worktrees merge here (once verified;
+  human gate if `worktree.merge_to_main_requires_human_approval` is on)
 - Parent worktrees (`worktree-<plan>`) ← Child worktrees merge here (automatic)
 - Child worktrees (`worktree-child-*`) ← Individual tasks worked on here
 
@@ -992,10 +1030,11 @@ $ git worktree list
 - [ ] ✋ **STEP 4**: Daemon restarts successfully in the worktree (`restart && status`)
 - [ ] ✋ **STEP 5**: Verified the main checkout is clean (`git status` shows clean)
 - [ ] ✋ **STEP 6**: Committed or otherwise set aside any uncommitted changes in main
-- [ ] ✋ **STEP 7**: Asked human for final approval
-- [ ] ✋ **STEP 8**: Got explicit "yes" from human
-- [ ] ✋ **STEP 9**: Confirmed no other agents/processes working in the main checkout
-- [ ] ✋ **STEP 10**: Reviewed changes one last time (`git log worktree-<name> --oneline`)
+- [ ] ✋ **STEP 7**: Confirmed no other agents/processes working in the main checkout
+- [ ] ✋ **STEP 8**: Reviewed changes one last time (`git log worktree-<name> --oneline`)
+- [ ] ✋ **STEP 9**: If `worktree.merge_to_main_requires_human_approval` is on,
+  reported the branch as verified and ready, and waited for a human to
+  run `hooks-daemon approve-merge <branch>` — otherwise proceeded to merge
 
 **REMINDER**: The merge order is ALWAYS: `main → worktree` FIRST, then `worktree → main`
 
@@ -1107,15 +1146,17 @@ rm -f /path/to/.claude/hooks-daemon/untracked/daemon-*.sock
      -b worktree-child-plan-task worktree-plan
    ```
 
-### Trying to Merge Parent to Main Without Approval
+### Merge Denied by the Human Approval Gate
 
-**Symptoms**: Agent attempts `git merge worktree-plan` from the main checkout
+**Symptoms**: `git merge worktree-plan` (or `gh pr merge`) from the main
+checkout is denied, naming `worktree.merge_to_main_requires_human_approval`
 **Solution**:
 
-1. Stop immediately
-2. Undo the merge if it happened: `git merge --abort`
-3. Ask the human for approval
-4. Only proceed after an explicit "yes"
+1. This project has the human gate on; the merge did not happen
+2. Report the branch as verified and ready to merge, then stop — do not wait
+   in a loop for the approval
+3. A human runs `hooks-daemon approve-merge <branch>`
+4. Retry the same merge command — it goes through once
 
 ## Quick Reference
 
@@ -1124,7 +1165,7 @@ rm -f /path/to/.claude/hooks-daemon/untracked/daemon-*.sock
 ```
 Main Project (project root)
     ↑
-    │ (merge with human approval)
+    │ (merge once verified; human gate if the project's key is on)
     │
 Parent Worktree (worktree-plan)
     ↑
@@ -1135,13 +1176,13 @@ Child Worktrees (worktree-child-plan-*)
 
 ### Key Rules Summary
 
-| Action                                                   | Approval Required        | Cleanup               |
-| -------------------------------------------------------- | ------------------------ | --------------------- |
-| Create parent worktree                                   | No                       | After merge to main   |
-| Create child worktree                                    | No                       | After merge to parent |
-| Merge child → parent                                     | **NO**                   | Immediate             |
-| Merge parent → main                                      | **YES**                  | Immediate             |
-| `cp`/`mv`/`rsync` across the worktree/main-repo boundary | N/A — **always blocked** | N/A                   |
+| Action                                                   | Human Gate (opt-in)                                                                | Cleanup               |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------------- |
+| Create parent worktree                                   | No                                                                                 | After merge to main   |
+| Create child worktree                                    | No                                                                                 | After merge to parent |
+| Merge child → parent                                     | **No** — never gated                                                               | Immediate             |
+| Merge parent → main                                      | **Off by default**; on with `worktree.merge_to_main_requires_human_approval: true` | Immediate             |
+| `cp`/`mv`/`rsync` across the worktree/main-repo boundary | N/A — **always blocked**                                                           | N/A                   |
 
 ### Naming Cheat Sheet
 
@@ -1177,5 +1218,6 @@ worktree-child-auth-refactor-config-fix
 - **Always stop the daemon before removing a worktree** (prevents orphaned processes)
 - **Always verify the daemon restarts** before merging
 - **Always cleanup** immediately after merging
-- **Always ask a human** before merging parent to main
+- **Always verify** the main checkout is clean before merging parent to main
+  (a human gate is opt-in: `worktree.merge_to_main_requires_human_approval`)
 - **Never `cp`/`mv`/`rsync` between a worktree and the main repo** — `cd` in, commit, `git merge` back

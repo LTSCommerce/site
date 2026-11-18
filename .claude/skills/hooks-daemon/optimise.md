@@ -53,7 +53,8 @@ handler cannot ship without being scored. Each handler declares its own
 RELEVANCE (`Handler.get_relevance()`): most apply everywhere; a few need
 something the project may lack (`lsp_enforcement` an LSP, the npm handlers a
 `package.json`, the ccy handlers an armed supervisor, the flaggable-content
-trio a deployed quarantine agent). The optimal state of a relevant handler is
+trio a deployed quarantine agent, and the `daemon_stats` status-line health
+line the daemon's own repository, since it is a daemon developer's diagnostic). The optimal state of a relevant handler is
 enabled, whatever its default; an irrelevant one is reported as "not
 applicable here", never as a shortfall.
 
@@ -69,6 +70,22 @@ each scored PASS / WARN / FAIL:
 
 The top-level `plan_workflow` config section and "plans in use" are checked
 alongside, since no handler owns them.
+
+### Worktree CLAUDE.md excludes (Plan 00563)
+
+A sub-agent working in a git worktree that lives under the project root loads
+the root `CLAUDE.md` twice: the main checkout's copy and the worktree's own
+(up to ~30k tokens). Claude Code's `claudeMdExcludes` setting stops the second
+copy. `optimise-checklist` looks for worktree roots under the project
+(`untracked/worktrees/`, `.claude/worktrees/`, and any path
+`git worktree list --porcelain` reports inside the project root) and, when a
+root has no covering glob in `.claude/settings.json` or
+`.claude/settings.local.json`, prints an unscored
+`OPTIONAL (not scored): worktrees live under the project root ...` line naming
+the exact globs (for example `**/untracked/worktrees/*/CLAUDE.md`) and the file
+to put them in (`.claude/settings.local.json`). It is silent when every root is
+covered or no worktree lives under the root. This is a suggestion only: nothing
+writes the setting unless the user asks for it at the apply prompt.
 
 ## What It Outputs
 

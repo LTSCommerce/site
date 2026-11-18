@@ -332,8 +332,9 @@ Each satellite has a contract. They differ, but they share R1.
 
 #### R7a — `.claude/rules/*.md`: POINTERS ONLY (firm)
 
-The whole permitted shape: frontmatter (`paths:` plus `description`), a
-trigger statement, the rule in **at most two imperative lines**, and link(s)
+The whole permitted shape: frontmatter (`paths:` only, the one field
+Claude Code reads from a rule; any other field is ignored), a trigger
+statement, the rule in **at most two imperative lines**, and link(s)
 to the agent tree or a registered `CLAUDE.md`.
 
 **No fences. No tables. No numbered procedures. No quotes.** Plus a small
@@ -553,6 +554,21 @@ non-deterministic gate — the same edit passing or failing on different runs.
 So each instrument does only what it can do reliably: the checker is exact
 and narrow, the agent is broad and advisory.
 
+### R14 — Deployed guidance names its enforcement
+
+A daemon-owned core document (`<agent tree>/core/*.core.md`) is the
+daemon's statement of its intended workflow, deployed verbatim into every
+project. When it tells an agent that a human must approve a step, the daemon
+must be the thing that enforces that gate, and the paragraph must name the
+config key that switches it, in backticks (for example
+`plan_workflow.close_requires_human_approval`). A human gate that exists
+only as prose is drift: an agent either stalls finished work on a human who
+never asked for the gate, or learns to ignore the document. The fix is a
+real gate behind a named key, or no instruction. A negated mention ("no
+approval needed") and a review verdict ("report approved") are not gates.
+
+Enforced by `unenforced-approval-gate`.
+
 ---
 
 ## Applying the rules
@@ -652,19 +668,21 @@ exactly the shape of a botched promotion, and the commit gate says so.
 Each check enforces one narrow, mechanical property. The table is the map
 from rule to instrument:
 
-| Check id                     | Rule    | Stages              | Can block?                                            |
-| ---------------------------- | ------- | ------------------- | ----------------------------------------------------- |
-| `pointer-resolves`           | R6      | edit, staged, sweep | Yes — only for a link NEW in this edit                |
-| `at-import-census`           | R6      | edit, sweep         | Yes — only for an import NEW in this edit             |
-| `duplicate-block`            | R1, R4  | edit, sweep         | **Never** — advisory by construction                  |
-| `quote-drift`                | R4b     | edit, sweep         | Yes at edit — any drifted quote in the edited file    |
-| `quote-source-stale`         | R4b     | edit                | **Never** — advises which quoters to re-check         |
-| `rules-file-shape`           | R7a     | edit, sweep         | Yes — worse-only (a metric grew, or a new bad file)   |
-| `rules-file-orphan-shrink`   | R7a     | staged              | **Never** — a prompt to check, not a verdict          |
-| `module-doc-budget`          | R7d     | edit, sweep         | Yes — registered docs over the block tier, worse-only |
-| `generated-doc-hand-edit`    | R10     | edit, sweep         | Yes at edit — the path matches a manifest glob        |
-| `plan-promotion-disposition` | R8      | staged              | **Never** — weak keyword approximation                |
-| `source-tree-markdown`       | R2, R7d | sweep               | **Never** — always advisory                           |
+| Check id                     | Rule    | Stages              | Can block?                                                                                                           |
+| ---------------------------- | ------- | ------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `pointer-resolves`           | R6      | edit, staged, sweep | Yes — only for a link NEW in this edit                                                                               |
+| `at-import-census`           | R6      | edit, sweep         | Yes — only for an import NEW in this edit                                                                            |
+| `duplicate-block`            | R1, R4  | edit, sweep         | **Never** — advisory by construction                                                                                 |
+| `quote-drift`                | R4b     | edit, sweep         | Yes at edit — any drifted quote in the edited file                                                                   |
+| `quote-source-stale`         | R4b     | edit                | **Never** — advises which quoters to re-check                                                                        |
+| `rules-file-shape`           | R7a     | edit, sweep         | Yes — worse-only (a metric grew, or a new bad file)                                                                  |
+| `rules-file-orphan-shrink`   | R7a     | staged              | **Never** — a prompt to check, not a verdict                                                                         |
+| `module-doc-budget`          | R7d     | edit, sweep         | Yes — registered docs over the block tier, worse-only                                                                |
+| `generated-doc-hand-edit`    | R10     | edit, sweep         | Yes at edit — the path matches a manifest glob                                                                       |
+| `plan-promotion-disposition` | R8      | staged              | **Never** — weak keyword approximation                                                                               |
+| `source-tree-markdown`       | R2, R7d | sweep               | **Never** — always advisory                                                                                          |
+| `unenforced-approval-gate`   | R14     | edit, staged, sweep | Yes — every instance, pre-existing or new                                                                            |
+| `unlisted-fake-value`        | R1      | edit, staged, sweep | Yes at commit, when `check_modes` sets it to `block` — a registry entry that is not visibly fake; otherwise advisory |
 
 Two properties of that table are worth internalising:
 
@@ -708,6 +726,13 @@ comment-block finder for its R7e hunt:
 
 Both are **finders**: they list candidates, they never judge content. The
 judgement is the agent's, or the reviewing human's.
+
+How Claude Code loads `CLAUDE.md`, rules and `@`-imports is pinned in the
+daemon repository's `contracts/claude-code-instructions/` (every fact cites its
+upstream anchor and the contract names the Claude Code version it was audited
+against). `docs-qa --footprint` measures what that contract says loads at
+session start versus on demand, and the `docs-optimise` skill turns the
+measurement into a restructure proposal. It proposes and never applies.
 
 ### Configuration reference
 

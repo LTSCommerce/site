@@ -28,6 +28,1233 @@ _HOOKS_DAEMON_CI_ENFORCED=false
 # Flag set by ensure_daemon when daemon directory/venv is absent (fresh clone)
 _HOOKS_DAEMON_NOT_INSTALLED=false
 
+# Set by ensure_daemon (Plan 00477) when NOT_INSTALLED holds in a checkout that
+# carries the tracked assets a provision needs: a fresh clone of a client
+# project. The remedy is `bash .claude/provision.sh`, not the install skill.
+# The mode is daemon.unprovisioned_mode (warn|block), read in bash because no
+# daemon exists to read it; the note is non-empty when the configured value was
+# not one of the two. STATUS_DOWN_TEXT is what the status-line forwarder prints
+# in place of its generic marker.
+_HOOKS_DAEMON_NEEDS_PROVISION=false
+_HOOKS_DAEMON_UNPROVISIONED_MODE="warn"
+_HOOKS_DAEMON_UNPROVISIONED_MODE_NOTE=""
+_HOOKS_DAEMON_STATUS_DOWN_TEXT=""
+
+# The status-line texts for the other daemon-down states ensure_daemon can name
+# (Plan 00488, GitHub #72). Each is one short line for a status bar; the
+# canonical list is CLAUDE/Architecture/StatusLine.md.
+_HOOKS_DAEMON_STATUS_TEXT_VENV_BUILDING="⏳ HOOKS DAEMON VENV BUILDING - wait, no action needed"
+_HOOKS_DAEMON_STATUS_TEXT_VENV_MISSING="⚠️ HOOKS DAEMON VENV MISSING - see the session notice"
+_HOOKS_DAEMON_STATUS_TEXT_VERSION_MISMATCH="⚠️ HOOKS DAEMON VERSION MISMATCH - upgrade needed"
+
+# Set by ensure_daemon when the installed clone and the project's TRACKED
+# deployed assets name different daemon versions (Plan 00386, GitHub issue #38).
+# The two version globals are only meaningful while the flag is true.
+_HOOKS_DAEMON_VERSION_MISMATCH=false
+_HOOKS_DAEMON_CLONE_VERSION=""
+_HOOKS_DAEMON_TRACKED_VERSION=""
+
+# Set by the repo-detection guard below: this checkout IS the hooks-daemon
+# repository and self-install has not been set up in it. Distinct from
+# NOT_INSTALLED because the remedy is the opposite of the standard one — a
+# restart cannot help, and the reader must run the installer with a flag the
+# standard message never mentions. A fresh clone of this repository is the one
+# environment the project cannot dogfood, since every maintainer checkout has
+# already been installed into, so this branch is written for a reader who has
+# no context at all.
+_HOOKS_DAEMON_REPO_UNCONFIGURED=false
+
+# Set by ensure_daemon when either a REAL daemon clone is present (see
+# _daemon_clone_present — bare directory presence does not qualify) or a
+# leftover venv is (see _daemon_orphan_venv_present), but no venv interpreter
+# resolves for THIS project path (GitHub issue #53). Distinct from
+# NOT_INSTALLED, whose remedy — the skill's install path — runs `rm -rf` on
+# the whole daemon directory when its health probe cannot pass, which is
+# exactly what happens here: the clone exists but the wrong venv is inside it
+# (or none at all), most commonly the second of two bind-mounted views (host
+# vs container) sharing one clone but not its per-path venv (Plan 00099). The
+# safe remedy is a same-version upgrade instead — see the message below.
+# _HOOKS_DAEMON_VENV_MISSING_VERSION holds the clone's own version when a
+# real clone was confirmed present AND it is readable; empty otherwise (a
+# leftover venv with no confirmed clone, or a confirmed clone whose version
+# is unreadable), which the message must also account for.
+_HOOKS_DAEMON_VENV_MISSING=false
+_HOOKS_DAEMON_VENV_MISSING_VERSION=""
+
+# Set by _detect_unsupported_python while an answer is being built: the version
+# of the system python3 when it is OLDER than the daemon's minimum, else empty.
+# It turns the "not installed" / "venv missing" advice (install the daemon),
+# which cannot succeed on such a Python, into one that names the versions and
+# says to upgrade Python. _HOOKS_DAEMON_MIN_PYTHON_FALLBACK is used only when the
+# clone's pyproject.toml (the source of truth, `requires-python`) is unreadable;
+# tests/integration/test_init_sh_unsupported_python.py pins the two together.
+_HOOKS_DAEMON_UNSUPPORTED_PYTHON=""
+_HOOKS_DAEMON_MIN_PYTHON=""
+_HOOKS_DAEMON_MIN_PYTHON_FALLBACK="3.11"
+
+# Set by start_daemon when this hook's start deadline came while the daemon
+# it launched was still starting (Plan 00466 review 8, R8-1): nothing is
+# wrong, and the call is denied with a "retry" rather than a diagnosis.
+_HOOKS_DAEMON_STARTING=false
+
+# Set by _venv_self_heal (Plan 00456) when VENV_MISSING found a real clone
+# with a readable version: what the clone's scripts/venv_bootstrap.sh did
+# about it. STATE is one of started|running|failed|refused|disabled|error, or
+# empty when no attempt was made (a damaged clone, or a clone too old to ship
+# the driver), in which case the 00454 message stands unchanged.
+_HOOKS_DAEMON_BOOTSTRAP_STATE=""
+_HOOKS_DAEMON_BOOTSTRAP_LOG=""
+_HOOKS_DAEMON_BOOTSTRAP_MISSING=""
+_HOOKS_DAEMON_BOOTSTRAP_FIXES=""
+_HOOKS_DAEMON_BOOTSTRAP_DETAIL=""
+_HOOKS_DAEMON_BOOTSTRAP_PID=""
+_HOOKS_DAEMON_BOOTSTRAP_ELAPSED=""
+
+# Set by hooks-relay (relay/hooks_relay.rs, judge_via_fallback; Plan 00466
+# N126) when it hands this forwarder a PreToolUse call whose exchange with
+# the daemon failed: send_request_stdin then denies through the recovery
+# carve-out without asking the daemon again. Captured and unset at once, so
+# a daemon this hook starts never inherits it. Setting it only ever denies.
+_HOOKS_DAEMON_RELAY_FAILED="${HOOKS_DAEMON_RELAY_FAILED:-}"
+unset HOOKS_DAEMON_RELAY_FAILED
+
+# Set by the generated relay guard (forwarder_generator.RELAY_UNUSED_ENV; Plan
+# 00529) to the relay binary path when the relay socket was live but the
+# binary was missing or could not run, so this call took the bash path.
+# send_request_stdin carries it to the daemon as the envelope's relay_unused
+# field, and the daemon adds a warning line. It never changes a verdict.
+# Captured and unset at once, so a daemon this hook starts never inherits it.
+_HOOKS_DAEMON_RELAY_UNUSED="${HOOKS_DAEMON_RELAY_UNUSED:-}"
+unset HOOKS_DAEMON_RELAY_UNUSED
+
+#
+# The daemon-recovery carve-out (Plan 00466 N24 review 3 MA4, N67), shared
+# verbatim by both python3 checks that apply it -- emit_hook_error's, via
+# _hooks_daemon_stdin_is_recovery_command below, and send_request_stdin's --
+# so the two can never disagree. Defines
+# _is_daemon_recovery_command(hook_input, project_path).
+#
+# A call is exempt only when it is a Bash call whose WHOLE command is exactly
+# one launcher spelling plus one recovery subcommand, and the file that
+# spelling runs is THIS daemon install's launcher, <daemon root>/bin/
+# hooks-daemon (Plan 00466 round 3, m-A): a client project may have a
+# bin/hooks-daemon of its own that has nothing to do with the daemon. A
+# relative spelling is resolved against the Bash tool's working directory
+# (the hook input's cwd): the text alone is not enough, because a relative
+# launcher runs whatever the cwd holds, so a planted bin/hooks-daemon would
+# otherwise run while every guard is down. An absolute spelling, shell-quoted
+# exactly as _recovery_command prints it, names the file itself and so works
+# from any cwd. Anything that cannot be resolved is not exempt. The launcher
+# follows its own symlinks to anchor itself, so a link to it is it.
+#
+# The spellings are tried in cli.py's order for "the project's launcher":
+# the daemon clone's first, then the project root's.
+#
+# Only spaces and tabs may pad the command. str.strip() would also drop
+# vertical tab, form feed, the separators and the Unicode line breaks, which
+# bash passes to the launcher as part of its argument.
+#
+# A function, not a variable, so the exported functions that run it still
+# have it in a child shell that never sourced this file (Plan 00466 round 2,
+# m3): it is exported with them, and start_daemon keeps it out of the
+# daemon's environment. It assigns the source to the variable its caller
+# names, which costs no fork on the hot path. No single quotes in this
+# block: it is a single-quoted shell string.
+_hooks_daemon_recovery_py() {
+    printf -v "$1" '%s' '
+import fnmatch
+import json
+import os
+import shlex
+import sys
+import time
+
+_INSTALL_LAUNCHER = "bin/hooks-daemon"
+_RECOVERY_BINARIES = (".claude/hooks-daemon/bin/hooks-daemon", _INSTALL_LAUNCHER)
+_RECOVERY_SUBCOMMANDS = ("restart", "status", "logs", "stop", "start", "repair", "diagnose")
+_RECOVERY_PADDING = " \t"
+
+# Plan 00555 Task 2.5 (b): the read-only diagnostics permitted while the daemon
+# was never reached. _PROTECTED_DEFAULTS is the daemon constant
+# DEFAULT_PROTECTED_PATTERNS, which this stdlib-only code cannot import;
+# test_init_sh_daemon_down_read_only.py pins the two equal. The globs are
+# assembled from parts so this file does not itself name a protected path.
+_PROTECTED_DEFAULTS = (
+    "*." + "secret*",
+    ".vault-" + "pass*",
+    "*.vault-" + "password",
+    "*vault_" + "pass*",
+    "id_" + "rsa",
+    "id_" + "ed25519",
+)
+# Protected whatever the snapshot says: the quarantined artefact that
+# quarantine_artefact_read_guard keeps out of the coordinator (its seed glob).
+_ALWAYS_PROTECTED = ("*-opus-security-DETAIL*",)
+# Written by the healthy daemon at start: the project-configured globs, one per line.
+_SNAPSHOT_NAME = ".protected-paths.snapshot"
+# Any of these anywhere in a Bash command voids the read-only judgement: pipes,
+# chaining, substitution, redirection, globbing, tilde, quoting, comments,
+# backslash and newlines.
+_SHELL_META = frozenset("|;&$`><(){}*?[~#" + chr(39) + chr(34) + chr(92) + chr(10) + chr(13))
+_LS_LETTERS = frozenset("lAahtr1d")
+_GIT_LOG_FLAGS = frozenset(
+    ["--oneline", "--stat", "--no-pager", "--all", "--decorate", "--graph"]
+)
+_GIT_LOG_PREFIXES = ("--format=", "--pretty=", "--since=", "--until=", "--author=", "--grep=")
+_REVISION_CHARS = frozenset(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_./^@-"
+)
+
+# Plan 00555 Task 2.6 (a): consecutive daemon-down stop blocks per session before
+# the stop is allowed. A constant, not a setting: a configurable bound invites 1.
+_STOP_BOUND = 3
+_TRANSCRIPT_TAIL_BYTES = 262144
+_STOP_EXPLANATION = "stopping because:"
+_AWAITING_SENTINEL = "[awaiting-human]"
+_STOP_EVENTS = ("Stop", "SubagentStop")
+
+
+def _is_absolute(path):
+    return isinstance(path, str) and os.path.isabs(path)
+
+
+def _resolve(path):
+    """The real path of the longest part of path that exists, with the rest
+    appended as written. hooks-relay and cli_command.py resolve the same way,
+    so all three name the same launcher."""
+    head, tail = path, []
+    while not os.path.exists(head):
+        parent, name = os.path.split(head)
+        if parent == head:
+            return path
+        tail.append(name)
+        head = parent
+    return os.path.join(os.path.realpath(head), *reversed(tail))
+
+
+def _project_it_manages(launcher):
+    """The project a launcher at this resolved path manages, by the rule the
+    launcher applies to itself (bin/hooks-daemon): the parent of its bin/ is
+    the daemon root, <project>/.claude/hooks-daemon for a client install and
+    the project itself for a self-install. None when the path is not a
+    bin/hooks-daemon at all (round 5, R4-2): any other file two levels below
+    a project manages nothing."""
+    bin_dir, name = os.path.split(launcher)
+    if name != "hooks-daemon" or os.path.basename(bin_dir) != "bin":
+        return None
+    daemon_dir = os.path.dirname(bin_dir)
+    parent = os.path.dirname(daemon_dir)
+    if os.path.basename(daemon_dir) == "hooks-daemon" and os.path.basename(parent) == ".claude":
+        return os.path.dirname(parent)
+    return daemon_dir
+
+
+def _installs_launcher(project_path, daemon_root):
+    """This install s launcher, resolved, or None when it is unknown.
+
+    HOOKS_DAEMON_ROOT_DIR can be inherited from whatever started Claude Code,
+    so it is trusted only when the launcher under it manages this project
+    (Plan 00466 round 4, P3-1). Otherwise it names another project s install,
+    or none, and no command is known to recover this one."""
+    if not (_is_absolute(project_path) and _is_absolute(daemon_root)):
+        return None
+    try:
+        launcher = _resolve(os.path.join(daemon_root, _INSTALL_LAUNCHER))
+        if _project_it_manages(launcher) != _resolve(project_path):
+            return None
+    except (OSError, ValueError):
+        # An unresolvable path (an embedded NUL, a loop) names no install.
+        return None
+    return launcher
+
+
+def _runs_the_installs_launcher(path, project_path, daemon_root):
+    """True when running path runs this install s launcher."""
+    launcher = _installs_launcher(project_path, daemon_root)
+    if launcher is None or not os.path.isfile(launcher):
+        return False
+    try:
+        return _resolve(path) == launcher
+    except (OSError, ValueError):
+        return False
+
+
+def _absolute_launchers(project_path, daemon_root):
+    """Every absolute spelling of the launcher, in the order a deny names them."""
+    spellings = []
+    if _is_absolute(project_path):
+        spellings.extend(os.path.join(project_path, binary) for binary in _RECOVERY_BINARIES)
+    if _is_absolute(daemon_root):
+        spellings.append(os.path.join(daemon_root, _INSTALL_LAUNCHER))
+    return spellings
+
+
+def _is_daemon_recovery_command(hi, project_path, daemon_root):
+    if not isinstance(hi, dict) or hi.get("tool_name") != "Bash":
+        return False
+    tool_input = hi.get("tool_input")
+    if not isinstance(tool_input, dict):
+        return False
+    command = tool_input.get("command")
+    if not isinstance(command, str):
+        return False
+    stripped = command.strip(_RECOVERY_PADDING)
+    if not stripped.isprintable():
+        return False
+    cwd = hi.get("cwd")
+    for sub in _RECOVERY_SUBCOMMANDS:
+        for binary in _RECOVERY_BINARIES:
+            if stripped == binary + " " + sub:
+                return _is_absolute(cwd) and _runs_the_installs_launcher(
+                    os.path.join(cwd, binary), project_path, daemon_root
+                )
+        for launcher in _absolute_launchers(project_path, daemon_root):
+            if stripped == shlex.quote(launcher) + " " + sub:
+                return _runs_the_installs_launcher(launcher, project_path, daemon_root)
+    return False
+
+
+def _roots(project_path, daemon_root):
+    """The project root and the daemon root, as written and resolved."""
+    roots = []
+    for base in (project_path, daemon_root):
+        if _is_absolute(base):
+            for candidate in (os.path.normpath(base), os.path.realpath(base)):
+                if candidate not in roots:
+                    roots.append(candidate)
+    return roots
+
+
+def _relative_to(path, root):
+    """path relative to root, or None when it is not inside it."""
+    if path == root:
+        return ""
+    prefix = root.rstrip("/") + "/"
+    if path.startswith(prefix):
+        return path[len(prefix):]
+    return None
+
+
+def _snapshot_globs(daemon_root):
+    """The project-configured protected globs the healthy daemon last wrote, or
+    None when there is no readable snapshot (which locks .claude/ down)."""
+    if not _is_absolute(daemon_root):
+        return None
+    try:
+        with open(os.path.join(daemon_root, "untracked", _SNAPSHOT_NAME)) as handle:
+            return [line.strip() for line in handle.read().splitlines() if line.strip()]
+    except (OSError, ValueError):
+        return None
+
+
+_CONFIG_NAMES = ("hooks-daemon.yaml", "hooks-daemon.yml")
+
+
+def _stale_config(project_path, daemon_root):
+    """Plan 00555 Task 2.8 S1: the project config file edited after the snapshot
+    was written, or None. The daemon rewrites the snapshot only when it starts,
+    so a config edited since then may carry globs the snapshot does not. Stale
+    means a config file is strictly newer than the snapshot, or a stat fails;
+    no config file at all is not stale."""
+    if not (_is_absolute(project_path) and _is_absolute(daemon_root)):
+        return None
+    snapshot = os.path.join(daemon_root, "untracked", _SNAPSHOT_NAME)
+    for name in _CONFIG_NAMES:
+        config = os.path.join(project_path, ".claude", name)
+        if not os.path.lexists(config):
+            continue
+        try:
+            if os.stat(config).st_mtime > os.stat(snapshot).st_mtime:
+                return config
+        except OSError:
+            return config
+    return None
+
+
+def _glob_tokens(pattern):
+    """The glob dialect of the daemon (utils/path_exclusion.py) as a token list."""
+    anchored = pattern.startswith("/")
+    body = pattern[1:] if anchored else pattern
+    tokens = [] if anchored else [("PREFIX", "")]
+    literal = []
+    index = 0
+    while index < len(body):
+        char = body[index]
+        if char in "*?":
+            if literal:
+                tokens.append(("LIT", "".join(literal)))
+                literal = []
+            if char == "?":
+                tokens.append(("QMARK", ""))
+            elif body.startswith("**", index):
+                index += 1
+                if body.startswith("/", index + 1):
+                    index += 1
+                    tokens.append(("SEGSTAR", ""))
+                else:
+                    tokens.append(("ANYALL", ""))
+            else:
+                tokens.append(("STAR", ""))
+        else:
+            literal.append(char)
+        index += 1
+    if literal:
+        tokens.append(("LIT", "".join(literal)))
+    return tokens
+
+
+def _glob_fullmatch(pattern, text):
+    """True when the whole of text matches pattern in the glob dialect of the daemon:
+    * and ? stay inside one segment, **/ spans whole segments, a trailing **
+    spans anything, a leading / anchors, otherwise any leading directories."""
+    size = len(text)
+    reach = {0}
+    for kind, literal in _glob_tokens(pattern):
+        found = set()
+        if kind == "PREFIX":
+            found = {0} | {at + 1 for at in range(size) if text[at] == "/"}
+        elif kind == "LIT":
+            found = {at + len(literal) for at in reach if text.startswith(literal, at)}
+        elif kind == "QMARK":
+            found = {at + 1 for at in reach if at < size and text[at] != "/"}
+        elif kind == "STAR":
+            for at in reach:
+                end = at
+                found.add(end)
+                while end < size and text[end] != "/":
+                    end += 1
+                    found.add(end)
+        elif kind == "SEGSTAR":
+            found = set(reach)
+            pending = list(reach)
+            while pending:
+                at = pending.pop()
+                slash = text.find("/", at)
+                if slash > at and slash + 1 not in found:
+                    found.add(slash + 1)
+                    pending.append(slash + 1)
+        else:
+            found = set(range(min(reach), size + 1)) if reach else set()
+        reach = found
+        if not reach:
+            return False
+    return size in reach
+
+
+def _glob_candidates(path, project_path):
+    """The forms of path the daemon matches a glob against: relative to the
+    project root when inside it, and the absolute path without its leading /."""
+    forms = [path.lstrip("/")]
+    if _is_absolute(project_path):
+        for root in {os.path.normpath(project_path), os.path.realpath(project_path)}:
+            rel = _relative_to(path, root)
+            if rel:
+                forms.append(rel)
+    return forms
+
+
+def _matches_glob(glob, path, project_path):
+    base = os.path.basename(path)
+    if fnmatch.fnmatchcase(base, glob) or fnmatch.fnmatchcase(path, glob):
+        return True
+    return any(_glob_fullmatch(glob, form) for form in _glob_candidates(path, project_path))
+
+
+def _is_protected(path, project_path, daemon_root):
+    """True when path names something a daemon-down read must never show."""
+    norm = os.path.normpath(path)
+    base = os.path.basename(norm)
+    snapshot = _snapshot_globs(daemon_root)
+    # The union: a stale snapshot keeps its globs AND locks .claude/ down.
+    lockdown = snapshot is None or _stale_config(project_path, daemon_root) is not None
+    for glob in _PROTECTED_DEFAULTS + _ALWAYS_PROTECTED + tuple(snapshot or ()):
+        if _matches_glob(glob, norm, project_path):
+            return True
+    if base.endswith(".sock"):
+        return True
+    for root in _roots(project_path, daemon_root):
+        rel = _relative_to(norm, root)
+        if rel is None:
+            continue
+        parts = rel.split("/")
+        if rel == ".claude/hooks-daemon.env":
+            return True
+        if rel.startswith(".claude/hooks-daemon/") and not rel.startswith(
+            ".claude/hooks-daemon/bin/"
+        ):
+            return True
+        if len(parts) > 1 and parts[0] == "untracked" and parts[1].startswith("events"):
+            return True
+        # Known-sensitive daemon runtime output: raw hook payloads, the verdict
+        # log, the stop-event log (utils/private_io.py) and the legacy hook error
+        # log (hook input redacted only by the secret word list, plus a traceback).
+        if len(parts) > 1 and parts[0] == "untracked":
+            if (
+                parts[1] == "payload-capture"
+                or parts[1].startswith("stop-events")
+                or parts[1].startswith("hook-errors.log")
+            ):
+                return True
+            if parts[1] == "logs" and len(parts) > 2 and parts[2] == "hooks":
+                return True
+        if lockdown and parts[0] == ".claude" and len(parts) > 1:
+            settings = len(parts) == 2 and fnmatch.fnmatchcase(parts[1], "settings*.json")
+            if rel != ".claude/hooks-daemon.yaml" and not settings:
+                return True
+    return False
+
+
+def _path_allowed(raw, cwd, project_path, daemon_root, allow_dir):
+    """True when raw names a regular file (or, with allow_dir, a directory)
+    inside the project or daemon root that is not protected. Judged on the
+    lexical spelling and on the resolved path, so a symlink or .. cannot launder it."""
+    try:
+        if not raw or "\0" in raw:
+            return False
+        absolute = os.path.normpath(os.path.join(cwd, raw))
+        if _is_protected(absolute, project_path, daemon_root):
+            return False
+        # The shell resolves a symlink before it applies a following .., so
+        # resolve the joined spelling, not the lexically normalised one.
+        real = os.path.realpath(os.path.join(cwd, raw))
+        if _is_protected(real, project_path, daemon_root):
+            return False
+        roots = _roots(project_path, daemon_root)
+        if not any(_relative_to(real, root) is not None for root in roots):
+            return False
+        # path.resolve in Node applies .. textually, so the lexical form must
+        # stay inside a root too: both the real and the lexical path pass.
+        if not any(_relative_to(absolute, root) is not None for root in roots):
+            return False
+        if os.path.isfile(real):
+            return True
+        return allow_dir and os.path.isdir(real)
+    except (OSError, ValueError):
+        return False
+
+
+def _is_int(text):
+    return text != "" and all(char in "0123456789" for char in text)
+
+
+def _git_read_only(args, cwd, project_path, daemon_root):
+    """git log with a fixed option set; nothing that prints content. status is not
+    here: it refreshes .git/index and may run a configured core.fsmonitor program."""
+    if not args or args[0] != "log":
+        return False
+    if not _path_allowed(".", cwd, project_path, daemon_root, True):
+        return False
+    flags = _GIT_LOG_FLAGS
+    prefixes = _GIT_LOG_PREFIXES
+    rest = args[1:]
+    index = 0
+    pathspecs = False
+    while index < len(rest):
+        token = rest[index]
+        index += 1
+        if pathspecs:
+            joined = os.path.join(cwd, token)
+            if token.startswith("-") or any(
+                _is_protected(form, project_path, daemon_root)
+                for form in (os.path.normpath(joined), os.path.realpath(joined))
+            ):
+                return False
+            continue
+        if token == "--":
+            pathspecs = True
+        elif token in flags or token.startswith(prefixes):
+            continue
+        elif token == "-n":
+            if index >= len(rest) or not _is_int(rest[index]):
+                return False
+            index += 1
+        elif token.startswith("-") and _is_int(token[1:]):
+            continue
+        elif not token.startswith("-") and all(char in _REVISION_CHARS for char in token):
+            continue
+        else:
+            return False
+    return True
+
+
+def _bash_read_only(command, cwd, project_path, daemon_root):
+    stripped = command.strip(_RECOVERY_PADDING)
+    if not stripped or not stripped.isprintable():
+        return False
+    if any(char in _SHELL_META for char in stripped):
+        return False
+    tokens = stripped.split()
+    head, args = tokens[0], tokens[1:]
+    if head == "ls":
+        paths = []
+        for arg in args:
+            if arg.startswith("-"):
+                if len(arg) < 2 or not set(arg[1:]) <= _LS_LETTERS:
+                    return False
+            else:
+                paths.append(arg)
+        return all(
+            _path_allowed(path, cwd, project_path, daemon_root, True) for path in (paths or ["."])
+        )
+    if head == "cat":
+        if not args or any(arg.startswith("-") for arg in args):
+            return False
+        return all(_path_allowed(arg, cwd, project_path, daemon_root, False) for arg in args)
+    if head in ("head", "tail"):
+        if len(args) != 3 or args[0] != "-n" or not _is_int(args[1]) or args[2].startswith("-"):
+            return False
+        return _path_allowed(args[2], cwd, project_path, daemon_root, False)
+    if head == "git":
+        return _git_read_only(args, cwd, project_path, daemon_root)
+    return False
+
+
+def _is_daemon_down_permitted(hi, project_path, daemon_root):
+    """Plan 00555 Task 2.5 (b): what a PreToolUse call may do while the daemon
+    was never reached -- a recovery command, a Read of a regular project file,
+    or one of the exact read-only Bash shapes. Anything else, and any error
+    while judging, is denied."""
+    if _is_daemon_recovery_command(hi, project_path, daemon_root):
+        return True
+    if not isinstance(hi, dict):
+        return False
+    tool_input = hi.get("tool_input")
+    if not isinstance(tool_input, dict):
+        return False
+    cwd = hi.get("cwd")
+    if not _is_absolute(cwd):
+        cwd = project_path
+    if not _is_absolute(cwd):
+        return False
+    try:
+        if hi.get("tool_name") == "Read":
+            path = tool_input.get("file_path")
+            return _is_absolute(path) and _path_allowed(
+                path, cwd, project_path, daemon_root, False
+            )
+        if hi.get("tool_name") == "Bash":
+            command = tool_input.get("command")
+            return isinstance(command, str) and _bash_read_only(
+                command, cwd, project_path, daemon_root
+            )
+    except (OSError, ValueError):
+        return False
+    return False
+
+
+def _fix_line(project_path, daemon_root):
+    restart = _recovery_command(project_path, daemon_root, "restart")
+    if restart is None:
+        return "A human must run the daemon launcher with restart, repair or diagnose."
+    return "Run exactly " + restart + " (then repair or diagnose if it cannot start)."
+
+
+def _safe_id(hi, key):
+    value = hi.get(key) if isinstance(hi, dict) else None
+    if not isinstance(value, str):
+        return "unknown"
+    cleaned = "".join(
+        char if ord(char) < 128 and (char.isalnum() or char in "-_") else "_"
+        for char in value[:100]
+    )
+    return cleaned or "unknown"
+
+
+def _safe_session(hi):
+    return _safe_id(hi, "session_id")
+
+
+def _stop_counter_path(daemon_root, session, event, agent=None):
+    """The counter of one session and event; a SubagentStop that names its agent
+    gets a count of its own, so each sub-agent is bounded separately."""
+    name = ".daemon-down-stops." + session + "." + event
+    if agent is not None:
+        name += "." + agent
+    return os.path.join(daemon_root, "untracked", name)
+
+
+def _text_of(content):
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "\n".join(
+            block["text"]
+            for block in content
+            if isinstance(block, dict) and block.get("type") == "text"
+            and isinstance(block.get("text"), str)
+        )
+    return ""
+
+
+def _last_assistant_text(path):
+    """The text of the last assistant message in the last 256 KiB of the
+    transcript JSONL. A line that does not parse ends the walk: no declaration."""
+    with open(path, "rb") as handle:
+        handle.seek(0, 2)
+        start = max(0, handle.tell() - _TRANSCRIPT_TAIL_BYTES)
+        handle.seek(start)
+        data = handle.read()
+    lines = data.split(b"\n")
+    if start > 0:
+        lines = lines[1:]
+    for raw in reversed(lines):
+        if not raw.strip():
+            continue
+        try:
+            entry = json.loads(raw.decode("utf-8"))
+        except ValueError:
+            return ""
+        if not isinstance(entry, dict):
+            return ""
+        message = entry.get("message")
+        holder = message if isinstance(message, dict) else entry
+        if holder.get("role") == "assistant" or entry.get("type") == "assistant":
+            return _text_of(holder.get("content"))
+    return ""
+
+
+def _declares_awaiting_human(text):
+    """The same declaration auto_continue_stop._AWAITING_HUMAN_DECLARATION finds:
+    the stop prefix, optional whitespace, the sentinel; case-insensitive."""
+    low = text.lower()
+    start = 0
+    while True:
+        at = low.find(_STOP_EXPLANATION, start)
+        if at < 0:
+            return False
+        cursor = at + len(_STOP_EXPLANATION)
+        while cursor < len(low) and low[cursor].isspace():
+            cursor += 1
+        if low.startswith(_AWAITING_SENTINEL, cursor):
+            return True
+        start = at + 1
+
+
+def _stop_bound(hi, event, reason_class, project_path, daemon_root):
+    """_stop_bound_counted, failing closed: any unexpected error keeps blocking."""
+    try:
+        return _stop_bound_counted(hi, event, reason_class, project_path, daemon_root)
+    except Exception as exc:
+        print(
+            "HOOKS DAEMON: stop bound failed, so this stop stays blocked: "
+            + type(exc).__name__ + ": " + str(exc)[:200],
+            file=sys.stderr,
+        )
+        return None
+
+
+def _stop_bound_counted(hi, event, reason_class, project_path, daemon_root):
+    """Plan 00555 Task 2.6 (a): the systemMessage that lets a daemon-down Stop
+    through, or None to keep blocking. Counts consecutive blocks per session and
+    event under <daemon root>/untracked; honours an awaiting-human declaration in
+    the last assistant message at any count. A count that cannot be written keeps
+    the block and says why on stderr."""
+    if event not in _STOP_EVENTS or not _is_absolute(daemon_root):
+        return None
+    fix = _fix_line(project_path, daemon_root)
+    transcript = None
+    agent = None
+    if isinstance(hi, dict):
+        transcript = hi.get("transcript_path")
+        if event == "SubagentStop" and isinstance(hi.get("agent_id"), str):
+            agent = _safe_id(hi, "agent_id")
+        agent_transcript = hi.get("agent_transcript_path")
+        if event == "SubagentStop" and isinstance(agent_transcript, str) and agent_transcript:
+            transcript = agent_transcript
+    if isinstance(transcript, str) and transcript:
+        try:
+            declared = _declares_awaiting_human(_last_assistant_text(transcript))
+        except (OSError, ValueError):
+            declared = False
+        if declared:
+            return (
+                "HOOKS DAEMON: your STOPPING BECAUSE [awaiting-human] declaration was honoured, "
+                "but the daemon is down, so no awaiting-human marker was armed and no "
+                "stand-in cron was scheduled; protection is NOT active. " + fix
+            )
+    session = _safe_session(hi)
+    path = _stop_counter_path(daemon_root, session, event, agent)
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        count = 0
+        if os.path.exists(path):
+            with open(path) as handle:
+                text = handle.read().strip()
+            count = int(text) if _is_int(text) else 0
+        count += 1
+        with open(path, "w") as handle:
+            handle.write(str(count) + "\n")
+    except OSError as exc:
+        print(
+            "HOOKS DAEMON: cannot count daemon-down stops, so this stop stays blocked: "
+            + path + ": " + str(exc),
+            file=sys.stderr,
+        )
+        return None
+    if count < _STOP_BOUND:
+        return None
+    stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    line = "\t".join([session, stamp, str(count), reason_class, event]) + "\n"
+    try:
+        with open(os.path.join(daemon_root, "untracked", ".daemon-down-stops.log"), "a") as log:
+            log.write(line)
+    except OSError as exc:
+        print("HOOKS DAEMON: could not log the unguarded stop: " + str(exc), file=sys.stderr)
+    return (
+        "HOOKS DAEMON: the daemon has been down for " + str(count) + " consecutive stops, so "
+        "this stop is allowed rather than wedging the session; protection was NOT active "
+        "for this stop. " + fix
+    )
+
+
+def _reset_stop_bound(hi, daemon_root):
+    """The daemon answered: the daemon-down stop counts of this session start over."""
+    if not _is_absolute(daemon_root):
+        return
+    directory = os.path.join(daemon_root, "untracked")
+    prefix = ".daemon-down-stops." + _safe_session(hi) + "."
+    try:
+        names = os.listdir(directory)
+    except OSError:
+        return
+    for name in names:
+        if not name.startswith(prefix):
+            continue
+        path = os.path.join(directory, name)
+        try:
+            os.remove(path)
+        except OSError as exc:
+            print("HOOKS DAEMON: could not reset " + path + ": " + str(exc), file=sys.stderr)
+
+
+def _recovery_command(project_path, daemon_root, sub):
+    """The exempt command a deny names: the launcher by absolute path, so it
+    works from any directory, or None when this install s launcher is
+    unknown. The first spelling that runs it wins; with none, where it
+    belongs, which is still never a file of the project s own."""
+    if _installs_launcher(project_path, daemon_root) is None:
+        return None
+    for launcher in _absolute_launchers(project_path, daemon_root):
+        if _runs_the_installs_launcher(launcher, project_path, daemon_root):
+            return shlex.quote(launcher) + " " + sub
+    return shlex.quote(os.path.join(daemon_root, _INSTALL_LAUNCHER)) + " " + sub
+
+
+def _launcher_for_a_human(project_path):
+    """The launcher a human is told to run when the install is unknown."""
+    if not _is_absolute(project_path):
+        return _RECOVERY_BINARIES[0]
+    for binary in _RECOVERY_BINARIES:
+        spelling = os.path.join(project_path, binary)
+        if os.path.isfile(spelling):
+            if _project_it_manages(_resolve(spelling)) == _resolve(project_path):
+                return shlex.quote(spelling)
+    return shlex.quote(os.path.join(project_path, _RECOVERY_BINARIES[0]))
+
+
+def _recovery_advice(project_path, daemon_root):
+    """The TO FIX lines every PreToolUse deny ends with."""
+    return _stale_notice(project_path, daemon_root) + _recovery_lines(project_path, daemon_root)
+
+
+def _stale_notice(project_path, daemon_root):
+    """The deny-reason lines naming a stale protected-paths snapshot, if any."""
+    config = _stale_config(project_path, daemon_root)
+    if config is None:
+        return []
+    return [
+        "NOTE: the protected-paths snapshot is stale: " + config + " is newer than",
+        "it, so .claude/ is locked down as well as the snapshot globs (only the",
+        "config and settings files stay readable). A daemon restart rewrites it.",
+    ]
+
+
+def _recovery_lines(project_path, daemon_root):
+    restart = _recovery_command(project_path, daemon_root, "restart")
+    repair = _recovery_command(project_path, daemon_root, "repair")
+    diagnose = _recovery_command(project_path, daemon_root, "diagnose")
+    if restart is None:
+        named_root = daemon_root or "unset"
+        return [
+            "TO FIX: no daemon command is exempt from this deny. HOOKS_DAEMON_ROOT_DIR",
+            f"({named_root}) is not a daemon install of this project",
+            f"({project_path}), so this hook cannot tell which launcher recovers it.",
+            "It may be inherited from the environment that started Claude Code, or",
+            "set in .claude/hooks-daemon.env. A human must correct it, and can",
+            "restart the daemon meanwhile with the ! prefix:",
+            f"! {_launcher_for_a_human(project_path)} restart",
+        ]
+    return [
+        f"TO FIX: run exactly {restart} (from any directory),",
+        "which stays allowed even while other calls are denied this way. If a",
+        "restart cannot start it (a broken venv), run exactly",
+        f"{repair}. A human can also",
+        f"run it directly (! {restart}), since Edit is denied here too.",
+        f"To see why it will not start, run exactly {diagnose}.",
+        "Only read-only diagnostics (Read, ls, cat/head/tail of a project file,",
+        "git log) are allowed while the daemon is down; everything else is",
+        "denied.",
+    ]
+'
+}
+
+#
+# _hooks_daemon_stdin_is_recovery_command() - True when stdin is an exempt
+# daemon recovery command (see _hooks_daemon_recovery_py above).
+#
+# Reads stdin (a PreToolUse hook_input JSON document) to EOF. Any parse
+# failure returns false (deny-by-default) -- this function decides whether a
+# call gets a CARVE-OUT, never whether it gets blocked outright.
+_hooks_daemon_stdin_is_recovery_command() {
+    _hooks_daemon_stdin_judge recovery
+}
+
+#
+# _hooks_daemon_stdin_judge MODE [EVENT CLASS] - Judge the hook_input JSON on
+# stdin. MODE recovery: exit 0 for an exempt recovery command. MODE permitted:
+# exit 0 for a recovery command or the read-only set allowed while the daemon
+# was never reached. MODE stop-bound: print the systemMessage JSON and exit 0
+# when a daemon-down Stop is let through, exit 1 to keep blocking. Unparseable
+# input is deny-by-default (exit 1); an unknown MODE exits 2.
+_hooks_daemon_stdin_judge() {
+    local recovery_py
+    _hooks_daemon_recovery_py recovery_py
+    python3 -c "$recovery_py"'
+import json
+import sys
+
+mode, project_path, daemon_root = sys.argv[1:4]
+try:
+    hi = json.load(sys.stdin)
+except Exception:
+    hi = None
+if mode == "recovery":
+    sys.exit(0 if _is_daemon_recovery_command(hi, project_path, daemon_root) else 1)
+if mode == "permitted":
+    allowed = _is_daemon_recovery_command(hi, project_path, daemon_root)
+    allowed = allowed or _is_daemon_down_permitted(hi, project_path, daemon_root)
+    sys.exit(0 if allowed else 1)
+if mode == "stop-bound":
+    message = _stop_bound(hi, sys.argv[4], sys.argv[5], project_path, daemon_root)
+    if message is None:
+        sys.exit(1)
+    print(json.dumps({"systemMessage": message}))
+    sys.exit(0)
+sys.exit(2)
+' "$1" "${PROJECT_PATH:-}" "${HOOKS_DAEMON_ROOT_DIR:-}" "${2:-}" "${3:-}"
+}
+
+#
+# _hooks_daemon_recovery_command() - The exempt command for recovery
+# subcommand $1, by the launcher's absolute path, as every deny names it.
+# Exits 3, printing nothing, when this install's launcher is unknown.
+_hooks_daemon_recovery_command() {
+    local recovery_py
+    _hooks_daemon_recovery_py recovery_py
+    python3 -c "$recovery_py"'
+import sys
+
+command = _recovery_command(sys.argv[1], sys.argv[2], sys.argv[3])
+if command is None:
+    sys.exit(3)
+print(command)
+' "${PROJECT_PATH:-}" "${HOOKS_DAEMON_ROOT_DIR:-}" "$1"
+}
+
+#
+# _hooks_daemon_recovery_advice() - The TO FIX lines a PreToolUse deny ends
+# with (see _recovery_advice above).
+_hooks_daemon_recovery_advice() {
+    local recovery_py
+    _hooks_daemon_recovery_py recovery_py
+    python3 -c "$recovery_py"'
+import sys
+
+print("\n".join(_recovery_advice(sys.argv[1], sys.argv[2])))
+' "${PROJECT_PATH:-}" "${HOOKS_DAEMON_ROOT_DIR:-}"
+}
+
+#
+# _hooks_daemon_static_deny() - A PreToolUse deny that needs neither python3
+# nor jq (Plan 00466 round 3, R2-1): the answer when the encoder that would
+# carry the real reason could not run. Constant text, so nothing needs
+# escaping. python3 also recognises the recovery commands, so with it gone
+# none is exempt, and the text says a human must act.
+_hooks_daemon_static_deny() {
+    printf '%s\n' '{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "HOOKS DAEMON: denied for safety - this hook could not build its answer because python3 is missing or failing, so no guard judged this call. python3 is also what recognises the daemon recovery commands, so none is allowed either. A human must fix python3, or run the daemon launcher directly with the ! prefix: ! .claude/hooks-daemon/bin/hooks-daemon restart (or ! bin/hooks-daemon restart in the daemon repository itself)."}}'
+}
+
+#
+# _hooks_daemon_stdin_is_provision_command() - True when stdin is a PreToolUse
+# call that runs provision itself (Plan 00477 Task 3.3).
+#
+# The one thing a block-mode unprovisioned checkout still allows, so it is kept
+# as narrow as the daemon recovery carve-out: a Skill call for hooks-daemon with
+# exactly the argument `provision`, or a Bash call whose WHOLE command is
+# `bash .claude/provision.sh` (or that script by absolute path, shell-quoted),
+# padded only by spaces and tabs. Anything that merely mentions it, chains
+# after it, or passes it a flag is not exempt. A relative spelling runs
+# whatever the Bash tool's working directory holds, so it counts only when it
+# resolves to THIS project's script. Any parse failure is "not exempt".
+_hooks_daemon_stdin_is_provision_command() {
+    python3 -c '
+import json
+import os
+import shlex
+import sys
+
+PADDING = " \t"
+
+
+def is_provision_call(hook_input, project_path):
+    if not isinstance(hook_input, dict):
+        return False
+    tool_input = hook_input.get("tool_input")
+    if not isinstance(tool_input, dict):
+        return False
+    tool_name = hook_input.get("tool_name")
+    if tool_name == "Skill":
+        args = tool_input.get("args")
+        return (
+            tool_input.get("skill") == "hooks-daemon"
+            and isinstance(args, str)
+            and args.strip(PADDING) == "provision"
+        )
+    if tool_name != "Bash":
+        return False
+    command = tool_input.get("command")
+    if not isinstance(command, str):
+        return False
+    stripped = command.strip(PADDING)
+    if not stripped.isprintable():
+        return False
+    script = os.path.join(project_path, ".claude", "provision.sh")
+    if not os.path.isfile(script):
+        return False
+    if stripped == "bash " + shlex.quote(script):
+        return True
+    if stripped != "bash .claude/provision.sh":
+        return False
+    cwd = hook_input.get("cwd")
+    if not (isinstance(cwd, str) and os.path.isabs(cwd)):
+        return False
+    return os.path.realpath(os.path.join(cwd, ".claude", "provision.sh")) == os.path.realpath(script)
+
+
+try:
+    hook_input = json.load(sys.stdin)
+except ValueError:
+    sys.exit(1)
+sys.exit(0 if is_provision_call(hook_input, sys.argv[1]) else 1)
+' "${PROJECT_PATH:-}"
+}
+
+#
+# The events whose output contract defines hookSpecificOutput.additionalContext
+# (contracts/claude-code-hooks/<Event>.json). Claude Code validates hook output
+# strictly: hookSpecificOutput on any OTHER event (SessionEnd, PreCompact,
+# Notification, ...) invalidates the whole document, so those get the universal
+# top-level systemMessage instead. The one list every fail-open answer in this
+# file consults; tests pin it against the contracts.
+_HOOKS_DAEMON_CONTEXT_EVENTS="PreToolUse PostToolUse PostToolUseFailure PostToolBatch PostModelSwitch SessionStart SubagentStart Stop SubagentStop UserPromptExpansion UserPromptSubmit"
+
+#
+# _hooks_daemon_event_takes_context() - True when the event's output contract
+# accepts hookSpecificOutput.additionalContext.
+#
+# Args:
+#   $1 - event name
+_hooks_daemon_event_takes_context() {
+    [[ " $_HOOKS_DAEMON_CONTEXT_EVENTS " == *" ${1:-} "* ]]
+}
+
+#
+# _hooks_daemon_last_build_note() - Name the last venv build and its log.
+#
+# Reads the newest untracked/.venv-bootstrap-<fingerprint>.result (venv.sh venv_write_build_result) with
+# plain bash: no subprocess, so the stop hook's hot path stays cheap. Prints
+# nothing when no build has recorded a result.
+#
+# Args:
+#   $1 - the daemon directory
+_hooks_daemon_last_build_note() {
+    # One record per view (keyed by the venv fingerprint, like the build log);
+    # the stop hook cannot tell which view it is cheaply: the newest wins.
+    local record="" candidate key value
+    local result="" finished="" log=""
+    for candidate in "$1/untracked"/.venv-bootstrap-*.result; do
+        [[ -f "$candidate" ]] || continue
+        if [[ -z "$record" || "$candidate" -nt "$record" ]]; then
+            record="$candidate"
+        fi
+    done
+    [[ -n "$record" ]] || return 0
+    while IFS='=' read -r key value; do
+        case "$key" in
+            result) result="$value" ;;
+            finished_at) finished="$value" ;;
+            log) log="$value" ;;
+        esac
+    done < "$record"
+    [[ -n "$result" ]] || return 0
+    printf ' (last venv build: %s at %s; build log: %s)' "$result" "${finished:-unknown time}" "${log:-unknown}"
+}
+
+#
+# _hooks_daemon_fail_open_json() - Print the schema-valid fail-open document
+# carrying a message, for the event (jq encoder).
+#
+# additionalContext where the event's contract has it, else systemMessage.
+#
+# Args:
+#   $1 - event name (non-empty)
+#   $2 - message
+_hooks_daemon_fail_open_json() {
+    if _hooks_daemon_event_takes_context "$1"; then
+        jq -n --arg event "$1" --arg context "$2" \
+            '{"hookSpecificOutput": {"hookEventName": $event, "additionalContext": $context}}'
+    else
+        jq -n --arg msg "$2" '{"systemMessage": $msg}'
+    fi
+}
+
+#
+# _hooks_daemon_emit_needs_provision() - The answer to EVERY hook event in a
+# checkout that needs provisioning (Plan 00477 Tasks 3.1-3.3).
+#
+# One message, for the human and the agent alike: what is wrong, which version
+# is expected, the exact command, and what the project's mode does about tool
+# calls. Each event's JSON is the shape Claude Code's output contract gives it:
+#
+#   SessionStart, UserPromptSubmit   systemMessage (shown to the human) AND
+#                                    hookSpecificOutput.additionalContext (agent)
+#   PreToolUse                       warn: additionalContext. block: a deny,
+#                                    unless the call is provision itself
+#   Stop, SubagentStop               warn: systemMessage. block: decision=block
+#   every other event                additionalContext where its contract has
+#                                    one, else systemMessage
+#
+# With neither jq nor python3 nothing can encode the message, so a constant
+# answer is given: a deny (no command can be recognised as provision) for a
+# blocking PreToolUse, a systemMessage otherwise.
+#
+# Args:
+#   $1 - event name (non-empty)
+_hooks_daemon_emit_needs_provision() {
+    local event_name="$1"
+    local mode="$_HOOKS_DAEMON_UNPROVISIONED_MODE"
+    local checkout="${PROJECT_PATH:-unknown checkout}"
+
+    local version_line
+    case "${_HOOKS_DAEMON_EXPECTED_VERSION_SOURCE:-}" in
+        config) version_line="$_HOOKS_DAEMON_EXPECTED_VERSION (daemon.expected_version in .claude/hooks-daemon.yaml)" ;;
+        tracked-doc) version_line="$_HOOKS_DAEMON_EXPECTED_VERSION (the .claude/HOOKS-DAEMON.md header)" ;;
+        config-invalid) version_line="unknown - daemon.expected_version in .claude/hooks-daemon.yaml is not X.Y.Z, so provision will stop and say so" ;;
+        *) version_line="unknown - neither daemon.expected_version nor the .claude/HOOKS-DAEMON.md header names one, so provision will stop and say so" ;;
+    esac
+
+    local mode_lines
+    if [[ "$mode" == "block" ]]; then
+        mode_lines="This project BLOCKS tool calls until the checkout is provisioned (daemon.unprovisioned_mode: block). Only the provision command is allowed: run exactly bash .claude/provision.sh, because the skill's own steps are blocked too."
+    else
+        mode_lines="Tool calls are NOT blocked (daemon.unprovisioned_mode: warn), but nothing is being checked."
+    fi
+    if [[ -n "$_HOOKS_DAEMON_UNPROVISIONED_MODE_NOTE" ]]; then
+        mode_lines="$mode_lines
+$_HOOKS_DAEMON_UNPROVISIONED_MODE_NOTE"
+    fi
+
+    local message
+    message="$(printf '%s\n' \
+        "HOOKS DAEMON: NEEDS PROVISIONING - this checkout has no daemon" \
+        "" \
+        "This project uses the Claude Code Hooks Daemon, but the daemon lives in the" \
+        "gitignored, per-checkout .claude/hooks-daemon/ and has not been built here." \
+        "Checkout: $checkout" \
+        "Expected daemon version: $version_line" \
+        "" \
+        "ALL safety handlers, code quality checks, and workflow enforcement are INACTIVE." \
+        "" \
+        "TO FIX - provision this checkout, from the project root:" \
+        "  bash .claude/provision.sh" \
+        "or use the hooks-daemon skill to provision (Skill tool: skill=hooks-daemon," \
+        "args=provision). It builds exactly the expected version, changes no tracked" \
+        "file, and needs no session restart." \
+        "" \
+        "$mode_lines")"
+
+    local shape
+    case "$event_name" in
+        SessionStart | UserPromptSubmit) shape="inform" ;;
+        PreToolUse)
+            shape="context"
+            if [[ "$mode" == "block" ]] && ! _hooks_daemon_stdin_is_provision_command; then
+                shape="deny"
+            fi
+            ;;
+        Stop | SubagentStop)
+            shape="system"
+            if [[ "$mode" == "block" ]]; then
+                shape="block"
+            fi
+            ;;
+        *)
+            shape="context"
+            if ! _hooks_daemon_event_takes_context "$event_name"; then
+                shape="system"
+            fi
+            ;;
+    esac
+
+    if command -v jq > /dev/null; then
+        jq -n --arg shape "$shape" --arg event "$event_name" --arg msg "$message" '
+            if $shape == "inform" then
+                {"systemMessage": $msg,
+                 "hookSpecificOutput": {"hookEventName": $event, "additionalContext": $msg}}
+            elif $shape == "deny" then
+                {"hookSpecificOutput": {"hookEventName": $event, "permissionDecision": "deny",
+                                        "permissionDecisionReason": $msg}}
+            elif $shape == "block" then {"decision": "block", "reason": $msg}
+            elif $shape == "system" then {"systemMessage": $msg}
+            else {"hookSpecificOutput": {"hookEventName": $event, "additionalContext": $msg}}
+            end'
+        return 0
+    fi
+    if python3 -c '
+import json
+import sys
+
+shape, event, msg = sys.argv[1:4]
+if shape == "inform":
+    resp = {
+        "systemMessage": msg,
+        "hookSpecificOutput": {"hookEventName": event, "additionalContext": msg},
+    }
+elif shape == "deny":
+    resp = {
+        "hookSpecificOutput": {
+            "hookEventName": event,
+            "permissionDecision": "deny",
+            "permissionDecisionReason": msg,
+        }
+    }
+elif shape == "block":
+    resp = {"decision": "block", "reason": msg}
+elif shape == "system":
+    resp = {"systemMessage": msg}
+else:
+    resp = {"hookSpecificOutput": {"hookEventName": event, "additionalContext": msg}}
+print(json.dumps(resp))
+' "$shape" "$event_name" "$message"; then
+        return 0
+    fi
+    if [[ "$shape" == "deny" ]]; then
+        printf '%s\n' '{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "HOOKS DAEMON: NEEDS PROVISIONING - this project blocks tool calls until the checkout is provisioned. Neither jq nor python3 is available, so no command can be recognised as the provision command. A human must run: ! bash .claude/provision.sh"}}'
+    else
+        printf '%s\n' '{"systemMessage": "HOOKS DAEMON: NEEDS PROVISIONING - run: bash .claude/provision.sh (neither jq nor python3 is available, so this message cannot be detailed)"}'
+    fi
+}
+
 #
 # emit_hook_error() - Output a valid hook error response to stdout
 #
@@ -37,7 +1264,13 @@ _HOOKS_DAEMON_NOT_INSTALLED=false
 # DRY: Uses Python utility to generate error responses - single source of truth.
 #
 # Args:
-#   $1 - Event name (e.g., "PreToolUse", "Stop")
+#   $1 - Event name (e.g., "PreToolUse", "Stop"), or EMPTY when the caller
+#        genuinely cannot know it. Claude Code validates `hookEventName`
+#        against a closed enum, and a value outside it invalidates the WHOLE
+#        document rather than just that field — so a placeholder word there
+#        does not degrade the response, it destroys it. Pass empty instead and
+#        the universal `systemMessage` field carries the text with no event
+#        name at all.
 #   $2 - Error type (e.g., "daemon_startup_failed")
 #   $3 - Error details
 #
@@ -46,15 +1279,100 @@ _HOOKS_DAEMON_NOT_INSTALLED=false
 #   Also logs to stderr for debugging
 #
 emit_hook_error() {
-    local event_name="${1:-Unknown}"
+    local event_name="${1:-}"
     local error_type="${2:-unknown_error}"
     local error_details="${3:-No details available}"
+
+    # The checkout this answer is about. PROJECT_PATH is assigned at source
+    # time, below this function's definition, so the `:-` default covers the
+    # one caller that runs before it (the init_path_error branch) under set -u.
+    local _hooks_daemon_checkout="${PROJECT_PATH:-unknown checkout}"
+    local _hd_last_build_note
+    _hd_last_build_note="$(_hooks_daemon_last_build_note "${HOOKS_DAEMON_ROOT_DIR:-$_hooks_daemon_checkout/.claude/hooks-daemon}")"
 
     # Log to stderr for debugging (agent won't see this)
     echo "HOOKS DAEMON ERROR [$error_type]: $error_details" >&2
 
+    # Plan 00466 N126 round 2 (F1): a relay hand-off is a PreToolUse call the
+    # relay has already failed, and the relay hands over only that socket's
+    # calls, so an unnamed event (a source-time guard) is that call too. Its
+    # only outcomes are the recovery carve-out's allow and a deny: every
+    # state below that would answer otherwise is shadowed for this call, so
+    # the standard branch judges it.
+    if [[ -n "${_HOOKS_DAEMON_RELAY_FAILED:-}" && ( -z "$event_name" || "$event_name" == "PreToolUse" ) ]]; then
+        event_name="PreToolUse"
+        local _HOOKS_DAEMON_CI_ENFORCED=false _HOOKS_DAEMON_REPO_UNCONFIGURED=false \
+            _HOOKS_DAEMON_VENV_MISSING=false _HOOKS_DAEMON_NOT_INSTALLED=false \
+            _HOOKS_DAEMON_VERSION_MISMATCH=false
+    fi
+
+    # Plan 00477: a fresh clone that only needs provisioning gets its own
+    # answer for every event. ensure_daemon sets the flag only after the CI,
+    # starting and passthrough diagnoses, so those keep their own answers.
+    if [[ "$_HOOKS_DAEMON_NEEDS_PROVISION" == "true" && -n "$event_name" ]]; then
+        _hooks_daemon_emit_needs_provision "$event_name"
+        return 0
+    fi
+
+    # Plan 00555 Task 2.6: a daemon-down Stop or SubagentStop is blocked, but
+    # only a bounded number of times in a row, or when the last message
+    # declares awaiting-human. The CI-enforced, unconfigured-repo and
+    # version-mismatch states keep their own unconditional answers.
+    if [[ ( "$event_name" == "Stop" || "$event_name" == "SubagentStop" ) \
+        && "$_HOOKS_DAEMON_CI_ENFORCED" != "true" \
+        && "$_HOOKS_DAEMON_REPO_UNCONFIGURED" != "true" \
+        && "$_HOOKS_DAEMON_VERSION_MISMATCH" != "true" ]]; then
+        local _hd_stop_class="standard"
+        if [[ "$_HOOKS_DAEMON_VENV_MISSING" == "true" ]]; then
+            _hd_stop_class="venv_missing"
+        elif [[ "$_HOOKS_DAEMON_NOT_INSTALLED" == "true" ]]; then
+            _hd_stop_class="not_installed"
+        fi
+        local _hd_stop_payload="" _hd_stop_answer="" _hd_stop_rc=0
+        IFS= read -r -d '' -t 2 _hd_stop_payload || _hd_stop_rc=$?
+        if _hd_stop_answer="$(_hooks_daemon_stdin_judge stop-bound "$event_name" "$_hd_stop_class" <<<"$_hd_stop_payload")"; then
+            printf '%s\n' "$_hd_stop_answer"
+            return 0
+        fi
+    fi
+
+    # Plan 00466 N24 review 3 MA4: for PreToolUse, the STANDARD branch below
+    # (an installed project whose daemon could not be reached at all --
+    # ensure_daemon itself failed) now denies rather than fails open. The one
+    # carve-out is the exact command that would fix it, so it must be
+    # checked before that decision is made. Every real call site with
+    # event_name=PreToolUse reaches this function with stdin still fully
+    # unconsumed and exits right afterwards, so reading it here is safe.
+    #
+    # Gated to ONLY the standard case (every named state below stays
+    # unconditionally fail-open, untouched by MA4) -- every other branch
+    # must never touch stdin at all: several of this function's OTHER
+    # callers pass no stdin of their own, and an unguarded read here would
+    # hang them waiting for an EOF that never comes.
+    local _pretooluse_deny="false"
+    if [[ "$event_name" == "PreToolUse" \
+        && "$_HOOKS_DAEMON_CI_ENFORCED" != "true" \
+        && "$_HOOKS_DAEMON_REPO_UNCONFIGURED" != "true" \
+        && "$_HOOKS_DAEMON_VENV_MISSING" != "true" \
+        && "$_HOOKS_DAEMON_NOT_INSTALLED" != "true" \
+        && "$_HOOKS_DAEMON_VERSION_MISMATCH" != "true" ]]; then
+        # The read-only set is for a daemon that was never reached; a relay
+        # hand-off means it WAS reached, so only the recovery carve-out applies.
+        local _hd_judge_mode="permitted"
+        if [[ -n "${_HOOKS_DAEMON_RELAY_FAILED:-}" ]]; then
+            _hd_judge_mode="recovery"
+        fi
+        if _hooks_daemon_stdin_judge "$_hd_judge_mode"; then
+            _pretooluse_deny="false"
+        else
+            _pretooluse_deny="true"
+        fi
+    fi
+
     # Build error context message based on CI enforcement policy
     local context_msg
+    # The Stop-family block reason for VENV_MISSING, shared by both encoders.
+    local venv_block_reason=""
 
     if [[ "$_HOOKS_DAEMON_CI_ENFORCED" == "true" ]]; then
         # CI ENFORCED: Loud STOP message — project requires daemon via ci_enabled: true
@@ -71,13 +1389,169 @@ emit_hook_error() {
             "3. Use the hooks-daemon skill to install (Skill tool: skill=hooks-daemon, args=install)" \
             "" \
             "DO NOT continue working without the daemon.")
+    elif [[ "$_HOOKS_DAEMON_REPO_UNCONFIGURED" == "true" ]]; then
+        # THE HOOKS-DAEMON REPO ITSELF, never installed into.
+        #
+        # Checked ahead of NOT_INSTALLED because both are true here and only
+        # this one is actionable: the standard message says "restart", and a
+        # restart cannot create a venv that was never built. Same reasoning as
+        # the VERSION_MISMATCH branch below — when the usual advice cannot
+        # succeed, saying so outright beats offering a better option, because
+        # a reader who follows advice that cannot work concludes the
+        # repository is broken rather than unconfigured.
+        context_msg=$(printf '%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' \
+            "HOOKS DAEMON: this checkout is the hooks-daemon repository, not yet set up" \
+            "" \
+            "You have cloned the daemon's own source. Its runtime pieces — the" \
+            "virtualenv, the dependencies and .claude/hooks-daemon.env — are" \
+            "gitignored per-checkout artefacts, so a clone never carries them." \
+            "Checkout: $_hooks_daemon_checkout" \
+            "" \
+            "ALL safety handlers, code quality checks, and workflow enforcement are INACTIVE." \
+            "" \
+            "A RESTART CANNOT FIX THIS — there is nothing built to restart yet." \
+            "" \
+            "TO FIX — build this checkout's runtime, from the repository root:" \
+            "  scripts/bootstrap-self-install.sh" \
+            "" \
+            "Do NOT run install.py --self-install here. install.py is the CLIENT" \
+            "installer: it OVERWRITES this repository's own tracked" \
+            ".claude/hooks-daemon.yaml and .claude/settings.json with default" \
+            "templates (--force only decides whether a .bak is kept first).")
+    elif [[ "$_HOOKS_DAEMON_VENV_MISSING" == "true" ]]; then
+        # VENV MISSING FOR THIS PATH: a real clone, a leftover venv, or both
+        # is present under $HOOKS_DAEMON_ROOT_DIR, but no venv interpreter
+        # resolves here (GitHub issue #53) — see _HOOKS_DAEMON_VENV_MISSING's
+        # declaration for which of the two ensure_daemon found.
+        #
+        # The standard NOT_INSTALLED message below is the wrong answer: its
+        # remedy is the install skill, and when the health probe it runs
+        # cannot pass — which it cannot, since the wrong venv (or none) is in
+        # this directory — a skill older than Plan 00456 escalates to
+        # `--force` on its own, whose `rm -rf` deletes $HOOKS_DAEMON_ROOT_DIR
+        # outright. That destroys whatever venv IS in there, which most often
+        # belongs to a second view of the same bind-mounted project (host vs
+        # container) sharing this clone but not its per-path venv. So this
+        # branch says outright not to install, same reasoning as
+        # REPO_UNCONFIGURED and VERSION_MISMATCH above: when the usual advice
+        # cannot succeed safely, say so rather than offering it anyway.
+        #
+        # Plan 00456: a real clone with a readable version now heals itself —
+        # _venv_self_heal started (or reported) a background build, and what
+        # it did replaces the remedy below. Every remedy it can print names
+        # `repair` or waiting, never install or --force.
+        #
+        # The manual fix is a same-version upgrade: scripts/upgrade_version.sh's
+        # idempotent path starts with ensure_venv (Plan 00099/00104) and
+        # deletes nothing. Pinning it to the clone's OWN version (read by
+        # _clone_version, which needs no working venv) keeps it on that path.
+        local _hd_repair_cmd="$HOOKS_DAEMON_ROOT_DIR/bin/hooks-daemon repair"
+        local _hd_venv_missing_remedy
+        if [[ -n "$_HOOKS_DAEMON_VENV_MISSING_VERSION" ]]; then
+            _hd_venv_missing_remedy="TO FIX — build the missing venv with a same-version upgrade:
+  Use the hooks-daemon skill to upgrade (Skill tool: skill=hooks-daemon, args=upgrade $_HOOKS_DAEMON_VENV_MISSING_VERSION)"
+        else
+            _hd_venv_missing_remedy="The clone's own version could not be read with confidence — either
+version.py is missing or unparseable, or scripts/lib/resolve_venv.sh itself
+is gone, which means $HOOKS_DAEMON_ROOT_DIR is not trusted enough to name an
+upgrade target from. This checkout's clone looks damaged or partial. Do not
+run the install skill on it (see below). Ask a human to inspect
+$HOOKS_DAEMON_ROOT_DIR directly, or remove it and reinstall only once you are
+certain no other environment's venv lives there."
+        fi
+
+        local _hd_venv_state_note=""
+        # Tool calls are not judged while the build runs (RULING-3.2, Plan 00488).
+        local _hd_build_window_guidance="Until the status line clears, keep to reads and ordinary edits. Do not commit,
+push, delete branches or touch protected files meanwhile: no guard is judging
+these calls."
+        case "$_HOOKS_DAEMON_BOOTSTRAP_STATE" in
+            started)
+                _hd_venv_missing_remedy="A BUILD HAS STARTED — nothing to do but wait.
+The missing venv is being built in the background for this project path only,
+under the venv build lock. Other environments' venvs are not touched.
+Build log: $_HOOKS_DAEMON_BOOTSTRAP_LOG
+When it finishes, the next hook starts the daemon on its own.
+$_hd_build_window_guidance"
+                _hd_venv_state_note=" - a venv build is running in the background"
+                ;;
+            running)
+                local _hd_build_who=""
+                if [[ -n "$_HOOKS_DAEMON_BOOTSTRAP_PID" ]]; then
+                    _hd_build_who="
+Build process: pid $_HOOKS_DAEMON_BOOTSTRAP_PID, running for ${_HOOKS_DAEMON_BOOTSTRAP_ELAPSED:-?}s (in the environment that started it)."
+                fi
+                _hd_venv_missing_remedy="A venv build is ALREADY RUNNING under this clone — nothing to do but wait.
+Build log: ${_HOOKS_DAEMON_BOOTSTRAP_LOG:-not recorded here (another process, such as an upgrade or a repair, holds the venv build lock)}${_hd_build_who}
+When it finishes, the next hook starts the daemon, or starts this path's own
+build if the one running belonged to another environment. A background build
+is stopped and reported as failed if it outlives its bound.
+$_hd_build_window_guidance"
+                _hd_venv_state_note=" - a venv build is running in the background"
+                ;;
+            failed)
+                _hd_venv_missing_remedy="THE LAST AUTOMATIC BUILD OF THIS VENV FAILED. Its log says why:
+  $_HOOKS_DAEMON_BOOTSTRAP_LOG
+Hooks do not retry it until pyproject.toml, uv.lock, the Python interpreter or
+the uv binary changes. Once the cause is fixed, retry in the foreground (it
+shows the output):
+  $_hd_repair_cmd"
+                _hd_venv_state_note=" - the automatic venv build failed"
+                ;;
+            refused)
+                _hd_venv_missing_remedy="The venv was NOT built automatically, because these conditions for a safe
+automatic build do not hold here (nothing was changed):
+${_HOOKS_DAEMON_BOOTSTRAP_FIXES}Fix them and the next hook builds the venv on its own, or build it now with:
+  $_hd_repair_cmd"
+                _hd_venv_state_note=" - automatic venv build refused ($_HOOKS_DAEMON_BOOTSTRAP_MISSING)"
+                ;;
+            disabled)
+                _hd_venv_missing_remedy="Automatic venv builds are switched off here (${_HOOKS_DAEMON_BOOTSTRAP_DETAIL:-HOOKS_DAEMON_SKIP_VENV_BOOTSTRAP=1}).
+That setting stops hooks building a venv on their own; an explicit repair still
+builds one. To build it now:
+  $_hd_repair_cmd"
+                _hd_venv_state_note=" - automatic venv builds switched off (${_HOOKS_DAEMON_BOOTSTRAP_DETAIL:-HOOKS_DAEMON_SKIP_VENV_BOOTSTRAP=1})"
+                ;;
+            error)
+                _hd_venv_missing_remedy="The automatic build could not be evaluated: $_HOOKS_DAEMON_BOOTSTRAP_DETAIL
+To build it now: $_hd_repair_cmd
+$_hd_venv_missing_remedy"
+                ;;
+        esac
+        venv_block_reason="Hooks daemon clone present but venv missing for this project path ($_hooks_daemon_checkout)${_hd_venv_state_note} - do not install/force, see additionalContext - protection not active"
+
+        context_msg=$(printf '%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' \
+            "HOOKS DAEMON: clone present, venv missing for this project path" \
+            "" \
+            "The daemon clone already exists under $HOOKS_DAEMON_ROOT_DIR, but no" \
+            "venv interpreter resolves for this checkout. This is the normal state" \
+            "the first time a bind-mounted project is opened from a second view" \
+            "(host vs container) — the venv is keyed per project path (Plan 00099)," \
+            "so the other view's venv correctly does not resolve here." \
+            "Checkout: $_hooks_daemon_checkout" \
+            "" \
+            "ALL safety handlers, code quality checks, and workflow enforcement are INACTIVE." \
+            "" \
+            "Do NOT use install/force here — a forced reinstall deletes the ENTIRE daemon
+directory ($HOOKS_DAEMON_ROOT_DIR) with rm -rf and re-clones it, which this
+state does not need, and an install skill older than this clone deletes any
+other environment's venv inside it too.
+
+$_hd_venv_missing_remedy")
     elif [[ "$_HOOKS_DAEMON_NOT_INSTALLED" == "true" ]]; then
         # NOT INSTALLED: Guide to install guide — project was cloned but daemon never set up
-        context_msg=$(printf '%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' \
+        #
+        # The checkout is named because this answer is most often seen in a
+        # checkout the reader did not expect: a git worktree has no
+        # (gitignored) .claude/hooks-daemon.env, so it never enters
+        # self-install mode and EVERY wrapper in it lands here, while the main
+        # checkout beside it is fully protected.
+        context_msg=$(printf '%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' \
             "HOOKS DAEMON: Not installed" \
             "" \
             "This project uses the Claude Code Hooks Daemon for safety enforcement," \
             "but the daemon is not installed in this environment." \
+            "Checkout: $_hooks_daemon_checkout" \
             "" \
             "ALL safety handlers, code quality checks, and workflow enforcement are INACTIVE." \
             "" \
@@ -85,6 +1559,80 @@ emit_hook_error() {
             "  Use the hooks-daemon skill to install (Skill tool: skill=hooks-daemon, args=install)" \
             "" \
             "After installing, restart your Claude session for hooks to activate.")
+    elif [[ "$_HOOKS_DAEMON_VERSION_MISMATCH" == "true" ]]; then
+        # VERSION MISMATCH: the clone and the project's TRACKED deployed assets
+        # name different versions (Plan 00386, GitHub issue #38).
+        #
+        # The standard message below points at `restart`, and a restart changes
+        # neither version — so a reader who follows it loops forever while every
+        # safety handler stays inactive. This branch therefore says outright that
+        # a restart cannot work, rather than merely offering a better option.
+        #
+        # The remedy differs by DIRECTION, so both are spelled out separately: a
+        # clone behind the tracked assets is upgraded, while a clone AHEAD of
+        # them means the tracked assets are the stale half and telling the reader
+        # to upgrade would be advice that cannot succeed.
+        #
+        # Plan 00477 Task 5.1: when the EXPECTED version came from the
+        # daemon.expected_version config key (a pull changed it), a clone ahead
+        # of it is a DOWNGRADE the project asked for, not a stale header, and the
+        # message says so; the regenerate remedy stays for the header source.
+        #
+        # Plan 00477 Task 5.2a: the clone being at another version than the one
+        # the repository expects is a SYNC, and the remedy is provision, which
+        # checks out exactly the expected tag, runs that release's pre-deploy
+        # gate, rebuilds the venv and restarts. Upgrade stays the route for
+        # moving the PROJECT itself to a new version, so the message says which
+        # case this is.
+        local _hd_remedy_1 _hd_remedy_2 _hd_headline _hd_expected_from
+        local _hd_sync_cmd="  bash .claude/provision.sh
+It checks out exactly v$_HOOKS_DAEMON_TRACKED_VERSION, runs that release's pre-deploy gate, rebuilds the venv and restarts the daemon. It refuses a clone with local changes, writes no tracked file, and a failed sync puts v$_HOOKS_DAEMON_CLONE_VERSION back.
+To move the PROJECT to another version instead (and change daemon.expected_version), use the hooks-daemon skill to upgrade (Skill tool: skill=hooks-daemon, args=upgrade <version>)."
+        if [[ "${_HOOKS_DAEMON_EXPECTED_VERSION_SOURCE:-}" == "config" ]]; then
+            _hd_headline="HOOKS DAEMON: version drift — installed clone v$_HOOKS_DAEMON_CLONE_VERSION, this project expects v$_HOOKS_DAEMON_TRACKED_VERSION"
+            _hd_expected_from="Expected version: v$_HOOKS_DAEMON_TRACKED_VERSION (daemon.expected_version in .claude/hooks-daemon.yaml)"
+            if _version_lt "$_HOOKS_DAEMON_CLONE_VERSION" "$_HOOKS_DAEMON_TRACKED_VERSION"; then
+                _hd_remedy_1="TO SYNC, this is an UPGRADE of the clone — a person or an agent runs, from the project root:"
+            else
+                _hd_remedy_1="TO SYNC, this is a DOWNGRADE — v$_HOOKS_DAEMON_TRACKED_VERSION is OLDER than the installed v$_HOOKS_DAEMON_CLONE_VERSION. Confirm it is intended (the commit may have come from an older checkout; if not, correct daemon.expected_version). A person or an agent runs, from the project root:"
+            fi
+            _hd_remedy_2="$_hd_sync_cmd
+Nothing has been changed: hooks never move the daemon to another version themselves."
+        else
+            _hd_headline="HOOKS DAEMON: version mismatch — installed clone v$_HOOKS_DAEMON_CLONE_VERSION, tracked assets v$_HOOKS_DAEMON_TRACKED_VERSION"
+            _hd_expected_from="Expected version: v$_HOOKS_DAEMON_TRACKED_VERSION (the .claude/HOOKS-DAEMON.md header)"
+            if _version_lt "$_HOOKS_DAEMON_CLONE_VERSION" "$_HOOKS_DAEMON_TRACKED_VERSION"; then
+                _hd_remedy_1="TO FIX — sync the clone to the version this repository expects, from the project root:"
+                _hd_remedy_2="$_hd_sync_cmd"
+            else
+                _hd_remedy_1="TO FIX — the TRACKED assets are the stale half here; regenerate and commit them:"
+                _hd_remedy_2="  Run generate-docs from the installed clone, then commit the resulting diff."
+            fi
+        fi
+
+        context_msg=$(printf '%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' \
+            "$_hd_headline" \
+            "" \
+            "The daemon under .claude/hooks-daemon/ is gitignored and per-checkout," \
+            "so it can fall behind the TRACKED assets this repository has committed." \
+            "$_hd_expected_from" \
+            "Checkout: $_hooks_daemon_checkout" \
+            "" \
+            "ALL safety handlers, code quality checks, and workflow enforcement are INACTIVE." \
+            "" \
+            "A RESTART CANNOT FIX THIS — both versions are unchanged by one." \
+            "" \
+            "$_hd_remedy_1" \
+            "$_hd_remedy_2" \
+            "Then restart your Claude session for hooks to activate.")
+    elif [[ "${_HOOKS_DAEMON_STARTING:-false}" == "true" ]]; then
+        # Still starting when this hook had to answer (Plan 00466 review 8,
+        # R8-1). Nothing is known to be wrong, so nothing is to be fixed.
+        context_msg=$(printf '%s\n%s\n%s\n%s' \
+            "HOOKS DAEMON: the daemon is starting; retry" \
+            "" \
+            "The daemon was still starting when this hook had to answer, before its timeout." \
+            "Hook safety handlers are inactive for this call only. Nothing needs fixing.")
     else
         # Standard error message
         # NOTE: Language is intentionally measured to avoid triggering investigation loops
@@ -107,42 +1655,137 @@ emit_hook_error() {
             "Then inform the user if the issue persists.")
     fi
 
+    # Plan 00466 N24 review 4 R4-MA2: the DENY reason for PreToolUse (below,
+    # when $_pretooluse_deny is "true") must not reuse $context_msg's
+    # fail-open wording above -- it says safety handlers are "inactive" (they
+    # are actively denying) and routes the agent to the Skill tool, which is
+    # itself a PreToolUse call and so is denied the same way, wedging an
+    # unattended agent in a loop. Give the deny its own honest text instead,
+    # matching emit_error_json's socket_not_found wording: name the one
+    # command that is actually allowed, and name the human fallback.
+    local _pretooluse_deny_msg=""
+    local _hd_advice=""
+    if [[ "$_pretooluse_deny" == "true" && "${_HOOKS_DAEMON_STARTING:-false}" == "true" ]]; then
+        # Plan 00466 review 8, R8-1: the call is denied only because the
+        # daemon has not finished starting. A retry is the whole remedy.
+        _pretooluse_deny_msg=$(printf '%s\n%s\n%s\n%s\n%s' \
+            "HOOKS DAEMON: the daemon is starting; retry this call — denied for safety" \
+            "" \
+            "The daemon was still starting when this hook had to answer, before its" \
+            "timeout, so no guard judged this call. Retry it in a few seconds; nothing" \
+            "needs fixing. If it is still denied after a minute, restart the daemon.")
+    elif [[ "$_pretooluse_deny" == "true" ]] \
+        && ! _hd_advice="$(_hooks_daemon_recovery_advice)"; then
+        # Plan 00466 round 3 (R2-1): python3 names the recovery command, and
+        # under set -e its failure here would end the hook with no answer at
+        # all. It also judges the carve-out, so no command is exempt: say so.
+        _pretooluse_deny_msg=$(printf '%s\n%s\n%s\n%s\n%s\n%s\n%s' \
+            "HOOKS DAEMON: could not connect at all — denied for safety" \
+            "" \
+            "Error: $error_type - $error_details" \
+            "" \
+            "python3 is missing or failing, and it is what recognises the daemon recovery" \
+            "commands, so none is allowed either. A human must fix python3, or run the" \
+            "daemon launcher directly: ! ${HOOKS_DAEMON_ROOT_DIR:-$_hooks_daemon_checkout/.claude/hooks-daemon}/bin/hooks-daemon restart")
+    elif [[ "$_pretooluse_deny" == "true" ]]; then
+        _pretooluse_deny_msg=$(printf '%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' \
+            "HOOKS DAEMON: could not connect at all — denied for safety" \
+            "" \
+            "Error: $error_type - $error_details" \
+            "" \
+            "This call was denied because the daemon could not be reached at all," \
+            "not because a guard judged it. Hook safety handlers are ACTIVE and" \
+            "denying by default until the daemon answers again." \
+            "" \
+            "$_hd_advice")
+    fi
+
+    # An unsupported system Python is the real cause behind a "not installed" or
+    # "venv missing" answer, and the advice those give (install the daemon) cannot
+    # succeed on it. Say what is wrong instead: the version found, the version
+    # required, and to upgrade. Only the MESSAGE changes; every flag, and so every
+    # event's allow/block decision below, is untouched, so this stays fail-open.
+    if [[ "$_HOOKS_DAEMON_NOT_INSTALLED" == "true" || "$_HOOKS_DAEMON_VENV_MISSING" == "true" ]]; then
+        _detect_unsupported_python
+        if [[ -n "$_HOOKS_DAEMON_UNSUPPORTED_PYTHON" ]]; then
+            context_msg=$(printf '%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s' \
+                "HOOKS DAEMON: INACTIVE - UNSUPPORTED PYTHON VERSION" \
+                "" \
+                "The python3 in this environment is $_HOOKS_DAEMON_UNSUPPORTED_PYTHON, but the hooks daemon requires Python $_HOOKS_DAEMON_MIN_PYTHON or later." \
+                "Checkout: $_hooks_daemon_checkout" \
+                "" \
+                "ALL safety handlers, code quality checks, and workflow enforcement are INACTIVE. Claude Code itself works normally." \
+                "" \
+                "TO FIX - upgrade Python: install Python $_HOOKS_DAEMON_MIN_PYTHON or later (for example python3.12) and make it the python3 on PATH." \
+                "Then use the hooks-daemon skill to install or upgrade the daemon (Skill tool: skill=hooks-daemon, args=install)," \
+                "and restart your Claude session for hooks to activate.")
+        fi
+    fi
+
     # Event-specific JSON formatting. jq is used only on this pure-error path
     # (the hot-path transport is jq-free since Plan 00156); a jq-less fallback
     # follows below for hosts without it.
     # Stop/SubagentStop: top-level decision only (deny to show error)
     # Other events: hookSpecificOutput with context (fail-open allow)
     if command -v jq &>/dev/null; then
-        if [[ "$_HOOKS_DAEMON_CI_ENFORCED" == "true" ]]; then
+        if [[ -z "$event_name" ]]; then
+            # The guards that run while init.sh is being SOURCED reach here:
+            # they fire before the forwarder that sourced us reaches its own
+            # body, so the event in flight is genuinely unknown. Every branch
+            # below keys on the event name, so none can be chosen honestly —
+            # and `hookSpecificOutput` has nowhere to put "I do not know".
+            # `systemMessage` is one of the five universal output fields
+            # defined on EVERY event, so it needs no event name and cannot
+            # name the wrong one. Fails open, like the branches below.
+            jq -n --arg msg "$context_msg" '{"systemMessage": $msg}'
+        elif [[ "$_HOOKS_DAEMON_CI_ENFORCED" == "true" ]]; then
             # CI enforced: hard deny/block for ALL event types to prevent work
             local ci_reason="Hooks daemon REQUIRED (ci_enabled: true) but not installed"
             if [[ "$event_name" == "PreToolUse" ]]; then
-                jq -n --arg reason "$context_msg" \
-                    '{"decision": "deny", "reason": $reason}'
+                jq -n --arg event "$event_name" --arg reason "$context_msg" \
+                    '{"hookSpecificOutput": {"hookEventName": $event, "permissionDecision": "deny", "permissionDecisionReason": $reason}}'
             elif [[ "$event_name" == "Stop" || "$event_name" == "SubagentStop" ]]; then
                 jq -n --arg reason "$ci_reason" \
                     '{"decision": "block", "reason": $reason}'
             else
-                jq -n --arg event "$event_name" --arg context "$context_msg" \
-                    '{"hookSpecificOutput": {"hookEventName": $event, "additionalContext": $context}}'
+                _hooks_daemon_fail_open_json "$event_name" "$context_msg"
+            fi
+        elif [[ "$_HOOKS_DAEMON_VENV_MISSING" == "true" ]]; then
+            # Venv missing for this path: Stop/SubagentStop block, others
+            # fail-open with the upgrade-not-install guidance. The block
+            # reason must not read as the plain NOT_INSTALLED block — a
+            # reader who sees "venv" here knows install would be the wrong
+            # fix, where a bare "not installed" would point them at it.
+            if [[ "$event_name" == "Stop" || "$event_name" == "SubagentStop" ]]; then
+                jq -n --arg reason "$venv_block_reason" \
+                    '{"decision": "block", "reason": $reason}'
+            else
+                _hooks_daemon_fail_open_json "$event_name" "$context_msg"
             fi
         elif [[ "$_HOOKS_DAEMON_NOT_INSTALLED" == "true" ]]; then
-            # Not installed: Stop/SubagentStop block, others fail-open with install guidance
+            # Not installed: Stop/SubagentStop block, others fail-open with install guidance.
+            # The block reason names the checkout: this response is shaped
+            # exactly like a WORKING stop gate's, so without the path there is
+            # nothing to tell "the gate ran" from "no gate ran here".
             if [[ "$event_name" == "Stop" || "$event_name" == "SubagentStop" ]]; then
-                jq -n --arg reason "Hooks daemon not installed - protection not active" \
+                jq -n --arg reason \
+                    "Hooks daemon not installed at $_hooks_daemon_checkout - protection not active" \
                     '{"decision": "block", "reason": $reason}'
             else
-                jq -n --arg event "$event_name" --arg context "$context_msg" \
-                    '{"hookSpecificOutput": {"hookEventName": $event, "additionalContext": $context}}'
+                _hooks_daemon_fail_open_json "$event_name" "$context_msg"
             fi
         else
-            # Standard: Stop/SubagentStop block, others fail-open with context
+            # Standard: Stop/SubagentStop block; PreToolUse denies (Plan
+            # 00466 N24 review 3 MA4) unless stdin was the exact recovery
+            # command; every other event fails open with context.
             if [[ "$event_name" == "Stop" || "$event_name" == "SubagentStop" ]]; then
-                jq -n --arg reason "Hooks daemon not running - protection not active" \
+                jq -n --arg reason "Hooks daemon not running - protection not active$_hd_last_build_note" \
                     '{"decision": "block", "reason": $reason}'
+            elif [[ "$event_name" == "PreToolUse" && "$_pretooluse_deny" == "true" ]]; then
+                jq -n --arg event "$event_name" --arg reason "$_pretooluse_deny_msg" \
+                    '{"hookSpecificOutput": {"hookEventName": $event, "permissionDecision": "deny", "permissionDecisionReason": $reason}}'
             else
-                jq -n --arg event "$event_name" --arg context "$context_msg" \
-                    '{"hookSpecificOutput": {"hookEventName": $event, "additionalContext": $context}}'
+                _hooks_daemon_fail_open_json "$event_name" "$context_msg"
             fi
         fi
     else
@@ -158,29 +1801,90 @@ emit_hook_error() {
 import json
 import sys
 
-event_name, context_msg, ci_enforced, not_installed = sys.argv[1:5]
+event_name, context_msg, ci_enforced, not_installed, checkout, venv_missing, venv_block_reason, pretooluse_deny, pretooluse_deny_msg, context_events, last_build_note = sys.argv[1:12]
 stop_events = ("Stop", "SubagentStop")
 
-if ci_enforced == "true":
+
+def fail_open(event, msg):
+    # additionalContext only where the event contract has it (the shell list in
+    # _HOOKS_DAEMON_CONTEXT_EVENTS, passed in); otherwise the universal
+    # systemMessage, since hookSpecificOutput invalidates the whole document.
+    if event in context_events.split():
+        return {"hookSpecificOutput": {"hookEventName": event, "additionalContext": msg}}
+    return {"systemMessage": msg}
+
+
+if not event_name:
+    # No event name: see the jq branch above. systemMessage is universal, so it
+    # is the only field that can carry this without naming an event. No
+    # backticks in this block -- the outer shell quotes it, and shellcheck
+    # reads a backtick inside single quotes as a dead command substitution.
+    resp = {"systemMessage": context_msg}
+elif ci_enforced == "true":
     if event_name == "PreToolUse":
-        resp = {"decision": "deny", "reason": context_msg}
+        resp = {
+            "hookSpecificOutput": {
+                "hookEventName": event_name,
+                "permissionDecision": "deny",
+                "permissionDecisionReason": context_msg,
+            }
+        }
     elif event_name in stop_events:
         resp = {"decision": "block", "reason": "Hooks daemon REQUIRED (ci_enabled: true) but not installed"}
     else:
-        resp = {"hookSpecificOutput": {"hookEventName": event_name, "additionalContext": context_msg}}
+        resp = fail_open(event_name, context_msg)
+elif venv_missing == "true":
+    # Clone present, venv missing for this path: same reasoning as the jq
+    # branch above -- the block reason must not read as plain NOT_INSTALLED,
+    # since the remedy that answer names (install/force) is destructive here.
+    # The shell composed the reason once, so both encoders say the same.
+    if event_name in stop_events:
+        resp = {"decision": "block", "reason": venv_block_reason}
+    else:
+        resp = fail_open(event_name, context_msg)
 elif not_installed == "true":
     if event_name in stop_events:
-        resp = {"decision": "block", "reason": "Hooks daemon not installed - protection not active"}
+        resp = {
+            "decision": "block",
+            "reason": f"Hooks daemon not installed at {checkout} - protection not active",
+        }
     else:
-        resp = {"hookSpecificOutput": {"hookEventName": event_name, "additionalContext": context_msg}}
+        resp = fail_open(event_name, context_msg)
 else:
+    # Standard: Stop/SubagentStop block; PreToolUse denies (Plan 00466 N24
+    # review 3 MA4) unless stdin was the exact recovery command; every
+    # other event fails open with context.
     if event_name in stop_events:
-        resp = {"decision": "block", "reason": "Hooks daemon not running - protection not active"}
+        resp = {
+            "decision": "block",
+            "reason": "Hooks daemon not running - protection not active" + last_build_note,
+        }
+    elif event_name == "PreToolUse" and pretooluse_deny == "true":
+        resp = {
+            "hookSpecificOutput": {
+                "hookEventName": event_name,
+                "permissionDecision": "deny",
+                "permissionDecisionReason": pretooluse_deny_msg,
+            }
+        }
     else:
-        resp = {"hookSpecificOutput": {"hookEventName": event_name, "additionalContext": context_msg}}
+        resp = fail_open(event_name, context_msg)
 
 print(json.dumps(resp))
-' "$event_name" "$context_msg" "$_HOOKS_DAEMON_CI_ENFORCED" "$_HOOKS_DAEMON_NOT_INSTALLED"
+' "$event_name" "$context_msg" "$_HOOKS_DAEMON_CI_ENFORCED" "$_HOOKS_DAEMON_NOT_INSTALLED" \
+            "$_hooks_daemon_checkout" "$_HOOKS_DAEMON_VENV_MISSING" "$venv_block_reason" \
+            "$_pretooluse_deny" "$_pretooluse_deny_msg" "$_HOOKS_DAEMON_CONTEXT_EVENTS" \
+            "$_hd_last_build_note" || {
+            # No jq and no working python3: nothing can encode the reason, but
+            # a deny must still reach Claude Code (Plan 00466 round 3, R2-1).
+            local _hd_encoder_rc=$?
+            if [[ "$event_name" == "PreToolUse" \
+                && ( "$_pretooluse_deny" == "true" || "$_HOOKS_DAEMON_CI_ENFORCED" == "true" ) ]]; then
+                _hooks_daemon_static_deny
+            else
+                return "$_hd_encoder_rc"
+            fi
+        }
     fi
 }
 
@@ -199,17 +1903,57 @@ done
 
 if [[ "$PROJECT_PATH" == "/" ]]; then
     # Output valid JSON error to stdout - event name unknown at this point
-    emit_hook_error "Unknown" "init_path_error" "Could not find .claude directory in path hierarchy. Hooks daemon cannot initialize."
+    emit_hook_error "" "init_path_error" "Could not find .claude directory in path hierarchy. Hooks daemon cannot initialize."
     exit 0  # Exit 0 so Claude Code processes the JSON response
 fi
 
 # Load environment overrides if present (for self-installation or custom setups)
 if [[ -f "$PROJECT_PATH/.claude/hooks-daemon.env" ]]; then
+    # The env file is the project's own and is not in this repository, so shellcheck cannot follow it.
     # shellcheck disable=SC1091
     source "$PROJECT_PATH/.claude/hooks-daemon.env"
 fi
 
-# Set daemon root directory (defaults to .claude/hooks-daemon, can be overridden)
+#
+# _is_raw_self_install_clone() - Is this a fresh clone of the daemon's OWN repository?
+#
+# Plan 00488 Task 3.4. .claude/hooks-daemon.env is gitignored, so a fresh clone
+# of this repository has none, and without it the daemon is looked for in
+# .claude/hooks-daemon/ (the client layout) and never found. The env file's
+# whole content is "the root is the project itself", which a raw clone can
+# derive instead of waiting for a human to run scripts/bootstrap-self-install.sh.
+#
+# Every marker must hold, so that no client project can match: the daemon's
+# source package, the client installer, the two self-install scripts, a
+# pyproject.toml that names this project, and NO real clone under
+# .claude/hooks-daemon (its own pyproject.toml; the self-install daemon's bare
+# bin/ link has none). Plain greps and file tests only: no venv exists yet.
+#
+# Returns 0 if so, 1 otherwise.
+#
+_is_raw_self_install_clone() {
+    [[ ! -f "$PROJECT_PATH/.claude/hooks-daemon.env" ]] || return 1
+    [[ ! -f "$PROJECT_PATH/.claude/hooks-daemon/pyproject.toml" ]] || return 1
+    # The one shell self-install test lives in mode_guard.sh. A client project
+    # has no such file, so its absence is itself a "no".
+    local guard="$PROJECT_PATH/scripts/install/mode_guard.sh"
+    [[ -f "$guard" ]] || return 1
+    # shellcheck source=scripts/install/mode_guard.sh
+    source "$guard"
+    is_self_install_checkout "$PROJECT_PATH" || return 1
+    [[ -f "$PROJECT_PATH/install.py" ]] || return 1
+    [[ -f "$PROJECT_PATH/scripts/bootstrap-self-install.sh" ]] || return 1
+    [[ -f "$PROJECT_PATH/scripts/venv_bootstrap.sh" ]] || return 1
+    [[ -f "$PROJECT_PATH/pyproject.toml" ]] || return 1
+    grep -qE '^name = "claude-code-hooks-daemon"' "$PROJECT_PATH/pyproject.toml"
+}
+
+# Set daemon root directory (defaults to .claude/hooks-daemon, can be overridden).
+# A raw clone of the daemon's own repository supplies the root its missing env
+# file would have, so it reaches the venv self-heal with no manual step.
+if [[ -z "${HOOKS_DAEMON_ROOT_DIR:-}" ]] && _is_raw_self_install_clone; then
+    HOOKS_DAEMON_ROOT_DIR="$PROJECT_PATH"
+fi
 HOOKS_DAEMON_ROOT_DIR="${HOOKS_DAEMON_ROOT_DIR:-$PROJECT_PATH/.claude/hooks-daemon}"
 
 #
@@ -219,7 +1963,7 @@ HOOKS_DAEMON_ROOT_DIR="${HOOKS_DAEMON_ROOT_DIR:-$PROJECT_PATH/.claude/hooks-daem
 # .claude/hooks-daemon/.claude/hooks-daemon structure
 #
 if [[ -d "$PROJECT_PATH/.claude/hooks-daemon/.claude/hooks-daemon" ]]; then
-    emit_hook_error "Unknown" "nested_installation" \
+    emit_hook_error "" "nested_installation" \
         "NESTED INSTALLATION DETECTED! Found: $PROJECT_PATH/.claude/hooks-daemon/.claude/hooks-daemon. Remove $PROJECT_PATH/.claude/hooks-daemon and reinstall."
     exit 0
 fi
@@ -253,12 +1997,20 @@ if [[ -d "$PROJECT_PATH/.git" ]]; then
             has_self_install=true
         fi
 
-        # Check config file for self_install_mode (requires Python, done later)
-        # For now, just trust the HOOKS_DAEMON_ROOT_DIR override
+        # Deliberately NOT read: .claude/hooks-daemon.yaml's self_install_mode.
+        # It is tracked and says `true` in this repository, so reading it would
+        # satisfy this guard on every fresh clone — and that is exactly wrong.
+        # The config declares INTENT; the two signals above are evidence the
+        # runtime was actually BUILT. A clone has the intent and none of the
+        # runtime, so believing the config would wave it through to the
+        # "not installed" branch, whose advice is to run the CLIENT installer —
+        # which overwrites this repository's own tracked config. Refusing here,
+        # with the bootstrap instruction, is the useful answer.
 
         if [[ "$has_self_install" != "true" ]] && [[ ! -f "$PROJECT_PATH/.claude/hooks-daemon.env" ]]; then
-            emit_hook_error "Unknown" "hooks_daemon_repo_detected" \
-                "This is the hooks-daemon repository. To install for development, run: python install.py --self-install"
+            _HOOKS_DAEMON_REPO_UNCONFIGURED=true
+            emit_hook_error "" "hooks_daemon_repo_detected" \
+                "This is the hooks-daemon repository. To set it up for development, run: scripts/bootstrap-self-install.sh"
             exit 0
         fi
     fi
@@ -290,6 +2042,44 @@ fi
 # `python3`. The scan-fallback handles cross-fingerprint resolution.
 PYTHON_CMD=""  # populated lazily by _resolve_python_cmd
 
+# _detect_unsupported_python() - Is the system python3 older than the daemon needs?
+#
+# Sets _HOOKS_DAEMON_UNSUPPORTED_PYTHON to the python3 version when it is below
+# the minimum, and _HOOKS_DAEMON_MIN_PYTHON to that minimum; both are empty
+# otherwise. Always returns 0 and never fails the caller: a missing python3, an
+# unreadable pyproject.toml or an unparseable version all mean "not shown to be
+# unsupported", which leaves the existing answer unchanged (fail-open).
+_detect_unsupported_python() {
+    _HOOKS_DAEMON_UNSUPPORTED_PYTHON=""
+    _HOOKS_DAEMON_MIN_PYTHON=""
+    if [[ -z "$(command -v python3)" ]]; then
+        return 0
+    fi
+
+    local min="$_HOOKS_DAEMON_MIN_PYTHON_FALLBACK"
+    local pyproject="${HOOKS_DAEMON_ROOT_DIR:-}/pyproject.toml"
+    local line=""
+    if [[ -n "${HOOKS_DAEMON_ROOT_DIR:-}" && -f "$pyproject" ]]; then
+        line="$(grep -E '^requires-python' "$pyproject")" || line=""
+    fi
+    if [[ "$line" =~ ([0-9]+\.[0-9]+) ]]; then
+        min="${BASH_REMATCH[1]}"
+    fi
+
+    local found=""
+    found="$(python3 -c 'import sys; v = sys.version_info; print("%d.%d.%d" % (v[0], v[1], v[2]))')" || found=""
+    if [[ ! "$found" =~ ^([0-9]+)\.([0-9]+)\. ]]; then
+        return 0
+    fi
+    local found_major="${BASH_REMATCH[1]}" found_minor="${BASH_REMATCH[2]}"
+    local min_major="${min%%.*}" min_minor="${min#*.}"
+    if (( found_major < min_major || (found_major == min_major && found_minor < min_minor) )); then
+        _HOOKS_DAEMON_UNSUPPORTED_PYTHON="$found"
+        _HOOKS_DAEMON_MIN_PYTHON="$min"
+    fi
+    return 0
+}
+
 # Plan 00104 Phase 4: delegate to canonical library at
 # ${HOOKS_DAEMON_ROOT_DIR}/scripts/lib/resolve_venv.sh. The library invokes
 # paths.py SSOT — including the metadata-authoritative step (Plan 00100
@@ -310,13 +2100,16 @@ _resolve_python_cmd() {
     # shellcheck disable=SC1090  # path is computed at runtime
     source "$lib"
 
-    if PYTHON_CMD="$(resolve_venv_python "$HOOKS_DAEMON_ROOT_DIR")"; then
-        return 0
+    # The status is captured from the assignment itself: after an `if` with no
+    # `else` whose condition failed, $? is 0, which made a failed resolve look
+    # like success with PYTHON_CMD empty.
+    local rv=0
+    PYTHON_CMD="$(resolve_venv_python "$HOOKS_DAEMON_ROOT_DIR")" || rv=$?
+    if [[ "$rv" -ne 0 ]]; then
+        PYTHON_CMD=""
+        return "$rv"
     fi
-
-    local rv=$?
-    PYTHON_CMD=""
-    return "$rv"
+    return 0
 }
 
 #
@@ -480,6 +2273,20 @@ if [[ -z "${CLAUDE_HOOKS_SOCKET_PATH:-}" ]] && [[ ! -S "$SOCKET_PATH" ]]; then
         _discovered_path=$(cat "$_discovery_file" 2>/dev/null)
         if [[ -n "$_discovered_path" ]] && [[ -S "$_discovered_path" ]]; then
             SOCKET_PATH="$_discovered_path"
+            # The daemon that fell back put its PID file beside that socket
+            # under the same stem (paths.get_pid_path mirrors get_socket_path),
+            # so the PID path must follow too. Left at the long default,
+            # is_daemon_running finds no PID, `cli start` then sees a live
+            # socket that is "not ours" and refuses it, and every forwarder
+            # reports daemon_startup_failed while status shows RUNNING.
+            # Only when the PID path ITSELF overflows (paths.pid_path_for
+            # decides on the PID path's own length, 104 = _UNIX_SOCKET_PATH_LIMIT):
+            # its socket is one character longer, so at exactly the limit the
+            # socket falls back while the PID file stays in the untracked dir,
+            # and following the socket would look where nothing was written.
+            if [[ -z "${CLAUDE_HOOKS_PID_PATH:-}" ]] && ((${#PID_PATH} > 104)); then
+                PID_PATH="${_discovered_path%.sock}.pid"
+            fi
         fi
     fi
 fi
@@ -494,10 +2301,31 @@ fi
 # 50 deciseconds (5s) produced false `daemon_startup_failed` reports
 # while the daemon was still binding — see Issue 1 in
 # untracked/hooks-daemon-niggles.md (2026-05-14 field report).
+#
+# It is how long the poll runs on once the launcher has finished, and never
+# past _HOOKS_DAEMON_START_DEADLINE.
 DAEMON_STARTUP_TIMEOUT=150
 
-# Daemon startup check interval (deciseconds)
-DAEMON_STARTUP_CHECK_INTERVAL=1
+# How far into this hook (bash's SECONDS, which counts from the hook's own
+# start) a daemon start is waited on before the hook denies "the daemon is
+# starting; retry" (Plan 00466 review 8, R8-1). A PreToolUse hook that
+# reaches the 60 s timeout lets the call run unjudged, and after this can
+# come one helper run's start-lock wait and the request the daemon answers.
+# Twin of Timeout.HOOK_START_DEADLINE_SEC.
+_HOOKS_DAEMON_START_DEADLINE=15
+
+# Plan 00495 Task 2.7: a DISPLAY-line forwarder (the status line) sets
+# _HOOKS_DAEMON_NONBLOCKING_START=true in front of ensure_daemon. Its start
+# is then waited on for only _HOOKS_DAEMON_NONBLOCKING_DEADLINE seconds, and
+# a daemon that is alive but not yet answering counts as STARTING (not
+# failed) however long it takes: the start carries on in the background and
+# the forwarder prints the loading line. Hooks that judge a call never set it.
+_HOOKS_DAEMON_NONBLOCKING_START=false
+_HOOKS_DAEMON_NONBLOCKING_DEADLINE=1
+
+# What the status line shows while the daemon is starting. Twin of
+# EventID.STATUS_LINE.daemon_loading_stdout.
+_HOOKS_DAEMON_STATUS_LOADING_TEXT="⏳ hooks daemon loading…"
 
 # Export paths for use by forwarder scripts
 export HOOKS_DAEMON_ROOT_DIR
@@ -518,6 +2346,7 @@ export PROJECT_PATH
 #
 validate_venv() {
     VENV_ERROR=""
+    local diagnosis=""
 
     # Plan 00099: lazy fingerprint-keyed venv resolution (paid only on daemon
     # startup, never on hot path). No-op on subsequent calls.
@@ -531,26 +2360,41 @@ validate_venv() {
         local resolve_rv=0
         _resolve_python_cmd || resolve_rv=$?
         if [ "$resolve_rv" -ne 0 ]; then
-            VENV_ERROR="Venv Python could not be resolved (exit $resolve_rv). Run: cd $HOOKS_DAEMON_ROOT_DIR && uv sync"
+            diagnosis="$(_venv_start_diagnosis)"
+            VENV_ERROR="Venv Python could not be resolved (exit $resolve_rv).
+$diagnosis"
             return 1
         fi
     fi
 
+    # Plan 00555 Task 2.4: every failure below names the venv's actual state
+    # and the one fix (bin/hooks-daemon repair), never a bare `uv sync`.
+    local venv_dir=""
+    if [[ -n "$PYTHON_CMD" ]]; then
+        venv_dir="$(dirname "$(dirname "$PYTHON_CMD")")"
+    fi
+
     # Check venv Python binary exists
     if [[ -z "$PYTHON_CMD" || ! -f "$PYTHON_CMD" ]]; then
-        VENV_ERROR="Venv Python not found at ${PYTHON_CMD:-<unresolved>}. Run: cd $HOOKS_DAEMON_ROOT_DIR && uv sync"
+        diagnosis="$(_venv_start_diagnosis "$venv_dir")"
+        VENV_ERROR="Venv Python not found at ${PYTHON_CMD:-<unresolved>}.
+$diagnosis"
         return 1
     fi
 
     # Check venv Python is executable
     if [[ ! -x "$PYTHON_CMD" ]]; then
-        VENV_ERROR="Venv Python not executable at $PYTHON_CMD. Run: cd $HOOKS_DAEMON_ROOT_DIR && uv sync"
+        diagnosis="$(_venv_start_diagnosis "$venv_dir")"
+        VENV_ERROR="Venv Python not executable at $PYTHON_CMD.
+$diagnosis"
         return 1
     fi
 
     # Check key package is importable
     if ! "$PYTHON_CMD" -c "import claude_code_hooks_daemon" 2>/dev/null; then
-        VENV_ERROR="Cannot import claude_code_hooks_daemon. Venv may be broken (stale .pth files or Python version mismatch). Run: cd $HOOKS_DAEMON_ROOT_DIR && uv sync"
+        diagnosis="$(_venv_start_diagnosis "$venv_dir")"
+        VENV_ERROR="Cannot import claude_code_hooks_daemon.
+$diagnosis"
         return 1
     fi
 
@@ -558,11 +2402,244 @@ validate_venv() {
 }
 
 #
+# _venv_start_diagnosis() - Print why the daemon cannot start from a venv
+# (Plan 00555 Task 2.4): interpreter version, the venv's pyvenv.cfg version,
+# whether its site-packages is on sys.path, and the one fix command.
+#
+# $1 is the venv directory; without it every untracked/venv-* is diagnosed.
+# paths.py is run by file path under the venv's own bin/python. That
+# interpreter still runs when the venv cannot import the daemon package, and
+# paths.py is stdlib-only, so the report works when the venv is exactly what
+# is broken. A bare PATH python3 could be older than requires-python. Exit 0
+# (healthy) and 1 (unhealthy) are both reports; any other status means the
+# interpreter did not run, so the next candidate is tried. Always prints at
+# least the fix line.
+#
+_venv_start_diagnosis() {
+    local paths_py="${HOOKS_DAEMON_ROOT_DIR}/src/claude_code_hooks_daemon/daemon/paths.py"
+    local -a venv_args=() candidates=()
+    if [[ -n "${1:-}" ]]; then
+        venv_args=(--venv-dir "$1")
+        candidates=("$1/bin/python")
+    else
+        candidates=("$HOOKS_DAEMON_ROOT_DIR"/untracked/venv-*/bin/python)
+    fi
+    local out="" rv interpreter
+    if [[ -f "$paths_py" ]]; then
+        for interpreter in "${candidates[@]}"; do
+            rv=0
+            out="$("$interpreter" "$paths_py" diagnose-venv --daemon-dir "$HOOKS_DAEMON_ROOT_DIR" \
+                ${venv_args[@]+"${venv_args[@]}"} 2>&1)" || rv=$?
+            if [[ "$rv" -le 1 ]]; then
+                break
+            fi
+            out=""
+        done
+    fi
+    if [[ -z "$out" ]]; then
+        out="fix: ${HOOKS_DAEMON_ROOT_DIR}/bin/hooks-daemon repair"
+    fi
+    printf '%s\n' "$out"
+}
+
+#
+# Linux's PID_MAX_LIMIT: no pid is larger. Twin of paths.PID_MAX_LIMIT.
+_HOOKS_DAEMON_PID_MAX=4194304
+
+#
+# _hooks_daemon_is_pid_text() - True when $1 is a PID file's text naming one
+# pid a daemon could hold (Plan 00466 round 4, Sh-B). 0 and negative numbers
+# are process groups to kill, so kill -0 on them succeeds against this
+# shell's own group; 1 is init. Twin of paths.parse_pid_text, which also
+# accepts the trailing newlines $(cat) has already dropped here.
+_hooks_daemon_is_pid_text() {
+    [[ "$1" =~ ^[1-9][0-9]{0,6}$ ]] && (($1 > 1 && $1 <= _HOOKS_DAEMON_PID_MAX))
+}
+
+#
+# _hooks_daemon_root_is_this_install() - True when HOOKS_DAEMON_ROOT_DIR is
+# an install of this project, by the P3-1 rule (_installs_launcher above).
+# Its venv is run only then (Plan 00466 round 5, Sh-F).
+_hooks_daemon_root_is_this_install() {
+    local recovery_py
+    _hooks_daemon_recovery_py recovery_py
+    python3 -c "$recovery_py"'
+import sys
+
+sys.exit(0 if _installs_launcher(sys.argv[1], sys.argv[2]) is not None else 1)
+' "${PROJECT_PATH:-}" "${HOOKS_DAEMON_ROOT_DIR:-}"
+}
+
+# What the one run of the daemon's helper a hook may make judged, and its
+# answer (Plan 00466 round 5, R4-1).
+_HOOKS_DAEMON_HELPER_KEY=""
+_HOOKS_DAEMON_HELPER_STATUS=1
+
+#
+# _hooks_daemon_run_cli_helper() - Run the daemon package's python snippet
+# $2 with the remaining arguments, in the daemon's own venv, to answer the
+# question $1 names. Fails when the venv is not this install's or cannot be
+# used, which every caller treats as "not proven".
+#
+# Importing the daemon package costs about half a second, and the startup
+# poll asks the same question every tick (round 5, R4-1): 150 of those ran
+# the hook past its 60 s timeout, and PreToolUse failed open. So it runs at
+# most once per hook. The same question gets the cached answer; any other
+# is not proven.
+_hooks_daemon_run_cli_helper() {
+    local key="$1" snippet="$2"
+    shift 2
+    if [[ -n "$_HOOKS_DAEMON_HELPER_KEY" ]]; then
+        if [[ "$_HOOKS_DAEMON_HELPER_KEY" == "$key" ]]; then
+            return "$_HOOKS_DAEMON_HELPER_STATUS"
+        fi
+        return 1
+    fi
+    _HOOKS_DAEMON_HELPER_KEY="$key"
+    _HOOKS_DAEMON_HELPER_STATUS=1
+    if ! _hooks_daemon_root_is_this_install; then
+        return 1
+    fi
+    if [[ -z "$PYTHON_CMD" ]] && ! _resolve_python_cmd; then
+        return 1
+    fi
+    local rv=0
+    "$PYTHON_CMD" -c "$snippet" "$@" || rv=$?
+    _HOOKS_DAEMON_HELPER_STATUS="$rv"
+    return "$rv"
+}
+
+#
+# _hooks_daemon_helper_proves_pid() - The daemon's own proof that live pid
+# $1 is this daemon: its socket answers as this project's daemon, or, for a
+# pid this user owns, its command line (cli.pid_is_this_projects_daemon).
+_hooks_daemon_helper_proves_pid() {
+    _hooks_daemon_run_cli_helper "prove:$1" '
+import sys
+from pathlib import Path
+
+from claude_code_hooks_daemon.daemon.cli import pid_is_this_projects_daemon
+
+sys.exit(0 if pid_is_this_projects_daemon(int(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])) else 1)
+' "$1" "$SOCKET_PATH" "$PROJECT_PATH"
+}
+
+# Where the kernel's process table is mounted.
+_HOOKS_DAEMON_PROCFS=/proc
+
+#
+# _hooks_daemon_argv_prove_this_project() - True when the arguments are a
+# daemon server of this project, at the exact positions start_daemon and
+# bin/hooks-daemon launch it with: `<python> -m <cli> --project-root <root>
+# start|restart` and nothing more, since neither subcommand takes an
+# argument, with no other argument naming a root (Plan 00466 round 6,
+# P5-3; N203). A start or restart naming no root is re-run naming it
+# (cli._reexec_daemon_launch_with_explicit_project_root). A sufficient
+# condition only (round 5, Sh-D): process_verification's rule accepts more,
+# and anything this does not prove goes to the daemon's helper. A test
+# checks that everything this proves is proven there too.
+_hooks_daemon_argv_prove_this_project() {
+    local physical
+    if _hooks_daemon_argv_name_root "$PROJECT_PATH" "$@"; then
+        return 0
+    fi
+    physical="$(cd -P -- "$PROJECT_PATH" && pwd -P)" || return 1
+    [[ "$physical" != "$PROJECT_PATH" ]] && _hooks_daemon_argv_name_root "$physical" "$@"
+}
+
+_hooks_daemon_argv_name_root() {
+    local root="$1" index
+    shift
+    local -a argv=("$@")
+    ((${#argv[@]} == 6)) || return 1
+    [[ "${argv[1]}" == "-m" && "${argv[2]}" == "claude_code_hooks_daemon.daemon.cli" &&
+        "${argv[3]}" == "--project-root" && "${argv[4]}" == "$root" &&
+        ("${argv[5]}" == "start" || "${argv[5]}" == "restart") ]] || return 1
+    # A root named anywhere else, even as the program's own name, proves
+    # nothing here: the daemon's helper reads such a line as argparse does.
+    for ((index = 0; index < ${#argv[@]}; index++)); do
+        if ((index != 3)) && [[ "${argv[index]}" == "--project-root" ||
+            "${argv[index]}" == "--project-root="* ]]; then
+            return 1
+        fi
+    done
+}
+
+#
+# _hooks_daemon_cmdline_proves_this_project() - The procfs cmdline file $1
+# proves this project's daemon. Its arguments are read split at their NULs
+# (Plan 00466 round 6, R5-2), as psutil reads them: joined by newlines, one
+# argument holding a newline-separated launch read as that launch. A read
+# loop, not mapfile, which bash 3.2 lacks; a last argument with no final NUL
+# is still an argument. An empty file (a zombie, a kernel thread) proves
+# nothing, and bash before 4.4 cannot expand an empty array under set -u.
+_hooks_daemon_cmdline_proves_this_project() {
+    local -a argv=()
+    local arg
+    [[ -r "$1" ]] || return 1
+    while IFS= read -r -d '' arg || [[ -n "$arg" ]]; do
+        argv+=("$arg")
+    done < "$1" || return 1
+    ((${#argv[@]})) || return 1
+    _hooks_daemon_argv_prove_this_project "${argv[@]}"
+}
+
+#
+# _hooks_daemon_ps_args_prove_this_project() - The arguments ps prints, $1,
+# prove this project's daemon. ps joins them with spaces, so its words are
+# read as the arguments: a project whose path holds a space is left to the
+# helper, and one argument holding a whole launch line passes. Only a
+# process this user owns gets here, and it could as well run that line.
+_hooks_daemon_ps_args_prove_this_project() {
+    local -a argv=()
+    read -r -a argv <<< "$1"
+    ((${#argv[@]})) || return 1
+    _hooks_daemon_argv_prove_this_project "${argv[@]}"
+}
+
+#
+# _hooks_daemon_pid_args_prove_this_project() - The command line of pid $1
+# proves it is this project's daemon: procfs's where it is mounted, else
+# ps's.
+_hooks_daemon_pid_args_prove_this_project() {
+    local cmdline="$_HOOKS_DAEMON_PROCFS/$1/cmdline" args
+    if [[ -r "$cmdline" ]]; then
+        _hooks_daemon_cmdline_proves_this_project "$cmdline"
+        return
+    fi
+    if ! args="$(ps -ww -o args= -p "$1")"; then
+        return 1
+    fi
+    _hooks_daemon_ps_args_prove_this_project "$args"
+}
+
+#
+# _hooks_daemon_pid_is_this_users() - True when pid $1's real and effective
+# uids are both this shell's effective uid. Ownership is the owner's uid,
+# never permission to signal (Plan 00466 round 6, P5-1): root may signal
+# every process, so `kill -0` passed another user's process as this user's.
+_hooks_daemon_pid_is_this_users() {
+    local owner="$_HOOKS_DAEMON_PROCFS/$1/status" uids
+    local -a ids
+    if [[ -r "$owner" ]]; then
+        uids="$(awk '$1 == "Uid:" { print $2, $3; exit }' "$owner")" || return 1
+    elif ! uids="$(ps -o ruid=,uid= -p "$1")"; then
+        return 1
+    fi
+    read -r -a ids <<< "$uids"
+    ((${#ids[@]} == 2)) && [[ "${ids[0]}" == "$EUID" && "${ids[1]}" == "$EUID" ]]
+}
+
+#
 # is_daemon_running() - Check if daemon is running
 #
 # Returns:
 #   0 if daemon is running
-#   1 if daemon is not running
+#   1 if daemon is not running (a stale or corrupt PID file, or none)
+#   2 if its pid names a live process that nothing proves is this daemon:
+#     unknown, so a caller must not skip a start (Plan 00466 round 4,
+#     N139-A; round 5, Sh-D). `cli start` then decides, and its REUSE gate
+#     never displaces a live daemon.
 #
 is_daemon_running() {
     # Check if PID file exists
@@ -574,18 +2651,51 @@ is_daemon_running() {
     local pid
     pid=$(cat "$PID_PATH" 2>/dev/null || echo "")
 
-    if [[ -z "$pid" ]]; then
-        return 1
+    if _hooks_daemon_is_pid_text "$pid"; then
+        # A live process is not proof of this daemon (round 5, Sh-D): after a
+        # reboot its pid can be anyone's. Its command line decides, then the
+        # daemon's helper.
+        #
+        # Plan 00466 N139: only ESRCH means the process is gone. EPERM (a
+        # process of another user's) and anything else unrecognised mean it
+        # may still run, so the daemon is not provably down and its PID file
+        # stays. strerror text in the C locale is the one portable signal the
+        # builtin gives. A command line is anyone's to write, so it counts
+        # only for a process this user owns (round 5, P4-2; round 6, P5-1);
+        # for any other, only the socket answering as this daemon does.
+        local probe_error=""
+        if kill -0 "$pid" 2>/dev/null || probe_error="$(export LC_ALL=C; kill -0 "$pid" 2>&1)"; then
+            if { _hooks_daemon_pid_is_this_users "$pid" &&
+                _hooks_daemon_pid_args_prove_this_project "$pid"; } ||
+                _hooks_daemon_helper_proves_pid "$pid"; then
+                return 0
+            fi
+            return 2
+        fi
+        if [[ "$probe_error" != *"No such process"* ]]; then
+            if _hooks_daemon_helper_proves_pid "$pid"; then
+                return 0
+            fi
+            return 2
+        fi
     fi
 
-    # Check if process is alive
-    if kill -0 "$pid" 2>/dev/null; then
-        return 0
-    else
-        # Stale PID file, clean up
-        rm -f "$PID_PATH"
-        return 1
+    # Stale or corrupt: removed under the start lock a daemon start writes
+    # its pid under, and only while the file still holds what was read here
+    # (Plan 00466 round 2, S2; round 4, Sh-A). Without the daemon's venv it
+    # stays, which is harmless: it never counts as running, and a starting
+    # daemon overwrites it.
+    if ! _hooks_daemon_run_cli_helper "remove:$pid" '
+import sys
+from pathlib import Path
+
+from claude_code_hooks_daemon.daemon.server import remove_stale_pid_file
+
+sys.exit(0 if remove_stale_pid_file(Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]) else 1)
+' "$PID_PATH" "$SOCKET_PATH" "$pid"; then
+        : "the PID file stays: it was not provably stale under the lock"
     fi
+    return 1
 }
 
 #
@@ -604,6 +2714,15 @@ start_daemon() {
         return 0
     fi
 
+    # Plan 00477 Task 5.2: provision is switching the clone to another version
+    # and starts the new daemon itself. Not starting one from a half-switched
+    # clone, this hook answers as for a daemon that is still starting.
+    if _daemon_switch_in_progress; then
+        _HOOKS_DAEMON_STARTING=true
+        echo "HOOKS DAEMON: provision is switching the daemon to another version; no daemon is started mid-switch" >&2
+        return 1
+    fi
+
     # Validate venv before attempting startup (fail-fast with actionable error)
     if ! validate_venv; then
         echo "ERROR: Venv validation failed: $VENV_ERROR" >&2
@@ -618,6 +2737,18 @@ start_daemon() {
     # liveness before unlinking (reuse on live, unlink on stale). We already
     # short-circuit via is_daemon_running() above for the healthy-incumbent case.
 
+    # The daemon names its root resolved (round 9b): its text is never
+    # resolved, so a root named through a link was refused by every caller
+    # that resolves its own, bin/hooks-daemon included. The start is also
+    # handed the root as this hook reached it: single-daemon enforcement
+    # needs that spelling to find a daemon an older version started through
+    # a link (review 10, R10-2).
+    local physical_root
+    if ! physical_root="$(cd -P -- "$PROJECT_PATH" && pwd -P)"; then
+        echo "ERROR: cannot resolve the project root $PROJECT_PATH" >&2
+        return 1
+    fi
+
     # Start daemon using CLI (proper daemonization)
     # CRITICAL: Pass --project-root and export env vars so the CLI uses the
     # same paths we computed above. Without this, the CLI re-discovers the
@@ -626,18 +2757,34 @@ start_daemon() {
     # Output is CAPTURED, not discarded (Plan 00200 Task 5.5): this parent
     # invocation is the short-lived process that daemonises and returns —
     # cli.py's cmd_start() prints its own diagnostics (e.g. "ERROR: Fork
-    # failed", "ERROR: Daemon failed to start (no PID file created)") on
+    # failed", "ERROR: Daemon not proven started: the daemon exited while
+    # starting (no PID file created)") on
     # THIS fd, before the double-fork detaches the long-lived daemon (which
     # redirects its OWN stdout/stderr to /dev/null internally regardless —
     # see daemon/cli.py's "Second child" branch). The readiness poll below
     # remains the authority for success/failure either way; this capture
     # only stops a genuine startup failure's root cause from being silently
     # discarded on the timeout path.
-    local start_output
-    start_output="$(CLAUDE_HOOKS_SOCKET_PATH="$SOCKET_PATH" \
-    CLAUDE_HOOKS_PID_PATH="$PID_PATH" \
-    $PYTHON_CMD -m claude_code_hooks_daemon.daemon.cli \
-        --project-root "$PROJECT_PATH" start 2>&1)"
+    #
+    # The recovery source is exported only for this hook's own child shells
+    # (see _hooks_daemon_recovery_py); the daemon is not one of them. The
+    # un-export happens inside the substitution's subshell, not here.
+    #
+    # The launcher runs beside this hook, which reads its output as it comes
+    # and never waits on it (Plan 00466 review 8, R8-1): its own waits (a
+    # start already under way, two start-lock waits, a 30 s start budget)
+    # outlast the hook's 60 s timeout,
+    # and a PreToolUse hook that times out lets the call run unjudged. A
+    # launcher still writing once the hook has answered gets EPIPE, which
+    # only its parent meets, after the fork: the daemon keeps starting. Its
+    # stdin is not the hook's, which carries the call to judge.
+    local launch_fd launch_output="" launch_done=false
+    exec {launch_fd}< <(export -fn _hooks_daemon_recovery_py
+        CLAUDE_HOOKS_SOCKET_PATH="$SOCKET_PATH" \
+            CLAUDE_HOOKS_PID_PATH="$PID_PATH" \
+            CLAUDE_HOOKS_DAEMON_CALLER_ROOT="$PROJECT_PATH" \
+            $PYTHON_CMD -m claude_code_hooks_daemon.daemon.cli \
+            --project-root "$physical_root" start < /dev/null 2>&1)
 
     # Wait for daemon to be ready (using deciseconds for integer arithmetic).
     #
@@ -647,33 +2794,110 @@ start_daemon() {
     # the socket file alone is not a reliable readiness signal. Combine with
     # is_daemon_running (PID alive) to guarantee the daemon we spawned is
     # the one we see.
-    local elapsed=0
-    while [[ $elapsed -lt $DAEMON_STARTUP_TIMEOUT ]]; do
+    #
+    # The budget is wall-clock time from this hook's own start (Plan 00466
+    # round 5, R4-1; review 8, R8-1), so it covers whatever ran before it. A
+    # launcher that has finished leaves DAEMON_STARTUP_TIMEOUT for its
+    # daemon to answer, and never more than the budget.
+    local deadline=$_HOOKS_DAEMON_START_DEADLINE settle_end=""
+    if [[ "$_HOOKS_DAEMON_NONBLOCKING_START" == "true" ]]; then
+        deadline=$_HOOKS_DAEMON_NONBLOCKING_DEADLINE
+    fi
+    while ((SECONDS < deadline)); do
         if is_daemon_running && [[ -S "$SOCKET_PATH" ]]; then
+            _hooks_daemon_end_launch
             return 0
+        fi
+        if _hooks_daemon_launch_settled; then
+            break
         fi
 
         # Sleep 0.1 seconds (1 decisecond)
         sleep 0.1
-        elapsed=$((elapsed + DAEMON_STARTUP_CHECK_INTERVAL))
     done
 
     # Final retry: the daemon may have bound the socket on the very tick
     # the loop's `elapsed < TIMEOUT` check went false. One more probe
     # before declaring failure closes the boundary race.
     if is_daemon_running && [[ -S "$SOCKET_PATH" ]]; then
+        _hooks_daemon_end_launch
         return 0
+    fi
+    _hooks_daemon_end_launch
+
+    # The launcher is still at work: the daemon is starting, and nothing is
+    # known to be wrong. This hook answers now, before its timeout.
+    #
+    # A non-blocking caller also counts a launcher that has finished while its
+    # daemon is alive and the settle time has not passed: that daemon is
+    # still coming up. A daemon that is not running by then has failed.
+    if [[ "$launch_done" == false ]] ||
+        { [[ "$_HOOKS_DAEMON_NONBLOCKING_START" == "true" ]] &&
+            { [[ -z "$settle_end" ]] || ((SECONDS < settle_end)); } &&
+            is_daemon_running; }; then
+        _HOOKS_DAEMON_STARTING=true
+        echo "HOOKS DAEMON: the daemon is still starting ${deadline}s into this hook, which answers now rather than run past its timeout" >&2
+        return 1
     fi
 
     # Genuine timeout. NOTE: do NOT unlink PID_PATH — if the daemon is still
     # coming up, the PID slot belongs to it. is_daemon_running() cleans
     # stale PID files on next call when the process is actually dead.
-    echo "ERROR: Daemon startup timeout (daemon not ready after ${DAEMON_STARTUP_TIMEOUT}/10 seconds)" >&2
-    if [[ -n "$start_output" ]]; then
+    echo "ERROR: Daemon startup timeout (daemon not ready $(((DAEMON_STARTUP_TIMEOUT + 9) / 10)) seconds after its launcher finished)" >&2
+    if [[ -n "$launch_output" ]]; then
         echo "Launcher output (may explain the failure):" >&2
-        echo "$start_output" >&2
+        echo "$launch_output" >&2
+    fi
+    if [[ -n "$PYTHON_CMD" ]]; then
+        _venv_start_diagnosis "$(dirname "$(dirname "$PYTHON_CMD")")" >&2
     fi
     return 1
+}
+
+#
+# _hooks_daemon_drain_launch() - Append what start_daemon's launcher has
+# written since the last call to start_daemon's launch_output, without
+# waiting for more, and set its launch_done at the launcher's end of file.
+# A read that times out keeps the partial line it read.
+_hooks_daemon_drain_launch() {
+    local line rv
+    while [[ "$launch_done" == false ]]; do
+        rv=0
+        IFS= read -r -t 0.01 -u "$launch_fd" line || rv=$?
+        if ((rv == 0)); then
+            launch_output+="$line"$'\n'
+            continue
+        fi
+        launch_output+="$line"
+        if ((rv > 128)); then
+            return 0
+        fi
+        launch_done=true
+    done
+}
+
+#
+# _hooks_daemon_launch_settled() - True once start_daemon's launcher has
+# finished and DAEMON_STARTUP_TIMEOUT has passed since, in which its daemon
+# had to answer. Sets start_daemon's settle_end when it sees the finish.
+_hooks_daemon_launch_settled() {
+    _hooks_daemon_drain_launch
+    if [[ "$launch_done" == false ]]; then
+        return 1
+    fi
+    if [[ -z "$settle_end" ]]; then
+        settle_end=$((SECONDS + (DAEMON_STARTUP_TIMEOUT + 9) / 10))
+    fi
+    ((SECONDS >= settle_end))
+}
+
+#
+# _hooks_daemon_end_launch() - Take what start_daemon's launcher has written
+# so far and close this hook's end of its output. A launcher still running
+# is left to finish on its own.
+_hooks_daemon_end_launch() {
+    _hooks_daemon_drain_launch
+    exec {launch_fd}<&-
 }
 
 #
@@ -702,7 +2926,472 @@ _is_ci_enforced() {
 #   1 if daemon directory or venv Python is absent
 #
 _is_daemon_installed() {
-    [[ -d "$HOOKS_DAEMON_ROOT_DIR" ]] && [[ -f "$PYTHON_CMD" ]]
+    # "Venv Python present" is the clone's gate (scripts/lib/resolve_venv.sh),
+    # not a file test: a venv whose interpreter now runs another Python
+    # major.minor than its pyvenv.cfg records is not installed in any useful
+    # sense, and must reach the VENV_MISSING self-heal (Plan 00555).
+    [[ -d "$HOOKS_DAEMON_ROOT_DIR" ]] && [[ -n "$PYTHON_CMD" ]] || return 1
+    # PYTHON_CMD can be set without _resolve_python_cmd having sourced the
+    # library, so load the gate here when it is not yet defined.
+    if ! declare -F venv_python_usable > /dev/null; then
+        # shellcheck disable=SC1091  # path is computed at runtime
+        source "$HOOKS_DAEMON_ROOT_DIR/scripts/lib/resolve_venv.sh" 2> /dev/null || return 1
+    fi
+    venv_python_usable "$PYTHON_CMD"
+}
+
+#
+# _daemon_clone_present() - Is there a REAL clone under HOOKS_DAEMON_ROOT_DIR?
+#
+# NOT the same question as `[[ -d "$HOOKS_DAEMON_ROOT_DIR" ]]`: this directory
+# always exists after init.sh has been sourced once, even on a genuinely fresh
+# checkout, because the untracked-dir setup a little further down this file
+# unconditionally does `mkdir -p "${HOOKS_DAEMON_ROOT_DIR}/untracked"` on
+# every source. Bare directory presence therefore cannot tell a fresh
+# checkout from a real clone with a missing venv (GitHub issue #53) — it is
+# true in both.
+#
+# scripts/lib/resolve_venv.sh is a real signal: it ships with the clone (it
+# is the canonical library `_resolve_python_cmd()` delegates to, and that
+# function's own failure message already names this exact path), and nothing
+# else creates it. Its presence means a clone was genuinely installed here,
+# whatever state its venv is in.
+#
+# Returns:
+#   0 if a real clone is present (its venv may still be missing/broken)
+#   1 if this is a genuinely fresh checkout — no clone at all
+#
+_daemon_clone_present() {
+    [[ -f "$HOOKS_DAEMON_ROOT_DIR/scripts/lib/resolve_venv.sh" ]]
+}
+
+#
+# _daemon_orphan_venv_present() - Is there a leftover venv under untracked/?
+#
+# A second signal for the same question `_daemon_clone_present` answers, and
+# needed for a case it cannot see (review finding on Plan 00454): a clone
+# that has LOST `scripts/lib/resolve_venv.sh` — damaged, partially deleted,
+# mid-reinstall — but still holds another environment's venv under
+# `untracked/venv-*` (Plan 00099's fingerprint-keyed layout,
+# `${HOOKS_DAEMON_ROOT_DIR}/untracked/venv-*/bin/python`). That venv is
+# exactly what install/force's `rm -rf` would destroy, so its mere presence
+# must block the NOT_INSTALLED fallback just as surely as a healthy clone
+# does — regardless of whether `resolve_venv.sh` survived.
+#
+# Safe against the same false-positive `_daemon_clone_present`'s own docstring
+# warns about: `mkdir -p "${HOOKS_DAEMON_ROOT_DIR}/untracked"` (a few hundred
+# lines down) creates an EMPTY directory, so a genuinely fresh checkout never
+# has a `venv-*` entry under it. The glob is nullglob-independent — a
+# no-match keeps `venv_dir` as the literal pattern string, which
+# `[[ -d ]]` then rejects like any other nonexistent path.
+#
+# Returns:
+#   0 if at least one untracked/venv-* directory exists
+#   1 if none does (fresh checkout, or a healthy clone with a resolved venv
+#     already handled by _is_daemon_installed elsewhere)
+#
+_daemon_orphan_venv_present() {
+    # canonical-resolver-exempt: this asks a different question from
+    # resolve_venv_python() (scripts/lib/resolve_venv.sh) — PRESENCE of a
+    # venv-* directory at all, not whether it resolves to a WORKING
+    # interpreter. A venv-* directory that resolve_venv_python() would
+    # reject (missing bin/python, mid-write, otherwise broken) still holds
+    # bytes that install/force's rm -rf would destroy, so delegating to the
+    # resolver here would under-detect exactly the case this function exists
+    # to catch.
+    local venv_dir
+    for venv_dir in "$HOOKS_DAEMON_ROOT_DIR"/untracked/venv-*; do
+        [[ -d "$venv_dir" ]] && return 0
+    done
+    return 1
+}
+
+# The marker provision.sh holds (its pid) while it switches the clone to another
+# version: from stopping the old daemon until it starts the new one.
+_HOOKS_DAEMON_SWITCH_MARKER_NAME=".provision-switching"
+
+#
+# _daemon_switch_in_progress() - Is provision switching the clone right now?
+#
+# Plan 00477 Task 5.2. Between the stop and the start, the checkout and the venv
+# are mid-change, and a daemon started then would load a half-switched clone.
+# Asked only on the start path, so a running daemon pays nothing. A marker
+# whose process is gone (a sync that was killed) does not count.
+#
+# Returns:
+#   0 while the marker names a live process, 1 otherwise
+#
+_daemon_switch_in_progress() {
+    local marker="$HOOKS_DAEMON_ROOT_DIR/untracked/$_HOOKS_DAEMON_SWITCH_MARKER_NAME" holder=""
+    [[ -f "$marker" ]] || return 1
+    IFS= read -r holder < "$marker" || [[ -n "$holder" ]] || return 1
+    [[ "$holder" =~ ^[0-9]+$ ]] || return 1
+    kill -0 "$holder" 2> /dev/null
+}
+
+#
+# _clone_version() - Version of the INSTALLED (gitignored) daemon clone
+#
+# Read with grep from version.py rather than by importing the package: the
+# clone that failed to start is often the one whose venv or interpreter is the
+# problem, so anything requiring a working Python would be unavailable at
+# exactly the moment this answer is needed.
+#
+# Output:
+#   The version on stdout, nothing when it cannot be determined
+#
+# Returns:
+#   0 if a version was read, 1 otherwise (a normal state, not an error)
+#
+_clone_version() {
+    local version_file="$HOOKS_DAEMON_ROOT_DIR/src/claude_code_hooks_daemon/version.py"
+    [[ -f "$version_file" ]] || return 1
+
+    local line
+    line="$(grep -m1 -oE '^__version__ = "[0-9]+\.[0-9]+\.[0-9]+"' "$version_file")" || return 1
+
+    local version="${line#*\"}"
+    printf '%s' "${version%\"}"
+}
+
+#
+# _venv_self_heal() - Have the clone build this path's missing venv (Plan 00456).
+#
+# Called ONLY from ensure_daemon's VENV_MISSING diagnosis, for a real clone
+# with a readable version, so the healthy path never pays for it. The work is
+# the clone's own scripts/venv_bootstrap.sh `hook`: this file is a per-project
+# COPY and the clone is what builds. That driver checks the five
+# can_inline_bootstrap preconditions without a venv. When they hold, it starts
+# one DETACHED build under the venv build lock and returns at once: hooks time
+# out at 60s, and a uv sync can take longer. When they do not hold, it
+# changes nothing and names each failed condition with its fix.
+#
+# A clone too old to ship the driver leaves the state empty, and the Plan
+# 00454 message stands. Sets the _HOOKS_DAEMON_BOOTSTRAP_* globals. Returns 0.
+#
+_venv_self_heal() {
+    _venv_driver_verb hook
+}
+
+#
+# _venv_build_running() - Is a venv build holding the build lock right now?
+#
+# Plan 00488 Task 3.5. Read-only (the driver's `probe` verb starts nothing).
+# For a venv that RESOLVES but cannot start the daemon: the first moments of a
+# build leave an interpreter that cannot import the package yet, and that must
+# read as "building", not as a broken venv. A clone too old to ship `probe`
+# answers with a usage error, which is "not known to be building".
+#
+# Sets the _HOOKS_DAEMON_BOOTSTRAP_* globals when it is. Returns 0 if a build
+# is running, 1 otherwise.
+#
+_venv_build_running() {
+    _venv_driver_verb probe
+    if [[ "$_HOOKS_DAEMON_BOOTSTRAP_STATE" == "running" ]]; then
+        return 0
+    fi
+    _HOOKS_DAEMON_BOOTSTRAP_STATE=""
+    return 1
+}
+
+#
+# _venv_driver_verb() - Run one verb of the clone's venv_bootstrap.sh, keep its answer.
+#
+# Args:
+#   $1 - the verb (hook or probe)
+#
+# Sets the _HOOKS_DAEMON_BOOTSTRAP_* globals from the driver's key=value
+# protocol. Returns 0.
+#
+_venv_driver_verb() {
+    local verb="$1"
+    local driver="$HOOKS_DAEMON_ROOT_DIR/scripts/venv_bootstrap.sh"
+    [[ -f "$driver" ]] || return 0
+
+    # stdout is the driver's key=value protocol; its stderr is left on this
+    # hook's stderr, where Claude Code's debug log keeps it.
+    local output rc=0
+    output="$(bash "$driver" "$verb" "$HOOKS_DAEMON_ROOT_DIR")" || rc=$?
+    if [[ "$rc" -ne 0 ]]; then
+        _HOOKS_DAEMON_BOOTSTRAP_STATE="error"
+        _HOOKS_DAEMON_BOOTSTRAP_DETAIL="$driver exited $rc (its output is on the hook's stderr)"
+        return 0
+    fi
+
+    local key value
+    while IFS='=' read -r key value; do
+        case "$key" in
+            state) _HOOKS_DAEMON_BOOTSTRAP_STATE="$value" ;;
+            log) _HOOKS_DAEMON_BOOTSTRAP_LOG="$value" ;;
+            missing)
+                _HOOKS_DAEMON_BOOTSTRAP_MISSING="${_HOOKS_DAEMON_BOOTSTRAP_MISSING:+$_HOOKS_DAEMON_BOOTSTRAP_MISSING, }$value"
+                ;;
+            fix) _HOOKS_DAEMON_BOOTSTRAP_FIXES="$_HOOKS_DAEMON_BOOTSTRAP_FIXES  - $value"$'\n' ;;
+            detail) _HOOKS_DAEMON_BOOTSTRAP_DETAIL="$value" ;;
+            pid) _HOOKS_DAEMON_BOOTSTRAP_PID="$value" ;;
+            elapsed) _HOOKS_DAEMON_BOOTSTRAP_ELAPSED="$value" ;;
+        esac
+    done <<< "$output"
+    return 0
+}
+
+#
+# _tracked_deployed_version() - Version the project's TRACKED assets came from
+#
+# .claude/HOOKS-DAEMON.md is a tracked deployed asset regenerated by
+# generate-docs on every upgrade, and it carries the only machine-readable
+# record of which version deployed the rest. The header shape is the one
+# docs_generator._render_header() emits.
+#
+# THIS PATTERN IS DUPLICATED IN PYTHON, and cannot be shared: this function must
+# work when the package cannot be imported at all. The canonical parser is
+# utils/deployed_version.py::VERSION_MARKER_RE, and
+# tests/integration/test_init_sh_stale_clone_version.py feeds one header line to
+# both and asserts they agree — that test is the only thing holding the two
+# together, so do not change either pattern without it.
+#
+# Output:
+#   The version on stdout, nothing when no marker is present
+#
+# Returns:
+#   0 if a version was read, 1 otherwise (a project that never generated the
+#   doc, or whose doc predates the header, is NORMAL — not broken)
+#
+_tracked_deployed_version() {
+    local doc="$PROJECT_PATH/.claude/HOOKS-DAEMON.md"
+    [[ -f "$doc" ]] || return 1
+
+    local line
+    line="$(grep -m1 -oE '> Generated on [0-9]{4}-[0-9]{2}-[0-9]{2} \(v[0-9]+\.[0-9]+\.[0-9]+\) by' "$doc")" || return 1
+
+    local version="${line##*\(v}"
+    printf '%s' "${version%%\)*}"
+}
+
+#
+# _config_daemon_key_raw() - The raw value of a key in the daemon: config block
+#
+# Plan 00477. A line-oriented read of .claude/hooks-daemon.yaml, because this
+# runs before any venv exists. It accepts exactly the shape the installer
+# writes: an indented KEY inside the top-level daemon block. A commented-out
+# key, or one in another block, is not the key. \042 and \047 are the double
+# and single quote, spelled as octal escapes so the awk program needs no quote
+# characters of its own.
+#
+# Args:
+#   $1 - the key name (a plain identifier)
+#
+# Output:
+#   The value with quotes and a trailing comment removed (possibly empty)
+#
+# Returns:
+#   0 if the key is present, 1 if it is not (or there is no config file)
+#
+_config_daemon_key_raw() {
+    local config="$PROJECT_PATH/.claude/hooks-daemon.yaml"
+    [[ -f "$config" ]] || return 1
+
+    # A bash-builtin read and a substring test first: a key the file never
+    # mentions (the usual case for an optional one) costs no process at all.
+    local content=""
+    IFS= read -r -d '' content < "$config" || [[ -n "$content" ]] || return 1
+    [[ "$content" == *"$1:"* ]] || return 1
+
+    local value
+    value="$(awk -v key="$1" '
+        /^daemon:/ { blk = 1; indent = ""; next }
+        /^[^ \t#]/ { blk = 0 }
+        blk && indent == "" && /^[ \t]+[^ \t#]/ {
+            indent = $0
+            sub(/[^ \t].*$/, "", indent)
+        }
+        blk && indent != "" && index($0, indent key ":") == 1 {
+            v = substr($0, length(indent key ":") + 1)
+            sub(/^[ \t]+/, "", v)
+            sub(/[ \t]+#.*$/, "", v)
+            sub(/[ \t]+$/, "", v)
+            gsub(/^[\042\047]|[\042\047]$/, "", v)
+            print "FOUND:" v
+            exit
+        }
+    ' "$config")"
+    [[ "$value" == FOUND:* ]] || return 1
+
+    printf '%s' "${value#FOUND:}"
+}
+
+# _config_expected_version_raw() - The raw daemon.expected_version value
+_config_expected_version_raw() {
+    _config_daemon_key_raw expected_version
+}
+
+#
+# _config_unprovisioned_mode() - daemon.unprovisioned_mode, warn when unset
+#
+# Plan 00477. Whether an unprovisioned checkout BLOCKS tool calls is a
+# per-project setting; the default, and what any unusable value falls back to,
+# is warn. A value that is present but neither warn nor block is named in
+# _HOOKS_DAEMON_UNPROVISIONED_MODE_NOTE so the message says so instead of
+# quietly choosing.
+#
+# Sets:
+#   _HOOKS_DAEMON_UNPROVISIONED_MODE       warn | block
+#   _HOOKS_DAEMON_UNPROVISIONED_MODE_NOTE  empty, or a sentence naming the bad value
+#
+_config_unprovisioned_mode() {
+    _HOOKS_DAEMON_UNPROVISIONED_MODE="warn"
+    _HOOKS_DAEMON_UNPROVISIONED_MODE_NOTE=""
+
+    local raw
+    if ! raw="$(_config_daemon_key_raw unprovisioned_mode)"; then
+        return 0
+    fi
+    case "$raw" in
+        warn | block) _HOOKS_DAEMON_UNPROVISIONED_MODE="$raw" ;;
+        *)
+            _HOOKS_DAEMON_UNPROVISIONED_MODE_NOTE="daemon.unprovisioned_mode '$raw' is not warn or block; treated as warn."
+            ;;
+    esac
+}
+
+#
+# _detect_needs_provision() - Is this a fresh clone that provision can build?
+#
+# Plan 00477. Called only once NOT_INSTALLED is established (no daemon running,
+# no clone, no leftover venv), so the question here is whether the tracked
+# assets a provision needs are present: the project's config and its
+# .claude/provision.sh. A project that predates provision.sh keeps the generic
+# answer, since naming a script it lacks would be a wrong instruction. The
+# daemon's own repository never needs provisioning: it is set up by
+# scripts/bootstrap-self-install.sh.
+#
+# Sets _HOOKS_DAEMON_NEEDS_PROVISION and, when true, the expected version
+# (_resolve_expected_version), the mode and the status-line text.
+#
+_detect_needs_provision() {
+    [[ -f "$PROJECT_PATH/.claude/hooks-daemon.yaml" ]] || return 0
+    [[ -f "$PROJECT_PATH/.claude/provision.sh" ]] || return 0
+    [[ -f "$PROJECT_PATH/src/claude_code_hooks_daemon/version.py" ]] && return 0
+
+    _HOOKS_DAEMON_NEEDS_PROVISION=true
+    if ! _resolve_expected_version; then
+        : # unknown is a reported state, carried in _HOOKS_DAEMON_EXPECTED_VERSION*
+    fi
+    _config_unprovisioned_mode
+    _HOOKS_DAEMON_STATUS_DOWN_TEXT="⚠️ HOOKS DAEMON NOT PROVISIONED - run: bash .claude/provision.sh"
+    return 0
+}
+
+#
+# _resolve_expected_version() - Which daemon version does this project expect?
+#
+# Plan 00477. The ONE resolver for the question, in bash, because it is asked
+# before any venv exists (provision.sh, and the unprovisioned diagnosis of the
+# hooks). Order: the daemon.expected_version config key, then the tracked
+# HOOKS-DAEMON.md header for a project that predates the key. It reports
+# unknown rather than guessing, and a key that is PRESENT but not X.Y.Z is
+# reported as invalid rather than overridden by the header: the project said
+# something deliberate, and quietly preferring another answer would install a
+# version nobody asked for.
+#
+# Sets:
+#   _HOOKS_DAEMON_EXPECTED_VERSION         X.Y.Z, or unknown
+#   _HOOKS_DAEMON_EXPECTED_VERSION_SOURCE  config | tracked-doc | config-invalid | empty
+#
+# Returns:
+#   0 if a version was resolved, 1 otherwise
+#
+_resolve_expected_version() {
+    _HOOKS_DAEMON_EXPECTED_VERSION="unknown"
+    _HOOKS_DAEMON_EXPECTED_VERSION_SOURCE=""
+
+    local raw
+    if raw="$(_config_expected_version_raw)"; then
+        if [[ "$raw" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            _HOOKS_DAEMON_EXPECTED_VERSION="$raw"
+            _HOOKS_DAEMON_EXPECTED_VERSION_SOURCE="config"
+            return 0
+        fi
+        _HOOKS_DAEMON_EXPECTED_VERSION_SOURCE="config-invalid"
+        return 1
+    fi
+
+    local tracked
+    if tracked="$(_tracked_deployed_version)"; then
+        _HOOKS_DAEMON_EXPECTED_VERSION="$tracked"
+        _HOOKS_DAEMON_EXPECTED_VERSION_SOURCE="tracked-doc"
+        return 0
+    fi
+    return 1
+}
+
+#
+# _version_lt() - True when $1 sorts strictly before $2
+#
+# Pure bash rather than `sort -V`: this runs on every hook of a broken install,
+# and the field-numeric comparison has no portability question to answer. Both
+# arguments are X.Y.Z by construction — the extraction patterns above accept
+# nothing else — so the fields are always numeric.
+#
+_version_lt() {
+    [[ "$1" == "$2" ]] && return 1
+
+    local -a left right
+    IFS=. read -r -a left <<< "$1"
+    IFS=. read -r -a right <<< "$2"
+
+    local i
+    for i in 0 1 2; do
+        local l="${left[i]:-0}" r="${right[i]:-0}"
+        if (( l < r )); then return 0; fi
+        if (( l > r )); then return 1; fi
+    done
+    return 1
+}
+
+#
+# _detect_stale_clone() - Is the installed clone not the version the project expects?
+#
+# Plan 00386 compared the clone with the tracked HOOKS-DAEMON.md header. Plan
+# 00477 Task 5.1 compares it with the RESOLVED expected version instead: the
+# daemon.expected_version config key, then the header for a project that
+# predates the key (_resolve_expected_version). The case is a pull that changes
+# the key: the gitignored clone stays where it was, so it and the tracked
+# assets now disagree. An invalid key reports nothing of its own here; the
+# comparison falls back to the header exactly as before the key existed.
+#
+# The daemon's own repository (self-install: the daemon root IS the project)
+# never reports drift: its source is the project, there is no clone to fall
+# behind. Reads are builtins and one grep for the clone's version.py; the
+# config is read without awk unless the key is actually present.
+#
+# Sets _HOOKS_DAEMON_CLONE_VERSION, _HOOKS_DAEMON_TRACKED_VERSION (the EXPECTED
+# version, whichever source named it) and _HOOKS_DAEMON_EXPECTED_VERSION_SOURCE
+# (config | tracked-doc) on a mismatch. Says nothing when either version is
+# unreadable: unknowable is not the same as wrong, and accusing a project on
+# absent evidence is how an advisory earns the habit of being ignored.
+#
+# Returns:
+#   0 if the two versions differ, 1 otherwise
+#
+_detect_stale_clone() {
+    [[ "$HOOKS_DAEMON_ROOT_DIR" == "$PROJECT_PATH" ]] && return 1
+
+    local clone expected source
+    clone="$(_clone_version)" || return 1
+    if _resolve_expected_version; then
+        expected="$_HOOKS_DAEMON_EXPECTED_VERSION"
+        source="$_HOOKS_DAEMON_EXPECTED_VERSION_SOURCE"
+    else
+        expected="$(_tracked_deployed_version)" || return 1
+        source="tracked-doc"
+    fi
+    [[ "$clone" == "$expected" ]] && return 1
+
+    _HOOKS_DAEMON_CLONE_VERSION="$clone"
+    _HOOKS_DAEMON_TRACKED_VERSION="$expected"
+    _HOOKS_DAEMON_EXPECTED_VERSION_SOURCE="$source"
+    return 0
 }
 
 #
@@ -747,24 +3436,51 @@ _passthrough_flag_path() {
 }
 
 #
-# _enter_passthrough_mode() - Override send_request_stdin to return empty JSON
+# _enter_passthrough_mode() - Make send_request_stdin answer with empty JSON
 #
 # When daemon is unavailable and ci_enabled is not set, hook events
 # silently pass through with no blocking and no context injection.
 #
 _enter_passthrough_mode() {
-    # shellcheck disable=SC2317
-    send_request_stdin() {
-        cat > /dev/null
-        # Status line ($2 == "status"): render the fallback text, not a raw JSON
-        # blob (Plan 00156 review finding 2). Other events: silent {} passthrough.
-        if [[ "${2:-}" == "status" ]]; then
-            echo '⚠️ NO STATUS DATA'
-        else
-            echo '{}'
-        fi
-    }
-    export -f send_request_stdin
+    # send_request_stdin answers from this exported mode before any transport.
+    export _HOOKS_DAEMON_PASSTHROUGH_MODE="silent"
+}
+
+#
+# _hooks_daemon_passthrough_response() - The canned answer for passthrough mode
+#
+# Drains stdin and prints the response for $1 (event name) / $2 (response mode)
+# according to _HOOKS_DAEMON_PASSTHROUGH_MODE ("silent" or "ci_advisory").
+#
+_hooks_daemon_passthrough_response() {
+    local event_name="${1:-Unknown}"
+    cat > /dev/null
+    # Status line ($2 == "status"): render the fallback text, not a raw JSON
+    # blob (Plan 00156 review finding 2).
+    if [[ "${2:-}" == "status" ]]; then
+        echo '⚠️ NO STATUS DATA'
+        return 0
+    fi
+    if [[ "$_HOOKS_DAEMON_PASSTHROUGH_MODE" == "silent" ]]; then
+        echo '{}'
+        return 0
+    fi
+    local ci_advisory="HOOKS DAEMON: Not installed in CI environment. Safety handlers are INACTIVE. All operations allowed without validation. This warning appears once."
+    if _hooks_daemon_event_takes_context "$event_name"; then
+        printf '{"hookSpecificOutput": {"hookEventName": "%s", "additionalContext": "%s"}}\n' \
+            "$event_name" "$ci_advisory"
+    else
+        printf '{"systemMessage": "%s"}\n' "$ci_advisory"
+    fi
+}
+
+#
+# _hooks_daemon_is_down() - True when is_daemon_running answers down (1):
+# neither running (0) nor unknown (2).
+_hooks_daemon_is_down() {
+    local running=0
+    is_daemon_running || running=$?
+    ((running == 1))
 }
 
 #
@@ -784,7 +3500,18 @@ _enter_passthrough_mode() {
 #   1 if daemon failed and must report error to agent
 #
 ensure_daemon() {
-    if is_daemon_running; then
+    # Plan 00466 N126 round 2 (F1): a relay hand-off goes straight to
+    # send_request_stdin, whose judged deny is the only answer it may get.
+    # A start could spend the whole hand-off budget, and every diagnosis
+    # below it (passthrough, not installed, venv missing, version mismatch)
+    # would answer the call the relay has already failed with an allow.
+    if [[ -n "$_HOOKS_DAEMON_RELAY_FAILED" ]]; then
+        return 0
+    fi
+
+    local running=0
+    is_daemon_running || running=$?
+    if ((running == 0)); then
         # Daemon running — clean up stale CI passthrough flag if present
         local passthrough_flag
         passthrough_flag=$(_passthrough_flag_path)
@@ -796,8 +3523,11 @@ ensure_daemon() {
     passthrough_flag=$(_passthrough_flag_path)
 
     # CI optimisation: skip start attempt if passthrough flag exists
-    # (daemon not installed in CI — no point trying repeatedly)
-    if _is_ci_environment && [[ -f "$passthrough_flag" ]] && ! _is_ci_enforced; then
+    # (daemon not installed in CI — no point trying repeatedly). Only for a
+    # daemon that is down (1): an unknown answer (2) must not skip a start
+    # (Plan 00466 round 6, R5-3).
+    if ((running == 1)) && _is_ci_environment && [[ -f "$passthrough_flag" ]] &&
+        ! _is_ci_enforced; then
         _enter_passthrough_mode
         return 0
     fi
@@ -805,19 +3535,32 @@ ensure_daemon() {
     # Try to start daemon
     if start_daemon; then
         rm -f "$passthrough_flag" 2>/dev/null
+        # No stop-count reset here: a start that returns 0 has not served a
+        # request, so only the transport's parsed-response reset may end the run.
         return 0
     fi
 
-    # Daemon failed to start — determine response based on environment/config
-
-    # ci_enabled: true — hard fail regardless of environment
+    # ci_enabled: true — hard fail regardless of environment, and whether the
+    # start failed or is still under way (review 9, DR-2): CI enforcement
+    # exempts no recovery command, and a slow start must not open one.
     if _is_ci_enforced; then
         _HOOKS_DAEMON_CI_ENFORCED=true
         return 1
     fi
 
-    # CI environment (but not enforced): passthrough mode — daemon simply not installed
-    if _is_ci_environment; then
+    # Still starting when this hook had to answer: no diagnosis below
+    # applies, and the answer is "retry" (Plan 00466 review 8, R8-1). In CI
+    # this skips the passthrough, so a start that keeps hanging denies every
+    # call (review 9, DR-3): fail closed.
+    if [[ "${_HOOKS_DAEMON_STARTING:-false}" == "true" ]]; then
+        return 1
+    fi
+
+    # CI environment (but not enforced): passthrough mode — daemon simply not
+    # installed. Only once it is down after the failed start: a pid still
+    # unknown (2) may be a daemon this start could not prove, and allowing
+    # every call on it would be failing open (round 6, R5-3).
+    if _is_ci_environment && _hooks_daemon_is_down; then
         echo "HOOKS DAEMON: Daemon unavailable in CI environment — passthrough mode active (handlers inactive)" >&2
         echo "HOOKS DAEMON: All operations will proceed without safety checks" >&2
         if ! touch "$passthrough_flag" 2>/dev/null; then
@@ -828,28 +3571,89 @@ ensure_daemon() {
         # Plan 00156: jq-free. The event name arrives as $1 (the wrapper passes
         # it); the hook_input payload on stdin is drained (this advisory is a
         # fixed template with no user-derived content).
-        # shellcheck disable=SC2317
-        send_request_stdin() {
-            local event_name="${1:-Unknown}"
-            cat > /dev/null
-            # Status line ($2 == "status"): render the fallback text, not a raw
-            # JSON blob (Plan 00156 review finding 2).
-            if [[ "${2:-}" == "status" ]]; then
-                echo '⚠️ NO STATUS DATA'
-                return 0
-            fi
-            printf '{"hookSpecificOutput": {"hookEventName": "%s", "additionalContext": "%s"}}\n' \
-                "$event_name" \
-                "HOOKS DAEMON: Not installed in CI environment. Safety handlers are INACTIVE. All operations allowed without validation. This warning appears once."
-        }
-        export -f send_request_stdin
+        export _HOOKS_DAEMON_PASSTHROUGH_MODE="ci_advisory"
         return 0
     fi
 
-    # Non-CI environment: fail with error so agent sees it and can act
-    # Distinguish not-installed (fresh clone) from installed-but-not-starting
-    if ! _is_daemon_installed; then
-        _HOOKS_DAEMON_NOT_INSTALLED=true
+    # Non-CI environment: fail with error so agent sees it and can act.
+    # Four diagnoses, MOST SPECIFIC FIRST (Plan 00386, Plan 00454).
+    #
+    # The version mismatch is tested before _is_daemon_installed deliberately.
+    # That check requires a RESOLVED venv interpreter, and a clone stale enough
+    # to fail startup often cannot resolve one — so a genuine version mismatch
+    # would otherwise be reported as "not installed", which says nothing about
+    # the versions and sends the reader to install rather than upgrade. Reversing
+    # the order costs nothing: _detect_stale_clone reads the clone's own
+    # version.py, so it CANNOT fire unless a clone is really present on disk.
+    #
+    # VENV_MISSING sits between the two: something real is present under
+    # HOOKS_DAEMON_ROOT_DIR (so this is NOT a fresh checkout) but
+    # _is_daemon_installed still failed, meaning no venv interpreter resolved
+    # for this project path. "Something real" is TWO discriminators, not one
+    # — neither is bare directory presence, and NEITHER is whether the
+    # clone's version is readable:
+    #   - _daemon_clone_present: a real clone (scripts/lib/resolve_venv.sh)
+    #     is here, whatever state its venv is in. When true, _clone_version
+    #     is trusted enough to name a version-pinned upgrade.
+    #   - _daemon_orphan_venv_present: EVEN WITHOUT a real clone marker, a
+    #     leftover untracked/venv-* directory is exactly what install/force's
+    #     rm -rf would destroy — reviewed in Plan 00454 and missed by the
+    #     first version of this fix, which read a clone that had lost
+    #     resolve_venv.sh but still held another view's venv as NOT_INSTALLED
+    #     and recommended install anyway. When ONLY this signal fires, the
+    #     clone is not trusted enough to read _clone_version from — a
+    #     partially damaged clone can have some files intact and others gone,
+    #     and guessing which half to trust is the mistake this branch exists
+    #     to avoid — so the version stays empty and the message says the
+    #     clone looks damaged rather than naming an upgrade target.
+    #
+    # Plan 00456: only the trusted case — a real clone whose version reads —
+    # tries to heal itself (_venv_self_heal). A damaged clone or a lone
+    # leftover venv never gets an automatic build, for the same reason it
+    # never gets a version-pinned upgrade.
+    #
+    # Plan 00488 (GitHub #72): each state also names itself for the status
+    # line, whose forwarder prints _HOOKS_DAEMON_STATUS_DOWN_TEXT. Without
+    # this a normal, self-healing build would read as a generic failure.
+    if _detect_stale_clone; then
+        _HOOKS_DAEMON_VERSION_MISMATCH=true
+        _HOOKS_DAEMON_STATUS_DOWN_TEXT="$_HOOKS_DAEMON_STATUS_TEXT_VERSION_MISMATCH"
+    elif ! _is_daemon_installed; then
+        if _daemon_clone_present; then
+            _HOOKS_DAEMON_VENV_MISSING=true
+            if ! _HOOKS_DAEMON_VENV_MISSING_VERSION="$(_clone_version)"; then
+                _HOOKS_DAEMON_VENV_MISSING_VERSION=""
+            fi
+            if [[ -n "$_HOOKS_DAEMON_VENV_MISSING_VERSION" ]]; then
+                _venv_self_heal
+            fi
+            case "$_HOOKS_DAEMON_BOOTSTRAP_STATE" in
+                started | running)
+                    _HOOKS_DAEMON_STATUS_DOWN_TEXT="$_HOOKS_DAEMON_STATUS_TEXT_VENV_BUILDING"
+                    ;;
+                *)
+                    _HOOKS_DAEMON_STATUS_DOWN_TEXT="$_HOOKS_DAEMON_STATUS_TEXT_VENV_MISSING"
+                    ;;
+            esac
+        elif _daemon_orphan_venv_present; then
+            _HOOKS_DAEMON_VENV_MISSING=true
+            _HOOKS_DAEMON_VENV_MISSING_VERSION=""
+            _HOOKS_DAEMON_STATUS_DOWN_TEXT="$_HOOKS_DAEMON_STATUS_TEXT_VENV_MISSING"
+        else
+            _HOOKS_DAEMON_NOT_INSTALLED=true
+            _detect_needs_provision
+        fi
+    elif _daemon_clone_present && _venv_build_running; then
+        # Plan 00488 Task 3.5: a venv resolves, yet the daemon cannot start,
+        # and a build holds the lock. The build has made the interpreter but
+        # not yet installed the package, so this is the build window, not a
+        # broken venv: same state, same status text and same fail-open as the
+        # moments before the interpreter existed (RULING-3.2).
+        _HOOKS_DAEMON_VENV_MISSING=true
+        if ! _HOOKS_DAEMON_VENV_MISSING_VERSION="$(_clone_version)"; then
+            _HOOKS_DAEMON_VENV_MISSING_VERSION=""
+        fi
+        _HOOKS_DAEMON_STATUS_DOWN_TEXT="$_HOOKS_DAEMON_STATUS_TEXT_VENV_BUILDING"
     fi
     return 1
 }
@@ -871,6 +3675,12 @@ ensure_daemon() {
 #   echo '{"key":"value"}' | send_request_stdin
 #
 send_request_stdin() {
+    # Passthrough mode (set by ensure_daemon / _enter_passthrough_mode) answers
+    # with a canned response instead of contacting the daemon.
+    if [[ -n "${_HOOKS_DAEMON_PASSTHROUGH_MODE:-}" ]]; then
+        _hooks_daemon_passthrough_response "$@"
+        return 0
+    fi
     # Plan 00156 (T2): jq-free transport. The event name arrives as $1; the raw
     # hook_input payload arrives on stdin. This inline python3 — already spawned
     # as the transport — wraps it into {"event": $1, "hook_input": <stdin>}
@@ -883,6 +3693,8 @@ send_request_stdin() {
     # Only uses stdlib: socket, sys, json (no venv packages needed).
     local event_name="${1:-Unknown}"
     local response_mode="${2:-}"
+    local _recovery_py
+    _hooks_daemon_recovery_py _recovery_py
     # Plan 00290 (T4.1/T4.2, DESIGN-socket-relay.md §6.2): $3, when the
     # forwarder_generator inserted it (nc_enabled at deploy time), names this
     # event's per-event socket filename (its bash_key, e.g. "pre-tool-use") —
@@ -899,6 +3711,18 @@ send_request_stdin() {
     # baked value — an operator's own override always wins.
     local events_dir_override="${4:-}"
 
+    # Plan 00512: how long this client waits for the daemon when
+    # CLAUDE_HOOKS_SOCKET_TIMEOUT is unset. The worktree events run git and
+    # report a path, so their chain deadline is longer than a guard's and this
+    # wait must outlast it. Mirrors Timeout.EVENT_CLIENT_WAIT in
+    # constants/timeout.py (pinned equal by tests/unit/constants/test_event_budgets.py).
+    local _event_socket_wait
+    case "$event_name" in
+        WorktreeCreate) _event_socket_wait=510;;
+        WorktreeRemove) _event_socket_wait=180;;
+        *) _event_socket_wait=30;;
+    esac
+
     # nc rung (rung 2): only for the plain passthrough shape (no response_mode
     # translation needed — "status"/"worktree" always go through the python3
     # rung's render_status/print_worktree, so that logic is never duplicated
@@ -909,10 +3733,28 @@ send_request_stdin() {
     # (design §5: an empty capture means no verdict was ever delivered, so
     # replay is always safe).
     local _nc_replay_payload=""
-    if [[ -z "$response_mode" && -n "$event_sock_name" ]] \
+    # A relay hand-off (Plan 00466 N126) already knows the daemon did not
+    # answer, so it goes straight to the python3 rung's judged deny. A relay
+    # the guard could not run (Plan 00529) also skips this rung: nc sends the
+    # raw hook input with no envelope, so it cannot carry relay_unused.
+    if [[ -z "$_HOOKS_DAEMON_RELAY_FAILED" && -z "$_HOOKS_DAEMON_RELAY_UNUSED" ]] \
+        && [[ -z "$response_mode" && -n "$event_sock_name" ]] \
         && [[ "${HOOKS_DAEMON_NC_UNIX_CAPABLE:-0}" == "1" ]] \
         && command -v nc > /dev/null; then
         local _nc_events_dir="${HOOKS_DAEMON_EVENTS_DIR:-${events_dir_override:-$_untracked_dir/events${_hostname_suffix}}}"
+        # Plan 00609: when the natural events dir does not exist the daemon
+        # bound in its AF_UNIX-overflow fallback root and published where, in
+        # a location file recording the untracked dir it was written for (a
+        # copied checkout must not trust another's).
+        if [[ -z "${HOOKS_DAEMON_EVENTS_DIR:-}" && -z "$events_dir_override" && ! -d "$_nc_events_dir" ]]; then
+            local _nc_loc="$_untracked_dir/events${_hostname_suffix}.location"
+            local _nc_loc_dir="" _nc_loc_events=""
+            if [[ -r "$_nc_loc" ]] \
+                && { IFS= read -r _nc_loc_dir && IFS= read -r _nc_loc_events; } < "$_nc_loc" \
+                && [[ "$_nc_loc_dir" == "$_untracked_dir" && -n "$_nc_loc_events" ]]; then
+                _nc_events_dir="$_nc_loc_events"
+            fi
+        fi
         local _nc_sock="$_nc_events_dir/${event_sock_name}.sock"
         if [[ -S "$_nc_sock" ]]; then
             local _nc_payload _nc_response _nc_stderr _nc_rc
@@ -929,7 +3771,7 @@ send_request_stdin() {
             # observed as a ~30s hang on every nc-rung call (Plan 00290
             # Phase 6 measurement). With -N, -w's "final net reads" role
             # becomes the correct overall response-wait budget.
-            nc -U -N -w "${CLAUDE_HOOKS_SOCKET_TIMEOUT:-30}" "$_nc_sock" \
+            nc -U -N -w "${CLAUDE_HOOKS_SOCKET_TIMEOUT:-$_event_socket_wait}" "$_nc_sock" \
                 < "$_nc_payload" > "$_nc_response" 2> "$_nc_stderr" || _nc_rc=$?
             if [[ "$_nc_rc" -eq 0 && -s "$_nc_response" ]]; then
                 cat "$_nc_response"
@@ -964,7 +3806,13 @@ send_request_stdin() {
         exec 3<&0
     fi
 
-    python3 -c "
+    # python3's answer is captured, with its exit status appended after a
+    # final x, so exactly one document reaches stdout (Plan 00466 round 4):
+    # a python3 that answered and then failed must not have the fixed deny
+    # below printed after its answer. The suffix keeps the answer's bytes,
+    # trailing newlines included, which a bare $( ) would drop.
+    local _rv=0 _hd_answer
+    _hd_answer="$(python3 -c "
 import json
 import os
 import socket
@@ -973,22 +3821,151 @@ import sys
 event_name = sys.argv[1] if len(sys.argv) > 1 else 'Unknown'
 response_mode = sys.argv[2] if len(sys.argv) > 2 else ''
 
-# Socket budget for the whole connect+send+recv exchange. Default 30s; operators
-# can raise it via CLAUDE_HOOKS_SOCKET_TIMEOUT (also lets tests drive the timeout
-# path fast). A non-numeric or non-positive value falls back to the default.
+# Events whose contract defines hookSpecificOutput.additionalContext: the shell
+# list _HOOKS_DAEMON_CONTEXT_EVENTS, expanded when this source is built.
+context_events = '$_HOOKS_DAEMON_CONTEXT_EVENTS'.split()
+
+# The status line's baseline while the daemon is starting (_HOOKS_DAEMON_STATUS_LOADING_TEXT).
+status_loading_text = '$_HOOKS_DAEMON_STATUS_LOADING_TEXT'
+
+# Socket budget for the whole connect+send+recv exchange. Default 30s, or the
+# event's own wait (_event_socket_wait, set above: the worktree events outlast a
+# guard's chain deadline); operators can raise it via CLAUDE_HOOKS_SOCKET_TIMEOUT
+# (also lets tests drive the timeout path fast). A non-numeric or non-positive
+# value falls back to the default.
 # Defined up-front (not inside the try) so emit_error_json can name it even when
 # a failure fires before the socket is opened (Plan 00177).
+DEFAULT_SOCKET_TIMEOUT = float('$_event_socket_wait')
+
 def _resolve_socket_timeout():
     raw = os.environ.get('CLAUDE_HOOKS_SOCKET_TIMEOUT', '').strip()
     if not raw:
-        return 30.0
+        return DEFAULT_SOCKET_TIMEOUT
     try:
         value = float(raw)
     except ValueError:
-        return 30.0
-    return value if value > 0 else 30.0
+        return DEFAULT_SOCKET_TIMEOUT
+    return value if value > 0 else DEFAULT_SOCKET_TIMEOUT
 
 SOCKET_TIMEOUT_SECONDS = _resolve_socket_timeout()
+
+# Timeout.CHAIN_DEADLINE_DEFAULT, which this stdlib-only client cannot import;
+# test_init_sh_pretooluse_fail_closed.py pins the two equal.
+_CHAIN_DEADLINE_DEFAULT_SECONDS = 20
+
+# core.chain.DISPATCH_SATURATED_REASON, which this stdlib-only client cannot
+# import either; test_init_sh_pretooluse_fail_closed.py pins the two equal.
+_DISPATCH_SATURATED_REASON = 'chain: not judged in time (dispatch pool saturated)'
+
+def _is_saturation_deny(text):
+    '''True when text is the daemon refusing a chain because its dispatch pool
+    is full (Plan 00533, issue #124). No guard judged the call: it is the same
+    no-verdict case as a transport failure, only worded as a well-formed deny,
+    so the recovery carve-out must apply to it too.'''
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return False
+    hso = data.get('hookSpecificOutput') if isinstance(data, dict) else None
+    if not isinstance(hso, dict) or hso.get('permissionDecision') != 'deny':
+        return False
+    reason = hso.get('permissionDecisionReason')
+    return isinstance(reason, str) and reason.startswith(_DISPATCH_SATURATED_REASON)
+
+def _socket_timeout_note():
+    '''Name CLAUDE_HOOKS_SOCKET_TIMEOUT when it caused a timeout (Plan 00466 N24).
+
+    Set below the daemon's chain deadline, it makes this client give up
+    before the daemon can answer, so every slow chain is denied. The deny is
+    right; an unexplained one is not.'''
+    raw = os.environ.get('CLAUDE_HOOKS_SOCKET_TIMEOUT', '').strip()
+    if not raw or SOCKET_TIMEOUT_SECONDS > _CHAIN_DEADLINE_DEFAULT_SECONDS:
+        return ''
+    return (f'CLAUDE_HOOKS_SOCKET_TIMEOUT={raw} makes this client wait only '
+            f'{SOCKET_TIMEOUT_SECONDS:g}s, shorter than the daemon\'s chain deadline '
+            f'(daemon.chain.deadline_seconds, {_CHAIN_DEADLINE_DEFAULT_SECONDS}s by '
+            'default): the client gives up before the daemon can answer. '
+            'Unset it, or raise it above the deadline.')
+
+# Plan 00466 n24 security review: filled in once the raw hook_input is
+# parsed, below. Stays None for a failure that fires before parsing (e.g.
+# invalid_hook_input) -- every reader of this name tolerates that.
+hook_input = None
+
+# Plan 00466 N69: set once connect() succeeds. It alone decides whether a
+# failure message may say the daemon was reached -- an error_type does not,
+# because an unclassified exception can fire on either side of connect().
+daemon_reached = False
+
+# The daemon recovery commands a PreToolUse deny must never block, so a
+# wedged/slow daemon (the B2 GIL-hang shape: alive but not answering) can
+# still be recovered from inside the same session. Defines
+# _is_daemon_recovery_command and _recovery_command; see
+# _hooks_daemon_recovery_py.
+$_recovery_py
+
+project_path = sys.argv[3] if len(sys.argv) > 3 else ''
+daemon_root = sys.argv[5] if len(sys.argv) > 5 else ''
+
+
+def _last_build_note(root):
+    '''Name the last venv build and its log: one small file read, no subprocess.'''
+    fields = {}
+    # One record per view (keyed by the venv fingerprint, like the build log);
+    # the newest of any view is named.
+    untracked = os.path.join(root, 'untracked')
+    try:
+        records = [os.path.join(untracked, name) for name in os.listdir(untracked)
+                   if name.startswith('.venv-bootstrap-') and name.endswith('.result')]
+        with open(max(records, key=os.path.getmtime)) as handle:
+            for line in handle:
+                key, _, value = line.rstrip('\n').partition('=')
+                fields[key] = value
+    except (OSError, ValueError):
+        return ''
+    if not fields.get('result'):
+        return ''
+    return (' (last venv build: %s at %s; build log: %s)'
+            % (fields['result'], fields.get('finished_at', 'unknown time'),
+               fields.get('log', 'unknown')))
+
+
+# The recovery advice every daemon-side failure below ends with.
+_RESTART_ADVICE = _recovery_advice(project_path, daemon_root) + [
+    'Then use the hooks-daemon skill to verify health (args=health).',
+    'If this recurs, use the hooks-daemon skill to check logs',
+    '(args=logs) and report it.',
+]
+
+# Plan 00466 N126: what hooks-relay reported when it handed this call over
+# after its own exchange with the daemon failed; empty otherwise.
+relay_failure = sys.argv[4] if len(sys.argv) > 4 else ''
+# Plan 00529: the relay binary the guard could not run; empty otherwise.
+relay_unused = sys.argv[6] if len(sys.argv) > 6 else ''
+
+def _pretooluse_response_looks_valid(text):
+    '''True when text parses as one of PreToolUse's two legitimate response
+    shapes: {} (a real ALLOW with nothing to say -- HookResult.to_json's
+    documented empty-response case) or a dict with a hookSpecificOutput key
+    whose permissionDecision, if present, is one of the four known values.
+    A response missing entirely, not valid JSON, or shaped as neither of
+    these is NOT a judged verdict -- the daemon-side handler chain may
+    have crashed or hung partway through serialising it.'''
+    if not text:
+        return False
+    try:
+        data = json.loads(text)
+    except Exception:
+        return False
+    if not isinstance(data, dict):
+        return False
+    if data == {}:
+        return True
+    hso = data.get('hookSpecificOutput')
+    if not isinstance(hso, dict):
+        return False
+    decision = hso.get('permissionDecision')
+    return decision is None or decision in ('allow', 'deny', 'ask', 'defer')
 
 def emit_error_json(event_name, error_type, error_details):
     '''Output valid hook error response to stdout.
@@ -997,6 +3974,9 @@ def emit_error_json(event_name, error_type, error_details):
     Handles event-specific formatting: Stop/SubagentStop vs other events.
     '''
     print(f'HOOKS DAEMON ERROR [{error_type}]: {error_details}', file=sys.stderr)
+    timeout_note = _socket_timeout_note() if error_type == 'socket_timeout' else ''
+    if timeout_note:
+        print(f'HOOKS DAEMON: {timeout_note}', file=sys.stderr)
 
     if error_type == 'invalid_hook_input':
         # A malformed payload never reached the socket, so the daemon state is
@@ -1008,7 +3988,8 @@ def emit_error_json(event_name, error_type, error_details):
             '',
             f'Error: {error_type} - {error_details}',
             '',
-            'The hook input was not valid JSON, so no handler validated it.',
+            'The hook input could not be parsed (not UTF-8 JSON, or nested too',
+            'deeply to decode), so no handler validated it.',
             'The daemon itself is likely healthy — do NOT restart it.',
             'If this recurs, capture the exact hook input and report it.',
         ]
@@ -1029,7 +4010,103 @@ def emit_error_json(event_name, error_type, error_details):
             '',
             'This usually means the session transcript has grown very large.',
             'Run /compact or start a new session to restore fast hooks.',
-        ]
+            '',
+            'If this is a PreToolUse call being denied for safety because of',
+            'this timeout: a genuinely wedged daemon (not just a slow handler)',
+            'is fixed by restarting it.',
+        ] + _recovery_advice(project_path, daemon_root)
+        if timeout_note:
+            context_lines[1:1] = ['', timeout_note]
+    elif error_type == 'connect_backlog_full':
+        # Plan 00466 N24 review 3 MA1: connect() itself raised EAGAIN/EWOULDBLOCK
+        # instead of blocking until the socket timeout, which on a UNIX stream
+        # socket means the kernel's accept backlog is already full -- the
+        # daemon process exists and is listening, it has simply stopped
+        # calling accept() (e.g. wedged holding the GIL). This is the daemon
+        # being unresponsive, not absent, so it is framed and denied the same
+        # way as connection_lost/malformed_response, not as daemon-not-running.
+        context_lines = [
+            'HOOKS DAEMON: accept backlog full — daemon unresponsive',
+            '',
+            f'Error: {error_type} - {error_details}',
+            '',
+            'The daemon socket exists and the kernel refused this connection',
+            'because the daemon has stopped accepting new connections (it is',
+            'listening but wedged, not down).',
+            '',
+        ] + _RESTART_ADVICE
+    elif error_type == 'connection_lost':
+        # connect() SUCCEEDED (a ConnectionRefusedError, the genuine
+        # daemon-down shape, is caught separately and never reaches here) --
+        # so the daemon WAS reached, then the connection dropped mid-send or
+        # mid-receive. Distinct from malformed_response (a response DID come
+        # back, just not a valid one) and from socket_timeout (no response
+        # within budget, connection still open): here the pipe itself broke.
+        context_lines = [
+            'HOOKS DAEMON: connection lost mid-exchange',
+            '',
+            f'Error: {error_type} - {error_details}',
+            '',
+            'The daemon was REACHED (the connection succeeded), then the pipe',
+            'broke before a response was received.',
+            '',
+        ] + _RESTART_ADVICE
+    elif error_type == 'malformed_response':
+        # The socket round-trip SUCCEEDED (connect+send+recv all completed),
+        # but what came back was not a valid decision -- the daemon-side
+        # chain crashed partway through serialising its verdict, or the
+        # connection closed early. Distinct from socket_timeout (no response
+        # at all within budget) and from a genuinely dead daemon (which
+        # would have failed to connect in the first place).
+        context_lines = [
+            'HOOKS DAEMON: responded, but not with a valid decision',
+            '',
+            f'Error: {error_type} - {error_details}',
+            '',
+            'The daemon was REACHED and answered, but the response could not',
+            'be parsed as a judged verdict for this call.',
+            '',
+        ] + _RESTART_ADVICE
+    elif error_type == 'dispatch_saturated':
+        # Plan 00533: only the exact recovery command reaches here.
+        context_lines = [
+            'HOOKS DAEMON: dispatch pool saturated',
+            '',
+            f'Error: {error_type} - {error_details}',
+            '',
+            'The daemon was REACHED, but every dispatch slot was taken, so no',
+            'guard judged this call. Restarting the daemon empties the pool;',
+            'if this recurs, raise daemon.chain.max_inflight.',
+            '',
+        ] + _RESTART_ADVICE
+    elif error_type in ('socket_not_found', 'connection_refused') \
+            or (event_name == 'PreToolUse' and not daemon_reached):
+        # Plan 00466 N24 review 3 MA4 (owner decision): connect() itself
+        # never reached a daemon at all -- the socket is missing, nothing is
+        # listening on it, or (N69) an error no clause above names, such as
+        # a socket this client may not open. The PreToolUse branch below
+        # denies all of these, with the one exact-recovery-command carve-out.
+        context_lines = [
+            'HOOKS DAEMON: could not connect at all',
+            '',
+            f'Error: {error_type} - {error_details}',
+            '',
+            'No daemon saw this call: the daemon is not running, its socket is',
+            'gone, or the socket cannot be opened (the Error line says which).',
+            '',
+        ] + _RESTART_ADVICE
+    elif event_name == 'PreToolUse':
+        # Plan 00466 N69: an error no clause above names, raised AFTER
+        # connect() succeeded. The daemon was reached; the exchange failed.
+        context_lines = [
+            'HOOKS DAEMON: the exchange with the daemon failed',
+            '',
+            f'Error: {error_type} - {error_details}',
+            '',
+            'The daemon was REACHED (the connection succeeded), but the exchange',
+            'failed before a verdict could be read.',
+            '',
+        ] + _RESTART_ADVICE
     else:
         context_lines = [
             'HOOKS DAEMON: Not currently running',
@@ -1072,19 +4149,85 @@ def emit_error_json(event_name, error_type, error_details):
                 'reason': reason,
             }
         else:
-            reason = 'Hooks daemon not running - protection not active'
+            reason = ('Hooks daemon not running - protection not active'
+                      + _last_build_note(daemon_root))
             response = {
                 'decision': 'block',
                 'reason': reason,
             }
-    else:
-        # Other events: hookSpecificOutput with context (fail-open allow)
+            # Plan 00555 Task 2.6/2.8 S5: every class that blocks counts toward
+            # the bound (reached-but-broken included); invalid_hook_input and
+            # socket_timeout are handled above and never count.
+            allowed = _stop_bound(hook_input, event_name, error_type,
+                                  project_path, daemon_root)
+            if allowed is not None:
+                response = {'systemMessage': allowed}
+    elif event_name == 'PreToolUse' \
+            and not (_is_daemon_recovery_command(hook_input, project_path, daemon_root)
+                     or (not daemon_reached
+                         and _is_daemon_down_permitted(hook_input, project_path, daemon_root))):
+        # Plan 00466 N24 review 4 R4-MA1: deny for EVERY PreToolUse transport
+        # failure except the exact daemon-recovery command (review 3 MA4's
+        # carve-out, checked via _is_daemon_recovery_command so this can
+        # never itself block the commands that would fix it). That includes
+        # invalid_hook_input (Plan 00466 N140): input that cannot be parsed
+        # reached no guard, and is never a recovery command, since that
+        # judgement needs the parsed input. This used to be an ALLOWLIST of known
+        # error_types (socket_timeout, malformed_response, connection_lost,
+        # connect_backlog_full, socket_not_found, connection_refused) that
+        # denied, with everything else falling through to the fail-open
+        # branch below -- so a connect() failure the transport's except
+        # clauses do not name explicitly (PermissionError from a chmod'd
+        # socket, NotADirectoryError, an over-long socket path, ...) disabled
+        # every later PreToolUse guard. 'An exception never means allow' is
+        # binding here: deny by default, name the one exemption instead of a
+        # list of what to deny. This project's install/CI story keeps
+        # ensure_daemon's auto-start ahead of every real call site here, so
+        # 'the socket that auto-start just tried to reach is still missing'
+        # is not the fresh-clone-before-first-install case -- that one is
+        # handled entirely by emit_hook_error's own NOT_INSTALLED/
+        # VENV_MISSING branches, upstream of ever reaching this transport at
+        # all.
+        if error_type == 'malformed_response':
+            verb = 'responded'
+        elif daemon_reached:
+            verb = 'reached'
+        else:
+            # Plan 00466 N69: connect() never succeeded -- a missing or
+            # refused socket, a full accept backlog, or an unclassified
+            # connect error -- so the daemon never saw this call.
+            verb = 'unreachable'
+        reason = f'Hooks daemon {verb} - no verdict produced ({error_type}) - denied for safety'
+        if error_type == 'invalid_hook_input':
+            reason = ('Hook input could not be parsed, so no guard judged this call '
+                      f'({error_type}) - denied for safety')
+        if timeout_note:
+            reason = f'{reason}. {timeout_note}'
         response = {
             'hookSpecificOutput': {
                 'hookEventName': event_name,
+                'permissionDecision': 'deny',
+                'permissionDecisionReason': reason,
                 'additionalContext': context,
             }
         }
+    else:
+        # Other events, and the one PreToolUse case that fails open: an
+        # exact daemon-recovery command (Plan 00466 N24 review 3 MA4's
+        # carve-out) on any of the error_types denied above.
+        # hookSpecificOutput with context where the event's contract has it
+        # (the shell list, interpolated below); otherwise the universal
+        # systemMessage, because hookSpecificOutput on any other event
+        # invalidates the whole document.
+        if event_name in context_events:
+            response = {
+                'hookSpecificOutput': {
+                    'hookEventName': event_name,
+                    'additionalContext': context,
+                }
+            }
+        else:
+            response = {'systemMessage': context}
     print(json.dumps(response))
 
 def fail(error_type, error_details):
@@ -1097,7 +4240,13 @@ def fail(error_type, error_details):
         # diagnostic on stderr — no silent error suppression (Plan 00156 review
         # finding 3). (The non-status path logs stderr inside emit_error_json.)
         print(f'HOOKS DAEMON ERROR [{error_type}]: {error_details}', file=sys.stderr)
-        print('⚠️ NO STATUS DATA')
+        # Plan 00495 Task 2.7: the daemon's process is alive (the wrapper
+        # gated on it) but its socket is not answering yet: it is still
+        # starting, which is not the same as having no status data.
+        if error_type in ('socket_not_found', 'connection_refused'):
+            print(status_loading_text)
+        else:
+            print('⚠️ NO STATUS DATA')
     elif response_mode == 'worktree':
         # WorktreeCreate stdout is parsed as a path; a transport failure has no
         # valid path to offer. Fail creation cleanly (non-zero) with the reason
@@ -1125,29 +4274,47 @@ def print_worktree(output):
     worktree PATH (not JSON), so print the raw .worktreePath the daemon returns.
     If the daemon produced no path (no handler / error), FAIL the creation
     cleanly with a non-zero exit rather than echoing '{}' — Claude Code would
-    take '{}' literally as the path '/<cwd>/{}' (the original Plan 00188 bug).'''
+    take '{}' literally as the path '/<cwd>/{}' (the original Plan 00188 bug).
+
+    On failure, report the daemon's OWN reason (Plan 00419 N10). A handler that
+    raises has its exception accumulated into the result context, which for this
+    event serialises as systemMessage — so the reason is already in these bytes.
+    Discarding it and guessing at a cause instead sent a real investigation to
+    check a handler registration that was never in doubt, and a message that
+    confidently names the wrong cause is worse than one that names none.'''
     try:
         data = json.loads(output)
     except Exception:
         data = None
-    path = data.get('worktreePath') if isinstance(data, dict) else None
+    if not isinstance(data, dict):
+        data = {}
+    path = data.get('worktreePath')
     if path:
         print(path)
         sys.exit(0)
-    print('HOOKS DAEMON: WorktreeCreate produced no worktree path '
-          '(is the worktree_create handler enabled?)', file=sys.stderr)
+    # systemMessage carries a crashed handler's exception; reason carries a
+    # deliberate refusal. Either is the daemon speaking for itself.
+    detail = data.get('systemMessage') or data.get('reason')
+    message = 'HOOKS DAEMON: WorktreeCreate produced no worktree path.'
+    if detail:
+        message = message + ' The daemon reported: ' + str(detail)
+    else:
+        message = message + (' No reason was returned — check the daemon logs '
+                             '(Skill tool: skill=hooks-daemon, args=logs).')
+    print(message, file=sys.stderr)
     sys.exit(1)
 
-# Read the raw hook_input payload from stdin (preserves control characters).
-raw = sys.stdin.read()
-
-# Parse it so we can wrap it ourselves (jq used to do this). Claude Code always
-# sends a JSON object; a parse failure is a real error, handled explicitly.
+# Read the raw hook_input payload from stdin (preserves control characters)
+# and parse it so we can wrap it ourselves (jq used to do this). Claude Code
+# always sends a JSON object; any failure to read, decode or parse it -- bytes
+# that are not UTF-8, or nesting deeper than the parser recurses -- is a real
+# error, handled explicitly (Plan 00466 N140: PreToolUse denies it).
 try:
+    raw = sys.stdin.read()
     hook_input = json.loads(raw)
 except Exception as exc:
     fail('invalid_hook_input',
-        f'Hook input was not valid JSON: {type(exc).__name__}: {exc}')
+        f'Hook input could not be parsed: {type(exc).__name__}: {exc}')
 
 # Status line injects its own event name into the payload (parity with the old
 # jq '. + {hook_event_name: \"Status\"}').
@@ -1162,15 +4329,49 @@ if event_name == 'Status' and isinstance(hook_input, dict):
         if _v is not None and _v.strip().isdigit():
             hook_input[_dst] = int(_v)
 
-# Wrap into the daemon request envelope; newline-terminated as the daemon expects.
-request = json.dumps({'event': event_name, 'hook_input': hook_input}) + '\n'
+# Forward the session's hostname override (Plan 00470 Task 6.1, issues #60 and
+# #62): a persistent_crons job may carry hosts:, matched against the hostname
+# the SESSION exported, and the daemon is a separate long-running process that
+# never inherits it. First non-empty of HOOKS_DAEMON_HOSTNAME then
+# CCY_HOST_HOSTNAME, as utils/cron_hosts.py resolves it; omitted when neither
+# is set, so the daemon falls back to the system hostname it shares.
+if isinstance(hook_input, dict):
+    for _name in ('HOOKS_DAEMON_HOSTNAME', 'CCY_HOST_HOSTNAME'):
+        _v = os.environ.get(_name, '').strip()
+        if _v:
+            hook_input['hooks_daemon_hostname'] = _v
+            break
+
+# Wrap into the daemon request envelope; newline-terminated as the daemon
+# expects. The envelope is one level deeper than the input, so input that
+# only just parsed can still be too deep to encode.
+_envelope = {'event': event_name, 'hook_input': hook_input}
+# Plan 00529: the relay binary the guard could not run. The literal is pinned
+# equal to RequestEnvelopeField.RELAY_UNUSED by a test.
+if relay_unused:
+    _envelope['relay_unused'] = relay_unused
+try:
+    request = json.dumps(_envelope) + '\n'
+except Exception as exc:
+    hook_input = None
+    fail('invalid_hook_input',
+        f'Hook input could not be encoded for the daemon: {type(exc).__name__}: {exc}')
 
 socket_path = '$SOCKET_PATH'
+
+if relay_failure and event_name == 'PreToolUse' and not response_mode:
+    # The relay connected, sent this call and got no verdict; asking the
+    # daemon again would only wait out the same wedge. Deny through
+    # emit_error_json, whose one recovery carve-out judges this call.
+    daemon_reached = True
+    fail('relay_exchange_failed',
+        f'hooks-relay reached the daemon but got no verdict ({relay_failure})')
 
 try:
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     sock.settimeout(SOCKET_TIMEOUT_SECONDS)  # budget for connect+send+recv
     sock.connect(socket_path)
+    daemon_reached = True
     sock.sendall(request.encode('utf-8'))
     sock.shutdown(socket.SHUT_WR)
 
@@ -1189,8 +4390,29 @@ try:
         print(render_status(output))
     elif response_mode == 'worktree':
         print_worktree(output)  # prints raw path + exits (0 on success, 1 if none)
+    elif event_name == 'PreToolUse' and not _pretooluse_response_looks_valid(output):
+        # Plan 00466 n24 security review: a response WAS received (the
+        # connect+send+recv all succeeded), but it is not one of
+        # PreToolUse's two legitimate shapes -- the connection closed
+        # early, or the daemon-side chain crashed partway through
+        # serialising its verdict. Treated exactly like a socket_timeout:
+        # fail CLOSED via emit_error_json's PreToolUse branch (still
+        # carving out an exact daemon-recovery command).
+        fail('malformed_response',
+            f'Daemon responded but the response was not a valid PreToolUse '
+            f'decision (received {output[:200]!r})')
+    elif (event_name == 'PreToolUse' and _is_saturation_deny(output)
+            and _is_daemon_recovery_command(hook_input, project_path, daemon_root)):
+        # Plan 00533 (issue #124): a full pool denies every chain, the
+        # restart that would empty it included. Only the exact recovery
+        # command is let through, by the transport-failure carve-out.
+        fail('dispatch_saturated',
+            f'Daemon at {socket_path} refused to judge this call: its dispatch '
+            'pool is saturated.')
     else:
         print(output)
+        if not response_mode:
+            _reset_stop_bound(hook_input, daemon_root)
     sys.exit(0)
 
 except socket.timeout:
@@ -1208,15 +4430,52 @@ except ConnectionRefusedError:
         f'Daemon refusing connections at {socket_path}. '
         'Daemon may be shutting down or in error state.')
 
+except BlockingIOError as e:
+    # Plan 00466 N24 review 3 MA1: on a UNIX stream socket, connect() raises
+    # EAGAIN/EWOULDBLOCK (BlockingIOError) instead of blocking until the
+    # timeout when the kernel's accept backlog is already full. The daemon
+    # process is there and listening -- it has simply stopped calling
+    # accept(), for example while wedged holding the GIL -- so this must be
+    # treated as an unresponsive-but-present daemon (deny), never as an
+    # absent one (allow).
+    fail('connect_backlog_full',
+        f'Daemon at {socket_path} did not accept the connection '
+        f'({type(e).__name__}: {e}). The accept backlog is full.')
+
+except (BrokenPipeError, ConnectionResetError) as e:
+    # Plan 00466 N40 review 2 mA1: connect() already SUCCEEDED by the time
+    # either of these can be raised here (sock.connect() itself raises
+    # ConnectionRefusedError, caught above, not these) -- so the daemon WAS
+    # reached, same as a socket_timeout, and the generic except Exception
+    # below used to classify this as an opaque error_type never in the
+    # PreToolUse fail-closed allowlist, silently ALLOWing. A legacy-socket
+    # peer past its drain cap (server.py's _drain_oversized_request) is
+    # exactly this shape on a large enough payload.
+    fail('connection_lost',
+        f'Daemon at {socket_path} was reached but the connection was lost '
+        f'mid-exchange ({type(e).__name__}: {e}).')
+
 except Exception as e:
     fail(type(e).__name__, f'{type(e).__name__}: {e}')
-" "$event_name" "$response_mode" <&3
-    local _rv=$?
+" "$event_name" "$response_mode" "${PROJECT_PATH:-}" "$_HOOKS_DAEMON_RELAY_FAILED" \
+        "${HOOKS_DAEMON_ROOT_DIR:-}" "$_HOOKS_DAEMON_RELAY_UNUSED" <&3; printf 'x%s' "$?")"
+    _rv="${_hd_answer##*x}"
+    _hd_answer="${_hd_answer%x*}"
+    # Every PreToolUse path above answers and exits 0, so a failure here is
+    # python3 missing or crashing: no guard's verdict can be trusted, and
+    # Claude Code runs a call whose hook wrote nothing (Plan 00466 round 3,
+    # R2-1). Whatever python3 printed first is dropped.
+    if [[ "$_rv" -ne 0 && "$event_name" == "PreToolUse" && -z "$response_mode" ]]; then
+        _hooks_daemon_static_deny
+        _rv=0
+    else
+        printf '%s' "$_hd_answer"
+    fi
     exec 3<&-
     if [[ -n "$_nc_replay_payload" ]]; then
         rm -f "$_nc_replay_payload"
     fi
-    return $_rv
+    return "$_rv"
 }
 
 #
@@ -1301,9 +4560,39 @@ sys.exit(0)
 
 # Export functions for use by forwarder scripts
 export -f emit_hook_error
+export -f _hooks_daemon_recovery_py
+export -f _hooks_daemon_stdin_is_recovery_command
+export -f _hooks_daemon_stdin_judge
+export -f _hooks_daemon_recovery_command
+export -f _hooks_daemon_static_deny
+export -f _hooks_daemon_stdin_is_provision_command
+export -f _hooks_daemon_event_takes_context
+export _HOOKS_DAEMON_CONTEXT_EVENTS
+export -f _hooks_daemon_emit_needs_provision
+export -f _detect_needs_provision
+export -f _config_daemon_key_raw
+export -f _config_unprovisioned_mode
 export -f validate_venv
+# is_daemon_running and everything it calls.
+export _HOOKS_DAEMON_PID_MAX
+export _HOOKS_DAEMON_PROCFS
+export -f _hooks_daemon_is_pid_text
+export -f _hooks_daemon_root_is_this_install
+export -f _hooks_daemon_run_cli_helper
+export -f _hooks_daemon_helper_proves_pid
+export -f _hooks_daemon_argv_prove_this_project
+export -f _hooks_daemon_argv_name_root
+export -f _hooks_daemon_cmdline_proves_this_project
+export -f _hooks_daemon_ps_args_prove_this_project
+export -f _hooks_daemon_pid_args_prove_this_project
+export -f _hooks_daemon_pid_is_this_users
 export -f is_daemon_running
 export -f start_daemon
+export -f _hooks_daemon_drain_launch
+export -f _hooks_daemon_launch_settled
+export -f _hooks_daemon_end_launch
+export -f _hooks_daemon_is_down
 export -f ensure_daemon
+export -f _hooks_daemon_passthrough_response
 export -f send_request_stdin
 export -f forward_stop_event
