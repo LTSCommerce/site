@@ -91,10 +91,6 @@ handlers:
       enabled: true
       priority: 21
 
-    daemon_restart_verifier: # Verifies daemon restart after code changes
-      enabled: true # Enable for daemon development projects
-      priority: 22
-
     worktree_file_copy: # Prevents copying files between git worktrees
       enabled: true
       priority: 16
@@ -130,17 +126,9 @@ handlers:
       options:
         track_plans_in_project: 'CLAUDE/Plan' # Must match markdown_organization setting
 
-    task_tdd_advisor: # Advises on TDD workflow for tasks
-      enabled: false # Enable for TDD guidance
-      priority: 36
-
     gh_issue_comments: # Requires --comments flag for gh issue view
       enabled: true
       priority: 40
-
-    validate_plan_number: # Validates plan number format (001-, 002-, etc)
-      enabled: true # This project uses CLAUDE/Plan/NNN-name/ structure
-      priority: 38
 
     global_npm_advisor: # Advises against global npm installs
       enabled: true
@@ -153,10 +141,6 @@ handlers:
     plan_workflow: # Provides guidance when creating plans
       enabled: true # This project uses CLAUDE/Plan/NNN-name/ structure
       priority: 44
-
-    plan_completion_advisor: # Advises on plan completion workflow
-      enabled: true # This project uses CLAUDE/Plan/NNN-name/ structure
-      priority: 48
 
     validate_instruction_content: # Blocks ephemeral content in CLAUDE.md/README.md
       enabled: true # Enable to prevent implementation logs in instruction files
@@ -211,10 +195,6 @@ handlers:
   post_tool_use:
     goal_injection:
       enabled: true
-    bash_error_detector: # Detects bash errors and suggests corrections
-      enabled: true
-      priority: 10
-
     lint_on_edit: # Language-aware lint validation after Write/Edit
       enabled: true # Enable for automatic lint validation (Shell, Python, Go, Rust, etc.)
       priority: 25
@@ -235,10 +215,6 @@ handlers:
       enabled: true
     tool_disable_advisor:
       enabled: true
-    yolo_container_detection: # Detects YOLO development environments (Docker, etc)
-      enabled: true
-      priority: 10
-
     optimal_config_checker: # Checks Claude Code env for optimal settings
       enabled: true
       priority: 52
@@ -264,25 +240,6 @@ handlers:
   pre_compact:
     compaction_signal:
       enabled: true
-    transcript_archiver: # Archives transcripts before compaction
-      enabled: false # Enable to save conversation history
-      priority: 10
-
-  # SessionEnd handlers (run when session ends)
-  session_end:
-    cleanup: # Session cleanup operations
-      enabled: true
-      priority: 10
-
-  # SubagentStop handlers (run when subagent completes)
-  subagent_stop:
-    subagent_completion_logger: # Logs subagent completion
-      enabled: false # Enable for debugging subagent workflows
-      priority: 10
-
-    remind_prompt_library: # Reminds about prompt library after agent work
-      enabled: false # Enable if using prompt library system
-      priority: 20
 
   # UserPromptSubmit handlers (run when user submits prompt)
   user_prompt_submit:
@@ -302,19 +259,10 @@ handlers:
       enabled: true
       priority: 10
 
-  notification:
-    notification_logger: # Logs notifications
-      enabled: false # Enable for debugging
-      priority: 10
-
   stop:
     auto_continue_stop: # Auto-continues after stop events based on criteria
       enabled: true
       priority: 10
-
-    task_completion_checker: # Checks for task completion
-      enabled: false # Enable if using task management system
-      priority: 20
 
   # Status line handlers (format daemon-based status display)
   status_line:
@@ -350,10 +298,6 @@ handlers:
       enabled: true
       priority: 14
 
-    usage_tracking: # Tracks and displays usage statistics
-      enabled: true
-      priority: 60
-
 # Project-level handlers (custom handlers in .claude/hooks/handlers/)
 # Example:
 # plugins:
@@ -383,6 +327,13 @@ documentation:
     resident_at_imports:
       - "CLAUDE.md" # built-in default - keep alongside any additions
       - "CLAUDE/PlanWorkflow.md" # planning/SKILL.md's "Required Reading" - deliberately eager, not a lazy pointer
+
+claude_md:
+  ownership: own # v3.75.0 default, written explicitly per the upgrade guide
+
+branches:
+  wip:
+    creation_grace: 2 # v3.75.0 default: warn at the cap, deny at cap + 2
 
 agents:
   docs_qa:

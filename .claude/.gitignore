@@ -2,3 +2,6 @@ cc-commands/
 
 # Claude Code Hooks Daemon - runtime files
 hooks-daemon/untracked/
+
+# Skills the daemon rescued on redeploy (customised copies, never committed)
+/hooks-daemon-backups/
