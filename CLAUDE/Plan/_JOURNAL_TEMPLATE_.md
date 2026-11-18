@@ -5,7 +5,7 @@ _Scaffolded by `mkplan.bash`; timestamps in this file are UTC._
 > **Append-only activity log** for plan {{PLAN_NUMBER}}. One file per entry,
 > in a folder per day (`JOURNAL/YYYY-MM-DD/HHMMSSZ-<category>-<hex>.md`); older
 > plans also hold legacy day-files (`{{PLAN_NUMBER}}-Journal-YY-MM-DD.md`). `PLAN.md` tracks the plan (what/why,
-> current state, tasks); this journal tracks what actually *happened* —
+> current state, tasks); this journal tracks what actually _happened_ —
 > findings, decisions, dead-ends, hand-off state — the linear lifecycle a plan
 > document structurally cannot carry.
 >

@@ -9,7 +9,7 @@
 ## Why journal a plan (and where does durable detail go)?
 
 `PLAN.md` captures **what** the work is and **why** — goals, tasks, decisions,
-success criteria. It is a living *specification*, curated and rewritten as the
+success criteria. It is a living _specification_, curated and rewritten as the
 plan evolves. It is a TASK LIST, kept deliberately lean, so it structurally
 cannot hold two other kinds of content that plans accumulate:
 
@@ -187,7 +187,7 @@ Each entry is a heading with a fixed grammar followed by a free markdown body:
 - Separator is the middot `·` (U+00B7).
 
 Bodies may embed fenced logs, diffs, or code snippets — put a one-line takeaway
-*above* the fence so a skim reader gets the point without expanding it.
+_above_ the fence so a skim reader gets the point without expanding it.
 
 ### Appending an entry
 
@@ -342,7 +342,7 @@ threshold are never nagged.
 ## 14:08 · thought · — hmm            ← empty; say something or omit
 ```
 
-Cadence is a *convention*: journal when something is worth grounding a future
+Cadence is a _convention_: journal when something is worth grounding a future
 agent on. It is never enforced per-tool-call — the daemon never turns
 journalling into a heartbeat.
 
@@ -405,12 +405,12 @@ Configuration block (defaults shown):
 plan_workflow:
   qa:
     journal:
-      enabled: true          # master switch for all journal checks
-      mode: advise           # advise | block | off (only naming honours block)
-      dir_name: JOURNAL       # journal sub-directory name
-      freshness_days: 3       # nag a quiet JOURNAL/ sooner than plan staleness
+      enabled: true # master switch for all journal checks
+      mode: advise # advise | block | off (only naming honours block)
+      dir_name: JOURNAL # journal sub-directory name
+      freshness_days: 3 # nag a quiet JOURNAL/ sooner than plan staleness
       enforce_on_completion: false
-      grandfather_before: 0   # plans below this number are never nagged for a JOURNAL/
+      grandfather_before: 0 # plans below this number are never nagged for a JOURNAL/
 ```
 
 Set `grandfather_before` to the plan number at which your project adopted
