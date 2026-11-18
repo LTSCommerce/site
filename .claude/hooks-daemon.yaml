@@ -195,6 +195,8 @@ handlers:
   post_tool_use:
     goal_injection:
       enabled: true
+    plan_fact_check_feed: # Debounced fact-check of plan edits (optimise review, v3.75.0)
+      enabled: true
     lint_on_edit: # Language-aware lint validation after Write/Edit
       enabled: true # Enable for automatic lint validation (Shell, Python, Go, Rust, etc.)
       priority: 25
@@ -327,6 +329,12 @@ documentation:
     resident_at_imports:
       - "CLAUDE.md" # built-in default - keep alongside any additions
       - "CLAUDE/PlanWorkflow.md" # planning/SKILL.md's "Required Reading" - deliberately eager, not a lazy pointer
+
+plan_workflow:
+  enabled: true
+  directory: "CLAUDE/Plan"
+  workflow_docs: "CLAUDE/PlanWorkflow.md"
+  enforce_claude_code_sync: false
 
 claude_md:
   ownership: own # v3.75.0 default, written explicitly per the upgrade guide
