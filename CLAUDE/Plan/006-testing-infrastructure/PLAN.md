@@ -1,6 +1,6 @@
 # Plan 006: Testing Infrastructure (Vitest + Playwright)
 
-**Status**: 📋 Planned
+**Status**: Not Started
 **Created**: 2026-02-20
 **Last Updated**: 2026-02-20
 **Owner**: Claude Code

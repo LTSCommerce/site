@@ -1,6 +1,6 @@
 # Hooks Daemon - Active Configuration
 
-> Generated on 2026-11-18 (v3.75.0) by `generate-docs`. Regenerate: `.claude/hooks-daemon/bin/hooks-daemon generate-docs`
+> Generated on 2026-11-20 (v3.75.0) by `generate-docs`. Regenerate: `.claude/hooks-daemon/bin/hooks-daemon generate-docs`
 
 ## Plan Mode
 
@@ -102,7 +102,7 @@ The redirect handler intercepts `~/.claude/plans/` writes as a safety net only.
 | 60 | subagent_tier_advisor | ADVISORY | Advise a cheaper tier on an unchosen or up-overridden dispatch, and a floor below it |
 | 60 | workflow_fanout_advisor | ADVISORY | Advise on a Workflow script's agent count, inherited sites and per-family ceiling |
 
-### PostToolUse (18 handlers)
+### PostToolUse (19 handlers)
 
 | Priority | Handler | Behaviour | Description |
 |----------|---------|----------|-------------|
@@ -120,6 +120,7 @@ The redirect handler intercepts `~/.claude/plans/` writes as a safety net only.
 | 34 | merge_qa_report | ADVISORY | Post-hoc plan/docs QA report over what a merge/pull/rebase just introduced |
 | 35 | daemon_sync_after_merge | ADVISORY | Advise a restart when a merge/pull/rebase changed daemon config or handlers |
 | 36 | cron_record_keeper | ADVISORY | Record every CronCreate and forget every CronDelete, silently |
+| 37 | plan_fact_check_feed | ADVISORY | Feed plan edits to the debouncer so a burst yields one pending fact-check |
 | 38 | operator_signal_notice | ADVISORY | Surface a pending operator signal as hook context, once per signal per agent thread |
 | 39 | cleanup_after_merge | ADVISORY | Delete or advise deleting the branch a merge into the default just landed |
 | 40 | branch_touch_recorder | ADVISORY | Write the creator and touch records of the branches a call created or changed |

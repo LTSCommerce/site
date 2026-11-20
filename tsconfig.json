@@ -42,5 +42,22 @@
     /* Test Types */
     "types": ["vitest/globals", "vite/client", "@testing-library/jest-dom"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "**/.build",
+    "**/.next",
+    "**/.venv",
+    "**/build",
+    "**/coverage",
+    "**/dist",
+    "**/node_modules",
+    "**/target",
+    "**/third_party",
+    "**/vendor",
+    "**/venv",
+    ".claude/ccy/plugins",
+    "CLAUDE/Plan",
+    "remote-docs",
+    "untracked"
+  ]
 }

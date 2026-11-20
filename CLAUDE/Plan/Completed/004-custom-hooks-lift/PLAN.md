@@ -1,6 +1,6 @@
 # Plan 004: Custom React Hooks Lift from EC Site
 
-**Status**: 🟢 Complete
+**Status**: Complete
 **Created**: 2026-02-20
 **Owner**: Claude Code
 **Priority**: Medium

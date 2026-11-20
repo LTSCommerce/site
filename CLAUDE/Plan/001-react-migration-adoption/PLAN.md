@@ -1,8 +1,8 @@
 # Plan 001: React Migration & Claude Code Infrastructure Adoption
 
-**Status**: 🔄 In Progress
+**Status**: In Progress
 **Created**: 2025-12-11
-**Last Updated**: 2026-01-22
+**Last Updated**: 2026-11-20
 **Owner**: Claude Code
 **Priority**: High
 **Type**: Major Migration / Infrastructure Overhaul
@@ -72,9 +72,9 @@
 - ✅ ArticleDetail: Header complete (content rendering is Phase 6 scope)
 - ✅ All QA checks passing (TypeScript: 0 errors, Build: successful, Bundle: 218KB)
 
-### Next Phase:
+### Reconciled 2026-11-20:
 
-**Phase 6: Article System Migration** - Migrate 25+ articles from legacy with content and syntax highlighting
+Phases 1, 2, 6 and 7 were done but never ticked; checked against the repo and updated. Phase 8 tooling exists. Still open: Phase 8 visual, cross-browser and mobile checks (Plan 006), Phase 9 launch (Plan 010) and Phase 10 documentation and cleanup.
 
 ## Overview
 
@@ -171,37 +171,37 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 - [x] ✅ **Create Plan 002**: Document skeleton repo approach (concurrent plan)
 - [x] ✅ **Create Plan README**: Index of all plans
 - [x] ✅ **Commit Foundation**: Commit selective infrastructure
-- [ ] ⬜ **Archive Legacy Build System**:
-  - [ ] ⬜ Create ARCHIVE/ directory
-  - [ ] ⬜ Move private_html/ to ARCHIVE/
-  - [ ] ⬜ Move scripts/ to ARCHIVE/
-  - [ ] ⬜ Move current vite.config.js to ARCHIVE/
-  - [ ] ⬜ Move current package.json to ARCHIVE/
-  - [ ] ⬜ Document what was archived
-- [ ] ⬜ **Wait for Skeleton Phase 4**: Type-safe routing and ESLint from Plan 002
+- [x] ✅ **Archive Legacy Build System** (ARCHIVE/ holds private_html/, scripts/, vite.config.js, package.json and a README.md):
+  - [x] ✅ Create ARCHIVE/ directory
+  - [x] ✅ Move private_html/ to ARCHIVE/
+  - [x] ✅ Move scripts/ to ARCHIVE/
+  - [x] ✅ Move current vite.config.js to ARCHIVE/
+  - [x] ✅ Move current package.json to ARCHIVE/
+  - [x] ✅ Document what was archived
+- [x] ✅ **Wait for Skeleton Phase 4**: Plan 002 is Complete
 
-### Phase 2: Build System Migration
+### Phase 2: Build System Migration - ✅ COMPLETE
 
-- [ ] ⬜ **Review Current Build System**: Understand existing Vite + EJS setup
-- [ ] ⬜ **Install React Dependencies**:
-  - [ ] ⬜ react, react-dom
-  - [ ] ⬜ @types/react, @types/react-dom
-- [ ] ⬜ **Install TypeScript**:
-  - [ ] ⬜ typescript
-  - [ ] ⬜ @types/node
-  - [ ] ⬜ tsconfig.json configuration
-- [ ] ⬜ **Adapt Vite Config**:
-  - [ ] ⬜ Multi-entry setup for pages
-  - [ ] ⬜ TypeScript support
-  - [ ] ⬜ React plugin
-  - [ ] ⬜ Asset optimization
-  - [ ] ⬜ Remove EJS preprocessing
-- [ ] ⬜ **Configure TypeScript**:
-  - [ ] ⬜ Strict mode enabled
-  - [ ] ⬜ Path aliases configured
-- [ ] ⬜ **Update npm Scripts**:
-  - [ ] ⬜ build, dev, preview
-  - [ ] ⬜ lint, type-check
+- [x] ✅ **Review Current Build System**: Understand existing Vite + EJS setup
+- [x] ✅ **Install React Dependencies**:
+  - [x] ✅ react, react-dom
+  - [x] ✅ @types/react, @types/react-dom
+- [x] ✅ **Install TypeScript**:
+  - [x] ✅ typescript
+  - [x] ✅ @types/node
+  - [x] ✅ tsconfig.json configuration
+- [x] ✅ **Adapt Vite Config**:
+  - [x] ✅ Multi-entry setup for pages (superseded: single SPA entry plus SSR prerender of every route)
+  - [x] ✅ TypeScript support
+  - [x] ✅ React plugin
+  - [x] ✅ Asset optimization
+  - [x] ✅ Remove EJS preprocessing
+- [x] ✅ **Configure TypeScript**:
+  - [x] ✅ Strict mode enabled
+  - [x] ✅ Path aliases configured
+- [x] ✅ **Update npm Scripts**:
+  - [x] ✅ build, dev, preview
+  - [x] ✅ lint, type-check
 
 ### Phase 3: Type-Safe Routing System - ✅ COMPLETED
 
@@ -266,46 +266,46 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 - [x] ✅ **Convert About Page** (full content match with legacy)
 - [x] ✅ **Convert Contact Page** (full form with validation)
 
-### Phase 6: Article System Migration
+### Phase 6: Article System Migration - ✅ COMPLETE
 
-- [ ] ⬜ **Design Article Data Structure**:
-  - [ ] ⬜ TypeScript interfaces
-  - [ ] ⬜ Article metadata
-  - [ ] ⬜ Content format (MDX vs HTML vs React)
-- [ ] ⬜ **Migrate Existing Articles**:
-  - [ ] ⬜ Convert metadata
-  - [ ] ⬜ Convert content
-  - [ ] ⬜ Preserve syntax highlighting
-- [ ] ⬜ **Article Registration**:
-  - [ ] ⬜ Auto-discover system
-  - [ ] ⬜ Type-safe references
+- [x] ✅ **Design Article Data Structure**:
+  - [x] ✅ TypeScript interfaces (src/types/article.ts)
+  - [x] ✅ Article metadata
+  - [x] ✅ Content format: HTML string rendered via dangerouslySetInnerHTML (see Decision 2)
+- [x] ✅ **Migrate Existing Articles**:
+  - [x] ✅ Convert metadata
+  - [x] ✅ Convert content (all articles live in src/data/articles.ts)
+  - [x] ✅ Preserve syntax highlighting (Highlight.js plus the snippet system)
+- [x] ✅ **Article Registration**:
+  - [x] ✅ Auto-discover system (superseded: articles are listed explicitly in SAMPLE_ARTICLES)
+  - [x] ✅ Type-safe references (CATEGORIES ids, route helpers)
 
-### Phase 7: Styling Migration
+### Phase 7: Styling Migration - ✅ COMPLETE
 
-- [ ] ⬜ **Evaluate Current Styles**
-- [ ] ⬜ **Set Up Styling System** (Tailwind or CSS Modules TBD)
-- [ ] ⬜ **Migrate Core Styles**:
-  - [ ] ⬜ Layout
-  - [ ] ⬜ Typography
-  - [ ] ⬜ Components
-  - [ ] ⬜ Articles
-- [ ] ⬜ **Preserve Custom Features**:
-  - [ ] ⬜ Syntax highlighting styles
-  - [ ] ⬜ Category colors
-  - [ ] ⬜ Responsive design
+- [x] ✅ **Evaluate Current Styles**
+- [x] ✅ **Set Up Styling System**: Tailwind CSS v4 (see Decision 3)
+- [x] ✅ **Migrate Core Styles**:
+  - [x] ✅ Layout
+  - [x] ✅ Typography
+  - [x] ✅ Components
+  - [x] ✅ Articles
+- [x] ✅ **Preserve Custom Features**:
+  - [x] ✅ Syntax highlighting styles
+  - [x] ✅ Category colors
+  - [x] ✅ Responsive design
 
-### Phase 8: Quality Assurance
+### Phase 8: Quality Assurance - 🔄 PARTIAL (testing infrastructure is Plan 006)
 
-- [ ] ⬜ **Set Up Testing**:
-  - [ ] ⬜ Playwright configuration
-  - [ ] ⬜ Smoke tests
-- [ ] ⬜ **ESLint Configuration**:
-  - [ ] ⬜ React rules
-  - [ ] ⬜ TypeScript rules
-  - [ ] ⬜ Run and fix violations
-- [ ] ⬜ **TypeScript Validation**:
-  - [ ] ⬜ Strict mode compliance
-  - [ ] ⬜ Zero type errors
+- [x] ✅ **Set Up Testing**:
+  - [x] ✅ Playwright configuration (playwright.config.ts)
+  - [x] ✅ Smoke tests (e2e/pages.spec.ts, plus Vitest page tests under src/pages)
+- [x] ✅ **ESLint Configuration**:
+  - [x] ✅ React rules
+  - [x] ✅ TypeScript rules
+  - [x] ✅ Run and fix violations
+- [x] ✅ **TypeScript Validation**:
+  - [x] ✅ Strict mode compliance
+  - [x] ✅ Zero type errors
 - [ ] ⬜ **Visual Testing**:
   - [ ] ⬜ Screenshots of current site
   - [ ] ⬜ Screenshots of new site
@@ -377,9 +377,9 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 2. **HTML rendering** - Keep EJS, use dangerouslySetInnerHTML
 3. **Pure React** - Full type safety, verbose for content
 
-**Decision**: TBD - Will evaluate during Phase 6
+**Decision**: HTML rendering. Articles are TypeScript objects in src/data/articles.ts whose content field is an HTML string, with code blocks pulled in through the snippet system.
 
-**Date**: 2025-12-11 (pending)
+**Date**: 2025-12-11 (decided during Phase 6)
 
 ### Decision 3: Styling Approach
 
@@ -391,9 +391,9 @@ The current LTS site is a PHP engineer's portfolio using EJS templates. We're mi
 2. **CSS Modules** - Scoped styles, standard CSS
 3. **Styled Components** - CSS-in-JS, full JS power
 
-**Decision**: TBD - Will evaluate during Phase 7
+**Decision**: Tailwind CSS v4.
 
-**Date**: 2025-12-11 (pending)
+**Date**: 2025-12-11 (decided during Phase 7)
 
 ## Success Criteria
 
@@ -425,8 +425,10 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 - **Phase 3**: ✅ Complete (Type-Safe Routing System)
 - **Phase 4**: ✅ Complete (Component Structure Setup)
 - **Phase 5**: ✅ Complete (Convert Core Templates - all pages with filtering/search)
-- **Phase 6**: 🔜 Next (Article System Migration with content & syntax highlighting)
-- **Phases 7-10**: Pending
+- **Phase 6**: ✅ Complete (Article System Migration)
+- **Phase 7**: ✅ Complete (Styling Migration, Tailwind v4)
+- **Phase 8**: 🔄 Partial (tooling and smoke tests in place; visual, cross-browser and mobile checks open; see Plan 006)
+- **Phases 9-10**: Open (go-live is tracked in Plan 010)
 
 **Target Completion**: When all phases complete and success criteria met
 

@@ -1,6 +1,6 @@
 # Plan 010: Go Live — React Migration
 
-**Status**: 🔄 In Progress
+**Status**: In Progress
 **Created**: 2026-02-20
 **Owner**: Claude
 **Priority**: Critical
@@ -33,15 +33,16 @@ remaining task needed to merge to `main` and go live with the React site.
 ### P3 — Merge & Deploy
 
 - [x] ✅ **QA pass**: TypeScript clean, build succeeds
-- [ ] ⬜ **Commit all changes** with clear message
-- [ ] ⬜ **Merge `react-migration` → `main`** (PR or direct)
+- [x] ✅ **Commit all changes** with clear message
+- [x] ✅ **Merge `react-migration` → `main`**: main is the React site and no react-migration branch remains
 
 ## Success Criteria
 
-- [ ] `npm run build` succeeds with zero errors
-- [ ] TypeScript clean (`tsc --noEmit`)
-- [ ] CI deploys `dist/` to GitHub Pages correctly
-- [ ] All social links correct (LinkedIn: edmondscommerce, GitHub: LongTermSupport)
-- [ ] No Flowbite in source or deps
-- [ ] ArticleList uses Tailwind throughout
-- [ ] Contact form has clear fallback
+Verified 2026-11-20:
+
+- [x] ✅ `npm run llm:build` succeeds with zero errors (70 routes prerendered, 0 failed; the build runs `tsc`)
+- [x] ✅ TypeScript clean (the build type-checks first)
+- [x] ✅ CI uploads `dist/` for GitHub Pages (`.github/workflows/ci.yml`)
+- [x] ✅ No source imports of Flowbite
+- [ ] ⬜ `flowbite-react` is still listed in `dependencies` in package.json although nothing imports it; remove it with the package manager (pnpm) so the lockfile stays in step
+- [ ] ⬜ Social links, ArticleList Tailwind and contact-form fallback were verified when written but not re-checked in this pass
