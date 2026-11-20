@@ -24,6 +24,10 @@ page reload (white flash) instead of smooth client-side navigation. This:
 Additionally, external links without `rel="noopener noreferrer"` are a security
 vulnerability (tabnabbing) and performance issue.
 
+Exception: links to Joseph's own sites (`OWN_SITE_HOSTS` in the rule, currently
+edmondscommerce.co.uk) need only `rel="noopener"`. Dropping `noreferrer` lets
+that site's analytics see visitors arriving from here.
+
 ## Violations and Correct Patterns
 
 BAD - full page reload for internal navigation:

@@ -71,7 +71,7 @@ export default {
       externalLinkMissingRel:
         'External link with target="_blank" is missing rel="noopener noreferrer".\n' +
         '   This is a security issue (tabnabbing) and a performance concern.\n' +
-        '   Add: rel="noopener noreferrer"\n' +
+        '   Add: rel="noopener noreferrer" (links to our own sites need only rel="noopener")\n' +
         '\n' +
         'See: eslint-rules/no-window-location.md for guidance',
     },
@@ -79,6 +79,19 @@ export default {
   },
 
   create(context) {
+    /**
+     * Joseph's own sites: links to these may keep the referrer (rel="noopener" alone).
+     */
+    const OWN_SITE_HOSTS = ['edmondscommerce.co.uk', 'www.edmondscommerce.co.uk'];
+
+    function isOwnSite(href) {
+      try {
+        return OWN_SITE_HOSTS.includes(new URL(href).hostname);
+      } catch {
+        return false;
+      }
+    }
+
     /**
      * Check if a string value is a mailto: or tel: URI (not a navigation event).
      * These are allowed with window.location.href since they open external apps.
@@ -193,14 +206,12 @@ export default {
             return;
           }
 
-          // Check for rel="noopener noreferrer" when target="_blank" is present
+          // target="_blank" always needs noopener. noreferrer is required too, except on
+          // Joseph's own sites, where keeping the referrer is the point.
           if (targetAttr && targetAttr.value?.value === '_blank') {
-            if (
-              !relAttr ||
-              !relAttr.value ||
-              !relAttr.value.value.includes('noopener') ||
-              !relAttr.value.value.includes('noreferrer')
-            ) {
+            const rel = relAttr?.value?.value ?? '';
+            const needsNoreferrer = !isOwnSite(hrefValue);
+            if (!rel.includes('noopener') || (needsNoreferrer && !rel.includes('noreferrer'))) {
               context.report({
                 node,
                 messageId: 'externalLinkMissingRel',
