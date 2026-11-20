@@ -209,12 +209,12 @@ rather than the parent. VAT status remains unknown for either entity.
 
 | Input                                                                                         | Blocks                                |
 | --------------------------------------------------------------------------------------------- | ------------------------------------- |
-| Fixed-scope offer prices — no anchor number exists anywhere                                   | Task 4.1 copy finalization            |
-| Availability-band min/max hours                                                               | Task 4.2 copy finalization            |
 | VAT number (site now says "VAT registered", no number shown)                                  | cosmetic only, not blocking           |
 | Whether to make `actions-hub` public                                                          | Whether it's added to Task 2.1 at all |
 | Manually pin repos on github.com/LTSCommerce (API has no pinning mutation)                    | Task 5.2 fully closing out            |
 | ~~Which LinkedIn profile is primary~~ resolved: `edmondscommerce`; Joseph pastes the headline | Task 5.1 paste only                   |
+
+~~Fixed-scope offer prices~~ — resolved (Joseph, 2026-11-20): none needed. Fixed scope means the client says what they need and gets a quote, so the offer cards stay at "Fixed price, get in touch for a quote" (Task 4.1, done). Availability-band hours (Task 4.2) are likewise not required; the Capacity bullet stands without figures.
 
 ~~Sign-off on which company name to display~~ — resolved without needing to ask: Companies House
 PSC data + the matching SIC code settled it (see Phase 0 correction above).
