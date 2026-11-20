@@ -34,8 +34,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     <p>Every statement lives as a <code>public const string SQL</code> on its own small class and goes through one thin gateway interface, which a hand-written fake implements for unit tests. Rows are read through a typed, fail-fast reader rather than <code>(int)$row['stock']</code>. Column names are written down once, in a hand-written table class, and everything else refers to them through it. Then the build enforces those conventions rather than hoping for them: three custom PHPStan rules ban the shortcuts, and two checks against a real database have MySQL itself confirm that the table class matches the table and that every SQL constant in the application prepares.</p>
 
     <p>All of it is in a public repository, <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo">LongTermSupport/sql-first-php-demo</a>.
-    I want to be clear about what that is: a <strong>concept demo, not a library</strong>.
-    It is deliberately small, every file is heavily commented, and it is meant to be read and copied from rather than installed.
+    It is a <strong>concept demo, not a library</strong>:
+    it is deliberately small, every file is heavily commented, and it is meant to be read and copied from rather than installed.
     The snippets in this article are trimmed from it, and each section links to the full file so you can see the surrounding comments and tests.</p>
 </section>
 
@@ -306,7 +306,7 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 <section>
     <h2>What This Costs</h2>
 
-    <p>This is not free, and I would rather say so than oversell it.</p>
+    <p>This is not terse, and is arguably a bit on the verbose side. It might feel like over-engineering, and maybe it is erring on that side. Where it is going to feel attractive is to people shipping important systems, where mistakes cost real money and reputation. Basically - it's really attractive to people working with big, complicated legacy systems that are vitally important and might be handling many zeros of revenue.</p>
 
     <p>There are more files. A query class, a unit test and an integration test for every statement is a real overhead compared with adding a method to a repository, and on a small project with a handful of queries it might well be more structure than the problem deserves. The payoff grows with the number of queries and the number of people touching them.</p>
 
