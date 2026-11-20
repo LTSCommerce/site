@@ -56,7 +56,7 @@ Detail:
   - `fake-unit-test.php` ("rows shaped as PDO sends them: strings and nulls")
   - the FakeDbService docblock ("rows shaped exactly like PDO's (strings everywhere)")
   - the PdoConnectionFactory docblock, which implies ints happen only because emulation is off
-- With the demo's own native-prepare connection, PDO sends `'id' => 3`, not `'3'`. So the fake's rows are the *legacy or stringified* shape, not "as PDO sends them".
+- With the demo's own native-prepare connection, PDO sends `'id' => 3`, not `'3'`. So the fake's rows are the _legacy or stringified_ shape, not "as PDO sends them".
   Fix: REPHRASE (article and snippet), and fix the demo docblocks to match.
   Suggested text (article): "Depending on the PHP version, the driver build and `PDO::ATTR_STRINGIFY_FETCHES`, an `INT` can arrive as `42` or as `"42"` (mysqlnd on PHP 8.1+ sends ints whether or not prepares are emulated)."
   Suggested snippet comments: `// what mysqlnd sends on PHP 8.1+` / `// STRINGIFY_FETCHES, libmysqlclient or older PHP send strings`.
@@ -72,7 +72,7 @@ FINDING \[MODERATE\]: "Retrying a self-contained statement on a fresh connection
 Location: "Retrying a self-contained statement on a fresh connection is safe, and long-running workers..."
 Detail:
 
-- Error 2013 ("Lost connection to MySQL server during query") can occur *after* the server has executed and auto-committed the statement.
+- Error 2013 ("Lost connection to MySQL server during query") can occur _after_ the server has executed and auto-committed the statement.
 - The demo retries `execute()` and `insert()` as well as reads, and matches '2013' and 'Lost connection'. So a non-idempotent write could be applied twice, for example `SET stock = stock + :delta` from the article's own AdjustStockStmt, or an INSERT.
 - "Gone away" detected before sending (2006, broken pipe on send) is the genuinely safe case.
 - The article is careful about the transaction subtlety but silent on this one, and calls the outside-transaction case "safe" outright.
