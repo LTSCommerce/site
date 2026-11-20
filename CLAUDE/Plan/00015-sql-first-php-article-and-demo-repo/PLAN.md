@@ -44,9 +44,9 @@ commented concept demo (explicitly not a library) that the article links into.
 
 - [x] ✅ **Task 1.1**: Write the demo code under `untracked/repos/sql-first-php-demo/`
 - [x] ✅ **Task 1.2**: Tests (unit + integration) and PHPStan rules, passing locally against MariaDB
-- [ ] 🔄 **Task 1.3**: GitHub Actions CI with a MySQL service (written; unproven until first push)
+- [x] ✅ **Task 1.3**: GitHub Actions CI with a MySQL service (green on first push, MySQL 8.4)
 - [x] ✅ **Task 1.4**: Sanitisation audit (no client identifiers anywhere, including git history)
-- [ ] ⬜ **Task 1.5**: Create the public repo and push. NEEDS EXPLICIT OWNER GO-AHEAD.
+- [x] ✅ **Task 1.5**: Create the public repo and push (owner go-ahead given 2026-11-20)
 
 ### Phase 2: Article
 
@@ -55,15 +55,16 @@ commented concept demo (explicitly not a library) that the article links into.
 - [x] ✅ **Task 2.3**: `article-reviewer` until READY TO PUBLISH
 - [x] ✅ **Task 2.4**: `voice-pass` (one pass; it reported no further pass needed)
 - [x] ✅ **Task 2.5**: Commit locally (push only with owner authorisation)
-- [ ] ⬜ **Task 2.6**: Push the site. NEEDS EXPLICIT OWNER AUTHORISATION (production deploy).
+- [ ] 🔄 **Task 2.7**: Hero image (article-image skill; CC0 card-catalogue photo)
+- [ ] 🔄 **Task 2.6**: Push the site via git-push (owner authorised 2026-11-20); verify live
 
 ## Success Criteria
 
-- [ ] Demo repo CI green on GitHub
-- [ ] Every article link to the demo repo resolves
-- [ ] A grep for the client's name across the article, snippets, demo repo and its history finds nothing
-- [ ] Article passes `article-reviewer` and `voice-pass`
+- [x] Demo repo CI green on GitHub
+- [x] Every article link to the demo repo resolves (19/19 HTTP 200)
+- [x] A grep for the client's name across the article, snippets, demo repo and its history finds nothing
+- [x] Article passes `article-reviewer` and `voice-pass`
 
 ## Delivery & Milestones
 
-- (pending)
+- Demo repo public: https://github.com/LongTermSupport/sql-first-php-demo

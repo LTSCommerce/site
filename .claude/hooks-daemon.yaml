@@ -157,6 +157,9 @@ handlers:
       options:
         track_plans_in_project: 'CLAUDE/Plan' # Set to "CLAUDE/Plan" to enable plan tracking
         plan_workflow_docs: 'CLAUDE/PlanWorkflow.md' # Optional: path to workflow doc
+        # Hero-image provenance records live beside the image (article-image skill, Step 5).
+        extra_allowed_markdown_paths:
+          - "^public/images/[^/]+/SOURCE\\.md$"
         #
         # Monorepo support: regex patterns matching sub-project root directories.
         # Sub-projects get the same organization rules as the root project.

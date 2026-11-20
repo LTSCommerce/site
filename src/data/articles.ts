@@ -7,6 +7,13 @@ import { CATEGORIES } from './categories';
 export const SAMPLE_ARTICLES: readonly Article[] = [
   {
     id: 'sql-first-php',
+    heroImage: {
+      src: '/images/sql-first-php/hero.webp',
+      alt: 'A close-up, desaturated photograph of rows of wooden library card-catalogue drawers with metal label holders',
+      ogImage: '/images/sql-first-php/og.jpg',
+      creditText: 'Image: MarkBuckawicki, CC0, via Wikimedia Commons',
+      creditUrl: 'https://commons.wikimedia.org/wiki/File:Wooden_Card_Catalog_Furniture.jpg',
+    },
     title: 'SQL-First PHP: Query Objects, Typed Rows and a Database That Checks Your SQL',
     description:
       'Raw SQL in PHP without the rot: one class per query, a mockable DB service, typed rows, column names written down once, and checks that have MySQL validate your SQL.',
