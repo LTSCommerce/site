@@ -209,7 +209,6 @@ rather than the parent. VAT status remains unknown for either entity.
 
 | Input                                                                                         | Blocks                                |
 | --------------------------------------------------------------------------------------------- | ------------------------------------- |
-| VAT number (site now says "VAT registered", no number shown)                                  | cosmetic only, not blocking           |
 | Whether to make `actions-hub` public                                                          | Whether it's added to Task 2.1 at all |
 | Manually pin repos on github.com/LTSCommerce (API has no pinning mutation)                    | Task 5.2 fully closing out            |
 | ~~Which LinkedIn profile is primary~~ resolved: `edmondscommerce`; Joseph pastes the headline | Task 5.1 paste only                   |

@@ -11,8 +11,8 @@ publication. The private ground truth lives outside this repository.
 
 - Joseph Edmonds. A developer. One person, from West Yorkshire, UK. Works
   remotely.
-- LTS Commerce Ltd (Company No. 16618262, England & Wales, VAT registered) is
-  the trading company. It is a wrapper: what you hire is Joseph.
+- LTS Commerce Ltd (Company No. 16618262, England & Wales, VAT registered,
+  VAT No. 452436402) is the trading company. It is a wrapper: what you hire is Joseph.
 - LTS stands for **Long Term Support**: retained, ongoing client
   relationships, not one-off billing.
 - Not an agency. No account managers, no hand-offs. The person you talk to is

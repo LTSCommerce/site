@@ -90,7 +90,7 @@ export function Footer() {
         <div className="border-t border-[#1a1a1a] pt-8 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
           <p className="text-xs text-gray-400 text-center sm:text-left">
             &copy; {COPYRIGHT_YEAR} Joseph Edmonds · trading as LTS Commerce Ltd. Company No.
-            16618262. Registered in England &amp; Wales. VAT registered.
+            16618262. Registered in England &amp; Wales. VAT registered, VAT No. 452436402.
           </p>
           <p className="text-xs text-gray-400">Built with TypeScript &amp; React</p>
         </div>

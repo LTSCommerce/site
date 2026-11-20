@@ -22,8 +22,8 @@ export function Privacy() {
               <h2 className="text-2xl font-bold mb-3">Who this is</h2>
               <p className="text-gray-700">
                 This site is operated by <strong>LTS Commerce Ltd</strong> (company number 16618262,
-                registered in England &amp; Wales, VAT registered). For anything in this policy,
-                contact{' '}
+                registered in England &amp; Wales, VAT registered, VAT No. 452436402). For anything
+                in this policy, contact{' '}
                 <a href="mailto:hello@ltscommerce.dev" className="text-[#0f4c81]">
                   hello@ltscommerce.dev
                 </a>
