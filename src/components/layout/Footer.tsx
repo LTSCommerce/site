@@ -30,6 +30,19 @@ export function Footer() {
               Support: retained expertise, on hand as and when you need it, from West Yorkshire, UK.
               No bullshit.
             </p>
+            <p className="text-sm leading-relaxed text-gray-400 max-w-xs mt-4">
+              Hire me personally through LTS, or if the work needs more hands, use the team of
+              developers at{' '}
+              <a
+                href="https://edmondscommerce.co.uk/"
+                target="_blank"
+                rel="noopener"
+                className="text-gray-300 underline hover:text-white transition-colors"
+              >
+                Edmonds Commerce
+              </a>
+              , the agency I run.
+            </p>
           </div>
 
           {/* Navigation */}
@@ -80,6 +93,16 @@ export function Footer() {
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
                   LinkedIn
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://edmondscommerce.co.uk/"
+                  target="_blank"
+                  rel="noopener"
+                  className="text-sm text-gray-400 hover:text-white transition-colors"
+                >
+                  Edmonds Commerce (my agency)
                 </a>
               </li>
             </ul>

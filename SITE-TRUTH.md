@@ -15,8 +15,11 @@ publication. The private ground truth lives outside this repository.
   VAT No. 452436402) is the trading company. It is a wrapper: what you hire is Joseph.
 - LTS stands for **Long Term Support**: retained, ongoing client
   relationships, not one-off billing.
-- Not an agency. No account managers, no hand-offs. The person you talk to is
-  the person who does the work.
+- LTS Commerce is not an agency. No account managers, no hand-offs. The person
+  you talk to is the person who does the work.
+- Separately, Joseph runs Edmonds Commerce (edmondscommerce.co.uk), a PHP
+  agency with a team of developers. Clients can contract with Joseph personally
+  through LTS, or use the Edmonds Commerce team when the work needs more hands.
 - Contact: hello@ltscommerce.dev. GitHub: github.com/LongTermSupport.
   LinkedIn: linkedin.com/in/edmondscommerce (13,000 followers).
 - Currently taking new clients.
@@ -41,10 +44,11 @@ publication. The private ground truth lives outside this repository.
 - 2007: founded Edmonds Commerce, a specialist ecommerce development agency;
   grew it to a fifteen-person team serving payment processors, fintechs,
   startups and B2C/B2B retailers.
-- Now trades as LTS Commerce Ltd.
+- Trades personally as LTS Commerce Ltd, and still runs Edmonds Commerce.
 - Author of _The Art of Modern PHP 8_ (Packt, 2021). Zend Certified Engineer.
-- Building and operating CI infrastructure since 2014; publishing test/QA
-  infrastructure in the open since 2015.
+- Builds and operates CI infrastructure (self-hosted Jenkins, then Travis,
+  then his own phpqa tooling, then GitHub Actions); publishing test/QA
+  infrastructure in the open since 2015. Give no start year for the CI work.
 
 ## Client practice — MANDATORY PLURAL FRAMING
 

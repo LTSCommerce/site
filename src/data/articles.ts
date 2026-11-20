@@ -328,6 +328,11 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     The <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo#reading-order">README has a suggested reading order</a> through the files if you want to see how the pieces connect.</p>
 
     <p>The combination matters more than any single piece, since query classes, typed rows and a table class each only help a little on their own. What turns them into something that still holds a year later, after a dozen people have worked on it, is the rules keeping them honest and the two database checks covering the gap static analysis cannot reach. Hopefully the demo gives you enough to try it on a corner of your own codebase and see whether it earns its place.</p>
+
+    <p>If you want to discuss your enterprise or legacy PHP development, <a href="/contact">get in touch directly</a>.
+    You can contract with me personally or, if the work needs more hands, use the team of developers at
+    <a target="_blank" rel="noopener" href="https://edmondscommerce.co.uk/">Edmonds Commerce</a>,
+    the agency I run.</p>
 </section>
 `,
   },

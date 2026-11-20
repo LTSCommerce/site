@@ -74,10 +74,11 @@ export function About() {
                     What started as necessity became the career. In 2007 I went out on my own and
                     founded Edmonds Commerce, a specialist ecommerce development agency that I grew
                     to a fifteen-person team serving payment processors, fintechs, startups and
-                    B2C/B2B retailers. These days I trade as LTS Commerce Ltd, but the company is
-                    just the wrapper. What you're hiring is me. The LTS stands for Long Term
-                    Support, because that's how I work: retained, ongoing relationships. Some of
-                    mine have run continuously for more than fifteen years.
+                    B2C/B2B retailers. I still run Edmonds Commerce for work that needs a team, and
+                    trade personally as LTS Commerce Ltd, where the company is just the wrapper and
+                    what you're hiring is me. The LTS stands for Long Term Support, because that's
+                    how I work: retained, ongoing relationships. Some of mine have run continuously
+                    for more than fifteen years.
                   </p>
                   <p>
                     Twenty-five years in, I can confidently say I'm at expert level now. Writing{' '}
@@ -127,9 +128,9 @@ export function About() {
                   </div>
                   <p>
                     Somewhere in that stretch I got serious about how code actually gets tested and
-                    shipped. I've been building and operating CI infrastructure since 2014, first
-                    self-hosted Jenkins, then Travis, then my own <code>phpqa</code> tooling, then
-                    GitHub Actions. I've published test infrastructure in the open continuously
+                    shipped, and I've been building and operating CI infrastructure ever since:
+                    first self-hosted Jenkins, then Travis, then my own <code>phpqa</code> tooling,
+                    then GitHub Actions. I've published test infrastructure in the open continuously
                     since 2015. The current guardrail and quality-gate work is the same problem,
                     just applied to agents instead of humans.
                   </p>

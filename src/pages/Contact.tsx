@@ -139,6 +139,18 @@ export function Contact() {
             <p className="text-sm text-gray-500 mt-3">
               You'll get a reply from me, not a sales team, within 24 hours on business days.
             </p>
+            <p className="text-sm text-gray-500 mt-3 max-w-2xl mx-auto">
+              You can contract with me personally, or if the job needs a team, use the developers at{' '}
+              <a
+                href="https://edmondscommerce.co.uk/"
+                target="_blank"
+                rel="noopener"
+                className="text-[#0f4c81] underline hover:text-[#1e6ba5] transition-colors"
+              >
+                Edmonds Commerce
+              </a>
+              , the agency I run.
+            </p>
           </div>
 
           <p className="text-center text-sm mb-8">

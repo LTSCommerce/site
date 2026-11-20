@@ -104,6 +104,19 @@ export function Home() {
               When you hire me, the person you talk to is the person who does the work. If it
               doesn't ship, that's on me. There's no account manager between you and the work.
             </p>
+            <p className="text-gray-700 text-lg leading-relaxed mb-4">
+              If the work needs more hands than mine, I also run{' '}
+              <a
+                href="https://edmondscommerce.co.uk/"
+                target="_blank"
+                rel="noopener"
+                className="text-[#0f4c81] underline hover:text-[#1e6ba5] transition-colors"
+              >
+                Edmonds Commerce
+              </a>
+              , an agency with a team of developers. You can contract with me personally, or use the
+              agency team.
+            </p>
             <p className="text-gray-700 text-lg leading-relaxed">
               The LTS in LTS Commerce stands for <strong>Long Term Support</strong>, and that's what
               I offer: expertise on hand, retained to support you as and when you need it. Some of
