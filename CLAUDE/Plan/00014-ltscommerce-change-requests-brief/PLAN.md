@@ -207,13 +207,19 @@ rather than the parent. VAT status remains unknown for either entity.
 
 ## Open inputs still needed from Joseph (not blocking the rest of the plan)
 
-| Input                                                                                         | Blocks                                |
-| --------------------------------------------------------------------------------------------- | ------------------------------------- |
-| Whether to make `actions-hub` public                                                          | Whether it's added to Task 2.1 at all |
-| Manually pin repos on github.com/LTSCommerce (API has no pinning mutation)                    | Task 5.2 fully closing out            |
-| ~~Which LinkedIn profile is primary~~ resolved: `edmondscommerce`; Joseph pastes the headline | Task 5.1 paste only                   |
+| Input                                                                                         | Blocks                     |
+| --------------------------------------------------------------------------------------------- | -------------------------- |
+| Manually pin repos on github.com/LTSCommerce (API has no pinning mutation)                    | Task 5.2 fully closing out |
+| ~~Which LinkedIn profile is primary~~ resolved: `edmondscommerce`; Joseph pastes the headline | Task 5.1 paste only        |
 
 ~~Fixed-scope offer prices~~ — resolved (Joseph, 2026-11-20): none needed. Fixed scope means the client says what they need and gets a quote, so the offer cards stay at "Fixed price, get in touch for a quote" (Task 4.1, done). Availability-band hours (Task 4.2) are likewise not required; the Capacity bullet stands without figures.
+
+~~Whether to make `actions-hub` public~~ — resolved (Joseph, 2026-11-20): it stays private, so it stays off `/open-source`.
+
+### How to do the two manual steps
+
+- **LinkedIn (Task 5.1)**: on `linkedin.com/in/edmondscommerce` click the pencil beside the name, replace the Headline field with the drafted text in Task 5.1 above, and save. The headline limit is 220 characters and the draft is under it.
+- **GitHub pins (Task 5.2)**: on `github.com/LTSCommerce` click "Customize your pins", tick `php-qa-ci`, `ts-qa-ci`, `claude-code-hooks-daemon` and `fedora-desktop` (GitHub allows up to six), and save.
 
 ~~Sign-off on which company name to display~~ — resolved without needing to ask: Companies House
 PSC data + the matching SIC code settled it (see Phase 0 correction above).
