@@ -338,7 +338,10 @@ Phase 5 finished in the same session as Phase 4, per the maintainer's explicit d
 
 - Maintainer sign-off recorded at [`ec-site-lift-signoff.md`](ec-site-lift-signoff.md): confirms ec-site code lift under `@longtermsupport`, the lift/adapt/drop boundary, and public-repo visibility (Decision 6). Task 3.0 marked complete; Decision 5 marked resolved.
 - Maintainer also directed a scope addition beyond what Task 3.0 alone required: `ts-qa-ci` must make it "easy" to layer private, project-specific rules on top of its globally-useful opt-in rules, and ec-site itself should be migrated onto `ts-qa-ci` (keeping only its private rules locally) rather than just mined for ideas. The layering mechanism this requires **already exists** — it's the same `tsQaConfig/eslint.config.js` + `tsQaConfig/tier-a-exemptions.json` design fixed during the pass-2 Fable audit (B1) — so this directive validates that design rather than requiring rework.
-- The ec-site migration itself is tracked as a **new, separate plan** ([Plan 012](../012-ecsite-ts-qa-ci-migration/PLAN.md)), not folded into this one — directly applying the Fable audit's own S5 recommendation (this plan already carries more than one project's worth of scope) using the maintainer's new instruction as the trigger, rather than deciding it unilaterally in the abstract. Plan 012 is gated on this plan reaching a usable, installable state (its own Task 1.1).
+- The ec-site migration itself is tracked as a **new, separate plan** ([Plan 012](../../012-ecsite-ts-qa-ci-migration/PLAN.md)), not folded into this one — directly applying the Fable audit's own S5 recommendation (this plan already carries more than one project's worth of scope) using the maintainer's new instruction as the trigger, rather than deciding it unilaterally in the abstract. Plan 012 is gated on this plan reaching a usable, installable state (its own Task 1.1).
+
+<!-- MUST_EXCEED_PLAN_SIZE_BECAUSE: archived record of a completed plan; its size is historical and the only change here is a relative-link repair after moving it into Completed/ -->
+
 - Phase 3 (Build) may now begin.
 
 ### 2026-07-10 - Phase 3 Build: Scaffold, Tool Runners, CDD Rules (Tasks 3.1-3.3 complete)
