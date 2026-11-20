@@ -9,6 +9,7 @@ This directory contains all project plans following the Planning Workflow (see `
 - [006: Testing Infrastructure](006-testing-infrastructure/PLAN.md) - Not Started - **Medium Priority** - Set up Vitest + Playwright (smoke tests for all pages); required before Plan 001 Phase 8
 - [010: Go Live - React Migration](010-go-live-react-migration/PLAN.md) - In Progress - **High Priority** - Take the React/TypeScript site live
 - [012: Migrate ec-site onto ts-qa-ci](012-ecsite-ts-qa-ci-migration/PLAN.md) - Not Started - **Medium Priority** - Refactor ec-site to consume `ts-qa-ci` for generic QA/CI, keep private/brand rules local via the project-override layer; depends on Plan 011
+- [00015: SQL-first PHP article and concept-demo repo](00015-sql-first-php-article-and-demo-repo/PLAN.md) - In Progress - **Medium Priority** - Article on a SQL-first persistence pattern for PHP, plus a public concept-demo repo it links into
 
 ## Completed Plans
 

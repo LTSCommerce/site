@@ -54,7 +54,8 @@ commented concept demo (explicitly not a library) that the article links into.
 - [x] ✅ **Task 2.2**: Article object in `src/data/articles.ts`; build and check the HTML
 - [x] ✅ **Task 2.3**: `article-reviewer` until READY TO PUBLISH
 - [x] ✅ **Task 2.4**: `voice-pass` (one pass; it reported no further pass needed)
-- [ ] 🔄 **Task 2.5**: Commit locally (push only with owner authorisation)
+- [x] ✅ **Task 2.5**: Commit locally (push only with owner authorisation)
+- [ ] ⬜ **Task 2.6**: Push the site. NEEDS EXPLICIT OWNER AUTHORISATION (production deploy).
 
 ## Success Criteria
 
