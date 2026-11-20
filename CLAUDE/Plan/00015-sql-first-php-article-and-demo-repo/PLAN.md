@@ -1,6 +1,6 @@
 # Plan 00015: SQL-first PHP article and concept-demo repo
 
-**Status**: In Progress
+**Status**: Complete
 **Created**: 2026-11-20
 **Owner**: joseph
 **Priority**: Medium
@@ -55,8 +55,8 @@ commented concept demo (explicitly not a library) that the article links into.
 - [x] ✅ **Task 2.3**: `article-reviewer` until READY TO PUBLISH
 - [x] ✅ **Task 2.4**: `voice-pass` (one pass; it reported no further pass needed)
 - [x] ✅ **Task 2.5**: Commit locally (push only with owner authorisation)
-- [ ] 🔄 **Task 2.7**: Hero image (article-image skill; CC0 card-catalogue photo)
-- [ ] 🔄 **Task 2.6**: Push the site via git-push (owner authorised 2026-11-20); verify live
+- [x] ✅ **Task 2.7**: Hero image (article-image skill; CC0 card-catalogue photo)
+- [x] ✅ **Task 2.6**: Push the site via git-push (owner authorised 2026-11-20); verify live
 
 ## Success Criteria
 
@@ -68,3 +68,4 @@ commented concept demo (explicitly not a library) that the article links into.
 ## Delivery & Milestones
 
 - Demo repo public: https://github.com/LongTermSupport/sql-first-php-demo
+- Article live: https://ltscommerce.dev/articles/sql-first-php (CI run 44765342596, build + deploy green)
