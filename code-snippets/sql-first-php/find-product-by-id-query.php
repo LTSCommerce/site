@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/FindProductByIdQuery.php
 // example/Product/FindProductByIdQuery.php (docblock removed)
 
 final readonly class FindProductByIdQuery

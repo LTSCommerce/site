@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Product/FindProductByIdQueryIntegrationTest.php
 // Trimmed from tests/Product/FindProductByIdQueryIntegrationTest.php
 
 #[Group('real-db')]

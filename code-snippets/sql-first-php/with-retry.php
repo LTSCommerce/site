@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Db/PdoDbService.php#L184-L221
 // Simplified from src/Db/PdoDbService.php (logging calls removed)
 
 final class PdoDbService implements DbServiceInterface

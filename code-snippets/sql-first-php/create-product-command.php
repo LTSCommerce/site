@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/CreateProductCommand.php
 // example/Product/CreateProductCommand.php (docblock removed)
 
 final readonly class CreateProductCommand

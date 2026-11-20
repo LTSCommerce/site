@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Support/ServerSidePrepareValidator.php#L37-L57
 // Trimmed from tests/Support/ServerSidePrepareValidator.php
 
 final readonly class ServerSidePrepareValidator

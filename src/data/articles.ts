@@ -74,6 +74,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>Everything that talks to the database goes through one interface. Here is all of it, with the docblocks trimmed.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Db/DbServiceInterface.php"
+    target="_blank" rel="noopener noreferrer"><code>src/Db/DbServiceInterface.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/db-service-interface.php}}</code></pre>
 
     <p>The size is the point: six methods, every one of which takes the SQL and a separate array of named parameters, so there is simply no method that interpolates a value into a statement. There is no query builder behind it and no entity manager, and what you pass in is what runs. It also gives you a single place to put the behaviour you want on every statement, and a single seam to replace in tests, which we will come to.</p>
@@ -85,6 +87,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     wrapping every failure in a single <code>QueryException</code> that carries the failing statement (but not the parameter values, which can hold personal data and end up in log aggregators),
     and retry on a lost connection. That last one is subtler than it looks, so here it is.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Db/PdoDbService.php#L184-L221"
+    target="_blank" rel="noopener noreferrer"><code>src/Db/PdoDbService.php</code>, <code>withRetry()</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/with-retry.php}}</code></pre>
 
     <p>Long-running workers, idle connection pools and database failovers all produce "MySQL server has gone away" often enough that you want some retry, and running a <code>SELECT</code> a second time on a fresh connection is harmless. Writes are a different matter. A connection can drop after the server has already run and committed the statement but before the reply arrives, so blindly re-sending <code>SET stock = stock + 3</code> or an <code>INSERT</code> could apply it twice. The demo therefore retries reads only: a write that loses its connection is reported rather than repeated, the dead connection is thrown away so the next statement gets a fresh one, and the caller, who knows whether that particular write is safe to run again, decides what to do.</p>
@@ -103,6 +107,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>A query is a small object, not a method on a repository that grows forever. Here is a complete one.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/FindProductByIdQuery.php"
+    target="_blank" rel="noopener noreferrer"><code>example/Product/FindProductByIdQuery.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/find-product-by-id-query.php}}</code></pre>
 
     <p>Every query class has the same shape. It is <code>final readonly</code>, has no base class and no state beyond the injected gateway, and holds its SQL as a public constant written out in full as SQL. It exposes one method, named for what it does, taking typed arguments and returning a typed result, where <code>null</code> here means "no such product". The column list is spelled out rather than <code>SELECT *</code>, so adding a column to the table never silently changes what the query returns.</p>
@@ -115,6 +121,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>Some SQL runs many times in a row with different parameters, typically in a loop over an import file. For those there is a second shape, a statement class, built once and called repeatedly.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/AdjustStockStmt.php"
+    target="_blank" rel="noopener noreferrer"><code>example/Product/AdjustStockStmt.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/adjust-stock-stmt.php}}</code></pre>
 
     <p>The gateway prepares the statement on the first call and reuses it for every one after.
@@ -133,6 +141,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Result/Row.php">Row</a> wraps a single result row,
     and every getter either returns exactly the type its name promises or throws, naming the column.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Result/Row.php"
+    target="_blank" rel="noopener noreferrer"><code>src/Result/Row.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/row-decimal.php}}</code></pre>
 
     <p>The decimal getter is the one I would draw your attention to. Money comes back as an exact string, <code>"5000.50"</code>, and a float arriving there is refused rather than formatted. Once a value has been through a float its original form is gone: <code>5000.50</code> comes back as <code>5000.5</code>, which breaks string comparison and display formatting even though it is numerically the same. Values near the top of a <code>DECIMAL(15,2)</code> column fare worse, losing real digits as soon as PHP turns the float back into a string (<code>9999999999999.99</code> becomes <code>10000000000000</code>). If a float shows up, it means the column is really <code>FLOAT</code> or <code>DOUBLE</code>, and the right response is to find that out now rather than format the damage into something plausible. Arithmetic on the string goes through <code>bcmath</code>, or you convert deliberately to integer pence.</p>
@@ -150,16 +160,22 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>The typed row reader solves the type problem but not the naming problem, since something still has to say <code>'unit_price'</code>. The answer is a hand-written table class that is the one place a table's names and types appear in PHP.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/ProductTable.php"
+    target="_blank" rel="noopener noreferrer"><code>example/Product/ProductTable.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/product-table.php}}</code></pre>
 
     <p>It has two layers. String constants, <code>TABLE_NAME</code> and <code>COL_*</code>, are usable anywhere a constant expression is needed, including as keys in a bound-parameter array. And each column also gets a typed column object built from its constant, which pairs the name with its PHP type. Each column type is a tiny final class:</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Schema/NullableDecimalColumn.php"
+    target="_blank" rel="noopener noreferrer"><code>src/Schema/NullableDecimalColumn.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/typed-column.php}}</code></pre>
 
     <p>PHP has no generics, so one small class per carrier type is what lets PHPStan know that <code>$t-&gt;salePrice-&gt;fromRow($row)</code> returns <code>?string</code> and that <code>$t-&gt;stock-&gt;is('five')</code> is a type error. Calling the wrong getter for a column stops being a mistake you can make, because the column object only has the right one. The base class is also deliberately not <code>Stringable</code>: if it were, <code>"SELECT $column FROM ..."</code> would work and pass static analysis, and a name would go into SQL without anyone deciding whether it needed quoting. Callers pick <code>-&gt;name</code>, <code>-&gt;quoted()</code> or <code>-&gt;param()</code> explicitly.</p>
 
     <p>With that in place, a DTO's hydration has no string-literal column names in it at all.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/Product.php#L43-L59"
+    target="_blank" rel="noopener noreferrer"><code>example/Product/Product.php</code>, <code>fromRow()</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/product-from-row.php}}</code></pre>
 
     <p>Compare that with the casual version earlier. A missing column, a <code>NULL</code> in a field the code believes is <code>NOT NULL</code>, a float where a decimal was promised, an <code>ENUM</code> value the PHP has never heard of: each of these throws at this line, naming the column, rather than travelling on into a total or an invoice.</p>
@@ -170,6 +186,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>There is exactly one place where SQL is built for you rather than written out, and it is a single-row <code>INSERT</code>.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/CreateProductCommand.php"
+    target="_blank" rel="noopener noreferrer"><code>example/Product/CreateProductCommand.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/create-product-command.php}}</code></pre>
 
     <p>A hand-written <code>INSERT</code> has a failure mode that <code>SELECT</code>s do not: the column list and the <code>VALUES</code> list are two lists that must line up, and nothing checks that they do.
@@ -190,12 +208,16 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
     <p>Because everything goes through the gateway interface, a unit test can swap in
     <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Testing/FakeDbService.php">FakeDbService</a>, a hand-written implementation keyed by SQL text.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Product/FindProductByIdQueryTest.php"
+    target="_blank" rel="noopener noreferrer"><code>tests/Product/FindProductByIdQueryTest.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/fake-unit-test.php}}</code></pre>
 
     <p>The difference from a mocking library matters here. A mock is configured in terms of method calls ("expect <code>query()</code> once, with any arguments, and return this"), which couples the test to how the class happens to call the gateway and says nothing about the SQL. The fake is configured in terms of statements: when this SQL runs, return these raw rows, exactly as a driver would hand them over. Afterwards, the test can read back precisely which statements ran with which parameters. Unconfigured SQL fails with a message listing what was configured, rather than passing on an accidental empty result, which catches a whole class of mistakes on its own.</p>
 
     <p>What the fake can't do is tell you the SQL is right. It returns the rows you hand it, even for a <code>SELECT</code> that names a column that doesn't exist, so a suite of fake-only tests can be entirely green on code that fails on its first real request. That is why every query class also gets an integration test, running the same constant against a real MySQL.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Product/FindProductByIdQueryIntegrationTest.php"
+    target="_blank" rel="noopener noreferrer"><code>tests/Product/FindProductByIdQueryIntegrationTest.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/integration-test.php}}</code></pre>
 
     <p>The <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Support/RealDatabase.php">RealDatabase</a> trait gives each test its own throwaway schema,
@@ -223,6 +245,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>Custom PHPStan rules are less work than people tend to expect. Here is the core of the first one:</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/phpstan/Rules/RowKeyMustNotBeLiteralRule.php#L74-L98"
+    target="_blank" rel="noopener noreferrer"><code>phpstan/Rules/RowKeyMustNotBeLiteralRule.php</code>, <code>processNode()</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/rule-row-key.php}}</code></pre>
 
     <p>All three are deliberately narrow. They fire on a string literal written at the call site, which is how the mistake is actually made, and let through anything indirect, such as a variable or a parameter, because a generic helper legitimately takes a <code>string $sql</code> that its own caller supplied as <code>Foo::SQL</code>. Chasing every value back to its origin would make for a much bigger rule that is wrong more often, and a rule that cries wolf tends to get suppressed rather than obeyed. The price of that narrowness is that the rules are a strong nudge rather than a proof: a key held in a variable, a raw array from <code>query()</code> or an exempted class can still get past them, which is one more reason the database checks below exist.
@@ -237,6 +261,8 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <h3>Check one: the table class against information_schema</h3>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Support/TableClassSchemaChecker.php#L74-L120"
+    target="_blank" rel="noopener noreferrer"><code>tests/Support/TableClassSchemaChecker.php</code>, <code>check()</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/schema-check.php}}</code></pre>
 
     <p>The <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Support/TableClassSchemaChecker.php">checker</a> reads the live table's columns from <code>information_schema</code>,
@@ -247,12 +273,16 @@ export const SAMPLE_ARTICLES: readonly Article[] = [
 
     <p>The second check is the one I find most satisfying, because it involves almost no code. A server-side prepare makes MySQL parse a statement and resolve every table, column and alias in it against the real schema, without executing anything. So the check finds every <code>SQL</code> constant in the application and asks MySQL to prepare each one.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Support/ServerSidePrepareValidator.php#L37-L57"
+    target="_blank" rel="noopener noreferrer"><code>tests/Support/ServerSidePrepareValidator.php</code>, <code>validate()</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/prepare-validator.php}}</code></pre>
 
     <p>That makes MySQL the SQL parser, and MySQL is the only parser guaranteed to agree with MySQL. There is no SQL parsing library involved and no regular expressions over SQL text, and because nothing is executed it is as safe for an <code>UPDATE</code> or a <code>DELETE</code> as it is for a <code>SELECT</code>. An unknown column, a typo in a join, or a <code>GROUP BY</code> that <code>ONLY_FULL_GROUP_BY</code> rejects all fail here with MySQL's own error message, and the check reports every failing statement in one run rather than stopping at the first. What it cannot catch is anything that only happens when the statement runs, such as a subquery returning two rows or a query that is valid but wrong; that is still the integration tests' job.</p>
 
     <p>There is one trap, and it is a nasty one: with <code>PDO::ATTR_EMULATE_PREPARES</code> switched on, <code>prepare()</code> never contacts the server at all. PDO stores the string and substitutes values itself on execute, so the check would pass for any SQL whatsoever. The validator refuses such a connection in its constructor, because a check that silently proves nothing is worse than no check.</p>
 
+    <p class="code-source">Full source: <a href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Checks/SqlConstantsPrepareTest.php"
+    target="_blank" rel="noopener noreferrer"><code>tests/Checks/SqlConstantsPrepareTest.php</code></a></p>
     <pre><code class="language-php">{{SNIPPET:sql-first-php/rename-drift-test.php}}</code></pre>
 
     <p>The first test covers every query class there is or ever will be, because it discovers them rather than listing them, and the assertion on the count guards against the uncomfortable case where a wrong path means it quietly checks nothing. The second test is the demonstration: rename a column underneath the application and every query still spelling the old name is listed, each with its own error.</p>

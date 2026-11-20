@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/phpstan/Rules/RowKeyMustNotBeLiteralRule.php#L74-L98
 // Trimmed from phpstan/Rules/RowKeyMustNotBeLiteralRule.php
 
 /** @implements Rule<MethodCall> */

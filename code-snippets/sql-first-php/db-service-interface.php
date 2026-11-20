@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Db/DbServiceInterface.php
 // Trimmed from src/Db/DbServiceInterface.php (docblocks removed).
 // This is the whole surface. Every query in the application goes through it.
 

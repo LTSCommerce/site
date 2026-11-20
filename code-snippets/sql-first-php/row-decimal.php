@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Result/Row.php
 // Simplified from src/Result/Row.php (int() inlines the private toInt() helper, and the
 // patterns are written out rather than referenced as class constants)
 

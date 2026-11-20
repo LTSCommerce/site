@@ -264,6 +264,18 @@
   font-variant-ligatures: none;
 }
 
+/* "Source: <link>" caption sitting directly above a code block */
+.prose .code-source {
+  margin-top: 2rem;
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  color: #525252;
+}
+
+.prose .code-source + pre {
+  margin-top: 0.5rem;
+}
+
 /* Article sections */
 .prose h2 {
   margin-top: 3rem;

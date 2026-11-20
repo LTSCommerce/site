@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/AdjustStockStmt.php
 // Trimmed from example/Product/AdjustStockStmt.php
 
 final class AdjustStockStmt extends AbstractPreparedStmt

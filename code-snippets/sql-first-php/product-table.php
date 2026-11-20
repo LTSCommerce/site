@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/ProductTable.php
 // Trimmed from example/Product/ProductTable.php (four of the ten columns shown)
 
 final class ProductTable

@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Support/TableClassSchemaChecker.php#L74-L120
 // Trimmed from tests/Support/TableClassSchemaChecker.php
 
 final readonly class TableClassSchemaChecker

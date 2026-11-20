@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Product/FindProductByIdQueryTest.php
 // Adapted from tests/Product/FindProductByIdQueryTest.php (the real test reuses a row fixture
 // from ProductTest; it is written out inline here so the shape is visible)
 

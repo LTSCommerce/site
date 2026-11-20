@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Checks/SqlConstantsPrepareTest.php
 // Trimmed from tests/Checks/SqlConstantsPrepareTest.php
 
 #[Group('real-db')]

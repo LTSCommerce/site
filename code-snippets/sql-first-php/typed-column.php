@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Schema/NullableDecimalColumn.php
 // src/Schema/NullableDecimalColumn.php, near enough. One small final class per PHP type, so
 // PHPStan knows exactly what fromRow() returns and what is() accepts.
 

@@ -1,5 +1,6 @@
 <?php
 
+// Source: https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/Product.php#L43-L59
 // Trimmed from example/Product/Product.php. Not one literal column name.
 
 final readonly class Product
