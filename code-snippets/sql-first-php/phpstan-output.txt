@@ -1,0 +1,20 @@
+$ vendor/bin/phpstan analyse tests/Scratch
+
+ ------ ----------------------------------------------------------------------
+  Line   ShortcutQueryTest.php
+ ------ ----------------------------------------------------------------------
+  14     ShortcutQueryTest uses FakeDbService, which cannot tell whether the
+         SQL is valid. Add ShortcutQueryIntegrationTest.php next to it,
+         running the same query against a real database.
+         🪪  sqlFirst.fakeWithoutIntegrationTest
+  15     queryRows() is given SQL as a string literal. Move it to a public
+         const string SQL on a query class and pass Foo::SQL, so the prepare
+         check can find and validate it.
+         🪪  sqlFirst.sqlLiteral
+  17     Row::int('stock') uses a string-literal column name. Read it through
+         the table class instead, e.g. $table->column->fromRow($row), so a
+         rename cannot leave this line behind.
+         🪪  sqlFirst.rowKeyLiteral
+ ------ ----------------------------------------------------------------------
+
+ [ERROR] Found 3 errors

@@ -1,11 +1,299 @@
 /**
  * Article Data - AUTO-MIGRATED FROM LEGACY EJS TEMPLATES
  */
-
 import type { Article } from '@/types/article';
 import { CATEGORIES } from './categories';
 
 export const SAMPLE_ARTICLES: readonly Article[] = [
+  {
+    id: 'sql-first-php',
+    title: 'SQL-First PHP: Query Objects, Typed Rows and a Database That Checks Your SQL',
+    description:
+      'Raw SQL in PHP without the rot: one class per query, a mockable DB service, typed rows, column names written down once, and checks that have MySQL validate your SQL.',
+    date: '2026-11-20',
+    category: CATEGORIES.php.id,
+    readingTime: 22,
+    author: 'Joseph Edmonds',
+    tags: [],
+    subreddit: 'PHP',
+    register: 'formal',
+    content: `<div class="intro">
+    <p class="lead">There are good reasons to skip the ORM and write SQL yourself, and most of them come down to wanting the SQL that runs to be exactly the SQL you wrote. The trouble is that raw SQL done casually tends to rot in a particular way. Column names get typed out by hand in fifty places, casts are sprinkled through every result and money quietly passes through floats, whilst the unit tests mock the database so thoroughly they would pass against a table that doesn't exist. This article describes a pattern for keeping the control without the rot, and the checks that make it hold up over time rather than just on the day it was written.</p>
+</div>
+
+<section>
+    <h2>The Short Version, and the Demo Repo</h2>
+
+    <p>Every statement lives as a <code>public const string SQL</code> on its own small class and goes through one thin gateway interface, which a hand-written fake implements for unit tests. Rows are read through a typed, fail-fast reader rather than <code>(int)$row['stock']</code>. Column names are written down once, in a hand-written table class, and everything else refers to them through it. Then the build enforces those conventions rather than hoping for them: three custom PHPStan rules ban the shortcuts, and two checks against a real database have MySQL itself confirm that the table class matches the table and that every SQL constant in the application prepares.</p>
+
+    <p>All of it is in a public repository, <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo">LongTermSupport/sql-first-php-demo</a>.
+    I want to be clear about what that is: a <strong>concept demo, not a library</strong>.
+    It is deliberately small, every file is heavily commented, and it is meant to be read and copied from rather than installed.
+    The snippets in this article are trimmed from it, and each section links to the full file so you can see the surrounding comments and tests.</p>
+</section>
+
+<section>
+    <h2>Why You Might Want Raw SQL at All</h2>
+
+    <p>I should say up front that this is not an anti-ORM piece. Doctrine and Eloquent are mature, well-maintained tools, and for a greenfield application where the code owns the schema and most of the work is creating, reading and updating individual records, an ORM is probably the faster and more sensible route. The general wisdom that ORMs pay off for CRUD-heavy domains is general wisdom for a reason. But there is a long list of situations where writing SQL directly is the better fit, and if you recognise your project in a few of these, the rest of the article is for you.</p>
+
+    <p><strong>You want absolute control over what runs.</strong> With hand-written SQL, the statement in your code is the statement MySQL receives. You can paste it into a client, run <code>EXPLAIN</code> on it, and know the plan you see is the plan production gets. There's no lazy loading to trigger a query you didn't write, no N+1 hiding behind a property access, and no hydration of forty columns when you needed three.</p>
+
+    <p><strong>You are working with a legacy database you do not own.</strong> This is the big one. Plenty of real schemas were designed long before anyone thought about mapping them to objects: tables without a single-column primary key, MyISAM tables that cannot take part in a transaction, columns whose type says one thing and whose data says another, naming conventions that change halfway through the alphabet. An ORM can usually be persuaded to work with all of that, but you end up fighting its assumptions on every table, and the mapping configuration becomes a second, harder-to-read description of a schema that already exists.</p>
+
+    <p><strong>Several applications share the same database.</strong> An ORM tends to assume it owns the schema, including generating it and migrating it. When three applications, a reporting job and a vendor's integration all read the same tables, no single codebase gets to be the owner, and plain SQL is the common language they all already speak.</p>
+
+    <p><strong>The interesting work is reporting and aggregation.</strong> Grouping, window functions, conditional sums, multi-table joins with careful index use: these are what SQL is for, and they are often awkward to express through a query builder and impossible through an entity API. Writing them out longhand is clearer, and the database does the arithmetic far faster than a PHP loop over hydrated objects.</p>
+
+    <p><strong>You want fewer layers between you and the problem.</strong> Every layer is something to learn, configure, upgrade and debug. A thin gateway over PDO has very little in it that can surprise you, and the people who know SQL best on your team, who may not be PHP developers at all, can read and review every statement.</p>
+
+    <p>None of those reasons are an argument for doing raw SQL carelessly, though, and careless is the default unless you put a structure in place.</p>
+</section>
+
+<section>
+    <h2>What Goes Wrong When It Is Done Casually</h2>
+
+    <p>I suspect most PHP developers have met some version of this class. Each method is reasonable in isolation, and the problems only show when you look at the codebase as a whole.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/casual-raw-sql.php}}</code></pre>
+
+    <p>The column name <code>unit_price</code> is a string literal that appears wherever anything touches the price, so renaming the column means a search across the codebase and a hope that nobody built the name dynamically. The <code>(int)</code> cast turns a <code>NULL</code> into <code>0</code> without complaint, which is a wonderful way to ship a stock level of zero that was really "unknown". The <code>(float)</code> cast puts money through binary floating point, which cannot represent most decimal fractions exactly. The return type is an array whose keys and types are a matter of trust. And when someone writes a unit test for this, the natural move is to mock <code>PDO</code> or the repository, at which point the test is checking that the mock returns what the mock was told to return.</p>
+
+    <p>None of this fails on the day it is written. It fails months later, when a column is renamed, or a nullable column starts actually containing nulls, or a report total is a penny out and nobody can work out why.</p>
+</section>
+
+<section>
+    <h2>One Gateway, Deliberately Small</h2>
+
+    <p>Everything that talks to the database goes through one interface. Here is all of it, with the docblocks trimmed.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/db-service-interface.php}}</code></pre>
+
+    <p>The size is the point: six methods, every one of which takes the SQL and a separate array of named parameters, so there is simply no method that interpolates a value into a statement. There is no query builder behind it and no entity manager, and what you pass in is what runs. It also gives you a single place to put the behaviour you want on every statement, and a single seam to replace in tests, which we will come to.</p>
+
+    <p>You'll notice there's no "which database" parameter anywhere, because one instance of the service is one connection. An application that talks to a primary and a read replica wires two instances and hands each query class the one it needs, which keeps the decision visible at the point it matters rather than buried in a connection-name string.</p>
+
+    <p>The real implementation, <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Db/PdoDbService.php">PdoDbService</a>, adds a small number of things around each call:
+    a bounded prepared-statement cache, slow-query logging that includes the SQL,
+    wrapping every failure in a single <code>QueryException</code> that carries the failing statement (but not the parameter values, which can hold personal data and end up in log aggregators),
+    and retry on a lost connection. That last one is subtler than it looks, so here it is.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/with-retry.php}}</code></pre>
+
+    <p>Long-running workers, idle connection pools and database failovers all produce "MySQL server has gone away" often enough that you want some retry, and running a <code>SELECT</code> a second time on a fresh connection is harmless. Writes are a different matter. A connection can drop after the server has already run and committed the statement but before the reply arrives, so blindly re-sending <code>SET stock = stock + 3</code> or an <code>INSERT</code> could apply it twice. The demo therefore retries reads only: a write that loses its connection is reported rather than repeated, the dead connection is thrown away so the next statement gets a fresh one, and the caller, who knows whether that particular write is safe to run again, decides what to do.</p>
+
+    <p>Inside a transaction, nothing is retried at all, reads included. The new connection would have no open transaction, so the remaining statements would each auto-commit on their own. The final <code>COMMIT</code> would then fail against the dead handle, and the caller would be told the work failed when half of it had been permanently applied. So the service counts how deeply it is nested inside <code>transactional()</code> and refuses to reconnect there.
+    The demo has <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Db/PdoDbServiceTest.php">real-database tests for all three cases</a>,
+    which read the service's own <code>CONNECTION_ID()</code> and <code>KILL</code> it from a second connection to prove the behaviour.</p>
+
+    <p>The connection itself is set up by <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Db/PdoConnectionFactory.php">PdoConnectionFactory</a>,
+    with exceptions on error, server-side prepares, <code>utf8mb4</code> and a strict <code>sql_mode</code> applied on every connect.
+    The strict mode matters on legacy servers in particular, which are often configured permissively: it turns a value that does not fit into an error rather than a silent truncation or a zero date.</p>
+</section>
+
+<section>
+    <h2>One Class Per Query</h2>
+
+    <p>A query is a small object, not a method on a repository that grows forever. Here is a complete one.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/find-product-by-id-query.php}}</code></pre>
+
+    <p>Every query class has the same shape. It is <code>final readonly</code>, has no base class and no state beyond the injected gateway, and holds its SQL as a public constant written out in full as SQL. It exposes one method, named for what it does, taking typed arguments and returning a typed result, where <code>null</code> here means "no such product". The column list is spelled out rather than <code>SELECT *</code>, so adding a column to the table never silently changes what the query returns.</p>
+
+    <p>Why a constant, specifically? Three reasons, and the third turns out to be the most useful. A reviewer reads the SQL as SQL, in one place, without reconstructing it from string concatenation. A unit test can configure the fake with exactly <code>FindProductByIdQuery::SQL</code>, so the test and the code cannot disagree about the statement. And because every statement in the application lives in a constant with the same name, a test can find all of them by reflection and have MySQL check each one, which is the subject of a later section.</p>
+
+    <p>Callers simply construct the query where they need it. In a framework application you would register the gateway in the container and exclude query classes from autowiring; they have one dependency each and are cheap to build, so there is nothing for a container to manage.</p>
+
+    <h3>Statement classes: construct once, run many times</h3>
+
+    <p>Some SQL runs many times in a row with different parameters, typically in a loop over an import file. For those there is a second shape, a statement class, built once and called repeatedly.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/adjust-stock-stmt.php}}</code></pre>
+
+    <p>The gateway prepares the statement on the first call and reuses it for every one after.
+    The base class, <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Stmt/AbstractPreparedStmt.php">AbstractPreparedStmt</a>, is almost empty on purpose:
+    it keeps the gateway's methods <code>protected</code>, so the public surface of a statement class is only its own domain-named methods and never a raw <code>execute(string $sql)</code> that would let a caller pass arbitrary SQL through it.</p>
+
+    <p>It's also worth looking at where the business rule lives. "Stock never goes below zero" is in the <code>WHERE</code> clause, so the database enforces it atomically, and two workers applying adjustments at the same moment cannot race each other the way a read-check-write in PHP could. The method reports whether a row changed, and <code>false</code> means either an unknown SKU or not enough stock. (The separate <code>:required</code> parameter exists because, with native prepares, a named placeholder cannot appear twice in one statement, which is an easy thing to trip over.)</p>
+</section>
+
+<section>
+    <h2>Typed Rows That Fail Loudly</h2>
+
+    <p>PDO does not hand you PHP types the way you might hope. mysqlnd on PHP 8.1 and later sends an <code>INT</code> as <code>42</code>, but with <code>PDO::ATTR_STRINGIFY_FETCHES</code>, a libmysqlclient build or an older PHP it arrives as <code>"42"</code>, and plenty of existing code and test data assumes the string form. <code>DECIMAL</code> always arrives as a string. A <code>BIGINT UNSIGNED</code> can hold values larger than PHP's integer maximum. And a <code>NULL</code> arrives as <code>null</code>, which a careless cast turns into something that looks like data.</p>
+
+    <p>Rather than let those rules leak into every class that reads a result, one class owns them.
+    <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Result/Row.php">Row</a> wraps a single result row,
+    and every getter either returns exactly the type its name promises or throws, naming the column.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/row-decimal.php}}</code></pre>
+
+    <p>The decimal getter is the one I would draw your attention to. Money comes back as an exact string, <code>"5000.50"</code>, and a float arriving there is refused rather than formatted. Once a value has been through a float its original form is gone: <code>5000.50</code> comes back as <code>5000.5</code>, which breaks string comparison and display formatting even though it is numerically the same. Values near the top of a <code>DECIMAL(15,2)</code> column fare worse, losing real digits as soon as PHP turns the float back into a string (<code>9999999999999.99</code> becomes <code>10000000000000</code>). If a float shows up, it means the column is really <code>FLOAT</code> or <code>DOUBLE</code>, and the right response is to find that out now rather than format the damage into something plausible. Arithmetic on the string goes through <code>bcmath</code>, or you convert deliberately to integer pence.</p>
+
+    <p>The same "say what you mean" idea applies to how many rows you expect.
+    Reads return a <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Result/RowSet.php">RowSet</a>,
+    which offers <code>single()</code> (exactly one, or throw), <code>firstOrNull()</code> and iteration.
+    A lookup by unique key uses <code>single()</code>, so if the <code>WHERE</code> clause that "can only ever match one row" matches two one day, you find out immediately rather than quietly using whichever came first.</p>
+
+    <p>Two smaller traps are covered too. MySQL has no real boolean: <code>BOOLEAN</code> is an alias for <code>TINYINT(1)</code>, and the <code>(1)</code> is a display width rather than a constraint, so the column will happily store 7. Reading it as a bool is a statement about how your application uses the column, and the getter enforces that statement by accepting only 0 and 1. And unsigned big integers stay as digit strings, because casting <code>18446744073709551615</code> to a PHP int gives you the wrong number with no warning at all.</p>
+</section>
+
+<section>
+    <h2>Column Names, Written Down Once</h2>
+
+    <p>The typed row reader solves the type problem but not the naming problem, since something still has to say <code>'unit_price'</code>. The answer is a hand-written table class that is the one place a table's names and types appear in PHP.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/product-table.php}}</code></pre>
+
+    <p>It has two layers. String constants, <code>TABLE_NAME</code> and <code>COL_*</code>, are usable anywhere a constant expression is needed, including as keys in a bound-parameter array. And each column also gets a typed column object built from its constant, which pairs the name with its PHP type. Each column type is a tiny final class:</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/typed-column.php}}</code></pre>
+
+    <p>PHP has no generics, so one small class per carrier type is what lets PHPStan know that <code>$t-&gt;salePrice-&gt;fromRow($row)</code> returns <code>?string</code> and that <code>$t-&gt;stock-&gt;is('five')</code> is a type error. Calling the wrong getter for a column stops being a mistake you can make, because the column object only has the right one. The base class is also deliberately not <code>Stringable</code>: if it were, <code>"SELECT $column FROM ..."</code> would work and pass static analysis, and a name would go into SQL without anyone deciding whether it needed quoting. Callers pick <code>-&gt;name</code>, <code>-&gt;quoted()</code> or <code>-&gt;param()</code> explicitly.</p>
+
+    <p>With that in place, a DTO's hydration has no string-literal column names in it at all.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/product-from-row.php}}</code></pre>
+
+    <p>Compare that with the casual version earlier. A missing column, a <code>NULL</code> in a field the code believes is <code>NOT NULL</code>, a float where a decimal was promised, an <code>ENUM</code> value the PHP has never heard of: each of these throws at this line, naming the column, rather than travelling on into a total or an invoice.</p>
+
+    <p>Why hand-written rather than generated? A table class is a few dozen lines and changes rarely, writing it by hand keeps it readable, and it lets you model only the columns you actually use. That last point matters a great deal for legacy schemas, where a sixty-column table can be adopted a few columns at a time. A generator starts to earn its keep when you have a lot of tables changing often, and at that point I would happily reach for one, but it is not where I would start.</p>
+
+    <h3>Writes, and the one piece of SQL that is composed</h3>
+
+    <p>There is exactly one place where SQL is built for you rather than written out, and it is a single-row <code>INSERT</code>.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/create-product-command.php}}</code></pre>
+
+    <p>A hand-written <code>INSERT</code> has a failure mode that <code>SELECT</code>s do not: the column list and the <code>VALUES</code> list are two lists that must line up, and nothing checks that they do.
+    <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Schema/Insert.php">Insert::row()</a> builds both from the same values, so they cannot drift apart,
+    and each value comes from its column's typed <code>is()</code> method, so the types are checked statically too.</p>
+
+    <p>It stops there, deliberately. There is no <code>Update</code> builder, no <code>Where</code> builder and no <code>Select</code> builder. Once a project has a <code>WHERE</code> builder it tends to grow, slowly and with the best of intentions, into a query builder, and then the SQL that runs is no longer the SQL anybody reads. Every other statement stays written out as a constant, where both a reviewer and the prepare check can see it.</p>
+
+    <p>Columns that only exist in a query's output, such as <code>COUNT(*) AS total</code>, get the same treatment through a small
+    <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/ProductStatusCount.php">result class</a> that declares the alias names as constants.
+    You can see it in use in <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/example/Product/CountProductsByStatusQuery.php">CountProductsByStatusQuery</a>,
+    which is also a nice example of the database doing exact <code>DECIMAL</code> arithmetic that a PHP loop over floats would get slightly wrong.</p>
+</section>
+
+<section>
+    <h2>Testing: a Fake, Not a Mock, and Always a Real Database Too</h2>
+
+    <p>Because everything goes through the gateway interface, a unit test can swap in
+    <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/src/Testing/FakeDbService.php">FakeDbService</a>, a hand-written implementation keyed by SQL text.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/fake-unit-test.php}}</code></pre>
+
+    <p>The difference from a mocking library matters here. A mock is configured in terms of method calls ("expect <code>query()</code> once, with any arguments, and return this"), which couples the test to how the class happens to call the gateway and says nothing about the SQL. The fake is configured in terms of statements: when this SQL runs, return these raw rows, exactly as a driver would hand them over. Afterwards, the test can read back precisely which statements ran with which parameters. Unconfigured SQL fails with a message listing what was configured, rather than passing on an accidental empty result, which catches a whole class of mistakes on its own.</p>
+
+    <p>What the fake can't do is tell you the SQL is right. It returns the rows you hand it, even for a <code>SELECT</code> that names a column that doesn't exist, so a suite of fake-only tests can be entirely green on code that fails on its first real request. That is why every query class also gets an integration test, running the same constant against a real MySQL.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/integration-test.php}}</code></pre>
+
+    <p>The <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Support/RealDatabase.php">RealDatabase</a> trait gives each test its own throwaway schema,
+    built from the same <code>schema.sql</code> a developer would run by hand, and drops it afterwards.
+    A whole schema per test is slower than wrapping each test in a rolled-back transaction, but it has no exceptions: MySQL commits DDL implicitly, so the transaction trick breaks the first time a test alters a table, whereas nothing a test does to its own schema can leak into the next one. Without database credentials in the environment the tests skip, so the unit suite runs on a laptop with nothing installed. CI runs them with <code>--fail-on-skipped</code>, so a misconfigured database turns the build red instead of silently skipping the only tests that prove the SQL.</p>
+</section>
+
+<section>
+    <h2>Making the Conventions True: Three PHPStan Rules</h2>
+
+    <p>Everything so far is a convention, and conventions written in a README erode one pull request at a time. Somebody is in a hurry, writes <code>$row-&gt;int('stock')</code> just this once, and the "one place for column names" claim is now false in a way nothing in PHP will ever notice, because a string is a string. The fix is to make the build fail. Here are three shortcuts in one innocent-looking test:</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/shortcut-query-test.php}}</code></pre>
+
+    <p>Dropped into the demo as <code>tests/Scratch/ShortcutQueryTest.php</code>, this is what its PHPStan configuration says about it:</p>
+
+    <pre><code class="language-bash">{{SNIPPET:sql-first-php/phpstan-output.txt}}</code></pre>
+
+    <p>Each rule targets one habit.
+    <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/phpstan/Rules/RowKeyMustNotBeLiteralRule.php">RowKeyMustNotBeLiteralRule</a> keeps column names in the table class.
+    <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/phpstan/Rules/SqlMustBeAClassConstantRule.php">SqlMustBeAClassConstantRule</a> keeps every statement in a <code>SQL</code> constant,
+    which is what lets the prepare check in the next section cover the application's SQL rather than whatever happened to be written in a query class.
+    And <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/phpstan/Rules/FakeDbTestNeedsIntegrationTestRule.php">FakeDbTestNeedsIntegrationTestRule</a>
+    requires any unit test that uses the fake to have a matching <code>*IntegrationTest.php</code> beside it, which removes "I'll write the real-database test later" as an option.</p>
+
+    <p>Custom PHPStan rules are less work than people tend to expect. Here is the core of the first one:</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/rule-row-key.php}}</code></pre>
+
+    <p>All three are deliberately narrow. They fire on a string literal written at the call site, which is how the mistake is actually made, and let through anything indirect, such as a variable or a parameter, because a generic helper legitimately takes a <code>string $sql</code> that its own caller supplied as <code>Foo::SQL</code>. Chasing every value back to its origin would make for a much bigger rule that is wrong more often, and a rule that cries wolf tends to get suppressed rather than obeyed. The price of that narrowness is that the rules are a strong nudge rather than a proof: a key held in a variable, a raw array from <code>query()</code> or an exempted class can still get past them, which is one more reason the database checks below exist.
+    The few places that genuinely need to break a rule, such as the tests of the row reader itself, are exempted by class name in
+    <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/phpstan.neon">phpstan.neon</a>, so every exemption is listed in one file and shows up in review.</p>
+</section>
+
+<section>
+    <h2>Letting MySQL Check the SQL</h2>
+
+    <p>Static analysis can catch most of the ways PHP code bypasses the table class or builds SQL outside a constant. What it cannot check at all is that the table class matches the table, or that the SQL in those constants parses and matches the schema. For that you need the database, and the demo has two checks that ask it directly.</p>
+
+    <h3>Check one: the table class against information_schema</h3>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/schema-check.php}}</code></pre>
+
+    <p>The <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/tests/Support/TableClassSchemaChecker.php">checker</a> reads the live table's columns from <code>information_schema</code>,
+    finds the typed columns a table class declares by reflection, and fails if any declared column is missing, has the wrong nullability, or has a type the PHP class cannot read.
+    A <code>NullableIntColumn</code> over a <code>NOT NULL</code> column fails, as does a <code>BoolColumn</code> over anything wider than a <code>TINYINT</code>, or an <code>IntColumn</code> over a <code>BIGINT UNSIGNED</code> whose values will not fit a PHP int. Live columns the class does not declare are reported but not failed, which is what lets you adopt a wide legacy table gradually. Because the query is scoped with <code>DATABASE()</code>, the same check runs against a throwaway test schema, a staging copy or, read-only, against production itself.</p>
+
+    <h3>Check two: prepare every SQL constant</h3>
+
+    <p>The second check is the one I find most satisfying, because it involves almost no code. A server-side prepare makes MySQL parse a statement and resolve every table, column and alias in it against the real schema, without executing anything. So the check finds every <code>SQL</code> constant in the application and asks MySQL to prepare each one.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/prepare-validator.php}}</code></pre>
+
+    <p>That makes MySQL the SQL parser, and MySQL is the only parser guaranteed to agree with MySQL. There is no SQL parsing library involved and no regular expressions over SQL text, and because nothing is executed it is as safe for an <code>UPDATE</code> or a <code>DELETE</code> as it is for a <code>SELECT</code>. An unknown column, a typo in a join, or a <code>GROUP BY</code> that <code>ONLY_FULL_GROUP_BY</code> rejects all fail here with MySQL's own error message, and the check reports every failing statement in one run rather than stopping at the first. What it cannot catch is anything that only happens when the statement runs, such as a subquery returning two rows or a query that is valid but wrong; that is still the integration tests' job.</p>
+
+    <p>There is one trap, and it is a nasty one: with <code>PDO::ATTR_EMULATE_PREPARES</code> switched on, <code>prepare()</code> never contacts the server at all. PDO stores the string and substitutes values itself on execute, so the check would pass for any SQL whatsoever. The validator refuses such a connection in its constructor, because a check that silently proves nothing is worse than no check.</p>
+
+    <pre><code class="language-php">{{SNIPPET:sql-first-php/rename-drift-test.php}}</code></pre>
+
+    <p>The first test covers every query class there is or ever will be, because it discovers them rather than listing them, and the assertion on the count guards against the uncomfortable case where a wrong path means it quietly checks nothing. The second test is the demonstration: rename a column underneath the application and every query still spelling the old name is listed, each with its own error.</p>
+</section>
+
+<section>
+    <h2>What a Rename Looks Like</h2>
+
+    <p>Let's walk through the case the whole structure is designed for. Say <code>sale_price</code> is being renamed to <code>promo_price</code>.</p>
+
+    <ol>
+        <li>The migration renames the column in the database.</li>
+        <li>In PHP, <code>ProductTable::COL_SALE_PRICE</code> changes value. Every hydration and every insert goes through the table class, and the rules stop the usual ways of bypassing it, so all of those follow automatically.</li>
+        <li>The query constants still spell <code>sale_price</code> in their SQL text, because SQL is written as SQL rather than assembled. The prepare check lists every one of them, each with MySQL's own error, so the search is done for you.</li>
+        <li>If you had renamed the column in the database and forgotten the table class, the schema check would fail on it instead; if you had changed the table class and forgotten the migration, the same check catches it from the other side.</li>
+    </ol>
+
+    <p>None of that relies on someone remembering to search the codebase.</p>
+</section>
+
+<section>
+    <h2>What This Costs</h2>
+
+    <p>This is not free, and I would rather say so than oversell it.</p>
+
+    <p>There are more files. A query class, a unit test and an integration test for every statement is a real overhead compared with adding a method to a repository, and on a small project with a handful of queries it might well be more structure than the problem deserves. The payoff grows with the number of queries and the number of people touching them.</p>
+
+    <p>The SQL text itself still spells out column names, which is a deliberate trade, since keeping SQL readable as SQL is the point of the whole exercise, and the prepare check is what makes it safe, but it does mean a rename touches the heredocs as well as the table class.</p>
+
+    <p>Genuinely dynamic queries are awkward, because a search screen with a dozen optional filters doesn't fit neatly into "one constant per statement". The options are a few explicit variants, a single statement that handles optional filters with <code>(:status IS NULL OR status = :status_value)</code>-style conditions (two parameter names bound to the same value, since native prepares will not reuse one, and with an eye on what the pattern does to index use), or, for that one case, a small and carefully contained builder. I don't think there is a perfect answer here, and it is the part of the pattern I would expect to need the most judgement.</p>
+
+    <p>It is MySQL-specific in its details. The prepare check relies on server-side prepares behaving as they do in MySQL and MariaDB, and the schema check reads MySQL's <code>information_schema</code> types. The ideas carry over to PostgreSQL, but the code would need adapting.</p>
+
+    <p>And the integration tests need a real database in CI.
+    The demo's <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo/blob/main/.github/workflows/ci.yml">workflow</a> uses a MySQL service container,
+    which is not much configuration, but it is more than a unit suite that runs anywhere.</p>
+</section>
+
+<section>
+    <h2>What the Demo Leaves Out</h2>
+
+    <p>The demo leaves out several things a real project would need, to keep the core idea visible: migrations (a plain <code>schema.sql</code> stands in for them), framework wiring, more column types such as dates and JSON, bulk writes, streaming exports and multiple connections. All of them fit the same gateway and none of them change the shape.
+    The <a target="_blank" rel="noopener noreferrer" href="https://github.com/LongTermSupport/sql-first-php-demo#reading-order">README has a suggested reading order</a> through the files if you want to see how the pieces connect.</p>
+
+    <p>The combination matters more than any single piece, since query classes, typed rows and a table class each only help a little on their own. What turns them into something that still holds a year later, after a dozen people have worked on it, is the rules keeping them honest and the two database checks covering the gap static analysis cannot reach. Hopefully the demo gives you enough to try it on a corner of your own codebase and see whether it earns its place.</p>
+</section>
+`,
+  },
   {
     id: 'the-ouroboros-problem',
     title: 'The Ouroboros Problem',
