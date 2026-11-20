@@ -8,10 +8,11 @@ This directory contains all project plans following the Planning Workflow (see `
 - [003: Contact Form with Google Apps Script Backend](003-contact-form-google-apps-script/PLAN.md) - Not Started - **High Priority** - Replace mailto: contact form with React Hook Form + Zod + Google Apps Script backend (honeypot, rate limiting, email)
 - [006: Testing Infrastructure](006-testing-infrastructure/PLAN.md) - Not Started - **Medium Priority** - Set up Vitest + Playwright (smoke tests for all pages); required before Plan 001 Phase 8
 - [010: Go Live - React Migration](010-go-live-react-migration/PLAN.md) - In Progress - **High Priority** - Take the React/TypeScript site live
-- [00014: ltscommerce.dev Change-Requests Brief](00014-ltscommerce-change-requests-brief/PLAN.md) - In Progress - **High Priority** - Action the site audit: agentic governance positioning, open-source portfolio, privacy policy, RSS feed, trust and legal fixes
 - [012: Migrate ec-site onto ts-qa-ci](012-ecsite-ts-qa-ci-migration/PLAN.md) - Not Started - **Medium Priority** - Refactor ec-site to consume `ts-qa-ci` for generic QA/CI, keep private/brand rules local via the project-override layer; depends on Plan 011
 
 ## Completed Plans
+
+- [00014: ltscommerce.dev Change-Requests Brief](Completed/00014-ltscommerce-change-requests-brief/PLAN.md) - Complete - **High Priority** - Action the site audit: agentic governance positioning, open-source portfolio, privacy policy, RSS feed, trust and legal fixes
 
 - [002: React Site Skeleton - Reusable Foundation](Completed/002-react-site-skeleton/PLAN.md) - Complete - **High Priority** - Generic React/TypeScript skeleton with type-safe patterns, ESLint rules, minimal components, and Claude Code infrastructure
 

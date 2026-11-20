@@ -1,8 +1,8 @@
 # ltscommerce.dev — action the change-requests brief
 
-**Status**: In Progress
+**Status**: Complete
 
-**Progress note**: Phases 1–4 (Tasks 1.1–4.8) executed and re-verified after the VAT/Footer/Privacy edits (`npx ts-qa` fully clean across all 10 checks: oxlint, prettier, eslintFix, eslintReport, remarkValidateLinks, knip, tsc, dependencyCruiser, vitest, playwright — 5/5 e2e tests pass). VAT status resolved and applied to Footer/Privacy. Testimonials closed (declined). GitHub profile name/bio updated live via API (Task 5.2); repo pinning confirmed API-impossible, left for Joseph to do manually. Added `.claude/ccy/Dockerfile` to bake the Playwright chromium browser into the ccy container image so it persists across sessions instead of reinstalling each time. LinkedIn (Task 5.1) still open — which profile is primary is Joseph's call. Not committed or deployed — awaiting instruction.
+**Progress note**: Phases 1–4 (Tasks 1.1–4.8) executed and re-verified after the VAT/Footer/Privacy edits (`npx ts-qa` fully clean across all 10 checks: oxlint, prettier, eslintFix, eslintReport, remarkValidateLinks, knip, tsc, dependencyCruiser, vitest, playwright — 5/5 e2e tests pass). VAT status resolved and applied to Footer/Privacy. Testimonials closed (declined). GitHub profile name/bio updated live via API (Task 5.2); repo pinning is API-impossible and was done by Joseph by hand. Added `.claude/ccy/Dockerfile` to bake the Playwright chromium browser into the ccy container image so it persists across sessions instead of reinstalling each time. LinkedIn (Task 5.1) closed unapplied: Joseph is not changing his profile. Everything is committed, deployed and confirmed live.
 
 ## Context
 
@@ -181,7 +181,7 @@ rather than the parent. VAT status remains unknown for either entity.
 
 ### Phase 5 — external surfaces (explicit go-ahead per item, not bundled into blanket approval)
 
-- [ ] 🔄 **Task 5.1**: Drafted — "Fractional CTO & PHP Engineer — building the guardrails (containment, policy, QA gates) that make AI-assisted delivery safe to ship. 20+ years backend. Long Term Support Ltd." Joseph pastes it himself (no API access to LinkedIn). **Correction**: there are actually _two_ LinkedIn profiles — the known `linkedin.com/in/edmondscommerce` (stale "Magento and E-Commerce Web Development Agency UK" headline) and a second, previously-undiscovered one, `linkedin.com/in/lts-joseph` (113 followers, headline just "Long Term Support LTD", featured posts still Magento/PHP-anchored). Neither shows any sign of repositioning yet. Flag both to Joseph — draft copy should probably go on whichever one he actually treats as primary, which only he can say. **Decision (Joseph, 2026-11-20): `linkedin.com/in/edmondscommerce` is primary.** The drafted headline above is ready for him to paste there; nothing more is needed from the repo side.
+- [x] ✅ **Task 5.1** (closed 2026-11-20: Joseph is not changing his LinkedIn profile, so this was not applied): Drafted — "Fractional CTO & PHP Engineer — building the guardrails (containment, policy, QA gates) that make AI-assisted delivery safe to ship. 20+ years backend. Long Term Support Ltd." Joseph pastes it himself (no API access to LinkedIn). **Correction**: there are actually _two_ LinkedIn profiles — the known `linkedin.com/in/edmondscommerce` (stale "Magento and E-Commerce Web Development Agency UK" headline) and a second, previously-undiscovered one, `linkedin.com/in/lts-joseph` (113 followers, headline just "Long Term Support LTD", featured posts still Magento/PHP-anchored). Neither shows any sign of repositioning yet. Flag both to Joseph — draft copy should probably go on whichever one he actually treats as primary, which only he can say. **Decision (Joseph, 2026-11-20): `linkedin.com/in/edmondscommerce` is primary.** The drafted headline above is ready for him to paste there; nothing more is needed from the repo side.
 - [x] ✅ **Voice pass** (added mid-execution, not in original brief): user asked for all copy to be filtered through Joseph's actual writing voice rather than generic marketing register. LinkedIn's activity feed is auth-walled (confirmed via real browser, no way through without his login — did not attempt). Real signal instead came from a LinkedIn Pulse article and featured-post snippets that _did_ come through via WebFetch: plain, clipped, self-deprecating, British-colloquial ("if you fancy a change", "100% X certified, 100% Y certified"), "get in touch" as his actual recurring CTA phrase.
       A background agent separately git-blame-verified that his own CCY docs are literally `Co-Authored-By: Claude Opus 5` in the commit history, and flagged (via stylistic fingerprinting) that **this site's pre-existing copy is itself probably AI-written** — so "preserve the existing voice" was never a safe default here.
       Best source, per Joseph's own suggestion: cloned the private `LongTermSupport/php-book` manuscript repo (`gh repo clone`, accessible via this container's `gh` auth) into `untracked/repos/php-book/` and read Chapter 1 directly — genuine, unfiltered, pre-LLM (2021) prose. Real pattern: long, loosely-built, comma-heavy sentences, British idiom ("the big daddy", "kick the tyres", "jump in at the deep end"), hedges and asides ("Whilst...", "I seriously hope...", "I think it would be fair to say..."), direct reader address, opinions stated plainly — nothing like the short-punchy-aphorism cadence AI text (including this site's prior copy) tends toward.
@@ -205,21 +205,15 @@ rather than the parent. VAT status remains unknown for either entity.
 
 ---
 
-## Open inputs still needed from Joseph (not blocking the rest of the plan)
+## Inputs from Joseph (all resolved)
 
-| Input                                                                                         | Blocks                     |
-| --------------------------------------------------------------------------------------------- | -------------------------- |
-| Manually pin repos on github.com/LTSCommerce (API has no pinning mutation)                    | Task 5.2 fully closing out |
-| ~~Which LinkedIn profile is primary~~ resolved: `edmondscommerce`; Joseph pastes the headline | Task 5.1 paste only        |
+~~Manually pin repos on github.com/LTSCommerce~~ — done by Joseph (2026-11-20). The profile now pins `fedora-desktop`, `claude-code-hooks-daemon`, `php-qa-ci`, `defence-before-fix.github.io`, `actions-qa-ci` and `go-qa-ci`; `ts-qa-ci` is not pinned and Joseph is happy with the six as they are.
+
+~~Which LinkedIn profile is primary~~ — moot (2026-11-20): Joseph is not changing his LinkedIn profile, so the drafted headline is not used.
 
 ~~Fixed-scope offer prices~~ — resolved (Joseph, 2026-11-20): none needed. Fixed scope means the client says what they need and gets a quote, so the offer cards stay at "Fixed price, get in touch for a quote" (Task 4.1, done). Availability-band hours (Task 4.2) are likewise not required; the Capacity bullet stands without figures.
 
 ~~Whether to make `actions-hub` public~~ — resolved (Joseph, 2026-11-20): it stays private, so it stays off `/open-source`.
-
-### How to do the two manual steps
-
-- **LinkedIn (Task 5.1)**: on `linkedin.com/in/edmondscommerce` click the pencil beside the name, replace the Headline field with the drafted text in Task 5.1 above, and save. The headline limit is 220 characters and the draft is under it.
-- **GitHub pins (Task 5.2)**: on `github.com/LTSCommerce` click "Customize your pins", tick `php-qa-ci`, `ts-qa-ci`, `claude-code-hooks-daemon` and `fedora-desktop` (GitHub allows up to six), and save.
 
 ~~Sign-off on which company name to display~~ — resolved without needing to ask: Companies House
 PSC data + the matching SIC code settled it (see Phase 0 correction above).
