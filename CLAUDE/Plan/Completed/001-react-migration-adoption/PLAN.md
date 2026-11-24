@@ -1,6 +1,6 @@
 # Plan 001: React Migration & Claude Code Infrastructure Adoption
 
-**Status**: In Progress
+**Status**: Complete
 **Created**: 2025-12-11
 **Last Updated**: 2026-11-20
 **Owner**: Claude Code
@@ -545,8 +545,14 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
   - Honeypot spam protection
   - Proper form handling without exposing email credentials
 
+### 2026-11-24 - Closure
+
+Closed as Complete. The migration is done: the React site was merged into `main` in `e4dd9ac` (2026-02-20) and has been live since. The pending contact-form backend shipped under Plan 003 (`85b422e1`). Test tooling shipped under Plan 006 (`a1b09e25`) and Plan 011 (`02b6648`). Go-live was tracked and finished in Plan 010. How to add articles and pages is now in the project `CLAUDE.md`.
+
+The remaining unticked boxes in Phases 8-10 and in Success Criteria were never worked or verified as separate tasks. They are left unticked on purpose: the plan is closed without them, not because they were checked.
+
 ---
 
 **Maintained by**: Joseph (LTS Commerce)
-**Last Updated**: 2026-01-23
-**Plan Status**: 🔄 In Progress (Phase 5 Complete ✅ - Typography Enhanced ✅ - Contact Form Pending)
+**Last Updated**: 2026-11-24
+**Plan Status**: Complete

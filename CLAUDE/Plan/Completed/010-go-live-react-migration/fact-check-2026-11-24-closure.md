@@ -1,0 +1,23 @@
+# Fact check: plan 010 closure (2026-11-24)
+
+Scope: claims added or changed by the 010 diff.
+
+## REFUTED
+
+1. "`flowbite-react` is still in `package.json` `dependencies` with no imports" (also the ticked-open item "although nothing imports it", and the unchanged-in-spirit "No source imports of Flowbite" is fine).
+   `tailwind.config.ts:2` has `import flowbite from 'flowbite-react/tailwind';`, and uses `flowbite.content()` (line 5) and `flowbite.plugin()` (line 40). So something does import it. The "no imports" claim holds only for `src/` (grep -w flowbite there finds only two comments saying "no Flowbite dependency"; e2e, scripts and vite.config.ts are clean). Consequence: removing the package as the note suggests would break the Tailwind config, which must be edited first. The remaining open item should say "imported only by tailwind.config.ts".
+
+## Claims
+
+| #   | Claim                                                                                        | Verdict                                     | Evidence                                                                                                                                                         |
+| --- | -------------------------------------------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `react-migration` merged into `main` in `e4dd9ac`                                            | VERIFIED                                    | `e4dd9ac` "Merge react-migration: Complete React/Vite migration", 2026-02-20, ancestor of main.                                                                  |
+| 2   | No `react-migration` branch remains                                                          | VERIFIED                                    | `git branch -a` lists only main, origin/HEAD, origin/main; `git branch -r --list '*react-migration*'` empty.                                                     |
+| 3   | main is the React site                                                                       | VERIFIED                                    | Tree has src/, vite.config.ts, package.json with React.                                                                                                          |
+| 4   | Site deployed from main since                                                                | UNVERIFIABLE-HERE                           | Needs Actions run history. ci.yml:55-57 uploads `./dist` for Pages.                                                                                              |
+| 5   | `flowbite-react` is in `dependencies` of package.json                                        | VERIFIED                                    | package.json:42 `"flowbite-react": "^0.12.17"`. Section (dependencies vs devDependencies) not separately confirmed beyond line position near other runtime deps. |
+| 6   | Package manager is pnpm, lockfile exists                                                     | VERIFIED                                    | pnpm-lock.yaml present, package-lock.json absent. (CLAUDE.md still says npm.)                                                                                    |
+| 7   | CI uploads `dist/` for GitHub Pages in `.github/workflows/ci.yml`                            | VERIFIED                                    | ci.yml:55 `actions/upload-pages-artifact@v3`, line 57 `path: ./dist`.                                                                                            |
+| 8   | `npm run llm:build` succeeds, 70 routes prerendered, 0 failed; build runs tsc                | UNVERIFIABLE-HERE                           | Needs a build run (not run per rules). Not checked whether the `llm:build` script exists.                                                                        |
+| 9   | No source imports of Flowbite                                                                | VERIFIED (src only)                         | See refuted item; `tailwind.config.ts` is outside `src/`.                                                                                                        |
+| 10  | Social links, ArticleList Tailwind, contact fallback "verified when written, not re-checked" | VERIFIED as a statement of non-verification | Self-described as unchecked; no claim of current state.                                                                                                          |

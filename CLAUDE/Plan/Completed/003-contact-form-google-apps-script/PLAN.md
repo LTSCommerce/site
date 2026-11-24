@@ -1,6 +1,6 @@
 # Plan 003: Contact Form with Google Apps Script Backend
 
-**Status**: Not Started
+**Status**: Complete
 **Created**: 2026-02-20
 **Owner**: Claude Code
 **Priority**: High
@@ -11,14 +11,14 @@
 
 This plan **must** be executed using the git worktree workflow. Read the full documentation before starting any implementation:
 
-**[CLAUDE/Worktree.md](../../Worktree.md)**
+**[CLAUDE/Worktree.md](../../../Worktree.md)**
 
 ```bash
 # Setup: create parent worktree before any implementation
 git worktree add untracked/worktrees/worktree-plan-003 -b worktree-plan-003
 ```
 
-All implementation happens inside that worktree. The merge rules (child → parent, parent → main) are in [Worktree.md: Hierarchical Structure](../../Worktree.md#hierarchical-structure).
+All implementation happens inside that worktree. The merge rules (child → parent, parent → main) are in [Worktree.md: Hierarchical Structure](../../../Worktree.md#hierarchical-structure).
 
 ## Overview
 
@@ -291,8 +291,12 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases, 
 - Current LTS Contact.tsx uses Flowbite components and mailto approach -- both will be replaced
 - The EC site Contact component references several EC-specific components (`PageContent`, `BlurText`, `StatusBadge`, `SubHeading`, `WhiteToRedTypewriter`, `Button`, `useInView`, `SSR`) -- LTS will use its own component patterns, not lift EC UI components
 
+### 2026-11-24 - Closure
+
+Closed as Complete. The work was delivered the day the plan was written, in `85b422e1` ("Plan 003: Contact form via Google Apps Script"). That commit added `google-apps-script/Code.gs` and `SETUP.md`, plus a React Hook Form + Zod `src/pages/Contact.tsx` that posts to `VITE_CONTACT_FORM_URL`. The mailto fallback for when that URL is unset came later, in `d81002a2` (Plan 010). This document was never updated to match. Its task boxes stay unticked because they were not tracked one by one, and the commit is the record of delivery.
+
 ---
 
 **Maintained by**: Joseph (LTS Commerce)
-**Last Updated**: 2026-02-20
-**Plan Status**: 📋 Planned
+**Last Updated**: 2026-11-24
+**Plan Status**: Complete

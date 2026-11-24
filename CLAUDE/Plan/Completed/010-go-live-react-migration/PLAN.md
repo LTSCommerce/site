@@ -1,6 +1,6 @@
 # Plan 010: Go Live — React Migration
 
-**Status**: In Progress
+**Status**: Complete
 **Created**: 2026-02-20
 **Owner**: Claude
 **Priority**: Critical
@@ -46,3 +46,10 @@ Verified 2026-11-20:
 - [x] ✅ No source imports of Flowbite
 - [ ] ⬜ `flowbite-react` is still listed in `dependencies` in package.json although nothing imports it; remove it with the package manager (pnpm) so the lockfile stays in step
 - [ ] ⬜ Social links, ArticleList Tailwind and contact-form fallback were verified when written but not re-checked in this pass
+
+## Closure
+
+Closed as Complete on 2026-11-24. The goal of this plan, taking the React site live, was met: `react-migration` was merged into `main` in `e4dd9ac` and the site has been deployed from `main` since. The two unticked items above were left open, not done:
+
+- `flowbite-react` is still in `package.json` `dependencies`. Nothing under `src/` imports it, but `tailwind.config.ts` does (`flowbite-react/tailwind`), so that config has to change before the package can be removed. (Success Criterion 4 above is true only for `src/`.)
+- The social-link, ArticleList and contact-form re-check was never done as a separate pass.

@@ -4,13 +4,17 @@ This directory contains all project plans following the Planning Workflow (see `
 
 ## Active Plans
 
-- [001: React Migration & Claude Code Infrastructure Adoption](001-react-migration-adoption/PLAN.md) - In Progress - **High Priority** - Migrate LTS Commerce site from EJS/Vite to React/TypeScript, apply skeleton from Plan 002
-- [003: Contact Form with Google Apps Script Backend](003-contact-form-google-apps-script/PLAN.md) - Not Started - **High Priority** - Replace mailto: contact form with React Hook Form + Zod + Google Apps Script backend (honeypot, rate limiting, email)
-- [006: Testing Infrastructure](006-testing-infrastructure/PLAN.md) - Not Started - **Medium Priority** - Set up Vitest + Playwright (smoke tests for all pages); required before Plan 001 Phase 8
-- [010: Go Live - React Migration](010-go-live-react-migration/PLAN.md) - In Progress - **High Priority** - Take the React/TypeScript site live
 - [012: Migrate ec-site onto ts-qa-ci](012-ecsite-ts-qa-ci-migration/PLAN.md) - Not Started - **Medium Priority** - Refactor ec-site to consume `ts-qa-ci` for generic QA/CI, keep private/brand rules local via the project-override layer; depends on Plan 011
 
 ## Completed Plans
+
+- [001: React Migration & Claude Code Infrastructure Adoption](Completed/001-react-migration-adoption/PLAN.md) - Complete - **High Priority** - Migrate LTS Commerce site from EJS/Vite to React/TypeScript, apply skeleton from Plan 002
+
+- [003: Contact Form with Google Apps Script Backend](Completed/003-contact-form-google-apps-script/PLAN.md) - Complete - **High Priority** - Replace mailto: contact form with React Hook Form + Zod + Google Apps Script backend (honeypot, rate limiting, email)
+
+- [006: Testing Infrastructure](Completed/006-testing-infrastructure/PLAN.md) - Complete - **Medium Priority** - Set up Vitest + Playwright (smoke tests for all pages)
+
+- [010: Go Live - React Migration](Completed/010-go-live-react-migration/PLAN.md) - Complete - **High Priority** - Take the React/TypeScript site live
 
 - [00015: SQL-first PHP article and concept-demo repo](Completed/00015-sql-first-php-article-and-demo-repo/PLAN.md) - Complete - **Medium Priority** - Article on a SQL-first persistence pattern for PHP, plus a public concept-demo repo it links into
 

@@ -1,6 +1,6 @@
 # Plan 006: Testing Infrastructure (Vitest + Playwright)
 
-**Status**: Not Started
+**Status**: Complete
 **Created**: 2026-02-20
 **Last Updated**: 2026-02-20
 **Owner**: Claude Code
@@ -12,14 +12,14 @@
 
 This plan **must** be executed using the git worktree workflow. Read the full documentation before starting any implementation:
 
-**[CLAUDE/Worktree.md](../../Worktree.md)**
+**[CLAUDE/Worktree.md](../../../Worktree.md)**
 
 ```bash
 # Setup: create parent worktree before any implementation
 git worktree add untracked/worktrees/worktree-plan-006 -b worktree-plan-006
 ```
 
-All implementation happens inside that worktree. The merge rules (child → parent, parent → main) are in [Worktree.md: Hierarchical Structure](../../Worktree.md#hierarchical-structure).
+All implementation happens inside that worktree. The merge rules (child → parent, parent → main) are in [Worktree.md: Hierarchical Structure](../../../Worktree.md#hierarchical-structure).
 
 ## Overview
 
@@ -333,8 +333,12 @@ Per PlanWorkflow guidance, no specific time estimates. Work proceeds in phases:
 - EC site's mock registry pattern not needed (LTS has no registries)
 - EC site's import.meta.env mock in setup.ts may be needed if components read env vars
 
+### 2026-11-24 - Closure
+
+Closed as Complete. Vitest was set up in `a1b09e25` ("Plan 006: Add Vitest testing infrastructure"), with `vitest.config.ts` and `src/test-utils/`. Playwright (`playwright.config.ts`, `e2e/pages.spec.ts`) arrived later with Plan 011 Phase 4 (`02b6648`), which also wired tests into the ts-qa-ci gates. This document was never updated to match. Its task boxes stay unticked because they were not tracked one by one, and the commits are the record of delivery.
+
 ---
 
 **Maintained by**: Joseph (LTS Commerce)
-**Last Updated**: 2026-02-20
-**Plan Status**: 📋 Planned
+**Last Updated**: 2026-11-24
+**Plan Status**: Complete
