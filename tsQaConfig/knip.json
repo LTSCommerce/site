@@ -11,5 +11,5 @@
     "src/types/article.ts",
     "src/types/project.ts"
   ],
-  "project": ["src/**/*.{ts,tsx}"]
+  "project": ["src/**/*.{ts,tsx,css}"]
 }

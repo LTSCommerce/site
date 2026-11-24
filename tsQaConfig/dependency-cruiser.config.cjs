@@ -20,7 +20,8 @@ module.exports = {
     // untracked/ holds Joseph's own local scratch clones of unrelated projects
     // (gitignored, not part of this repo's dependency graph) - one of them ships a
     // generated .ts file dependency-cruiser's parser chokes on entirely. dist/
-    // dist-server/var are build output, not source.
-    exclude: { path: '^(untracked|dist|dist-server|var)/' },
+    // dist-server/var are build output, not source. .claude/ is agent tooling
+    // (hooks daemon, gitignored ccy plugin caches), never part of the app.
+    exclude: { path: '^(untracked|dist|dist-server|var|\\.claude)/' },
   },
 };
