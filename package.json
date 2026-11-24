@@ -39,7 +39,6 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "embla-carousel-react": "^8.6.0",
-    "flowbite-react": "^0.12.17",
     "highlight.js": "^11.11.1",
     "lucide-react": "^0.575.0",
     "react": "^18.3.1",
@@ -49,8 +48,8 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@longtermsupport/ts-qa-ci": "github:LongTermSupport/ts-qa-ci#4203dc8f97ff74c6c42897d6ab89e988c33fc3d9",
     "@eslint/js": "^9.39.4",
+    "@longtermsupport/ts-qa-ci": "github:LongTermSupport/ts-qa-ci#4203dc8f97ff74c6c42897d6ab89e988c33fc3d9",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",

@@ -1,7 +1,7 @@
 /**
  * Footer Component
  *
- * Dark footer — no Flowbite dependency.
+ * Dark footer.
  * Brand left, nav + connect columns right, copyright bar.
  */
 

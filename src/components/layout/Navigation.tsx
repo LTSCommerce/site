@@ -1,7 +1,7 @@
 /**
  * Navigation Component
  *
- * Clean, custom navigation — no Flowbite dependency.
+ * Clean, custom navigation.
  * Logo left, nav links + CTA right, mobile hamburger.
  */
 

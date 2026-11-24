@@ -340,7 +340,7 @@ Pages live in `src/pages/`:
 - `package.json` - Dependencies and npm scripts
 - `vite.config.ts` - Build configuration (Vite + React plugin)
 - `tsconfig.json` - TypeScript compiler options (strict mode enabled)
-- `tailwind.config.ts` - Tailwind CSS configuration
+- `src/styles/global.css` - Tailwind CSS v4 configuration (CSS-first: `@import 'tailwindcss'` plus the `@theme` block; there is no JS Tailwind config)
 - `eslint.config.js` - ESLint flat config with TypeScript and React rules
 - `.github/workflows/ci.yml` - Main CI/CD pipeline with quality gates
 - `.github/workflows/static.yml` - GitHub Pages deployment (triggered by CI success)

@@ -11,6 +11,7 @@
 // (route/SEO/category-system rules) and stays local per the ec-site-lift
 // sign-off's lift/keep-private boundary.
 import js from '@eslint/js';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -30,7 +31,7 @@ import noChildrenOnPropOnlyComponents from '../eslint-rules/no-children-on-prop-
 // tsconfigRootDir explicitly rather than relying on this file's own location.
 const projectRoot = new URL('..', import.meta.url).pathname;
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: [
       'dist',
@@ -40,7 +41,6 @@ export default tseslint.config(
       'untracked',
       'ARCHIVE',
       'var',
-      'tailwind.config.ts',
       'vitest.config.ts',
       'scripts/',
       '.claude/',

@@ -17,3 +17,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     npx -y playwright@1.61.1 install --with-deps chromium
 
 RUN npx -y playwright@1.61.1 --version
+
+# pnpm is this project's package manager (package.json `packageManager`, and CI
+# runs `pnpm install --frozen-lockfile`). The base image ships neither pnpm nor
+# corepack. Keep the version in lockstep with package.json `packageManager`.
+RUN npm install -g pnpm@12.3.4 && pnpm --version
