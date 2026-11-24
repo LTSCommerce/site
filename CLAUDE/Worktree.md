@@ -90,13 +90,7 @@ Worktrees support **parent-child relationships** for complex plans:
 
 ❌ **Wrong**: `plan-004`, `feature/headers`, `temp-work`, `child-component-1`
 
-**Why**:
-
-- Clear identification of worktree hierarchy
-- Easy filtering in `git branch` output
-- Shows parent-child relationships
-- Prevents accidental merges to main
-- Signals temporary nature
+**Why**: see [Branch Naming in the daemon's core worktree doc](core/Worktree.core.md#2-branch-naming).
 
 ### 3. Agent Containment
 

@@ -19,9 +19,7 @@ This plan **must** be executed using the git worktree workflow. Read the full do
 git worktree add untracked/worktrees/worktree-plan-006 -b worktree-plan-006
 ```
 
-- All implementation work happens inside the worktree — never directly in `/workspace`
-- Child → Parent merges: automatic (no approval needed)
-- Parent → `react-migration` merge: **requires explicit human approval**
+All implementation happens inside that worktree. The merge rules (child → parent, parent → main) are in [Worktree.md: Hierarchical Structure](../../Worktree.md#hierarchical-structure).
 
 ## Overview
 

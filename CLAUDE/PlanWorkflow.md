@@ -140,28 +140,9 @@ Refer to detailed info in supporting docs as required
 
 ## ✅ Task Status System
 
-### Status Icons
+### Status Icons and Task Formatting
 
-Use these Unicode icons for task status:
-
-| Status           | Icon | Markdown | Meaning                           |
-| ---------------- | ---- | -------- | --------------------------------- |
-| **Not Started**  | ⬜   | `⬜`     | Task not yet begun                |
-| **In Progress**  | 🔄   | `🔄`     | Currently being worked on         |
-| **Completed**    | ✅   | `✅`     | Task finished and verified        |
-| **Blocked**      | 🚫   | `🚫`     | Cannot proceed (dependency/issue) |
-| **Cancelled**    | ❌   | `❌`     | Task no longer needed             |
-| **On Hold**      | ⏸️   | `⏸️`     | Paused temporarily                |
-| **Needs Review** | 👁️   | `👁️`     | Work done, awaiting review        |
-
-### Task Formatting
-
-```markdown
-- [ ] ⬜ **Task Title**: Clear description of what needs to be done
-  - [ ] ⬜ Subtask 1: Specific action
-  - [ ] 🔄 Subtask 2: Another action (currently working)
-  - [ ] ✅ Subtask 3: Already completed
-```
+The status icon table and the task-line format are defined once, in the daemon's core plan workflow doc: see [Status Icons](core/PlanWorkflow.core.md#status-icons) and [Task Formatting](core/PlanWorkflow.core.md#task-formatting).
 
 ### Rules for Status Updates
 
