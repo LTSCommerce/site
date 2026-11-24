@@ -21,26 +21,15 @@ Git worktrees allow multiple working directories from a single repository, enabl
 
 ### ESLint in Worktrees
 
-Worktrees have their own copy of `eslint.config.js` which can become stale over time, causing config drift. To ensure consistent linting:
-
-**Use the ESLint wrapper script** for all ESLint operations in worktrees:
+`eslint.config.js` only delegates to the pinned `@longtermsupport/ts-qa-ci` package plus `tsQaConfig/eslint.config.js`, so a worktree lints with whatever rules its own branch carries. To lint specific files from anywhere:
 
 ```bash
-# Instead of: npx eslint src/
-npx tsx scripts/eslint-wrapper.ts src/
-
-# Or use llm:lint commands (wrapper used automatically)
-npm run llm:lint
+npx tsx scripts/eslint-wrapper.ts src/            # human-readable output
+npx tsx scripts/eslint-wrapper.ts a.tsx --max-warnings 0
+npm run llm:lint                                  # whole project, JSON to var/qa/eslint.json
 ```
 
-**How it works**:
-
-- Auto-detects worktree context from cwd
-- Runs ESLint using main workspace's `eslint.config.js`
-- Ensures all worktrees use the same linting rules
-- Prevents config drift issues
-
-**Note**: The validate-eslint-on-write.py hook automatically uses the wrapper script, so file edits are validated with the current config.
+`scripts/eslint-wrapper.ts` resolves the config of the checkout the script itself lives in, whatever the current directory is, and does not report files the config deliberately ignores. The hooks daemon's `validate_eslint_on_write` handler runs it after every `.ts`/`.tsx` write.
 
 ### Hierarchical Structure
 

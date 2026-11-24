@@ -11,8 +11,10 @@ minimumReleaseAgeExclude: [] # only for manually-reviewed security patches — t
 # Block dependency install scripts by default; allowlist specific packages below
 # (one entry per legitimate native-build dep, with a justification comment).
 dangerouslyAllowAllBuilds: false
-# allowBuilds:
-#   esbuild: true
+allowBuilds:
+  # Denied: esbuild (pulled in by tsx) ships its binary as a platform optional
+  # dependency (@esbuild/<platform>), so its postinstall check is not needed.
+  esbuild: false
 
 # Fail loudly if the lockfile drifts from the manifests.
 verifyDepsBeforeRun: error
