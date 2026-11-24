@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ElementType } from 'react';
+import { useCallback, useState, type ElementType } from 'react';
 
 import { Typewriter } from './Typewriter';
 
@@ -60,16 +60,14 @@ export function HighlightTypewriter({
   speed = 50,
   highlightColour = '#0f4c81',
 }: HighlightTypewriterProps) {
-  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
-
-  // Reset animation state when text changes
-  useEffect(() => {
-    setIsAnimationComplete(false);
-  }, [text]);
+  // Records WHICH text finished animating, so a new `text` is incomplete by
+  // definition and needs no reset step.
+  const [completedText, setCompletedText] = useState<string | null>(null);
+  const isAnimationComplete = completedText === text;
 
   const handleComplete = useCallback(() => {
-    setIsAnimationComplete(true);
-  }, []);
+    setCompletedText(text);
+  }, [text]);
 
   // No highlight: render entire text without highlight colour
   if (!highlightText) {

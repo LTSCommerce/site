@@ -14,7 +14,9 @@
  *   <MyCard title="Card 3" />
  * </MobileCarouselGrid>
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+
+import { useCarouselState } from '../../hooks/useCarouselState';
 
 import {
   Carousel,
@@ -41,25 +43,7 @@ export interface MobileCarouselGridProps {
  * Dots are clickable to navigate to specific slides.
  */
 function CarouselDots({ api }: { api: CarouselApi | undefined }) {
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!api) return;
-
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap());
-
-    const onSelect = () => {
-      setCurrent(api.selectedScrollSnap());
-    };
-
-    api.on('select', onSelect);
-
-    return () => {
-      api.off('select', onSelect);
-    };
-  }, [api]);
+  const { selectedIndex: current, snapCount: count } = useCarouselState(api);
 
   const handleDotClick = useCallback(
     (index: number) => {

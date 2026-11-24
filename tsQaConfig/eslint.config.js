@@ -83,17 +83,6 @@ export default defineConfig(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      // Downgraded from the recommended 'error'. This rule shipped new in
-      // eslint-plugin-react-hooks 6/7 (this repo was on 5.x until Plan 011 Task 4.1's
-      // dependency bump pulled it in as a side effect of chasing current-stable
-      // floors). Every instance found so far (Carousel/Typewriter/BlurText/etc.) is a
-      // genuine "synchronize local state with an external system" effect (embla
-      // carousel, animation timers, the copyright-year clock) - textbook useEffect
-      // usage per React's own docs, not a bug. Redesigning each component's effect
-      // pattern to satisfy the new rule is real application-behavior work, tracked
-      // as CDD/animation-component follow-up (Plan 011 Task 4.6), not done blind
-      // here. Kept at 'warn' rather than 'off' so it stays visible.
-      'react-hooks/set-state-in-effect': 'warn',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 
       '@typescript-eslint/no-unused-vars': [

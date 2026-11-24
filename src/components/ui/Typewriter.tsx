@@ -47,12 +47,15 @@ export function Typewriter({
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const isPhone = useMediaQuery('(max-width: 767px)');
 
-  // Reset state when mode or text changes
-  useEffect(() => {
+  // Restart when mode or text changes. Adjusting state during render (not in
+  // an effect) means the stale text is never painted for the new props.
+  const [runFor, setRunFor] = useState({ mode, text });
+  if (runFor.mode !== mode || runFor.text !== text) {
+    setRunFor({ mode, text });
     setDisplayedText(mode === 'delete' ? text : '');
     setStarted(false);
     setFinished(false);
-  }, [mode, text]);
+  }
 
   // Handle initial delay and start
   useEffect(() => {
@@ -69,51 +72,47 @@ export function Typewriter({
     };
   }, [trigger, delay, started]);
 
-  // Handle typing animation
+  // Handle typing animation. Completion fires in the same tick that types the
+  // final character.
   useEffect(() => {
-    if (!started || mode !== 'type') {
-      return;
-    }
-
-    if (displayedText.length >= text.length) {
-      if (!finished) {
-        setFinished(true);
-        onComplete?.();
-      }
+    if (!started || finished || mode !== 'type') {
       return;
     }
 
     const timeout = setTimeout(() => {
-      setDisplayedText(text.slice(0, displayedText.length + 1));
+      const next = text.slice(0, displayedText.length + 1);
+      setDisplayedText(next);
+      if (next.length >= text.length) {
+        setFinished(true);
+        onComplete?.();
+      }
     }, speed);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [started, displayedText, text, speed, mode, finished, onComplete]);
+  }, [started, finished, displayedText, text, speed, mode, onComplete]);
 
-  // Handle deletion animation
+  // Handle deletion animation. Completion fires in the same tick that removes
+  // the final character.
   useEffect(() => {
-    if (!started || mode !== 'delete') {
-      return;
-    }
-
-    if (displayedText.length === 0) {
-      if (!finished) {
-        setFinished(true);
-        onComplete?.();
-      }
+    if (!started || finished || mode !== 'delete') {
       return;
     }
 
     const timeout = setTimeout(() => {
-      setDisplayedText(displayedText.slice(0, -1));
+      const next = displayedText.slice(0, -1);
+      setDisplayedText(next);
+      if (next.length === 0) {
+        setFinished(true);
+        onComplete?.();
+      }
     }, deleteSpeed);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [started, displayedText, deleteSpeed, mode, finished, onComplete]);
+  }, [started, finished, displayedText, deleteSpeed, mode, onComplete]);
 
   // Early return for phones or reduced motion preference -- render instantly (after all hooks)
   if (isPhone || prefersReducedMotion) {

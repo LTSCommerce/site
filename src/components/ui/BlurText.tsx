@@ -42,10 +42,16 @@ export function BlurText({
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const isPhone = useMediaQuery('(max-width: 767px)');
 
+  // Latch on the next frame, not synchronously: the blurred start state has to
+  // be painted first, or the CSS transition has nothing to animate from.
   React.useEffect(() => {
-    if (trigger && !hasAnimated) {
+    if (!trigger || hasAnimated) return;
+    const frame = requestAnimationFrame(() => {
       setHasAnimated(true);
-    }
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+    };
   }, [trigger, hasAnimated]);
 
   const baseStyle: CSSProperties = {
