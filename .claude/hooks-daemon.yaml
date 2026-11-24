@@ -237,8 +237,10 @@ handlers:
       options:
         mode: agent-pull # Auto-pull as first action when behind upstream
 
+    # Disabled: re-auditing the vendored hooks contract is daemon-maintainer work, so in this
+    # client project the advisory repeats every session with nothing actionable here.
     contract_staleness: # Flags when installed Claude Code outruns the last-audited hooks contract
-      enabled: true
+      enabled: false
       priority: 60
 
   # PreCompact handlers (run before conversation compaction)
